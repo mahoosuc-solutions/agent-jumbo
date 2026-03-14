@@ -25,15 +25,11 @@ class DiagramTool(Tool):
                 return await self._generate_drawio()
             else:
                 return Response(
-                    message=f"Unsupported diagram type: {diagram_type}. "
-                           f"Supported types: mermaid, excalidraw, drawio",
-                    break_loop=False
+                    message=f"Unsupported diagram type: {diagram_type}. Supported types: mermaid, excalidraw, drawio",
+                    break_loop=False,
                 )
         except Exception as e:
-            return Response(
-                message=f"Error generating {diagram_type} diagram: {e!s}",
-                break_loop=False
-            )
+            return Response(message=f"Error generating {diagram_type} diagram: {e!s}", break_loop=False)
 
     async def _generate_mermaid(self):
         """Generate Mermaid diagram"""
@@ -43,10 +39,7 @@ class DiagramTool(Tool):
         theme = self.args.get("theme", "default")
 
         if not code:
-            return Response(
-                message="Error: 'code' argument is required for Mermaid diagrams",
-                break_loop=False
-            )
+            return Response(message="Error: 'code' argument is required for Mermaid diagrams", break_loop=False)
 
         # Use the instrument script
         script_path = "/a0/instruments/custom/diagram_generator/generate_mermaid.py"
@@ -54,11 +47,16 @@ class DiagramTool(Tool):
         if output_path:
             # Generate to file
             cmd = [
-                "python3", script_path,
-                "--output", output_path,
-                "--code", code,
-                "--format", format,
-                "--theme", theme
+                "python3",
+                script_path,
+                "--output",
+                output_path,
+                "--code",
+                code,
+                "--format",
+                format,
+                "--theme",
+                theme,
             ]
 
             result = subprocess.run(cmd, capture_output=True, text=True)
@@ -66,20 +64,14 @@ class DiagramTool(Tool):
             if result.returncode == 0:
                 return Response(
                     message=f"Successfully generated Mermaid diagram: {output_path}\n\n"
-                           f"View it with: ![Diagram](img://{output_path})",
-                    break_loop=False
+                    f"View it with: ![Diagram](img://{output_path})",
+                    break_loop=False,
                 )
             else:
-                return Response(
-                    message=f"Error generating Mermaid diagram:\n{result.stderr}",
-                    break_loop=False
-                )
+                return Response(message=f"Error generating Mermaid diagram:\n{result.stderr}", break_loop=False)
         else:
             # Return code for inline rendering
-            return Response(
-                message=f"Mermaid diagram code:\n\n```mermaid\n{code}\n```",
-                break_loop=False
-            )
+            return Response(message=f"Mermaid diagram code:\n\n```mermaid\n{code}\n```", break_loop=False)
 
     async def _generate_excalidraw(self):
         """Generate Excalidraw diagram"""
@@ -98,25 +90,21 @@ class DiagramTool(Tool):
             cmd.extend(["--elements", json.dumps(elements)])
         else:
             return Response(
-                message="Error: Either 'elements' or 'template' is required for Excalidraw diagrams",
-                break_loop=False
+                message="Error: Either 'elements' or 'template' is required for Excalidraw diagrams", break_loop=False
             )
 
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode == 0:
             message = f"Successfully generated Excalidraw diagram: {output_path}"
-            if format == "json" or output_path.endswith('.excalidraw'):
+            if format == "json" or output_path.endswith(".excalidraw"):
                 message += "\n\nOpen at: https://excalidraw.com"
             else:
                 message += f"\n\nView it with: ![Diagram](img://{output_path})"
 
             return Response(message=message, break_loop=False)
         else:
-            return Response(
-                message=f"Error generating Excalidraw diagram:\n{result.stderr}",
-                break_loop=False
-            )
+            return Response(message=f"Error generating Excalidraw diagram:\n{result.stderr}", break_loop=False)
 
     async def _generate_drawio(self):
         """Generate Draw.io diagram"""
@@ -135,22 +123,18 @@ class DiagramTool(Tool):
             cmd.extend(["--xml", xml])
         else:
             return Response(
-                message="Error: Either 'xml' or 'template' is required for Draw.io diagrams",
-                break_loop=False
+                message="Error: Either 'xml' or 'template' is required for Draw.io diagrams", break_loop=False
             )
 
         result = subprocess.run(cmd, capture_output=True, text=True)
 
         if result.returncode == 0:
             message = f"Successfully generated Draw.io diagram: {output_path}"
-            if format == "xml" or output_path.endswith('.drawio'):
+            if format == "xml" or output_path.endswith(".drawio"):
                 message += "\n\nOpen at: https://app.diagrams.net"
             else:
                 message += f"\n\nView it with: ![Diagram](img://{output_path})"
 
             return Response(message=message, break_loop=False)
         else:
-            return Response(
-                message=f"Error generating Draw.io diagram:\n{result.stderr}",
-                break_loop=False
-            )
+            return Response(message=f"Error generating Draw.io diagram:\n{result.stderr}", break_loop=False)

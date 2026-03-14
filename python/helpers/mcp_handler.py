@@ -861,7 +861,7 @@ class MCPConfig(BaseModel):
 
                 for tool in tools:
                     prompt += (
-                        f"\n### {server_name}.{tool['name']}:\n" f"{tool['description']}\n\n"
+                        f"\n### {server_name}.{tool['name']}:\n{tool['description']}\n\n"
                         # f"#### Categories:\n"
                         # f"* kind: MCP Server Tool\n"
                         # f'* server: "{server_name}" ({server.description})\n\n'
@@ -880,7 +880,7 @@ class MCPConfig(BaseModel):
                         # f'    "observations": ["..."],\n' # TODO: this should be a prompt file with placeholders
                         f'    "thoughts": ["..."],\n'
                         # f'    "reflection": ["..."],\n' # TODO: this should be a prompt file with placeholders
-                        f"    \"tool_name\": \"{server_name}.{tool['name']}\",\n"
+                        f'    "tool_name": "{server_name}.{tool["name"]}",\n'
                         f'    "tool_args": !follow schema above\n'
                         f"}}\n"
                     )

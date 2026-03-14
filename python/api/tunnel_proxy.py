@@ -8,13 +8,10 @@ class TunnelProxy(ApiHandler):
     async def process(self, input: dict, request: Request) -> dict | Response:
         return await process(input)
 
+
 async def process(input: dict) -> dict | Response:
     # Get configuration from environment
-    tunnel_api_port = (
-        runtime.get_arg("tunnel_api_port")
-        or int(dotenv.get_dotenv_value("TUNNEL_API_PORT", 0))
-        or 55520
-    )
+    tunnel_api_port = runtime.get_arg("tunnel_api_port") or int(dotenv.get_dotenv_value("TUNNEL_API_PORT", 0)) or 55520
 
     # first verify the service is running:
     service_ok = False
@@ -35,4 +32,5 @@ async def process(input: dict) -> dict | Response:
     else:
         # forward to API handler directly
         from python.api.tunnel import process as local_process
+
         return await local_process(input)

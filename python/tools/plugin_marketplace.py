@@ -280,7 +280,7 @@ class PluginMarketplace(Tool):
 
         lines.append("")
         lines.append(
-            f"**Install:** `{{{{plugin_marketplace(action=\"install_plugin\", identifier=\"{plugin['identifier']}\")}}}}`"
+            f'**Install:** `{{{{plugin_marketplace(action="install_plugin", identifier="{plugin["identifier"]}")}}}}`'
         )
 
         return Response(message="\n".join(lines), break_loop=False)

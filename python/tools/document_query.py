@@ -5,7 +5,6 @@ from python.helpers.tool import Response, Tool
 
 
 class DocumentQueryTool(Tool):
-
     async def execute(self, **kwargs):
         document_uri = kwargs.get("document")
         document_uris = []
@@ -18,15 +17,8 @@ class DocumentQueryTool(Tool):
         if not document_uris:
             return Response(message="Error: no document provided", break_loop=False)
 
-        queries = (
-            kwargs["queries"]
-            if "queries" in kwargs
-            else [kwargs["query"]]
-            if (kwargs.get("query"))
-            else []
-        )
+        queries = kwargs["queries"] if "queries" in kwargs else [kwargs["query"]] if (kwargs.get("query")) else []
         try:
-
             progress = []
 
             # logging callback
@@ -36,9 +28,7 @@ class DocumentQueryTool(Tool):
 
             helper = DocumentQueryHelper(self.agent, progress_callback)
             if not queries:
-                contents = await asyncio.gather(
-                    *[helper.document_get_content(uri) for uri in document_uris]
-                )
+                contents = await asyncio.gather(*[helper.document_get_content(uri) for uri in document_uris])
                 content = "\n\n---\n\n".join(contents)
             else:
                 _, content = await helper.document_qa(document_uris, queries)

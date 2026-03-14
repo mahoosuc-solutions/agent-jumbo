@@ -29,14 +29,14 @@ class APIDesign(Tool):
         # Validate resource
         if not resource:
             return Response(
-                message="Error: resource parameter is required. " 'Example: {"resource": "users"}', break_loop=False
+                message='Error: resource parameter is required. Example: {"resource": "users"}', break_loop=False
             )
 
         # Validate format
         valid_formats = ["rest", "openapi", "graphql"]
         if api_format not in valid_formats:
             return Response(
-                message=f"Invalid format: {api_format}. " f"Must be one of: {', '.join(valid_formats)}",
+                message=f"Invalid format: {api_format}. Must be one of: {', '.join(valid_formats)}",
                 break_loop=False,
             )
 

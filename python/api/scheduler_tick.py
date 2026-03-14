@@ -52,9 +52,4 @@ class SchedulerTick(ApiHandler):
         # Get updated tasks after tick
         serialized_tasks = scheduler.serialize_all_tasks()
 
-        return {
-            "scheduler": "tick",
-            "timestamp": timestamp,
-            "tasks_count": tasks_count,
-            "tasks": serialized_tasks
-        }
+        return {"scheduler": "tick", "timestamp": timestamp, "tasks_count": tasks_count, "tasks": serialized_tasks}

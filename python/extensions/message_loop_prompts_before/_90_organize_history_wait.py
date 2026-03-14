@@ -1,4 +1,3 @@
-
 from agent import LoopData
 from python.extensions.message_loop_end._10_organize_history import DATA_NAME_TASK
 from python.helpers.extension import Extension
@@ -6,7 +5,6 @@ from python.helpers.extension import Extension
 
 class OrganizeHistoryWait(Extension):
     async def execute(self, loop_data: LoopData = LoopData(), **kwargs):
-
         # sync action only required if the history is too large, otherwise leave it in background
         while self.agent.history.is_over_limit():
             # get task

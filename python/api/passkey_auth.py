@@ -1,4 +1,3 @@
-
 from python.helpers.api import ApiHandler, Request, Response
 from python.helpers.security import SecurityManager
 
@@ -38,7 +37,9 @@ class PasskeyAuth(ApiHandler):
                 result = manager.verify_registration(user_id, challenge, response_data, host, origin)
 
                 status = "success" if result.get("success") else "failure"
-                SecurityManager.log_event("passkey_reg_verify", status, user_id, details=result if status == "failure" else None)
+                SecurityManager.log_event(
+                    "passkey_reg_verify", status, user_id, details=result if status == "failure" else None
+                )
                 return result
 
             elif action == "get_authentication_options":
@@ -55,7 +56,9 @@ class PasskeyAuth(ApiHandler):
                 if status == "success":
                     SecurityManager.set_authorized(user_id)
 
-                SecurityManager.log_event("passkey_auth_verify", status, user_id, details=result if status == "failure" else None)
+                SecurityManager.log_event(
+                    "passkey_auth_verify", status, user_id, details=result if status == "failure" else None
+                )
                 return result
 
             return {"success": False, "error": f"Unknown action: {action}"}

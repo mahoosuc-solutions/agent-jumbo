@@ -4,9 +4,7 @@ from python.helpers.extension import Extension
 
 
 class LoadProfileSettings(Extension):
-
     async def execute(self, **kwargs) -> None:
-
         if not self.agent or not self.agent.config.profile:
             return
 
@@ -22,10 +20,7 @@ class LoadProfileSettings(Extension):
 
                     new_config = initialize_agent(override_settings=override_settings)
 
-                    if (
-                        "agent_memory_subdir" not in override_settings
-                        and current_memory_subdir != "default"
-                    ):
+                    if "agent_memory_subdir" not in override_settings and current_memory_subdir != "default":
                         new_config.memory_subdir = current_memory_subdir
 
                     self.agent.config = new_config
@@ -38,16 +33,10 @@ class LoadProfileSettings(Extension):
                         ),
                     )
                 else:
-                    raise Exception(
-                        f"Subordinate settings in {settings_path} "
-                        "must be a JSON object."
-                    )
+                    raise Exception(f"Subordinate settings in {settings_path} must be a JSON object.")
 
             except Exception as e:
                 self.agent.context.log.log(
                     type="error",
-                    content=(
-                        "Error loading subordinate settings for "
-                        f"profile '{self.agent.config.profile}': {e}"
-                    ),
+                    content=(f"Error loading subordinate settings for profile '{self.agent.config.profile}': {e}"),
                 )

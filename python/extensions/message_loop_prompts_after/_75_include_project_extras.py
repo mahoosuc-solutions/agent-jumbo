@@ -5,7 +5,6 @@ from python.helpers.extension import Extension
 
 class IncludeProjectExtras(Extension):
     async def execute(self, loop_data: LoopData = LoopData(), **kwargs):
-
         # active project
         project_name = projects.get_context_project_name(self.agent.context)
         if not project_name:
@@ -34,14 +33,14 @@ class IncludeProjectExtras(Extension):
 def cleanup_gitignore(gitignore_raw: str) -> str:
     """Process gitignore: split lines, strip, remove comments, remove empty lines."""
     gitignore_lines = []
-    for line in gitignore_raw.split('\n'):
+    for line in gitignore_raw.split("\n"):
         # Strip whitespace
         line = line.strip()
         # Remove inline comments (everything after #)
-        if '#' in line:
-            line = line.split('#')[0].strip()
+        if "#" in line:
+            line = line.split("#")[0].strip()
         # Keep only non-empty lines
         if line:
             gitignore_lines.append(line)
 
-    return '\n'.join(gitignore_lines) if gitignore_lines else "nothing ignored"
+    return "\n".join(gitignore_lines) if gitignore_lines else "nothing ignored"

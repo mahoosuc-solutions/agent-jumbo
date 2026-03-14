@@ -13,7 +13,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "instruments" / "cu
 
 
 class PropertyManager(Tool):
-
     async def execute(self, **kwargs):
         """
         Execute property management operations
@@ -141,14 +140,11 @@ class PropertyManager(Tool):
 - **Financial**: cash_flow
 - **Setup**: setup_initial
 """,
-                    break_loop=False
+                    break_loop=False,
                 )
 
         except Exception as e:
-            return Response(
-                message=f"Property Manager error: {e!s}",
-                break_loop=False
-            )
+            return Response(message=f"Property Manager error: {e!s}", break_loop=False)
 
     # Dashboard and overview
     async def _get_dashboard(self, pm) -> Response:
@@ -161,40 +157,40 @@ class PropertyManager(Tool):
 ## 🏠 Property Management Dashboard
 
 ### Portfolio Overview
-- **Total Properties**: {summary.get('total_properties', 0)}
-- **Total Units**: {summary.get('total_units', 0)}
-- **Occupancy Rate**: {summary.get('occupancy_rate', 0):.1f}%
-- **Active Leases**: {summary.get('active_leases', 0)}
+- **Total Properties**: {summary.get("total_properties", 0)}
+- **Total Units**: {summary.get("total_units", 0)}
+- **Occupancy Rate**: {summary.get("occupancy_rate", 0):.1f}%
+- **Active Leases**: {summary.get("active_leases", 0)}
 
 ### Monthly Financial Summary
-- **Monthly Rent Income**: ${summary.get('monthly_rent_income', 0):,.2f}
-- **Monthly Expenses**: ${summary.get('monthly_expenses', 0):,.2f}
-- **Net Cash Flow**: ${summary.get('monthly_rent_income', 0) - summary.get('monthly_expenses', 0):,.2f}
+- **Monthly Rent Income**: ${summary.get("monthly_rent_income", 0):,.2f}
+- **Monthly Expenses**: ${summary.get("monthly_expenses", 0):,.2f}
+- **Net Cash Flow**: ${summary.get("monthly_rent_income", 0) - summary.get("monthly_expenses", 0):,.2f}
 
 ### ⚠️ Alerts
 """
 
-        if alerts.get('expiring_leases', 0) > 0:
+        if alerts.get("expiring_leases", 0) > 0:
             result += f"- **{alerts['expiring_leases']}** leases expiring within 30 days\n"
 
-        if alerts.get('overdue_rent', 0) > 0:
+        if alerts.get("overdue_rent", 0) > 0:
             result += f"- **{alerts['overdue_rent']}** overdue payments (${alerts.get('overdue_amount', 0):,.2f})\n"
 
-        if alerts.get('emergency_maintenance', 0) > 0:
+        if alerts.get("emergency_maintenance", 0) > 0:
             result += f"- **{alerts['emergency_maintenance']}** emergency maintenance requests\n"
 
-        if alerts.get('open_maintenance', 0) > 0:
+        if alerts.get("open_maintenance", 0) > 0:
             result += f"- **{alerts['open_maintenance']}** open maintenance requests\n"
 
         # Show critical items
-        if dashboard.get('expiring_leases'):
+        if dashboard.get("expiring_leases"):
             result += "\n### Expiring Leases\n"
-            for lease in dashboard['expiring_leases'][:5]:
+            for lease in dashboard["expiring_leases"][:5]:
                 result += f"- {lease['tenant_name']} @ {lease['property_name']} - expires {lease['end_date']}\n"
 
-        if dashboard.get('emergency_maintenance'):
+        if dashboard.get("emergency_maintenance"):
             result += "\n### 🚨 Emergency Maintenance\n"
-            for maint in dashboard['emergency_maintenance']:
+            for maint in dashboard["emergency_maintenance"]:
                 result += f"- {maint['title']} @ {maint['property_name']}\n"
 
         return Response(message=result, break_loop=False)
@@ -211,14 +207,14 @@ class PropertyManager(Tool):
 |----------|------|-------|----------|--------------|
 """
 
-        for prop in summary.get('properties', []):
+        for prop in summary.get("properties", []):
             result += f"| {prop['name']} | {prop['type']} | {prop.get('units', 1)} | {prop.get('occupied', 0)} | ${prop.get('monthly_rent', 0):,.2f} |\n"
 
         result += f"""
 ### Totals
-- **Total Portfolio Value**: ${summary.get('total_value', 0):,.2f}
-- **Monthly Income**: ${summary.get('total_monthly_income', 0):,.2f}
-- **Annual Income**: ${summary.get('total_annual_income', 0):,.2f}
+- **Total Portfolio Value**: ${summary.get("total_value", 0):,.2f}
+- **Monthly Income**: ${summary.get("total_monthly_income", 0):,.2f}
+- **Annual Income**: ${summary.get("total_annual_income", 0):,.2f}
 """
 
         return Response(message=result, break_loop=False)
@@ -234,20 +230,20 @@ class PropertyManager(Tool):
 ## 💰 Financial Report
 
 ### Income
-- **Total Rent Collected**: ${financials.get('income', {}).get('total_rent', 0):,.2f}
-- **Other Income**: ${financials.get('income', {}).get('other', 0):,.2f}
+- **Total Rent Collected**: ${financials.get("income", {}).get("total_rent", 0):,.2f}
+- **Other Income**: ${financials.get("income", {}).get("other", 0):,.2f}
 
 ### Expenses by Category
 """
 
-        for category, amount in financials.get('expenses', {}).get('by_category', {}).items():
+        for category, amount in financials.get("expenses", {}).get("by_category", {}).items():
             result += f"- **{category.title()}**: ${amount:,.2f}\n"
 
         result += f"""
 ### Summary
-- **Total Expenses**: ${financials.get('expenses', {}).get('total', 0):,.2f}
-- **Net Income**: ${financials.get('net_income', 0):,.2f}
-- **ROI**: {financials.get('roi_percent', 0):.1f}%
+- **Total Expenses**: ${financials.get("expenses", {}).get("total", 0):,.2f}
+- **Net Income**: ${financials.get("net_income", 0):,.2f}
+- **ROI**: {financials.get("roi_percent", 0):.1f}%
 """
 
         return Response(message=result, break_loop=False)
@@ -263,14 +259,14 @@ class PropertyManager(Tool):
         result = f"## 🏠 Properties ({len(properties)})\n\n"
 
         for prop in properties:
-            occupancy = (prop['occupied_units'] / prop['unit_count'] * 100) if prop['unit_count'] > 0 else 0
+            occupancy = (prop["occupied_units"] / prop["unit_count"] * 100) if prop["unit_count"] > 0 else 0
             result += f"""
-### {prop['name']}
-- **Type**: {prop['property_type']}
-- **Location**: {prop['address']}, {prop['city']}, {prop['state']}
-- **Units**: {prop['occupied_units']}/{prop['unit_count']} occupied ({occupancy:.0f}%)
-- **Monthly Rent**: ${prop['monthly_rent_total']:,.2f}
-- **Status**: {prop['status']}
+### {prop["name"]}
+- **Type**: {prop["property_type"]}
+- **Location**: {prop["address"]}, {prop["city"]}, {prop["state"]}
+- **Units**: {prop["occupied_units"]}/{prop["unit_count"]} occupied ({occupancy:.0f}%)
+- **Monthly Rent**: ${prop["monthly_rent_total"]:,.2f}
+- **Status**: {prop["status"]}
 """
 
         return Response(message=result, break_loop=False)
@@ -285,48 +281,50 @@ class PropertyManager(Tool):
             return Response(message=f"Property {property_id} not found", break_loop=False)
 
         result = f"""
-## {prop['name']}
+## {prop["name"]}
 
 ### Basic Information
-- **ID**: {prop['id']}
-- **Type**: {prop['property_type']}
-- **Address**: {prop['address']}
-- **City/State**: {prop['city']}, {prop['state']}
-- **ZIP**: {prop.get('zip_code', 'N/A')}
-- **Status**: {prop['status']}
+- **ID**: {prop["id"]}
+- **Type**: {prop["property_type"]}
+- **Address**: {prop["address"]}
+- **City/State**: {prop["city"]}, {prop["state"]}
+- **ZIP**: {prop.get("zip_code", "N/A")}
+- **Status**: {prop["status"]}
 
 ### Financial
-- **Purchase Price**: ${prop.get('purchase_price', 0):,.2f}
-- **Market Value**: ${prop.get('market_value', 0):,.2f}
+- **Purchase Price**: ${prop.get("purchase_price", 0):,.2f}
+- **Market Value**: ${prop.get("market_value", 0):,.2f}
 """
 
-        if prop.get('mortgage'):
-            m = prop['mortgage']
+        if prop.get("mortgage"):
+            m = prop["mortgage"]
             result += f"""
 ### Mortgage
-- **Lender**: {m.get('lender', 'N/A')}
-- **Balance**: ${m.get('balance', 0):,.2f}
-- **Monthly Payment**: ${m.get('monthly_payment', 0):,.2f}
-- **Rate**: {m.get('interest_rate', 0)}%
+- **Lender**: {m.get("lender", "N/A")}
+- **Balance**: ${m.get("balance", 0):,.2f}
+- **Monthly Payment**: ${m.get("monthly_payment", 0):,.2f}
+- **Rate**: {m.get("interest_rate", 0)}%
 """
 
-        if prop.get('units'):
+        if prop.get("units"):
             result += f"\n### Units ({len(prop['units'])})\n"
-            for unit in prop['units'][:10]:  # Show first 10
-                status_emoji = "🟢" if unit['status'] == 'occupied' else "⚪"
+            for unit in prop["units"][:10]:  # Show first 10
+                status_emoji = "🟢" if unit["status"] == "occupied" else "⚪"
                 result += f"- {status_emoji} Unit {unit['unit_number']}: {unit['status']} - ${unit.get('rent_amount', 0):,.2f}/mo\n"
-            if len(prop['units']) > 10:
+            if len(prop["units"]) > 10:
                 result += f"... and {len(prop['units']) - 10} more units\n"
 
-        if prop.get('active_leases'):
+        if prop.get("active_leases"):
             result += f"\n### Active Leases ({len(prop['active_leases'])})\n"
-            for lease in prop['active_leases']:
+            for lease in prop["active_leases"]:
                 result += f"- {lease.get('tenant_name', 'Unknown')} - ${lease['rent_amount']:,.2f}/mo\n"
 
-        if prop.get('open_maintenance'):
+        if prop.get("open_maintenance"):
             result += f"\n### Open Maintenance ({len(prop['open_maintenance'])})\n"
-            for maint in prop['open_maintenance']:
-                priority_emoji = "🚨" if maint['priority'] == 'emergency' else "⚠️" if maint['priority'] == 'high' else "📋"
+            for maint in prop["open_maintenance"]:
+                priority_emoji = (
+                    "🚨" if maint["priority"] == "emergency" else "⚠️" if maint["priority"] == "high" else "📋"
+                )
                 result += f"- {priority_emoji} {maint['title']}\n"
 
         return Response(message=result, break_loop=False)
@@ -336,17 +334,11 @@ class PropertyManager(Tool):
         required = ["name", "property_type", "address", "city", "state"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         prop = pm.add_property(**data)
 
-        return Response(
-            message=f"✅ Property added: **{prop['name']}** (ID: {prop['id']})",
-            break_loop=False
-        )
+        return Response(message=f"✅ Property added: **{prop['name']}** (ID: {prop['id']})", break_loop=False)
 
     async def _update_property(self, pm, property_id: int, data: dict) -> Response:
         """Update property"""
@@ -369,10 +361,7 @@ class PropertyManager(Tool):
             return Response(message="Error: units list is required", break_loop=False)
 
         unit_ids = pm.add_units(property_id, units)
-        return Response(
-            message=f"✅ Added {len(unit_ids)} units to property {property_id}",
-            break_loop=False
-        )
+        return Response(message=f"✅ Added {len(unit_ids)} units to property {property_id}", break_loop=False)
 
     async def _generate_motel_units(self, pm, property_id: int, data: dict) -> Response:
         """Generate motel room units"""
@@ -383,10 +372,7 @@ class PropertyManager(Tool):
         base_rent = data.get("base_rent", 89.00)
 
         unit_ids = pm.generate_motel_units(property_id, count, base_rent)
-        return Response(
-            message=f"✅ Generated {len(unit_ids)} motel rooms at ${base_rent:.2f}/night",
-            break_loop=False
-        )
+        return Response(message=f"✅ Generated {len(unit_ids)} motel rooms at ${base_rent:.2f}/night", break_loop=False)
 
     # Tenant operations
     async def _add_tenant(self, pm, data: dict) -> Response:
@@ -394,15 +380,12 @@ class PropertyManager(Tool):
         required = ["first_name", "last_name"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         tenant = pm.add_tenant(**data)
         return Response(
             message=f"✅ Tenant added: **{tenant['first_name']} {tenant['last_name']}** (ID: {tenant['id']})",
-            break_loop=False
+            break_loop=False,
         )
 
     async def _search_tenants(self, pm, query: str) -> Response:
@@ -431,19 +414,19 @@ class PropertyManager(Tool):
             return Response(message=f"Tenant {tenant_id} not found", break_loop=False)
 
         result = f"""
-## Tenant: {history['first_name']} {history['last_name']}
+## Tenant: {history["first_name"]} {history["last_name"]}
 
 ### Contact
-- **Email**: {history.get('email', 'N/A')}
-- **Phone**: {history.get('phone', 'N/A')}
+- **Email**: {history.get("email", "N/A")}
+- **Phone**: {history.get("phone", "N/A")}
 
 ### Payment History
-- **Total Paid**: ${history.get('total_paid', 0):,.2f}
+- **Total Paid**: ${history.get("total_paid", 0):,.2f}
 
-### Leases ({len(history.get('leases', []))})
+### Leases ({len(history.get("leases", []))})
 """
 
-        for lease in history.get('leases', []):
+        for lease in history.get("leases", []):
             result += f"- {lease['property_name']} ({lease['start_date']} - {lease.get('end_date', 'ongoing')}): ${lease['rent_amount']:,.2f}/mo\n"
 
         return Response(message=result, break_loop=False)
@@ -454,15 +437,12 @@ class PropertyManager(Tool):
         required = ["property_id", "tenant_id", "start_date", "rent_amount"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         lease = pm.create_lease(**data)
         return Response(
             message=f"✅ Lease created (ID: {lease['id']}) - ${lease['rent_amount']:,.2f}/mo starting {lease['start_date']}",
-            break_loop=False
+            break_loop=False,
         )
 
     async def _renew_lease(self, pm, lease_id: int, data: dict) -> Response:
@@ -475,10 +455,7 @@ class PropertyManager(Tool):
             return Response(message="Error: new_end_date is required", break_loop=False)
 
         pm.renew_lease(lease_id, new_end_date, data.get("new_rent"))
-        return Response(
-            message=f"✅ Lease {lease_id} renewed until {new_end_date}",
-            break_loop=False
-        )
+        return Response(message=f"✅ Lease {lease_id} renewed until {new_end_date}", break_loop=False)
 
     async def _terminate_lease(self, pm, lease_id: int, reason: str) -> Response:
         """Terminate a lease"""
@@ -486,10 +463,7 @@ class PropertyManager(Tool):
             return Response(message="Error: lease_id is required", break_loop=False)
 
         pm.terminate_lease(lease_id, reason)
-        return Response(
-            message=f"✅ Lease {lease_id} terminated",
-            break_loop=False
-        )
+        return Response(message=f"✅ Lease {lease_id} terminated", break_loop=False)
 
     async def _get_expiring_leases(self, pm, days: int) -> Response:
         """Get expiring leases"""
@@ -510,16 +484,10 @@ class PropertyManager(Tool):
         required = ["lease_id", "amount"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         payment = pm.record_rent_payment(**data)
-        return Response(
-            message=f"✅ Payment recorded: ${payment['amount']:,.2f}",
-            break_loop=False
-        )
+        return Response(message=f"✅ Payment recorded: ${payment['amount']:,.2f}", break_loop=False)
 
     async def _get_rent_roll(self, pm, month: str) -> Response:
         """Get rent roll"""
@@ -528,19 +496,19 @@ class PropertyManager(Tool):
         if not roll:
             return Response(message="No active leases found", break_loop=False)
 
-        total_expected = sum(r['expected'] for r in roll)
-        total_paid = sum(r['paid'] for r in roll)
-        total_balance = sum(r['balance'] for r in roll)
+        total_expected = sum(r["expected"] for r in roll)
+        total_paid = sum(r["paid"] for r in roll)
+        total_balance = sum(r["balance"] for r in roll)
 
         result = f"""
-## Rent Roll - {month or 'Current Month'}
+## Rent Roll - {month or "Current Month"}
 
 | Property | Unit | Tenant | Expected | Paid | Balance |
 |----------|------|--------|----------|------|---------|
 """
 
         for r in roll:
-            unit = r.get('unit_number', '-')
+            unit = r.get("unit_number", "-")
             result += f"| {r['property_name']} | {unit} | {r['tenant_name']} | ${r['expected']:,.2f} | ${r['paid']:,.2f} | ${r['balance']:,.2f} |\n"
 
         result += f"""
@@ -559,7 +527,7 @@ class PropertyManager(Tool):
         if not overdue:
             return Response(message="✅ No overdue rent payments!", break_loop=False)
 
-        total = sum(p['amount'] for p in overdue)
+        total = sum(p["amount"] for p in overdue)
 
         result = f"## ⚠️ Overdue Rent ({len(overdue)} payments - ${total:,.2f})\n\n"
         for p in overdue:
@@ -573,15 +541,11 @@ class PropertyManager(Tool):
         required = ["property_id", "category", "description", "amount"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         expense = pm.record_expense(**data)
         return Response(
-            message=f"✅ Expense recorded: ${expense['amount']:,.2f} - {expense['description']}",
-            break_loop=False
+            message=f"✅ Expense recorded: ${expense['amount']:,.2f} - {expense['description']}", break_loop=False
         )
 
     async def _get_expense_report(self, pm, property_id: int, data: dict) -> Response:
@@ -589,7 +553,7 @@ class PropertyManager(Tool):
         if not property_id:
             return Response(message="Error: property_id is required", break_loop=False)
 
-        report = pm.get_expense_report(property_id, data.get('start_date'), data.get('end_date'))
+        report = pm.get_expense_report(property_id, data.get("start_date"), data.get("end_date"))
 
         result = f"""
 ## Expense Report - Property {property_id}
@@ -599,13 +563,13 @@ class PropertyManager(Tool):
 |----------|-------|
 """
 
-        for cat, info in report.get('by_category', {}).items():
+        for cat, info in report.get("by_category", {}).items():
             result += f"| {cat.title()} | ${info['total']:,.2f} |\n"
 
         result += f"""
 ### Summary
-- **Total Expenses**: ${report.get('total', 0):,.2f}
-- **Expense Count**: {report.get('expense_count', 0)}
+- **Total Expenses**: ${report.get("total", 0):,.2f}
+- **Expense Count**: {report.get("expense_count", 0)}
 """
 
         return Response(message=result, break_loop=False)
@@ -616,16 +580,15 @@ class PropertyManager(Tool):
         required = ["property_id", "category", "title"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         request = pm.create_maintenance_request(**data)
-        priority_emoji = "🚨" if data.get('priority') == 'emergency' else "⚠️" if data.get('priority') == 'high' else "📋"
+        priority_emoji = (
+            "🚨" if data.get("priority") == "emergency" else "⚠️" if data.get("priority") == "high" else "📋"
+        )
         return Response(
             message=f"{priority_emoji} Maintenance request created (ID: {request['id']}): {request['title']}",
-            break_loop=False
+            break_loop=False,
         )
 
     async def _update_maintenance(self, pm, request_id: int, data: dict) -> Response:
@@ -635,10 +598,7 @@ class PropertyManager(Tool):
 
         status = data.get("status", "in_progress")
         pm.update_maintenance_status(request_id, status, **data)
-        return Response(
-            message=f"✅ Maintenance request {request_id} updated to '{status}'",
-            break_loop=False
-        )
+        return Response(message=f"✅ Maintenance request {request_id} updated to '{status}'", break_loop=False)
 
     async def _complete_maintenance(self, pm, request_id: int, data: dict) -> Response:
         """Complete maintenance request"""
@@ -648,8 +608,7 @@ class PropertyManager(Tool):
         actual_cost = data.get("actual_cost", 0)
         pm.complete_maintenance(request_id, actual_cost, data.get("notes"))
         return Response(
-            message=f"✅ Maintenance request {request_id} completed - Cost: ${actual_cost:,.2f}",
-            break_loop=False
+            message=f"✅ Maintenance request {request_id} completed - Cost: ${actual_cost:,.2f}", break_loop=False
         )
 
     async def _get_maintenance_schedule(self, pm) -> Response:
@@ -683,7 +642,7 @@ class PropertyManager(Tool):
         for p in projections:
             result += f"| {p['month']} | ${p['expected_income']:,.2f} | ${p['expected_expenses']:,.2f} | ${p['projected_net']:,.2f} |\n"
 
-        total_net = sum(p['projected_net'] for p in projections)
+        total_net = sum(p["projected_net"] for p in projections)
         result += f"\n**Total Projected Net**: ${total_net:,.2f}"
 
         return Response(message=result, break_loop=False)
@@ -713,5 +672,5 @@ The following properties have been added to your portfolio:
 2. Add tenants: `action: add_tenant, data: {first_name: "...", last_name: "...", email: "...", phone: "..."}`
 3. Create leases: `action: create_lease, data: {property_id: X, tenant_id: Y, start_date: "YYYY-MM-DD", rent_amount: 1000}`
 """,
-            break_loop=False
+            break_loop=False,
         )

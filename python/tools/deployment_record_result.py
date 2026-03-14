@@ -21,8 +21,7 @@ class DeploymentRecordResult(Tool):
         record = record_deployment_result(payload)
         return Response(
             message=(
-                f"Deployment result recorded for {payload['environment'] or 'unknown'} "
-                f"with status {payload['status']}"
+                f"Deployment result recorded for {payload['environment'] or 'unknown'} with status {payload['status']}"
             ),
             break_loop=False,
             additional=record,

@@ -33,14 +33,13 @@ class AnalyticsROICalculator(Tool):
         # Validate required parameters
         if not investment_str:
             return Response(
-                message="Error: investment parameter is required. "
-                'Example: {"investment": "50000", "revenue": "75000"}',
+                message='Error: investment parameter is required. Example: {"investment": "50000", "revenue": "75000"}',
                 break_loop=False,
             )
 
         if not revenue_str:
             return Response(
-                message="Error: revenue parameter is required. " 'Example: {"investment": "50000", "revenue": "75000"}',
+                message='Error: revenue parameter is required. Example: {"investment": "50000", "revenue": "75000"}',
                 break_loop=False,
             )
 

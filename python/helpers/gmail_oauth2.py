@@ -28,11 +28,11 @@ class GmailOAuth2Handler:
 
     # Gmail API scopes
     SCOPES = [
-        'https://www.googleapis.com/auth/gmail.readonly',
-        'https://www.googleapis.com/auth/gmail.send',
-        'https://www.googleapis.com/auth/gmail.modify',
-        'https://www.googleapis.com/auth/gmail.labels',
-        'https://www.googleapis.com/auth/gmail.compose'
+        "https://www.googleapis.com/auth/gmail.readonly",
+        "https://www.googleapis.com/auth/gmail.send",
+        "https://www.googleapis.com/auth/gmail.modify",
+        "https://www.googleapis.com/auth/gmail.labels",
+        "https://www.googleapis.com/auth/gmail.compose",
     ]
 
     def __init__(self, credentials_dir: str = "data/gmail_credentials"):
@@ -73,14 +73,16 @@ class GmailOAuth2Handler:
             Credentials object or None
         """
         if Credentials is None:
-            raise ImportError("Google OAuth2 libraries not installed. Run: pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client")
+            raise ImportError(
+                "Google OAuth2 libraries not installed. Run: pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client"
+            )
 
         token_path = self.credentials_dir / f"token_{account_name}.pickle"
 
         if not token_path.exists():
             return None
 
-        with open(token_path, 'rb') as token:
+        with open(token_path, "rb") as token:
             creds = pickle.load(token)
 
         # Refresh if expired
@@ -103,7 +105,7 @@ class GmailOAuth2Handler:
             creds: Credentials object to save
         """
         token_path = self.credentials_dir / f"token_{account_name}.pickle"
-        with open(token_path, 'wb') as token:
+        with open(token_path, "wb") as token:
             pickle.dump(creds, token)
 
     def _get_token_path(self, account_name: str) -> Path:
@@ -127,25 +129,19 @@ class GmailOAuth2Handler:
 
         # Parse credentials_json (can be path or JSON string)
         if os.path.exists(credentials_json):
-            flow = Flow.from_client_secrets_file(
-                credentials_json,
-                scopes=self.SCOPES,
-                state=state
-            )
+            flow = Flow.from_client_secrets_file(credentials_json, scopes=self.SCOPES, state=state)
         else:
             # Assume it's JSON content
             import json
+
             client_config = json.loads(credentials_json)
-            flow = Flow.from_client_config(
-                client_config,
-                scopes=self.SCOPES,
-                state=state
-            )
+            flow = Flow.from_client_config(client_config, scopes=self.SCOPES, state=state)
 
         # Set redirect URI
         if not redirect_uri:
             # Use current Flask server + callback endpoint
             from python.helpers import runtime
+
             host = runtime.get_web_ui_host() or "localhost"
             port = runtime.get_web_ui_port()
             redirect_uri = f"http://{host}:{port}/gmail_oauth_callback"
@@ -154,16 +150,21 @@ class GmailOAuth2Handler:
 
         # Generate authorization URL
         auth_url, _ = flow.authorization_url(
-            access_type='offline',
-            include_granted_scopes='true',
-            prompt='consent'  # Force consent screen to get refresh token
+            access_type="offline",
+            include_granted_scopes="true",
+            prompt="consent",  # Force consent screen to get refresh token
         )
 
         return auth_url
 
-    def complete_authorization(self, account_name: str, credentials_json: str,
-                              authorization_code: str, state: str,
-                              redirect_uri: str | None = None) -> str:
+    def complete_authorization(
+        self,
+        account_name: str,
+        credentials_json: str,
+        authorization_code: str,
+        state: str,
+        redirect_uri: str | None = None,
+    ) -> str:
         """
         Complete OAuth2 authorization and save credentials
 
@@ -182,24 +183,18 @@ class GmailOAuth2Handler:
 
         # Parse credentials_json (can be path or JSON string)
         if os.path.exists(credentials_json):
-            flow = Flow.from_client_secrets_file(
-                credentials_json,
-                scopes=self.SCOPES,
-                state=state
-            )
+            flow = Flow.from_client_secrets_file(credentials_json, scopes=self.SCOPES, state=state)
         else:
             # Assume it's JSON content
             import json
+
             client_config = json.loads(credentials_json)
-            flow = Flow.from_client_config(
-                client_config,
-                scopes=self.SCOPES,
-                state=state
-            )
+            flow = Flow.from_client_config(client_config, scopes=self.SCOPES, state=state)
 
         # Set redirect URI
         if not redirect_uri:
             from python.helpers import runtime
+
             host = runtime.get_web_ui_host() or "localhost"
             port = runtime.get_web_ui_port()
             redirect_uri = f"http://{host}:{port}/gmail_oauth_callback"
@@ -234,7 +229,7 @@ class GmailOAuth2Handler:
             return {
                 "success": False,
                 "error": "Google OAuth2 libraries not installed",
-                "install_command": "pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client"
+                "install_command": "pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client",
             }
 
         # Check for existing credentials
@@ -249,14 +244,12 @@ class GmailOAuth2Handler:
                 return {
                     "success": False,
                     "error": "credentials.json not found",
-                    "help": "Download OAuth2 credentials from Google Cloud Console"
+                    "help": "Download OAuth2 credentials from Google Cloud Console",
                 }
 
             try:
                 # Start OAuth2 flow
-                flow = InstalledAppFlow.from_client_secrets_file(
-                    credentials_json_path, self.SCOPES
-                )
+                flow = InstalledAppFlow.from_client_secrets_file(credentials_json_path, self.SCOPES)
                 creds = flow.run_local_server(port=0)
 
                 # Save credentials
@@ -264,24 +257,21 @@ class GmailOAuth2Handler:
                 self.accounts[account_name] = creds
 
             except Exception as e:
-                return {
-                    "success": False,
-                    "error": f"OAuth2 authentication failed: {e!s}"
-                }
+                return {"success": False, "error": f"OAuth2 authentication failed: {e!s}"}
 
         return {
             "success": True,
             "account_name": account_name,
             "email": self._get_account_email(account_name),
-            "scopes": self.SCOPES
+            "scopes": self.SCOPES,
         }
 
     def _get_account_email(self, account_name: str) -> str | None:
         """Get email address for authenticated account"""
         try:
             service = self.get_gmail_service(account_name)
-            profile = service.users().getProfile(userId='me').execute()
-            return profile.get('emailAddress')
+            profile = service.users().getProfile(userId="me").execute()
+            return profile.get("emailAddress")
         except:
             return None
 
@@ -308,7 +298,7 @@ class GmailOAuth2Handler:
         if not creds or not creds.valid:
             raise ValueError(f"No valid credentials for account: {account_name}")
 
-        return build('gmail', 'v1', credentials=creds)
+        return build("gmail", "v1", credentials=creds)
 
     def list_accounts(self) -> list[dict]:
         """
@@ -321,11 +311,7 @@ class GmailOAuth2Handler:
 
         for account_name in self.accounts:
             email = self._get_account_email(account_name)
-            accounts_info.append({
-                "account_name": account_name,
-                "email": email,
-                "authenticated": True
-            })
+            accounts_info.append({"account_name": account_name, "email": email, "authenticated": True})
 
         return accounts_info
 
@@ -367,7 +353,7 @@ class GmailOAuth2Handler:
                     "account_name": account_name,
                     "authenticated": False,
                     "valid": False,
-                    "error": "No credentials found"
+                    "error": "No credentials found",
                 }
 
             return {
@@ -375,14 +361,9 @@ class GmailOAuth2Handler:
                 "email": self._get_account_email(account_name),
                 "authenticated": True,
                 "valid": creds.valid,
-                "expired": creds.expired if hasattr(creds, 'expired') else False,
-                "has_refresh_token": bool(creds.refresh_token) if hasattr(creds, 'refresh_token') else False,
-                "scopes": self.SCOPES
+                "expired": creds.expired if hasattr(creds, "expired") else False,
+                "has_refresh_token": bool(creds.refresh_token) if hasattr(creds, "refresh_token") else False,
+                "scopes": self.SCOPES,
             }
         except Exception as e:
-            return {
-                "account_name": account_name,
-                "authenticated": False,
-                "valid": False,
-                "error": str(e)
-            }
+            return {"account_name": account_name, "authenticated": False, "valid": False, "error": str(e)}

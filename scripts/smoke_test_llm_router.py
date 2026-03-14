@@ -350,11 +350,11 @@ def test_endpoint(session: requests.Session, base_url: str, endpoint: dict) -> T
 
 def run_all_tests(base_url: str, skip_state: bool = False) -> list[TestResult]:
     """Run all endpoint tests."""
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("  LLM Router API Smoke Tests")
     print(f"  Base URL: {base_url}")
     print(f"  Skip state-changing: {skip_state}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     print("Setting up session...")
     session = get_session(base_url)
@@ -392,9 +392,9 @@ def print_summary(results: list[TestResult]):
     failed = sum(1 for r in results if not r.passed)
     total = len(results)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"  RESULTS: {passed}/{total} passed, {failed} failed")
-    print(f"{'='*60}")
+    print(f"{'=' * 60}")
 
     if failed > 0:
         print("\nFailed endpoints:")

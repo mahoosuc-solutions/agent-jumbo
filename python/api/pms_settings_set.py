@@ -5,6 +5,7 @@ Configure and manage PMS provider settings
 
 import sys
 from pathlib import Path
+
 from python.helpers.api import ApiHandler, Request, Response
 
 # Add instruments path
@@ -29,9 +30,6 @@ class PMSSettingsSet(ApiHandler):
             Response with result
         """
         try:
-            from pms_hub.provider_registry import ProviderRegistry
-            from pms_hub.pms_provider import ProviderType
-
             action = input.get("action", "").lower()
 
             if action == "add":
@@ -60,8 +58,8 @@ class PMSSettingsSet(ApiHandler):
 
     async def _add_provider(self, input: dict) -> dict:
         """Add new provider"""
-        from pms_hub.provider_registry import ProviderRegistry
         from pms_hub.pms_provider import ProviderType
+        from pms_hub.provider_registry import ProviderRegistry
 
         registry = ProviderRegistry()
 
@@ -116,7 +114,7 @@ class PMSSettingsSet(ApiHandler):
         else:
             return {
                 "status": "error",
-                "message": f"Failed to add provider",
+                "message": "Failed to add provider",
             }
 
     async def _update_provider(self, input: dict) -> dict:

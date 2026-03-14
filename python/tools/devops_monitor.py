@@ -61,16 +61,12 @@ class DevOpsMonitor(Tool):
         valid_platforms = ["grafana", "datadog", "cloudwatch"]
         if platform.lower() not in valid_platforms:
             return Response(
-                message=f"ERROR: Invalid platform '{platform}'\n"
-                f"Valid platforms: {', '.join(valid_platforms)}",
+                message=f"ERROR: Invalid platform '{platform}'\nValid platforms: {', '.join(valid_platforms)}",
                 break_loop=False,
             )
 
         # Generate monitoring setup report
-        report = self._generate_monitoring_report(
-            environment=environment.lower(),
-            platform=platform.lower()
-        )
+        report = self._generate_monitoring_report(environment=environment.lower(), platform=platform.lower())
 
         return Response(message=report, break_loop=False)
 

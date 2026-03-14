@@ -11,12 +11,11 @@ Options:
     --auto-send    Actually send messages (requires user confirmation)
 """
 
-import sys
-import asyncio
-from pathlib import Path
-from datetime import datetime, date
-from typing import Optional
 import argparse
+import asyncio
+import sys
+from datetime import date, datetime
+from pathlib import Path
 
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -24,7 +23,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from instruments.custom.pms_hub.canonical_models import (
     Reservation,
     ReservationStatus,
-    MessageType,
 )
 from python.helpers import files
 
@@ -120,9 +118,9 @@ async def create_google_voice_messages(
     manager = GoogleVoiceManager(str(db_path))
     messages = []
 
-    print(f"\n{'='*70}")
-    print(f"  GOOGLE VOICE CHECK-IN MESSAGE TEST")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("  GOOGLE VOICE CHECK-IN MESSAGE TEST")
+    print(f"{'=' * 70}")
     print(f"\n📅 Check-in Date: {date.today()}")
     print(f"⏰ Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print(f"Mode: {'DRY RUN (preview only)' if dry_run else 'SENDING MESSAGES'}")
@@ -135,7 +133,7 @@ async def create_google_voice_messages(
         # Create friendly message
         message_text = format_checkin_message(guest_name, f"Property {property_id}")
 
-        print(f"\n{'─'*70}")
+        print(f"\n{'─' * 70}")
         print(f"Message {i}/{len(reservations)}")
         print(f"├─ To: {guest_name} <{phone}>")
         print(f"├─ Property: {property_id}")
@@ -143,7 +141,7 @@ async def create_google_voice_messages(
         print(f"├─ Provider: {reservation.provider}")
         print(f"├─ Check-in: {reservation.check_in_date}")
         print(f"├─ Check-out: {reservation.check_out_date}")
-        print(f"└─ Message:")
+        print("└─ Message:")
         print(f"   {message_text.replace(chr(10), chr(10) + '   ')}")
 
         if not dry_run:
@@ -181,7 +179,7 @@ async def create_google_voice_messages(
                         }
                     )
             except Exception as e:
-                print(f"   ✗ ERROR: {str(e)}")
+                print(f"   ✗ ERROR: {e!s}")
                 messages.append(
                     {
                         "reservation_id": reservation.provider_id,
@@ -213,9 +211,9 @@ async def list_pending_messages() -> None:
 
     manager = GoogleVoiceManager(str(db_path))
 
-    print(f"\n{'='*70}")
-    print(f"  PENDING GOOGLE VOICE MESSAGES")
-    print(f"{'='*70}")
+    print(f"\n{'=' * 70}")
+    print("  PENDING GOOGLE VOICE MESSAGES")
+    print(f"{'=' * 70}")
 
     draft_messages = manager.list_outbound("draft")
     pending_messages = manager.list_outbound("approved")
@@ -237,7 +235,7 @@ async def list_pending_messages() -> None:
         for msg in sent_messages[:5]:
             print(f"  ID {msg['id']}: To {msg['to_number']} at {msg.get('sent_at', '?')}")
 
-    print(f"\n")
+    print("\n")
 
 
 async def main():
@@ -286,15 +284,15 @@ Examples:
         messages = await create_google_voice_messages(checkins, dry_run=dry_run)
 
         # Summary
-        print(f"\n{'='*70}")
-        print(f"  SUMMARY")
-        print(f"{'='*70}")
+        print(f"\n{'=' * 70}")
+        print("  SUMMARY")
+        print(f"{'=' * 70}")
         print(f"Total customers: {len(checkins)}")
         print(f"Mode: {'DRY RUN (preview)' if dry_run else 'LIVE SEND'}")
 
         if dry_run:
-            print(f"\n💡 To actually send these messages, run:")
-            print(f"   python scripts/test_google_voice_checkin.py --auto-send")
+            print("\n💡 To actually send these messages, run:")
+            print("   python scripts/test_google_voice_checkin.py --auto-send")
         else:
             sent = sum(1 for m in messages if m.get("status") == "sent")
             failed = sum(1 for m in messages if m.get("status") == "failed")
@@ -302,10 +300,10 @@ Examples:
             if failed:
                 print(f"✗ Failed: {failed}")
 
-        print(f"\n{'='*70}\n")
+        print(f"\n{'=' * 70}\n")
 
     except Exception as e:
-        print(f"\n❌ Error: {str(e)}")
+        print(f"\n❌ Error: {e!s}")
         import traceback
 
         traceback.print_exc()

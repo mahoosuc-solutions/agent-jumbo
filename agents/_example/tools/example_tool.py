@@ -5,9 +5,9 @@ from python.helpers.tool import Response, Tool
 #   agent.system.tool.example_tool.md file in prompts directory of your agent
 # see /python/tools folder for all default tools
 
+
 class ExampleTool(Tool):
     async def execute(self, **kwargs):
-
         # parameters
         test_input = kwargs.get("test_input", "")
 
@@ -16,6 +16,6 @@ class ExampleTool(Tool):
 
         # return response
         return Response(
-            message="This is an example tool response, test_input: " + test_input, # response for the agent
-            break_loop=False, # stop the message chain if true
+            message="This is an example tool response, test_input: " + test_input,  # response for the agent
+            break_loop=False,  # stop the message chain if true
         )

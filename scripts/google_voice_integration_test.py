@@ -114,11 +114,11 @@ async def test_message_sending():
 
     test_message = input("📝 Enter message to send: ").strip()
 
-    print(f"\n{'─'*70}")
+    print(f"\n{'─' * 70}")
     print("Preview:")
     print(f"  To: {test_phone}")
     print(f"  Message: {test_message}")
-    print(f"{'─'*70}")
+    print(f"{'─' * 70}")
 
     confirm = input("\n⚠️  Send this message? (yes/no): ").strip().lower()
     if confirm != "yes":

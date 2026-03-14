@@ -6,7 +6,6 @@ from python.helpers.memory import Memory, get_context_memory_subdir, get_existin
 
 
 class MemoryDashboard(ApiHandler):
-
     async def process(self, input: dict, request: Request) -> dict | Response:
         try:
             action = input.get("action", "search")
@@ -186,9 +185,7 @@ class MemoryDashboard(ApiHandler):
 
             # Get summary statistics
             total_memories = len(formatted_memories)
-            knowledge_count = sum(
-                1 for m in formatted_memories if m["knowledge_source"]
-            )
+            knowledge_count = sum(1 for m in formatted_memories if m["knowledge_source"])
             conversation_count = total_memories - knowledge_count
 
             # Get total count of all memories in database (unfiltered)

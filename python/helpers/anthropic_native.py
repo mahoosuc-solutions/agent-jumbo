@@ -12,7 +12,7 @@ This complements LiteLLM for cases where native SDK features are needed.
 """
 
 import os
-from typing import Any, Optional
+from typing import Any
 
 try:
     from anthropic import Anthropic, AsyncAnthropic
@@ -42,7 +42,7 @@ class AnthropicNativeClient:
         ```
     """
 
-    def __init__(self, api_key: Optional[str] = None):
+    def __init__(self, api_key: str | None = None):
         """
         Initialize native Anthropic client.
 
@@ -66,11 +66,11 @@ class AnthropicNativeClient:
         model: str,
         messages: list[dict],
         max_tokens: int = 4096,
-        system: Optional[str] = None,
-        tools: Optional[list[dict]] = None,
+        system: str | None = None,
+        tools: list[dict] | None = None,
         temperature: float = 1.0,
         cache_control: bool = True,
-        effort: Optional[str] = None,
+        effort: str | None = None,
         **kwargs: Any,
     ) -> dict:
         """
@@ -221,7 +221,7 @@ class AnthropicNativeClient:
 
 
 # Global instance
-_native_client: Optional[AnthropicNativeClient] = None
+_native_client: AnthropicNativeClient | None = None
 
 
 def get_native_client() -> AnthropicNativeClient:

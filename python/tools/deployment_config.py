@@ -64,5 +64,5 @@ class DeploymentConfig:
             ValueError: If platform is not supported
         """
         if platform not in self.VALID_PLATFORMS:
-            raise ValueError(f"Invalid platform: '{platform}'. " f"Valid platforms: {', '.join(self.VALID_PLATFORMS)}")
+            raise ValueError(f"Invalid platform: '{platform}'. Valid platforms: {', '.join(self.VALID_PLATFORMS)}")
         return True

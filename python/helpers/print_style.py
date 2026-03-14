@@ -12,7 +12,16 @@ class PrintStyle:
     last_endline = True
     log_file_path = None
 
-    def __init__(self, bold=False, italic=False, underline=False, font_color="default", background_color="default", padding=False, log_only=False):
+    def __init__(
+        self,
+        bold=False,
+        italic=False,
+        underline=False,
+        font_color="default",
+        background_color="default",
+        padding=False,
+        log_only=False,
+    ):
         self.bold = bold
         self.italic = italic
         self.underline = underline
@@ -86,7 +95,7 @@ class PrintStyle:
             self.padding_added = True
 
     def _log_html(self, html):
-        with open(PrintStyle.log_file_path, "a", encoding='utf-8') as f: # type: ignore # add encoding='utf-8'
+        with open(PrintStyle.log_file_path, "a", encoding="utf-8") as f:  # type: ignore # add encoding='utf-8'
             f.write(html)
 
     @staticmethod
@@ -95,13 +104,14 @@ class PrintStyle:
             with open(PrintStyle.log_file_path, "a") as f:
                 f.write("</pre></body></html>")
 
-    def get(self, *args, sep=' ', **kwargs):
+    def get(self, *args, sep=" ", **kwargs):
         text = sep.join(map(str, args))
 
         # Automatically mask secrets in all print output
         try:
             if not hasattr(self, "secrets_mgr"):
                 from python.helpers.secrets import get_secrets_manager
+
                 self.secrets_mgr = get_secrets_manager()
             text = self.secrets_mgr.mask_values(text)
         except Exception:
@@ -110,22 +120,22 @@ class PrintStyle:
 
         return text, self._get_styled_text(text), self._get_html_styled_text(text)
 
-    def print(self, *args, sep=' ', **kwargs):
+    def print(self, *args, sep=" ", **kwargs):
         self._add_padding_if_needed()
         if not PrintStyle.last_endline:
             print()
             self._log_html("<br>")
         _plain_text, styled_text, html_text = self.get(*args, sep=sep, **kwargs)
         if not self.log_only:
-            print(styled_text, end='\n', flush=True)
-        self._log_html(html_text+"<br>\n")
+            print(styled_text, end="\n", flush=True)
+        self._log_html(html_text + "<br>\n")
         PrintStyle.last_endline = True
 
-    def stream(self, *args, sep=' ', **kwargs):
+    def stream(self, *args, sep=" ", **kwargs):
         self._add_padding_if_needed()
         _plain_text, styled_text, html_text = self.get(*args, sep=sep, **kwargs)
         if not self.log_only:
-            print(styled_text, end='', flush=True)
+            print(styled_text, end="", flush=True)
         self._log_html(html_text)
         PrintStyle.last_endline = False
 
@@ -139,27 +149,28 @@ class PrintStyle:
 
     @staticmethod
     def hint(text: str):
-        PrintStyle(font_color="#6C3483", padding=True).print("Hint: "+text)
+        PrintStyle(font_color="#6C3483", padding=True).print("Hint: " + text)
 
     @staticmethod
     def info(text: str):
-        PrintStyle(font_color="#0000FF", padding=True).print("Info: "+text)
+        PrintStyle(font_color="#0000FF", padding=True).print("Info: " + text)
 
     @staticmethod
     def success(text: str):
-        PrintStyle(font_color="#008000", padding=True).print("Success: "+text)
+        PrintStyle(font_color="#008000", padding=True).print("Success: " + text)
 
     @staticmethod
     def warning(text: str):
-        PrintStyle(font_color="#FFA500", padding=True).print("Warning: "+text)
+        PrintStyle(font_color="#FFA500", padding=True).print("Warning: " + text)
 
     @staticmethod
     def debug(text: str):
-        PrintStyle(font_color="#808080", padding=True).print("Debug: "+text)
+        PrintStyle(font_color="#808080", padding=True).print("Debug: " + text)
 
     @staticmethod
     def error(text: str):
-        PrintStyle(font_color="red", padding=True).print("Error: "+text)
+        PrintStyle(font_color="red", padding=True).print("Error: " + text)
+
 
 # Ensure HTML file is closed properly when the program exits
 import atexit

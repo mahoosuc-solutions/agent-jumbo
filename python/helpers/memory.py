@@ -4,7 +4,7 @@ import os
 from collections.abc import Callable, Sequence
 from datetime import datetime
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 import faiss
 import numpy as np
@@ -253,8 +253,8 @@ class Memory:
         self,
         db: MyFaiss,
         memory_subdir: str,
-        on_save: Optional[Callable] = None,
-        on_recall: Optional[Callable] = None,
+        on_save: Callable | None = None,
+        on_recall: Callable | None = None,
     ):
         self.db = db
         self.memory_subdir = memory_subdir

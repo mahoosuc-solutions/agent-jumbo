@@ -11,7 +11,7 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
-import threading  # noqa: TCH003
+import threading  # noqa: TC003
 
 from flask import Flask, Request, Response
 

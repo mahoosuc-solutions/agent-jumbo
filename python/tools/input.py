@@ -3,7 +3,6 @@ from python.tools.code_execution_tool import CodeExecution
 
 
 class Input(Tool):
-
     async def execute(self, keyboard="", **kwargs):
         # normalize keyboard input
         keyboard = keyboard.rstrip()
@@ -19,7 +18,12 @@ class Input(Tool):
         return await cet.execute(**args)
 
     def get_log_object(self):
-        return self.agent.context.log.log(type="code_exe", heading=f"icon://keyboard {self.agent.agent_name}: Using tool '{self.name}'", content="", kvps=self.args)
+        return self.agent.context.log.log(
+            type="code_exe",
+            heading=f"icon://keyboard {self.agent.agent_name}: Using tool '{self.name}'",
+            content="",
+            kvps=self.args,
+        )
 
     async def after_execution(self, response, **kwargs):
         self.agent.hist_add_tool_result(self.name, response.message, **(response.additional or {}))

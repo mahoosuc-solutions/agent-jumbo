@@ -79,7 +79,7 @@ class EmailClient:
                 await self._connect_exchange()
             else:
                 raise RepairableException(
-                    f"Unsupported account type: {self.account_type}. " "Supported types: 'imap', 'exchange'"
+                    f"Unsupported account type: {self.account_type}. Supported types: 'imap', 'exchange'"
                 )
         except Exception as e:
             err = format_error(e)

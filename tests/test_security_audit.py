@@ -244,7 +244,5 @@ async def test_security_audit_includes_findings_summary(mock_agent):
     # Should include findings summary
     assert "findings" in message_lower or "vulnerabilities" in message_lower
     # Should mention severity levels
-    severity_count = sum(
-        1 for term in ["critical", "high", "medium", "low"] if term in message_lower
-    )
+    severity_count = sum(1 for term in ["critical", "high", "medium", "low"] if term in message_lower)
     assert severity_count >= 2

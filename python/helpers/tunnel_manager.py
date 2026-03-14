@@ -36,7 +36,7 @@ class TunnelManager:
                         config = FlareConfig(port=port, verbose=True)
                         self.tunnel = FlareTunnel(config)
                     else:  # Default to serveo
-                        config = ServeoConfig(port=port) # type: ignore
+                        config = ServeoConfig(port=port)  # type: ignore
                         self.tunnel = ServeoTunnel(config)
 
                     self.tunnel.start()

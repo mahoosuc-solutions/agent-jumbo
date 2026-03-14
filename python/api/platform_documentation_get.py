@@ -13,13 +13,9 @@ class platform_documentation_get(ApiHandler):
             if not os.path.exists(doc_path):
                 return {"success": False, "error": "Documentation file not found."}
 
-            with open(doc_path, encoding='utf-8') as f:
+            with open(doc_path, encoding="utf-8") as f:
                 content = f.read()
 
-            return {
-                "success": True,
-                "content": content,
-                "last_updated": os.path.getmtime(doc_path)
-            }
+            return {"success": True, "content": content, "last_updated": os.path.getmtime(doc_path)}
         except Exception as e:
             return {"success": False, "error": str(e)}

@@ -26,14 +26,7 @@ def mock_agent():
 
 def create_tool(mock_agent, args):
     """Helper to create DevOpsMonitor tool with proper initialization"""
-    return DevOpsMonitor(
-        agent=mock_agent,
-        name="devops_monitor",
-        method=None,
-        args=args,
-        message="",
-        loop_data=None
-    )
+    return DevOpsMonitor(agent=mock_agent, name="devops_monitor", method=None, args=args, message="", loop_data=None)
 
 
 class TestDevOpsMonitorInstantiation:

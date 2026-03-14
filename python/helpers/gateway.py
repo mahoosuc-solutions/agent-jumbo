@@ -11,10 +11,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
-from collections.abc import Awaitable, Callable  # noqa: TCH003
+from collections.abc import Awaitable, Callable  # noqa: TC003
 from typing import Any
 
-from python.helpers.channel_bridge import NormalizedMessage  # noqa: TCH001
+from python.helpers.channel_bridge import NormalizedMessage  # noqa: TC001
 from python.helpers.channel_factory import ChannelFactory
 from python.helpers.message_queue import MessageQueue
 from python.helpers.message_store import MessageStore

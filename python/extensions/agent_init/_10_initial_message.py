@@ -5,7 +5,6 @@ from python.helpers.extension import Extension
 
 
 class InitialMessage(Extension):
-
     async def execute(self, **kwargs):
         """
         Add an initial greeting message when first user message is processed.

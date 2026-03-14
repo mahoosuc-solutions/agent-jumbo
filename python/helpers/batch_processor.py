@@ -20,7 +20,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from python.helpers.datetime_utils import isoformat_z, utc_now
 
@@ -57,9 +57,9 @@ class BatchJob:
     request_count: int
     completed_count: int = 0
     failed_count: int = 0
-    submitted_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    results_file: Optional[str] = None
+    submitted_at: str | None = None
+    completed_at: str | None = None
+    results_file: str | None = None
     cost: float = 0.0
     metadata: dict[str, Any] = field(default_factory=dict)
 
@@ -67,7 +67,7 @@ class BatchJob:
 class BatchDatabase:
     """SQLite database for batch job tracking"""
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: str | None = None):
         if db_path is None:
             data_dir = Path(__file__).parent.parent.parent / "data"
             data_dir.mkdir(exist_ok=True)
@@ -127,7 +127,7 @@ class BatchDatabase:
             )
             conn.commit()
 
-    def get_batch(self, batch_id: str) -> Optional[BatchJob]:
+    def get_batch(self, batch_id: str) -> BatchJob | None:
         """Get a batch job by ID"""
         with sqlite3.connect(self.db_path) as conn:
             conn.row_factory = sqlite3.Row
@@ -211,7 +211,7 @@ class BatchProcessor:
     and management that can be integrated with the official SDK.
     """
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: str | None = None):
         self.db = BatchDatabase(db_path)
         self._poll_interval = int(os.getenv("ANTHROPIC_BATCH_POLL_INTERVAL", "300"))  # 5 minutes
         self._enabled = os.getenv("ANTHROPIC_BATCH_ENABLED", "false").lower() == "true"
@@ -223,7 +223,7 @@ class BatchProcessor:
     async def create_batch(
         self,
         requests: list[BatchRequest],
-        metadata: Optional[dict[str, Any]] = None,
+        metadata: dict[str, Any] | None = None,
     ) -> str:
         """
         Create a new batch job.
@@ -352,7 +352,7 @@ class BatchProcessor:
 
 
 # Global instance
-_batch_processor: Optional[BatchProcessor] = None
+_batch_processor: BatchProcessor | None = None
 
 
 def get_batch_processor() -> BatchProcessor:

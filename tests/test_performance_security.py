@@ -8,7 +8,6 @@ from python.helpers.security import SecurityManager
 
 
 class TestPerformanceSecurity(unittest.TestCase):
-
     @classmethod
     def setUpClass(cls):
         """Ensure we have a clean test environment."""
@@ -25,7 +24,7 @@ class TestPerformanceSecurity(unittest.TestCase):
             SecurityManager.log_event("perf_test", "success", details={"index": i})
 
         end_time = time.perf_counter()
-        duration = (end_time - start_time) * 1000 # convert to ms
+        duration = (end_time - start_time) * 1000  # convert to ms
 
         print(f"\n[PERF] 10 Async Logs took: {duration:.2f}ms")
 
@@ -53,6 +52,7 @@ class TestPerformanceSecurity(unittest.TestCase):
     def test_wal_mode_enabled(self):
         """Checks if the database is running in WAL mode for concurrency."""
         from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+
         db = WorkflowEngineDatabase(self.db_path)
         conn = db._get_conn()
         cursor = conn.cursor()
@@ -61,6 +61,7 @@ class TestPerformanceSecurity(unittest.TestCase):
         conn.close()
 
         self.assertEqual(mode.lower(), "wal", "Database should be in WAL mode for performance")
+
 
 if __name__ == "__main__":
     unittest.main()

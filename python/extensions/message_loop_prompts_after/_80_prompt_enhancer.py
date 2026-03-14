@@ -100,7 +100,7 @@ class PromptEnhancer(Extension):
         except TimeoutError:
             self.agent.context.log.log(
                 type="warning",
-                content=("Prompt enhancement timed out. " "Continuing with original user prompt."),
+                content=("Prompt enhancement timed out. Continuing with original user prompt."),
             )
             if set.get("prompt_enhance_fail_open", True):
                 return

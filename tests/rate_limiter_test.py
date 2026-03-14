@@ -1,4 +1,3 @@
-
 import os
 import sys
 
@@ -29,7 +28,5 @@ async def test_rate_limiter_openrouter():
         ),
     )
 
-    response, _reasoning = await model.unified_call(
-        user_message="Tell me a joke"
-    )
+    response, _reasoning = await model.unified_call(user_message="Tell me a joke")
     assert response

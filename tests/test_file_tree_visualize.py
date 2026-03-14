@@ -8,7 +8,7 @@ from collections.abc import Callable, Iterable
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 try:
     import pytest  # type: ignore
@@ -45,7 +45,7 @@ class Config:
     params: dict[str, Any]
 
 
-SetupHook = Optional[Callable[[str], None]]
+SetupHook = Callable[[str], None] | None
 
 
 @dataclass(slots=True)
@@ -316,9 +316,7 @@ def build_scenarios() -> list[Scenario]:
                 "sandbox": {},
                 "vendor": {},
             },
-            ignore_content="\n".join(
-                ["*.tmp", "cache/", "!src/cache/keep.txt", "logs/", "!logs/2025.log"]
-            ),
+            ignore_content="\n".join(["*.tmp", "cache/", "!src/cache/keep.txt", "logs/", "!logs/2025.log"]),
             configs=[
                 Config(
                     "string • folders-first with summaries",
@@ -821,9 +819,7 @@ def build_scenarios() -> list[Scenario]:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(
-        description="Visualize file_tree() outputs across configurations."
-    )
+    parser = argparse.ArgumentParser(description="Visualize file_tree() outputs across configurations.")
     parser.add_argument(
         "--scenario",
         action="append",

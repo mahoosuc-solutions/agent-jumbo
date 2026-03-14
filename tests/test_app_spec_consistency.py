@@ -33,7 +33,9 @@ def test_app_spec_consistency():
     assert not missing_eval_use_cases, f"Missing eval cases for use cases: {sorted(missing_eval_use_cases)}"
 
     unknown_acceptance_story = acceptance_story_ids - story_ids
-    assert not unknown_acceptance_story, f"Acceptance tests reference unknown stories: {sorted(unknown_acceptance_story)}"
+    assert not unknown_acceptance_story, (
+        f"Acceptance tests reference unknown stories: {sorted(unknown_acceptance_story)}"
+    )
 
     unknown_eval_story = eval_story_ids - story_ids
     assert not unknown_eval_story, f"Eval cases reference unknown stories: {sorted(unknown_eval_story)}"

@@ -21,8 +21,7 @@ class CoworkApprovalsUpdate(ApiHandler):
             remaining = [
                 approval
                 for approval in approvals
-                if approval.get("status") == "pending"
-                and not approval.get("consumed")
+                if approval.get("status") == "pending" and not approval.get("consumed")
             ]
             context.data[cowork.APPROVALS_KEY] = remaining
             return {"approvals": remaining}
@@ -39,9 +38,7 @@ class CoworkApprovalsUpdate(ApiHandler):
                 updated["inherit"] = inherit
                 if action == "approve_and_retry":
                     tool_name = updated.get("tool_name", "tool")
-                    message = (
-                        f"Approval granted for {tool_name}. Retry the action now."
-                    )
+                    message = f"Approval granted for {tool_name}. Retry the action now."
                     context.communicate(UserMessage(message=message, attachments=[], system_message=[]))
             return {"approvals": cowork.get_approvals(context)}
 

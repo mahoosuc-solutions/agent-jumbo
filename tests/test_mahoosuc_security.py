@@ -22,9 +22,9 @@ class TestMahoosucSecurity:
 
             # If subprocess is used, should use list args
             if "subprocess" in source:
-                assert (
-                    "subprocess.run([" in source or "subprocess.Popen([" in source
-                ), f"subprocess in {module.__name__} should use list args, not string"
+                assert "subprocess.run([" in source or "subprocess.Popen([" in source, (
+                    f"subprocess in {module.__name__} should use list args, not string"
+                )
 
     def test_path_traversal_protection(self):
         """Should prevent path traversal attacks"""

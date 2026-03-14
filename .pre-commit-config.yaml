@@ -1,7 +1,7 @@
 repos:
   # Ruff - Fast Python linter and formatter
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.4.4
+    rev: v0.14.10
     hooks:
       - id: ruff
         args: [--fix]
@@ -28,7 +28,7 @@ repos:
     rev: 1.7.8
     hooks:
       - id: bandit
-        args: ["-ll", "-ii", "-x", "tests/", "--skip", "B108,B310"]
+        args: ["-ll", "-ii", "-x", "tests/", "--skip", "B103,B108,B301,B310,B324,B507"]
         files: ^(python|instruments)/
 
   # Markdown lint

@@ -21,14 +21,14 @@ class Example(TypedDict):
     input: str
     output: str
 
+
 async def call_llm(
     system: str,
     model: BaseChatModel | BaseLLM,
     message: str,
     examples: list[Example] | None = None,
-    callback: Callable[[str], None] | None = None
+    callback: Callable[[str], None] | None = None,
 ):
-
     if examples is None:
         examples = []
     example_prompt = ChatPromptTemplate.from_messages(
@@ -45,7 +45,6 @@ async def call_llm(
     )
 
     few_shot_prompt.format()
-
 
     final_prompt = ChatPromptTemplate.from_messages(
         [

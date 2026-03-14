@@ -3,7 +3,6 @@ from python.helpers.secrets import get_secrets_manager
 
 
 class MaskResponseStreamChunk(Extension):
-
     async def execute(self, **kwargs):
         # Get stream data and agent from kwargs
         stream_data = kwargs.get("stream_data")
@@ -33,6 +32,7 @@ class MaskResponseStreamChunk(Extension):
             # Print the processed chunk (this is where printing should happen)
             if processed_chunk:
                 from python.helpers.print_style import PrintStyle
+
                 PrintStyle().stream(processed_chunk)
         except Exception:
             # If masking fails, proceed without masking

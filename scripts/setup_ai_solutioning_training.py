@@ -42,10 +42,7 @@ def setup_training():
             "category": "discovery",
             "description": "Effectively capture customer information, qualify leads, and set up customer records",
             "prerequisites": [],
-            "learning_resources": [
-                "Customer Lifecycle Tool Documentation",
-                "CRM Best Practices Guide"
-            ]
+            "learning_resources": ["Customer Lifecycle Tool Documentation", "CRM Best Practices Guide"],
         },
         {
             "skill_id": "business_analysis",
@@ -53,10 +50,7 @@ def setup_training():
             "category": "discovery",
             "description": "Use Business X-Ray tool to analyze customer's business processes, identify pain points, and score AI opportunities",
             "prerequisites": ["customer_intake"],
-            "learning_resources": [
-                "Business X-Ray Tool Guide",
-                "Process Mapping Techniques"
-            ]
+            "learning_resources": ["Business X-Ray Tool Guide", "Process Mapping Techniques"],
         },
         {
             "skill_id": "requirements_gathering",
@@ -64,10 +58,7 @@ def setup_training():
             "category": "discovery",
             "description": "Capture detailed technical and business requirements, define success criteria",
             "prerequisites": ["customer_intake"],
-            "learning_resources": [
-                "Requirements Engineering Guide",
-                "User Story Writing"
-            ]
+            "learning_resources": ["Requirements Engineering Guide", "User Story Writing"],
         },
         {
             "skill_id": "ai_readiness_assessment",
@@ -75,10 +66,7 @@ def setup_training():
             "category": "discovery",
             "description": "Evaluate customer's data quality, infrastructure, and team capabilities for AI adoption",
             "prerequisites": ["business_analysis"],
-            "learning_resources": [
-                "AI Readiness Checklist",
-                "Data Quality Assessment Guide"
-            ]
+            "learning_resources": ["AI Readiness Checklist", "Data Quality Assessment Guide"],
         },
     ]
 
@@ -92,10 +80,7 @@ def setup_training():
             "category": "solution_design",
             "description": "Classify tasks as fully automatable, AI-assisted, or human-required using AI Migration tool",
             "prerequisites": ["business_analysis"],
-            "learning_resources": [
-                "AI Migration Tool Guide",
-                "Automation Scoring Methodology"
-            ]
+            "learning_resources": ["AI Migration Tool Guide", "Automation Scoring Methodology"],
         },
         {
             "skill_id": "workflow_design",
@@ -103,10 +88,7 @@ def setup_training():
             "category": "solution_design",
             "description": "Design sequential and parallel workflows for complex AI agent operations",
             "prerequisites": ["business_analysis"],
-            "learning_resources": [
-                "Workflow Engine Documentation",
-                "Logic Tree Best Practices"
-            ]
+            "learning_resources": ["Workflow Engine Documentation", "Logic Tree Best Practices"],
         },
         {
             "skill_id": "tradeoff_analysis",
@@ -114,11 +96,7 @@ def setup_training():
             "category": "solution_design",
             "description": "Perform ATAM-based analysis comparing Cost, Latency, and Scalability for proposed solutions.",
             "prerequisites": ["workflow_design"],
-            "learning_resources": [
-                "ATAM Methodology Guide",
-                "CAP Theorem Reference",
-                "PERFORMANCE_REPORT.md"
-            ]
+            "learning_resources": ["ATAM Methodology Guide", "CAP Theorem Reference", "PERFORMANCE_REPORT.md"],
         },
         {
             "skill_id": "human_ai_workflow",
@@ -126,10 +104,7 @@ def setup_training():
             "category": "solution_design",
             "description": "Design optimized workflows that combine human judgment with AI automation",
             "prerequisites": ["task_classification"],
-            "learning_resources": [
-                "Workflow Design Patterns",
-                "Human-in-the-Loop Architectures"
-            ]
+            "learning_resources": ["Workflow Design Patterns", "Human-in-the-Loop Architectures"],
         },
         {
             "skill_id": "architecture_design",
@@ -137,10 +112,7 @@ def setup_training():
             "category": "solution_design",
             "description": "Design technical architectures for AI solutions using Diagram Architect",
             "prerequisites": ["workflow_design", "tradeoff_analysis"],
-            "learning_resources": [
-                "Diagram Architect Tool Guide",
-                "Cloud Architecture Patterns"
-            ]
+            "learning_resources": ["Diagram Architect Tool Guide", "Cloud Architecture Patterns"],
         },
         {
             "skill_id": "prompt_engineering",
@@ -148,10 +120,7 @@ def setup_training():
             "category": "solution_design",
             "description": "Design effective prompts for AI models to achieve desired outputs",
             "prerequisites": [],
-            "learning_resources": [
-                "Prompt Engineering Guide",
-                "Claude Best Practices"
-            ]
+            "learning_resources": ["Prompt Engineering Guide", "Claude Best Practices"],
         },
     ]
 
@@ -165,10 +134,7 @@ def setup_training():
             "category": "sales",
             "description": "Calculate and project ROI for AI solutions at 1, 3, and 5 year horizons",
             "prerequisites": ["task_classification"],
-            "learning_resources": [
-                "ROI Calculation Guide",
-                "AI Investment Analysis"
-            ]
+            "learning_resources": ["ROI Calculation Guide", "AI Investment Analysis"],
         },
         {
             "skill_id": "proposal_creation",
@@ -176,10 +142,7 @@ def setup_training():
             "category": "sales",
             "description": "Generate professional proposals with pricing, timelines, and deliverables",
             "prerequisites": ["roi_calculation", "architecture_design"],
-            "learning_resources": [
-                "Sales Generator Tool Guide",
-                "Proposal Writing Best Practices"
-            ]
+            "learning_resources": ["Sales Generator Tool Guide", "Proposal Writing Best Practices"],
         },
         {
             "skill_id": "roadmap_planning",
@@ -187,10 +150,7 @@ def setup_training():
             "category": "sales",
             "description": "Create phased implementation roadmaps for AI migrations",
             "prerequisites": ["workflow_design"],
-            "learning_resources": [
-                "Roadmap Planning Guide",
-                "Agile Release Planning"
-            ]
+            "learning_resources": ["Roadmap Planning Guide", "Agile Release Planning"],
         },
     ]
 
@@ -204,10 +164,7 @@ def setup_training():
             "category": "implementation",
             "description": "Generate project structures from templates using Project Scaffold tool",
             "prerequisites": ["architecture_design"],
-            "learning_resources": [
-                "Project Scaffold Tool Guide",
-                "Project Structure Best Practices"
-            ]
+            "learning_resources": ["Project Scaffold Tool Guide", "Project Structure Best Practices"],
         },
         {
             "skill_id": "ai_integration",
@@ -215,10 +172,7 @@ def setup_training():
             "category": "implementation",
             "description": "Integrate AI models (Claude, OpenAI, local models) into solutions",
             "prerequisites": ["prompt_engineering"],
-            "learning_resources": [
-                "Claude API Documentation",
-                "Model Integration Patterns"
-            ]
+            "learning_resources": ["Claude API Documentation", "Model Integration Patterns"],
         },
         {
             "skill_id": "testing",
@@ -226,10 +180,7 @@ def setup_training():
             "category": "implementation",
             "description": "Write comprehensive tests for AI solutions including edge cases",
             "prerequisites": ["ai_integration"],
-            "learning_resources": [
-                "Testing AI Systems Guide",
-                "pytest Best Practices"
-            ]
+            "learning_resources": ["Testing AI Systems Guide", "pytest Best Practices"],
         },
     ]
 
@@ -243,10 +194,7 @@ def setup_training():
             "category": "deployment",
             "description": "Configure automated build, test, and deployment pipelines",
             "prerequisites": ["testing"],
-            "learning_resources": [
-                "Deployment Orchestrator Guide",
-                "GitHub Actions Tutorial"
-            ]
+            "learning_resources": ["Deployment Orchestrator Guide", "GitHub Actions Tutorial"],
         },
         {
             "skill_id": "containerization",
@@ -254,10 +202,7 @@ def setup_training():
             "category": "deployment",
             "description": "Create Docker images and compose files for AI solutions",
             "prerequisites": [],
-            "learning_resources": [
-                "Docker Best Practices",
-                "Container Security Guide"
-            ]
+            "learning_resources": ["Docker Best Practices", "Container Security Guide"],
         },
         {
             "skill_id": "cloud_deployment",
@@ -265,10 +210,7 @@ def setup_training():
             "category": "deployment",
             "description": "Deploy AI solutions to cloud environments (AWS, GCP, Azure)",
             "prerequisites": ["cicd_setup", "containerization"],
-            "learning_resources": [
-                "Cloud Deployment Guide",
-                "Infrastructure as Code"
-            ]
+            "learning_resources": ["Cloud Deployment Guide", "Infrastructure as Code"],
         },
     ]
 
@@ -282,10 +224,7 @@ def setup_training():
             "category": "support",
             "description": "Monitor AI accuracy, latency, costs, and user satisfaction",
             "prerequisites": ["cloud_deployment"],
-            "learning_resources": [
-                "Observability Guide",
-                "AI Metrics Dashboard"
-            ]
+            "learning_resources": ["Observability Guide", "AI Metrics Dashboard"],
         },
         {
             "skill_id": "prompt_optimization",
@@ -293,10 +232,7 @@ def setup_training():
             "category": "support",
             "description": "Refine prompts based on production data to improve AI performance",
             "prerequisites": ["prompt_engineering", "performance_monitoring"],
-            "learning_resources": [
-                "Prompt Iteration Guide",
-                "A/B Testing Prompts"
-            ]
+            "learning_resources": ["Prompt Iteration Guide", "A/B Testing Prompts"],
         },
         {
             "skill_id": "customer_success",
@@ -304,21 +240,13 @@ def setup_training():
             "category": "support",
             "description": "Manage ongoing customer relationships and ensure success",
             "prerequisites": ["customer_intake"],
-            "learning_resources": [
-                "Customer Lifecycle Guide",
-                "Support Best Practices"
-            ]
+            "learning_resources": ["Customer Lifecycle Guide", "Support Best Practices"],
         },
     ]
 
     # Register all skills
     all_skills = (
-        discovery_skills +
-        design_skills +
-        sales_skills +
-        implementation_skills +
-        deployment_skills +
-        support_skills
+        discovery_skills + design_skills + sales_skills + implementation_skills + deployment_skills + support_skills
     )
 
     print(f"\n📚 Registering {len(all_skills)} skills...")
@@ -329,7 +257,7 @@ def setup_training():
             category=skill["category"],
             description=skill.get("description", ""),
             prerequisites=skill.get("prerequisites", []),
-            related_tools=skill.get("learning_resources", [])  # Map to related_tools
+            related_tools=skill.get("learning_resources", []),  # Map to related_tools
         )
         print(f"  ✓ {skill['name']} ({skill['category']})")
 
@@ -347,14 +275,25 @@ def setup_training():
                     "module_id": "discovery_fundamentals",
                     "name": "Discovery Fundamentals",
                     "description": "Master customer discovery and business analysis",
-                    "skills": ["customer_intake", "business_analysis", "requirements_gathering", "ai_readiness_assessment"],
-                    "lessons": [
-                        {"title": "Introduction to AI Solutioning", "content": "Overview of the AI solutioning process"},
-                        {"title": "Using Customer Lifecycle Tool", "content": "Hands-on: Add a customer and capture requirements"},
-                        {"title": "Business X-Ray Analysis", "content": "Hands-on: Run a full business analysis"},
-                        {"title": "AI Readiness Assessment", "content": "Evaluate customer readiness for AI adoption"}
+                    "skills": [
+                        "customer_intake",
+                        "business_analysis",
+                        "requirements_gathering",
+                        "ai_readiness_assessment",
                     ],
-                    "estimated_hours": 4
+                    "lessons": [
+                        {
+                            "title": "Introduction to AI Solutioning",
+                            "content": "Overview of the AI solutioning process",
+                        },
+                        {
+                            "title": "Using Customer Lifecycle Tool",
+                            "content": "Hands-on: Add a customer and capture requirements",
+                        },
+                        {"title": "Business X-Ray Analysis", "content": "Hands-on: Run a full business analysis"},
+                        {"title": "AI Readiness Assessment", "content": "Evaluate customer readiness for AI adoption"},
+                    ],
+                    "estimated_hours": 4,
                 },
                 {
                     "module_id": "solution_design_mastery",
@@ -365,9 +304,9 @@ def setup_training():
                         {"title": "Task Classification Framework", "content": "Classify tasks as human/AI/hybrid"},
                         {"title": "Workflow Design Patterns", "content": "Design human-in-the-loop workflows"},
                         {"title": "Architecture with Diagram Architect", "content": "Generate system diagrams"},
-                        {"title": "Prompt Engineering Basics", "content": "Write effective AI prompts"}
+                        {"title": "Prompt Engineering Basics", "content": "Write effective AI prompts"},
                     ],
-                    "estimated_hours": 6
+                    "estimated_hours": 6,
                 },
                 {
                     "module_id": "sales_and_roi",
@@ -377,9 +316,9 @@ def setup_training():
                     "lessons": [
                         {"title": "ROI Calculation Methods", "content": "Calculate 1/3/5 year ROI projections"},
                         {"title": "Using Sales Generator", "content": "Generate professional proposals"},
-                        {"title": "Roadmap Planning", "content": "Create phased implementation plans"}
+                        {"title": "Roadmap Planning", "content": "Create phased implementation plans"},
                     ],
-                    "estimated_hours": 3
+                    "estimated_hours": 3,
                 },
                 {
                     "module_id": "implementation_excellence",
@@ -389,9 +328,9 @@ def setup_training():
                     "lessons": [
                         {"title": "Project Setup", "content": "Scaffold projects from templates"},
                         {"title": "AI Model Integration", "content": "Connect Claude and other AI models"},
-                        {"title": "Testing AI Solutions", "content": "Write comprehensive tests"}
+                        {"title": "Testing AI Solutions", "content": "Write comprehensive tests"},
                     ],
-                    "estimated_hours": 8
+                    "estimated_hours": 8,
                 },
                 {
                     "module_id": "deployment_operations",
@@ -401,9 +340,9 @@ def setup_training():
                     "lessons": [
                         {"title": "CI/CD Pipeline Setup", "content": "Configure automated deployments"},
                         {"title": "Docker Containerization", "content": "Package applications for deployment"},
-                        {"title": "Cloud Deployment", "content": "Deploy to production environments"}
+                        {"title": "Cloud Deployment", "content": "Deploy to production environments"},
                     ],
-                    "estimated_hours": 5
+                    "estimated_hours": 5,
                 },
                 {
                     "module_id": "optimization_support",
@@ -413,20 +352,20 @@ def setup_training():
                     "lessons": [
                         {"title": "Monitoring AI Performance", "content": "Track metrics and KPIs"},
                         {"title": "Prompt Iteration", "content": "Improve prompts based on data"},
-                        {"title": "Customer Success", "content": "Manage ongoing relationships"}
+                        {"title": "Customer Success", "content": "Manage ongoing relationships"},
                     ],
-                    "estimated_hours": 4
-                }
+                    "estimated_hours": 4,
+                },
             ],
             "certification": {
                 "name": "Certified AI Solution Architect",
                 "requirements": [
                     "Complete all modules",
                     "Achieve Intermediate level in all skills",
-                    "Complete one end-to-end AI Solutioning project"
-                ]
+                    "Complete one end-to-end AI Solutioning project",
+                ],
             },
-            "total_hours": 30
+            "total_hours": 30,
         },
         {
             "path_id": "quick_start_operator",
@@ -442,9 +381,9 @@ def setup_training():
                     "lessons": [
                         {"title": "AI Solutioning Overview", "content": "Quick intro to the process"},
                         {"title": "Essential Tools", "content": "Customer Lifecycle + Business X-Ray + AI Migration"},
-                        {"title": "Quick Win Identification", "content": "Find fast automation opportunities"}
+                        {"title": "Quick Win Identification", "content": "Find fast automation opportunities"},
                     ],
-                    "estimated_hours": 2
+                    "estimated_hours": 2,
                 },
                 {
                     "module_id": "first_project",
@@ -454,20 +393,17 @@ def setup_training():
                     "lessons": [
                         {"title": "Project Walkthrough", "content": "From discovery to deployment"},
                         {"title": "Using Workflow Templates", "content": "Start from AI Solutioning template"},
-                        {"title": "Hands-on Exercise", "content": "Build a simple AI automation"}
+                        {"title": "Hands-on Exercise", "content": "Build a simple AI automation"},
                     ],
-                    "estimated_hours": 4
-                }
+                    "estimated_hours": 4,
+                },
             ],
             "certification": {
                 "name": "AI Solutioning Quickstart Certificate",
-                "requirements": [
-                    "Complete both modules",
-                    "Achieve Beginner level in essential skills"
-                ]
+                "requirements": ["Complete both modules", "Achieve Beginner level in essential skills"],
             },
-            "total_hours": 6
-        }
+            "total_hours": 6,
+        },
     ]
 
     print(f"\n📖 Creating {len(learning_paths)} learning paths...")
@@ -478,7 +414,7 @@ def setup_training():
             description=path["description"],
             target_role=path["target_role"],
             modules=path["modules"],
-            certification=path["certification"]
+            certification=path["certification"],
         )
         print(f"  ✓ {path['name']} ({path['total_hours']} hours)")
         for module in path["modules"]:
@@ -523,11 +459,7 @@ Next Steps:
      Settings → Workflows → Training tab
 """)
 
-    return {
-        "skills": len(all_skills),
-        "paths": len(learning_paths),
-        "categories": 6
-    }
+    return {"skills": len(all_skills), "paths": len(learning_paths), "categories": 6}
 
 
 if __name__ == "__main__":

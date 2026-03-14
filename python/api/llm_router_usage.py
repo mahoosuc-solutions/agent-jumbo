@@ -13,7 +13,4 @@ class LlmRouterUsage(ApiHandler):
 
         stats = router.get_usage_stats(hours=hours)
 
-        return {
-            "success": True,
-            "stats": stats
-        }
+        return {"success": True, "stats": stats}

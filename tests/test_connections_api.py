@@ -37,7 +37,9 @@ async def test_finance_connect_and_list_api(tmp_path, monkeypatch):
     monkeypatch.setattr(files, "get_abs_path", lambda path: str(db_path))
 
     connect_handler = FinanceConnect(SimpleNamespace(), SimpleNamespace())
-    connect_result = await connect_handler.process({"provider": "plaid", "mock": True}, DummyRequest({"provider": "plaid"}))
+    connect_result = await connect_handler.process(
+        {"provider": "plaid", "mock": True}, DummyRequest({"provider": "plaid"})
+    )
 
     assert connect_result["success"] is True
     assert connect_result["status"] == "connected"

@@ -3,18 +3,18 @@ Unit tests for PMS provider adapters
 Tests API clients, data transformation, and webhook verification
 """
 
-import pytest
-import json
-import hmac
 import hashlib
-from unittest.mock import AsyncMock, MagicMock, patch
-from datetime import datetime, date
+import hmac
+import json
 from decimal import Decimal
+from unittest.mock import AsyncMock, patch
 
+import pytest
+
+from instruments.custom.pms_hub.canonical_models import PaymentStatus, ReservationStatus
+from instruments.custom.pms_hub.pms_provider import ProviderType
 from instruments.custom.pms_hub.providers.hostaway import HostawayProvider
 from instruments.custom.pms_hub.providers.lodgify import LodgifyProvider
-from instruments.custom.pms_hub.pms_provider import ProviderType
-from instruments.custom.pms_hub.canonical_models import ReservationStatus, PaymentStatus
 
 
 class TestHostawayProvider:
@@ -125,16 +125,12 @@ class TestLodgifyProvider:
     @pytest.mark.unit
     def test_lodgify_webhook_signature_verification_valid(self):
         """Test Lodgify webhook signature verification with valid signature"""
-        provider = LodgifyProvider({
-            "api_key": "test_key",
-            "api_secret": "test_secret",
-            "account_id": "123"
-        })
+        provider = LodgifyProvider({"api_key": "test_key", "api_secret": "test_secret", "account_id": "123"})
 
         payload = {"event": "reservation.created", "id": "123"}
         payload_str = json.dumps(payload, separators=(",", ":"), sort_keys=True)
         expected_sig = hmac.new(
-            "test_secret".encode(),
+            b"test_secret",
             payload_str.encode(),
             hashlib.sha256,
         ).hexdigest()
@@ -145,11 +141,7 @@ class TestLodgifyProvider:
     @pytest.mark.unit
     def test_lodgify_webhook_signature_verification_invalid(self):
         """Test Lodgify webhook signature verification with invalid signature"""
-        provider = LodgifyProvider({
-            "api_key": "test_key",
-            "api_secret": "test_secret",
-            "account_id": "123"
-        })
+        provider = LodgifyProvider({"api_key": "test_key", "api_secret": "test_secret", "account_id": "123"})
 
         payload = {"event": "reservation.created"}
         invalid_sig = "invalid_signature_12345"
@@ -160,11 +152,13 @@ class TestLodgifyProvider:
     @pytest.mark.unit
     def test_lodgify_webhook_signature_no_secret(self):
         """Test Lodgify webhook verification fails without secret"""
-        provider = LodgifyProvider({
-            "api_key": "test_key",
-            "api_secret": None,  # No secret
-            "account_id": "123"
-        })
+        provider = LodgifyProvider(
+            {
+                "api_key": "test_key",
+                "api_secret": None,  # No secret
+                "account_id": "123",
+            }
+        )
 
         payload = {"event": "test"}
         assert provider.verify_webhook(payload, "any_sig") is False
@@ -321,11 +315,7 @@ class TestProviderErrorHandling:
     @pytest.mark.asyncio
     async def test_provider_http_error_handling(self):
         """Test provider handles HTTP errors gracefully"""
-        provider = HostawayProvider({
-            "api_key": "x",
-            "user_id": "y",
-            "access_token": "z"
-        })
+        provider = HostawayProvider({"api_key": "x", "user_id": "y", "access_token": "z"})
 
         # Mock client with error response
         provider.client = AsyncMock()
@@ -339,11 +329,7 @@ class TestProviderErrorHandling:
     @pytest.mark.asyncio
     async def test_provider_authentication_error(self):
         """Test provider handles authentication errors"""
-        provider = HostawayProvider({
-            "api_key": "x",
-            "user_id": "y",
-            "access_token": "z"
-        })
+        provider = HostawayProvider({"api_key": "x", "user_id": "y", "access_token": "z"})
 
         provider.client = AsyncMock()
         response = AsyncMock()
@@ -386,7 +372,7 @@ class TestProviderFactory:
             "account_id": "123",
         }
 
-        with patch.object(LodgifyProvider, 'authenticate', return_value=True):
+        with patch.object(LodgifyProvider, "authenticate", return_value=True):
             provider = await create_provider(ProviderType.LODGIFY, config)
             assert isinstance(provider, LodgifyProvider)
 
@@ -407,6 +393,6 @@ class TestProviderFactory:
 
         config = {"api_key": "bad_key", "user_id": "bad", "access_token": "bad"}
 
-        with patch.object(HostawayProvider, 'authenticate', return_value=False):
+        with patch.object(HostawayProvider, "authenticate", return_value=False):
             with pytest.raises(Exception):
                 await create_provider(ProviderType.HOSTAWAY, config)

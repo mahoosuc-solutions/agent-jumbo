@@ -3,7 +3,6 @@ from python.helpers.api import ApiHandler, Request, Response
 
 
 class RFC(ApiHandler):
-
     @classmethod
     def requires_csrf(cls) -> bool:
         return False
@@ -13,5 +12,5 @@ class RFC(ApiHandler):
         return False
 
     async def process(self, input: dict, request: Request) -> dict | Response:
-        result = await runtime.handle_rfc(input) # type: ignore
+        result = await runtime.handle_rfc(input)  # type: ignore
         return result

@@ -562,10 +562,10 @@ class WorkflowTraining(Tool):
             return f"**Error:** {result['error']}"
         return f"""## Skill Registered
 
-**Skill ID:** {result['skill_id']}
-**Name:** {result['name']}
-**Category:** {result['category']}
-**Status:** {result['status']}"""
+**Skill ID:** {result["skill_id"]}
+**Name:** {result["name"]}
+**Category:** {result["category"]}
+**Status:** {result["status"]}"""
 
     def _format_skill_details(self, skill: dict) -> str:
         if "error" in skill:
@@ -582,20 +582,20 @@ class WorkflowTraining(Tool):
 
         tools = skill.get("related_tools", [])
 
-        return f"""## Skill: {skill['name']}
+        return f"""## Skill: {skill["name"]}
 
-**ID:** {skill['skill_id']}
-**Category:** {skill['category']}
-**Description:** {skill.get('description', 'N/A')}
+**ID:** {skill["skill_id"]}
+**Category:** {skill["category"]}
+**Description:** {skill.get("description", "N/A")}
 
 ### Proficiency Levels
 {chr(10).join(level_lines)}
 
 ### Prerequisites
-{chr(10).join(prereq_lines) if prereq_lines else '  None'}
+{chr(10).join(prereq_lines) if prereq_lines else "  None"}
 
 ### Related Tools
-{', '.join(tools) if tools else 'None'}"""
+{", ".join(tools) if tools else "None"}"""
 
     def _format_skills_list(self, skills: list) -> str:
         if not skills:
@@ -637,21 +637,21 @@ class WorkflowTraining(Tool):
             return (
                 f"""## Level Up! 🎉
 
-**Skill:** {result['skill_id']}
-**New Level:** {result['new_level']} ({result['level_name']})
+**Skill:** {result["skill_id"]}
+**New Level:** {result["new_level"]} ({result["level_name"]})
 **Score:** {score}%"""
                 if score
                 else f"""## Level Up! 🎉
 
-**Skill:** {result['skill_id']}
-**New Level:** {result['new_level']} ({result['level_name']})"""
+**Skill:** {result["skill_id"]}
+**New Level:** {result["new_level"]} ({result["level_name"]})"""
             )
 
         return f"""## Skill Practice Recorded
 
-**Skill:** {result['skill_id']}
-**Success:** {result['success']}
-{f'**Score:** {score}%' if score else ''}"""
+**Skill:** {result["skill_id"]}
+**Success:** {result["success"]}
+{f"**Score:** {score}%" if score else ""}"""
 
     def _format_module(self, module: dict) -> str:
         lessons = module.get("lessons", [])
@@ -659,15 +659,15 @@ class WorkflowTraining(Tool):
         for i, l in enumerate(lessons, 1):
             lesson_lines.append(f"  {i}. {l.get('name', l.get('id'))} ({l.get('type', 'lesson')})")
 
-        return f"""## Training Module: {module['name']}
+        return f"""## Training Module: {module["name"]}
 
-**ID:** {module['module_id']}
-**Description:** {module.get('description', 'N/A')}
-**Target Level:** {module.get('skill_level_target', 'N/A')}
-**Skills Taught:** {', '.join(module.get('skills_taught', []))}
+**ID:** {module["module_id"]}
+**Description:** {module.get("description", "N/A")}
+**Target Level:** {module.get("skill_level_target", "N/A")}
+**Skills Taught:** {", ".join(module.get("skills_taught", []))}
 
 ### Lessons
-{chr(10).join(lesson_lines) if lesson_lines else '  No lessons defined'}"""
+{chr(10).join(lesson_lines) if lesson_lines else "  No lessons defined"}"""
 
     def _format_lesson(self, lesson: dict) -> str:
         content = lesson.get("content", {})
@@ -681,22 +681,22 @@ class WorkflowTraining(Tool):
             if s.get("action"):
                 step_lines.append(f"     Action: `{s['action']}`")
 
-        return f"""## Lesson: {lesson['name']}
+        return f"""## Lesson: {lesson["name"]}
 
-**Type:** {lesson.get('type', 'lesson')}
-**Duration:** {lesson.get('duration_minutes', 'N/A')} minutes
+**Type:** {lesson.get("type", "lesson")}
+**Duration:** {lesson.get("duration_minutes", "N/A")} minutes
 
 ### Objectives
-{chr(10).join(obj_lines) if obj_lines else '  Not specified'}
+{chr(10).join(obj_lines) if obj_lines else "  Not specified"}
 
 ### Introduction
-{content.get('introduction', 'Begin the lesson.')}
+{content.get("introduction", "Begin the lesson.")}
 
 ### Steps
-{chr(10).join(step_lines) if step_lines else '  Follow the lesson content.'}
+{chr(10).join(step_lines) if step_lines else "  Follow the lesson content."}
 
 ### Key Points
-{chr(10).join(['  - ' + k for k in content.get('key_points', [])])}"""
+{chr(10).join(["  - " + k for k in content.get("key_points", [])])}"""
 
     def _format_paths_list(self, paths: list) -> str:
         if not paths:
@@ -729,20 +729,20 @@ class WorkflowTraining(Tool):
         cert_info = ""
         if cert:
             cert_info = f"""
-### Certification: {cert.get('name', 'Available')}
+### Certification: {cert.get("name", "Available")}
 Requirements:
-  - Min modules: {cert.get('requirements', {}).get('min_modules_completed', 'All')}
-  - Min score: {cert.get('requirements', {}).get('min_overall_score', 70)}%"""
+  - Min modules: {cert.get("requirements", {}).get("min_modules_completed", "All")}
+  - Min score: {cert.get("requirements", {}).get("min_overall_score", 70)}%"""
 
-        return f"""## Learning Path: {path['name']}
+        return f"""## Learning Path: {path["name"]}
 
-**ID:** {path['path_id']}
-**Target Role:** {path.get('target_role', 'all')}
-**Description:** {path.get('description', 'N/A')}
-**Estimated Hours:** {path.get('estimated_hours', 'N/A')}
+**ID:** {path["path_id"]}
+**Target Role:** {path.get("target_role", "all")}
+**Description:** {path.get("description", "N/A")}
+**Estimated Hours:** {path.get("estimated_hours", "N/A")}
 
 ### Modules
-{chr(10).join(module_lines) if module_lines else '  No modules defined'}
+{chr(10).join(module_lines) if module_lines else "  No modules defined"}
 {cert_info}"""
 
     def _format_learning_progress(self, progress: list) -> str:
@@ -768,19 +768,19 @@ Requirements:
         return "\n".join(lines)
 
     def _format_practice(self, practice: dict) -> str:
-        return f"""## Practice Task: {practice['skill_name']}
+        return f"""## Practice Task: {practice["skill_name"]}
 
-**Skill Level:** {practice['level']}
-**Type:** {practice['type']}
+**Skill Level:** {practice["level"]}
+**Type:** {practice["type"]}
 
 ### Task
-{practice['prompt']}
+{practice["prompt"]}
 
 ### Tools Available
-{', '.join(practice.get('tools', [])) or 'Any'}
+{", ".join(practice.get("tools", [])) or "Any"}
 
 ### Hints
-{'Enabled - ask for hints if needed' if practice.get('hints_enabled') else 'Disabled at this level'}
+{"Enabled - ask for hints if needed" if practice.get("hints_enabled") else "Disabled at this level"}
 
 *Complete this task and use `assess_skill` to record your result.*"""
 
@@ -840,15 +840,15 @@ Requirements:
 - **Available Paths:** {len(paths)}
 
 ### Quick Stats
-- Total Skills Available: {stats.get('total_skills', 0)}
-- Learning Paths Available: {stats.get('total_learning_paths', 0)}
-- Total Workflows: {stats.get('total_workflows', 0)}
+- Total Skills Available: {stats.get("total_skills", 0)}
+- Learning Paths Available: {stats.get("total_learning_paths", 0)}
+- Total Workflows: {stats.get("total_workflows", 0)}
 
 ### Top Skills
-{chr(10).join([f"- {s.get('name', s['skill_id'])}: Level {s['current_level']}" for s in sorted(skills, key=lambda x: -x['current_level'])[:5]]) if skills else '  None yet'}
+{chr(10).join([f"- {s.get('name', s['skill_id'])}: Level {s['current_level']}" for s in sorted(skills, key=lambda x: -x["current_level"])[:5]]) if skills else "  None yet"}
 
 ### Active Learning
-{chr(10).join([f"- {p.get('path_name', p['path_id'])}: {len(p.get('modules_completed', []))} modules completed" for p in progress[:3]]) if progress else '  Not enrolled in any paths'}"""
+{chr(10).join([f"- {p.get('path_name', p['path_id'])}: {len(p.get('modules_completed', []))} modules completed" for p in progress[:3]]) if progress else "  Not enrolled in any paths"}"""
 
     def _format_help(self) -> str:
         return """## Workflow Training Tool

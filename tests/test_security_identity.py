@@ -7,7 +7,6 @@ from python.helpers.security import SecurityManager, SecurityVaultManager
 
 
 class TestSecurityIdentity:
-
     @pytest.fixture(autouse=True)
     def setup_security(self):
         # Reset state before each test
@@ -38,11 +37,12 @@ class TestSecurityIdentity:
     def test_rate_limiter(self):
         """Test simple rate limiting logic."""
         from flask import Flask
+
         app = Flask(__name__)
         # Ensure rate limits are clear for test
         SecurityManager._rate_limits = {}
 
-        with app.test_request_context(environ_base={'REMOTE_ADDR': '127.0.0.1'}):
+        with app.test_request_context(environ_base={"REMOTE_ADDR": "127.0.0.1"}):
             # Allow 3 attempts in 60s
             for _i in range(3):
                 result = SecurityManager.check_rate_limit("test_action", limit=3)
@@ -78,19 +78,21 @@ class TestSecurityIdentity:
         assert SecurityManager.check_network_sentinel("bash", {"command": "ls -la"}) is True
 
         # Suspicious tool call (curl/external access)
-        assert SecurityManager.check_network_sentinel("run_in_terminal", {"command": "curl http://example.com"}) is False
+        assert (
+            SecurityManager.check_network_sentinel("run_in_terminal", {"command": "curl http://example.com"}) is False
+        )
         assert SecurityManager.check_network_sentinel("run_command", {"args": "wget 1.2.3.4"}) is False
 
     def test_vault_secrets(self, tmp_path):
         """Test vault storage and retrieval using a temporary path."""
         vault_file = tmp_path / "vault.json"
-        with patch.object(SecurityVaultManager, 'VAULT_PATH', str(vault_file)):
+        with patch.object(SecurityVaultManager, "VAULT_PATH", str(vault_file)):
             SecurityVaultManager.set_secret("test_key", "test_value")
             assert SecurityVaultManager.get_secret("test_key") == "test_value"
             assert SecurityVaultManager.get_secret("missing_key") is None
 
-    @patch('python.helpers.proactive.webpush')
-    @patch('python.helpers.proactive.WorkflowEngineDatabase')
+    @patch("python.helpers.proactive.webpush")
+    @patch("python.helpers.proactive.WorkflowEngineDatabase")
     def test_proactive_push_trigger(self, mock_db, mock_webpush):
         """Test that proactive notifications trigger the webpush library."""
         ProactiveManager.ENABLED = True

@@ -10,6 +10,7 @@ class FieldOption(TypedDict):
     value: str
     label: str
 
+
 class ProviderManager:
     _instance = None
     _raw: dict[str, list[dict[str, str]]] | None = None  # full provider data
@@ -73,7 +74,6 @@ class ProviderManager:
     def get_providers(self, provider_type: str) -> list[FieldOption]:
         """Returns a list of providers for a given type (e.g., 'chat', 'embedding')."""
         return self._options.get(provider_type, []) if self._options else []
-
 
     def get_raw_providers(self, provider_type: str) -> list[dict[str, str]]:
         """Return raw provider dictionaries for advanced use-cases."""

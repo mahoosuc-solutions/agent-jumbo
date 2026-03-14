@@ -9,16 +9,11 @@ class SearchEngine(Tool):
     parallel_safe = True
 
     async def execute(self, query="", **kwargs):
-
-
         searxng_result = await self.searxng_search(query)
 
-        await self.agent.handle_intervention(
-            searxng_result
-        )  # wait for intervention and handle it, if paused
+        await self.agent.handle_intervention(searxng_result)  # wait for intervention and handle it, if paused
 
         return Response(message=searxng_result, break_loop=False)
-
 
     async def searxng_search(self, question):
         results = await searxng(question)

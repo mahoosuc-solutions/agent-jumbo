@@ -4,7 +4,6 @@ from python.helpers.print_style import PrintStyle
 
 
 class SchedulerTaskRun(ApiHandler):
-
     _printer: PrintStyle = PrintStyle(italic=True, font_color="green", padding=False)
 
     async def process(self, input: Input, request: Request) -> Output:
@@ -42,10 +41,7 @@ class SchedulerTaskRun(ApiHandler):
             # Return task details along with error for better frontend handling
             serialized_task = scheduler.serialize_task(task_id)
             self._printer.error(f"SchedulerTaskRun: Task '{task_id}' is in state '{task.state}' and cannot be run")
-            return {
-                "error": f"Task '{task_id}' is in state '{task.state}' and cannot be run",
-                "task": serialized_task
-            }
+            return {"error": f"Task '{task_id}' is in state '{task.state}' and cannot be run", "task": serialized_task}
 
         # Run the task, which now includes atomic state checks and updates
         try:
@@ -54,11 +50,7 @@ class SchedulerTaskRun(ApiHandler):
             # Get updated task after run starts
             serialized_task = scheduler.serialize_task(task_id)
             if serialized_task:
-                return {
-                    "success": True,
-                    "message": f"Task '{task_id}' started successfully",
-                    "task": serialized_task
-                }
+                return {"success": True, "message": f"Task '{task_id}' started successfully", "task": serialized_task}
             else:
                 return {"success": True, "message": f"Task '{task_id}' started successfully"}
         except ValueError as e:

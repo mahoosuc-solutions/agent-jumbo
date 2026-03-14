@@ -59,7 +59,7 @@ def validate_integration_mode(mode: str) -> bool:
         ValueError: If mode is not valid
     """
     if mode not in VALID_INTEGRATION_MODES:
-        raise ValueError(f"Invalid integration mode: {mode}. " f"Must be one of: {', '.join(VALID_INTEGRATION_MODES)}")
+        raise ValueError(f"Invalid integration mode: {mode}. Must be one of: {', '.join(VALID_INTEGRATION_MODES)}")
     return True
 
 

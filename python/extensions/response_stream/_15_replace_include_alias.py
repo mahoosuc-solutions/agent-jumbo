@@ -5,13 +5,7 @@ from python.helpers.strings import replace_file_includes
 
 
 class ReplaceIncludeAlias(Extension):
-    async def execute(
-        self,
-        loop_data=None,
-        text: str = "",
-        parsed: dict[str, Any] | None = None,
-        **kwargs
-    ):
+    async def execute(self, loop_data=None, text: str = "", parsed: dict[str, Any] | None = None, **kwargs):
         if not parsed or not isinstance(parsed, dict):
             return
 

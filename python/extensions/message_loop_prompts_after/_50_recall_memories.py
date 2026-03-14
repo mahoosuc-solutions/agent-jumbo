@@ -10,7 +10,6 @@ DATA_NAME_ITER = "_recall_memories_iter"
 
 
 class RecallMemories(Extension):
-
     # INTERVAL = 3
     # HISTORY = 10000
     # MEMORIES_MAX_SEARCH = 12
@@ -20,7 +19,6 @@ class RecallMemories(Extension):
     # THRESHOLD = DEFAULT_MEMORY_THRESHOLD
 
     async def execute(self, loop_data: LoopData = LoopData(), **kwargs):
-
         set = settings.get_settings()
 
         # turned off in settings?
@@ -29,16 +27,13 @@ class RecallMemories(Extension):
 
         # every X iterations (or the first one) recall memories
         if loop_data.iteration % set["memory_recall_interval"] == 0:
-
             # show util message right away
             log_item = self.agent.context.log.log(
                 type="util",
                 heading="Searching memories...",
             )
 
-            task = asyncio.create_task(
-                self.search_memories(loop_data=loop_data, log_item=log_item, **kwargs)
-            )
+            task = asyncio.create_task(self.search_memories(loop_data=loop_data, log_item=log_item, **kwargs))
         else:
             task = None
 
@@ -47,14 +42,12 @@ class RecallMemories(Extension):
         self.agent.set_data(DATA_NAME_ITER, loop_data.iteration)
 
     async def search_memories(self, log_item: log.LogItem, loop_data: LoopData, **kwargs):
-
         # cleanup
         extras = loop_data.extras_persistent
         if "memories" in extras:
             del extras["memories"]
         if "solutions" in extras:
             del extras["solutions"]
-
 
         set = settings.get_settings()
         # try:
@@ -67,13 +60,9 @@ class RecallMemories(Extension):
             log_item.stream(query=content)
 
         # call util llm to summarize conversation
-        user_instruction = (
-            loop_data.user_message.output_text() if loop_data.user_message else "None"
-        )
-        history = self.agent.history.output_text()[-set["memory_recall_history_len"]:]
-        message = self.agent.read_prompt(
-            "memory.memories_query.msg.md", history=history, message=user_instruction
-        )
+        user_instruction = loop_data.user_message.output_text() if loop_data.user_message else "None"
+        history = self.agent.history.output_text()[-set["memory_recall_history_len"] :]
+        message = self.agent.read_prompt("memory.memories_query.msg.md", history=history, message=user_instruction)
 
         # if query preparation by AI is enabled
         if set["memory_recall_query_prep"]:
@@ -87,9 +76,7 @@ class RecallMemories(Extension):
                 query = query.strip()
             except Exception as e:
                 err = errors.format_error(e)
-                self.agent.context.log.log(
-                    type="error", heading="Recall memories extension error:", content=err
-                )
+                self.agent.context.log.log(type="error", heading="Recall memories extension error:", content=err)
                 query = ""
 
             # no query, no search
@@ -178,11 +165,8 @@ class RecallMemories(Extension):
 
             except Exception as e:
                 err = errors.format_error(e)
-                self.agent.context.log.log(
-                    type="error", heading="Failed to filter relevant memories", content=err
-                )
+                self.agent.context.log.log(type="error", heading="Failed to filter relevant memories", content=err)
                 filter_inds = []
-
 
         # limit the number of memories and solutions
         memories = memories[: set["memory_recall_memories_max_result"]]
@@ -204,10 +188,6 @@ class RecallMemories(Extension):
 
         # place to prompt
         if memories_txt:
-            extras["memories"] = self.agent.parse_prompt(
-                "agent.system.memories.md", memories=memories_txt
-            )
+            extras["memories"] = self.agent.parse_prompt("agent.system.memories.md", memories=memories_txt)
         if solutions_txt:
-            extras["solutions"] = self.agent.parse_prompt(
-                "agent.system.solutions.md", solutions=solutions_txt
-            )
+            extras["solutions"] = self.agent.parse_prompt("agent.system.solutions.md", solutions=solutions_txt)

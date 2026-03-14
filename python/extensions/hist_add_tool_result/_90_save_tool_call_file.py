@@ -6,6 +6,7 @@ from python.helpers.extension import Extension
 
 LEN_MIN = 500
 
+
 class SaveToolCallFile(Extension):
     async def execute(self, data: dict[str, Any] | None = None, **kwargs):
         if not data:
@@ -28,7 +29,7 @@ class SaveToolCallFile(Extension):
         last_num = len(os.listdir(msgs_folder))
 
         # create new file
-        new_file = files.get_abs_path(msgs_folder, f"{last_num+1}.txt")
+        new_file = files.get_abs_path(msgs_folder, f"{last_num + 1}.txt")
         files.write_file(
             new_file,
             result,

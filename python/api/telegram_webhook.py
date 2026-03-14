@@ -1,17 +1,17 @@
 import os
 import uuid
 
-from agent import AgentContext, UserMessage
+from agent import UserMessage
+from python.helpers import extension
 from python.helpers.api import ApiHandler, Request, Response
 from python.helpers.print_style import PrintStyle
-from python.helpers import extension
 from python.helpers.telegram_bridge import (
+    build_title,
+    clear_context_for_chat,
+    extract_tags,
     get_context_for_chat,
     set_context_for_chat,
     should_ignore_update,
-    clear_context_for_chat,
-    extract_tags,
-    build_title,
 )
 from python.helpers.telegram_client import send_message
 
@@ -86,13 +86,11 @@ class TelegramWebhook(ApiHandler):
 
     async def _store_telegram_message(self, text: str, title: str, tags: list[str]) -> None:
         try:
-            from python.helpers import files
             from instruments.custom.knowledge_ingest.knowledge_ingest_db import KnowledgeIngestDatabase
             from instruments.custom.knowledge_ingest.knowledge_ingest_manager import KnowledgeIngestManager
+            from python.helpers import files
 
-            db_path = files.get_abs_path(
-                "./instruments/custom/knowledge_ingest/data/knowledge_ingest.db"
-            )
+            db_path = files.get_abs_path("./instruments/custom/knowledge_ingest/data/knowledge_ingest.db")
             db = KnowledgeIngestDatabase(db_path)
             source_name = "Telegram Inbox"
             source_uri = "telegram://inbox"

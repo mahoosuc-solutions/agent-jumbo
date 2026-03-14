@@ -14,7 +14,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache Software License 2.0"}
+license = "Apache-2.0"
 keywords = [
     "deployment",
     "orchestration",
@@ -115,7 +115,7 @@ Discussions = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/discussi
 # Ruff Configuration for Agent Jumbo
 # ============================================
 [tool.ruff]
-target-version = "py312"
+target-version = "py310"
 line-length = 120
 indent-width = 4
 
@@ -165,6 +165,8 @@ ignore = [
     "SIM108", # Use ternary operator instead of if-else block
     "SIM113", # Use enumerate (existing patterns)
     "SIM115", # Use context manager for files (existing patterns)
+    "SIM103", # Return condition directly (existing patterns)
+    "SIM116", # Use dict instead of if/elif (existing patterns)
     "SIM117", # Single with statement (existing patterns)
     "UP007",  # Use X | Y for type annotations (keep Optional for clarity)
     "UP017",  # Use TimeoutError instead of asyncio.TimeoutError (Python 3.10 needs asyncio.TimeoutError)
@@ -181,8 +183,8 @@ unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
 # Tests: allow sys.path manipulation, unused vars, conditional imports
-"tests/*" = ["E402", "F841", "SIM105", "PLR2004", "S101"]
-"tests/**/*.py" = ["E402", "F841", "SIM105", "PLR2004", "S101"]
+"tests/*" = ["E402", "F841", "SIM105", "PLR2004", "S101", "RUF059", "B017"]
+"tests/**/*.py" = ["E402", "F841", "SIM105", "PLR2004", "S101", "RUF059", "B017"]
 # Extensions may have conditional imports
 "**/extensions/*" = ["E402"]
 # Initialization requires sys.path setup

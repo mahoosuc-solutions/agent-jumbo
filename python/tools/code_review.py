@@ -40,7 +40,7 @@ class CodeReview(Tool):
         valid_focuses = ["security", "performance", "style", "all"]
         if focus not in valid_focuses:
             return Response(
-                message=f"Invalid focus: {focus}. " f"Must be one of: {', '.join(valid_focuses)}", break_loop=False
+                message=f"Invalid focus: {focus}. Must be one of: {', '.join(valid_focuses)}", break_loop=False
             )
 
         # Generate review

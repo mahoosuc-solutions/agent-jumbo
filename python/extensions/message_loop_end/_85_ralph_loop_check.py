@@ -26,9 +26,7 @@ class RalphLoopCheck(Extension):
             from python.helpers import files
 
             # Initialize manager
-            db_path = files.get_abs_path(
-                "./instruments/custom/ralph_loop/data/ralph_loop.db"
-            )
+            db_path = files.get_abs_path("./instruments/custom/ralph_loop/data/ralph_loop.db")
             manager = RalphLoopManager(db_path)
 
             # Get agent ID
@@ -45,30 +43,22 @@ class RalphLoopCheck(Extension):
             last_response = loop_data.last_response or ""
 
             # Check if loop should complete
-            is_complete, reason = manager.check_completion(
-                active_loop['loop_id'],
-                last_response
-            )
+            is_complete, reason = manager.check_completion(active_loop["loop_id"], last_response)
 
             if is_complete:
                 # Log completion
                 self.agent.context.log.log(
-                    type="info",
-                    content=f"🔄 Ralph Loop: {reason}",
-                    heading=f"Loop #{active_loop['loop_id']} Complete"
+                    type="info", content=f"🔄 Ralph Loop: {reason}", heading=f"Loop #{active_loop['loop_id']} Complete"
                 )
                 return
 
             # Loop should continue - advance iteration
             iteration_result = manager.advance_iteration(
-                loop_id=active_loop['loop_id'],
-                output_summary=last_response[:500] if last_response else None
+                loop_id=active_loop["loop_id"], output_summary=last_response[:500] if last_response else None
             )
 
             # Generate and inject the continuation prompt
-            continuation_prompt = manager.generate_iteration_prompt(
-                active_loop['loop_id']
-            )
+            continuation_prompt = manager.generate_iteration_prompt(active_loop["loop_id"])
 
             if continuation_prompt:
                 # Add to extras for next iteration
@@ -78,7 +68,7 @@ class RalphLoopCheck(Extension):
                 self.agent.context.log.log(
                     type="info",
                     content=f"Iteration {iteration_result['iteration']}/{iteration_result['max_iterations'] or '∞'}",
-                    heading="🔄 Ralph Loop Continuing"
+                    heading="🔄 Ralph Loop Continuing",
                 )
 
         except ImportError:
@@ -87,7 +77,4 @@ class RalphLoopCheck(Extension):
         except Exception as e:
             # Log but don't break the main loop
             if self.agent and self.agent.context:
-                self.agent.context.log.log(
-                    type="error",
-                    content=f"Ralph loop check error: {e!s}"
-                )
+                self.agent.context.log.log(type="error", content=f"Ralph loop check error: {e!s}")

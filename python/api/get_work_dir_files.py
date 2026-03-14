@@ -4,7 +4,6 @@ from python.helpers.file_browser import FileBrowser
 
 
 class GetWorkDirFiles(ApiHandler):
-
     @classmethod
     def get_methods(cls):
         return ["GET"]

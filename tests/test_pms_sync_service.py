@@ -3,17 +3,16 @@ Integration tests for PMS Sync Service
 Tests bi-directional sync between PMS and PropertyManager
 """
 
-import pytest
-from unittest.mock import AsyncMock, MagicMock, patch
 from datetime import date
-from decimal import Decimal
+from unittest.mock import AsyncMock, MagicMock, patch
 
-from instruments.custom.pms_hub.sync_service import PMSSyncService
+import pytest
+
 from instruments.custom.pms_hub.canonical_models import (
     Reservation,
     ReservationStatus,
-    PaymentStatus,
 )
+from instruments.custom.pms_hub.sync_service import PMSSyncService
 
 
 class TestSyncServiceInitialization:
@@ -73,26 +72,20 @@ class TestPropertySync:
         with patch("instruments.custom.pms_hub.sync_service.ProviderRegistry"):
             sync = PMSSyncService()
             sync.pm = AsyncMock()
-            sync.pm.add_property = AsyncMock(return_value={
-                "status": "success",
-                "data": {"id": 1}
-            })
+            sync.pm.add_property = AsyncMock(return_value={"status": "success", "data": {"id": 1}})
 
             # Mock provider
             mock_provider = AsyncMock()
             mock_provider.get_property = AsyncMock(return_value=None)
 
-            with patch.object(
-                sync.registry,
-                "get_provider_async",
-                return_value=mock_provider
-            ):
+            with patch.object(sync.registry, "get_provider_async", return_value=mock_provider):
                 with patch.object(sync, "registry") as mock_registry:
                     mock_registry.list_providers.return_value = ["test"]
                     mock_registry.get_provider_async = AsyncMock(return_value=mock_provider)
 
                     # Need valid property for test
                     from instruments.custom.pms_hub.canonical_models import Property
+
                     prop = Property(
                         provider_id="p1",
                         provider="test",
@@ -100,7 +93,7 @@ class TestPropertySync:
                         name="Test",
                         address="123",
                         city="City",
-                        state="ST"
+                        state="ST",
                     )
                     mock_provider.get_property = AsyncMock(return_value=prop)
 
@@ -118,10 +111,7 @@ class TestGuestSync:
         with patch("instruments.custom.pms_hub.sync_service.ProviderRegistry"):
             sync = PMSSyncService()
             sync.pm = AsyncMock()
-            sync.pm.add_tenant = AsyncMock(return_value={
-                "status": "success",
-                "data": {"id": 1}
-            })
+            sync.pm.add_tenant = AsyncMock(return_value={"status": "success", "data": {"id": 1}})
 
             tenant_id = await sync._sync_guest_to_tenant(sample_reservation)
 
@@ -137,15 +127,11 @@ class TestGuestSync:
     @pytest.mark.asyncio
     async def test_guest_name_parsing(self):
         """Test guest name parsing"""
-        from instruments.custom.pms_hub.canonical_models import Reservation
 
         with patch("instruments.custom.pms_hub.sync_service.ProviderRegistry"):
             sync = PMSSyncService()
             sync.pm = AsyncMock()
-            sync.pm.add_tenant = AsyncMock(return_value={
-                "status": "success",
-                "data": {"id": 1}
-            })
+            sync.pm.add_tenant = AsyncMock(return_value={"status": "success", "data": {"id": 1}})
 
             res = Reservation(
                 provider_id="r1",
@@ -174,16 +160,10 @@ class TestLeaseSync:
         with patch("instruments.custom.pms_hub.sync_service.ProviderRegistry"):
             sync = PMSSyncService()
             sync.pm = AsyncMock()
-            sync.pm.create_lease = AsyncMock(return_value={
-                "status": "success",
-                "data": {"id": 100}
-            })
+            sync.pm.create_lease = AsyncMock(return_value={"status": "success", "data": {"id": 100}})
 
             lease_id = await sync._sync_reservation_to_lease(
-                property_id=1,
-                unit_id=None,
-                tenant_id=1,
-                reservation=sample_reservation
+                property_id=1, unit_id=None, tenant_id=1, reservation=sample_reservation
             )
 
             assert lease_id == 100
@@ -225,9 +205,7 @@ class TestPaymentSync:
         with patch("instruments.custom.pms_hub.sync_service.ProviderRegistry"):
             sync = PMSSyncService()
             sync.pm = AsyncMock()
-            sync.pm.record_payment = AsyncMock(return_value={
-                "status": "success"
-            })
+            sync.pm.record_payment = AsyncMock(return_value={"status": "success"})
 
             result = await sync._record_payment(lease_id=100, reservation=sample_reservation)
 
@@ -243,9 +221,7 @@ class TestPaymentSync:
         with patch("instruments.custom.pms_hub.sync_service.ProviderRegistry"):
             sync = PMSSyncService()
             sync.pm = AsyncMock()
-            sync.pm.record_payment = AsyncMock(return_value={
-                "status": "success"
-            })
+            sync.pm.record_payment = AsyncMock(return_value={"status": "success"})
 
             await sync._record_payment(lease_id=100, reservation=sample_reservation)
 
@@ -267,6 +243,7 @@ class TestBulkSync:
             mock_provider = AsyncMock()
 
             from instruments.custom.pms_hub.canonical_models import Reservation
+
             reservations = [
                 Reservation(
                     provider_id="r1",
@@ -291,11 +268,7 @@ class TestBulkSync:
             sync.registry.get_provider_async = AsyncMock(return_value=mock_provider)
 
             # Mock sync method
-            with patch.object(
-                sync,
-                "sync_reservation_to_property_manager",
-                return_value=(True, 1)
-            ):
+            with patch.object(sync, "sync_reservation_to_property_manager", return_value=(True, 1)):
                 synced, errors = await sync.sync_all_reservations("test_provider")
 
             # Should have synced 2 reservations
@@ -313,6 +286,7 @@ class TestBulkSync:
             mock_provider = AsyncMock()
 
             from instruments.custom.pms_hub.canonical_models import Reservation
+
             reservations = [
                 Reservation(
                     provider_id="r1",
@@ -335,11 +309,7 @@ class TestBulkSync:
             sync.registry.get_provider_async = AsyncMock(return_value=mock_provider)
 
             # Mock sync - first succeeds, second fails
-            with patch.object(
-                sync,
-                "sync_reservation_to_property_manager",
-                side_effect=[(True, 1), (False, None)]
-            ):
+            with patch.object(sync, "sync_reservation_to_property_manager", side_effect=[(True, 1), (False, None)]):
                 synced, errors = await sync.sync_all_reservations("test_provider")
 
             assert synced == 1

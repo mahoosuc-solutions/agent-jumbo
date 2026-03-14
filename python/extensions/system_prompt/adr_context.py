@@ -11,29 +11,32 @@ class adr_context(Extension):
     """
 
     async def execute(self, system_prompt: list[str], **kwargs) -> None:
-        if not self.agent: return
+        if not self.agent:
+            return
 
         # Only inject if we are in a solutioning context
         profile = getattr(self.agent.config, "profile", "default")
-        if profile not in ["architect", "developer", "solutioning"]: # Logic could be more broad
+        if profile not in ["architect", "developer", "solutioning"]:  # Logic could be more broad
             pass
 
         try:
             adr_dir = files.get_abs_path("knowledge/custom/architectural_patterns/adrs")
-            if not os.path.exists(adr_dir): return
+            if not os.path.exists(adr_dir):
+                return
 
             # Get latest 3 ADRs
             files_list = [f for f in os.listdir(adr_dir) if f.endswith(".md")]
             files_list.sort(reverse=True)
             latest_adrs = files_list[:3]
 
-            if not latest_adrs: return
+            if not latest_adrs:
+                return
 
             ctx_text = "## 📜 Historical Architectural Decisions (ADRs)\n"
             ctx_text += "You must maintain consistency with following recent decisions:\n\n"
 
             for adr_file in latest_adrs:
-                with open(os.path.join(adr_dir, adr_file), encoding='utf-8') as f:
+                with open(os.path.join(adr_dir, adr_file), encoding="utf-8") as f:
                     # Just take the first few lines / summary
                     content = f.read()
                     # Extract decision section if possible, otherwise first 200 chars

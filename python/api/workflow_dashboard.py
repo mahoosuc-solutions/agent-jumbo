@@ -20,9 +20,7 @@ class WorkflowDashboard(ApiHandler):
             )
 
             # Get database path
-            db_path = files.get_abs_path(
-                "./instruments/custom/workflow_engine/data/workflow.db"
-            )
+            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
 
             # Ensure data directory exists
             data_dir = os.path.dirname(db_path)

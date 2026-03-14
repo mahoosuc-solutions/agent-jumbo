@@ -18,9 +18,7 @@ class RalphLoopControl(ApiHandler):
             from instruments.custom.ralph_loop.ralph_manager import RalphLoopManager
 
             # Get database path
-            db_path = files.get_abs_path(
-                "./instruments/custom/ralph_loop/data/ralph_loop.db"
-            )
+            db_path = files.get_abs_path("./instruments/custom/ralph_loop/data/ralph_loop.db")
 
             # Ensure data directory exists
             data_dir = os.path.dirname(db_path)
@@ -90,7 +88,7 @@ class RalphLoopControl(ApiHandler):
                 return {
                     "success": False,
                     "error": f"Unknown action: {action}. "
-                             "Valid actions: pause, resume, cancel, get_details, get_history, list_all"
+                    "Valid actions: pause, resume, cancel, get_details, get_history, list_all",
                 }
 
         except Exception as e:

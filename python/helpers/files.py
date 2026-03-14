@@ -18,9 +18,7 @@ class VariablesPlugin(ABC):
         pass
 
 
-def load_plugin_variables(
-    file: str, backup_dirs: list[str] | None = None, **kwargs
-) -> dict[str, Any]:
+def load_plugin_variables(file: str, backup_dirs: list[str] | None = None, **kwargs) -> dict[str, Any]:
     if not file.endswith(".md"):
         return {}
 
@@ -36,12 +34,9 @@ def load_plugin_variables(
         plugin_file = None
 
     if plugin_file and exists(plugin_file):
-
         from python.helpers import extract_tools
 
-        classes = extract_tools.load_classes_from_file(
-            plugin_file, VariablesPlugin, one_per_file=False
-        )
+        classes = extract_tools.load_classes_from_file(plugin_file, VariablesPlugin, one_per_file=False)
         for cls in classes:
             return cls().get_variables(file, backup_dirs, **kwargs)  # type: ignore < abstract class here is ok, it is always a subclass
 
@@ -75,9 +70,7 @@ def load_plugin_variables(
 from python.helpers.strings import sanitize_string
 
 
-def parse_file(
-    _filename: str, _directories: list[str] | None = None, _encoding="utf-8", **kwargs
-):
+def parse_file(_filename: str, _directories: list[str] | None = None, _encoding="utf-8", **kwargs):
     if _directories is None:
         _directories = []
 
@@ -110,9 +103,7 @@ def parse_file(
         return content
 
 
-def read_prompt_file(
-    _file: str, _directories: list[str] | None = None, _encoding="utf-8", **kwargs
-):
+def read_prompt_file(_file: str, _directories: list[str] | None = None, _encoding="utf-8", **kwargs):
     if _directories is None:
         _directories = []
 
@@ -203,13 +194,9 @@ def replace_placeholders_dict(_content: dict, **kwargs):
                         if value == f"{{{{{placeholder}}}}}":
                             return replacement
                         elif isinstance(replacement, (dict, list)):
-                            value = value.replace(
-                                f"{{{{{placeholder}}}}}", json.dumps(replacement)
-                            )
+                            value = value.replace(f"{{{{{placeholder}}}}}", json.dumps(replacement))
                         else:
-                            value = value.replace(
-                                f"{{{{{placeholder}}}}}", str(replacement)
-                            )
+                            value = value.replace(f"{{{{{placeholder}}}}}", str(replacement))
             return value
         elif isinstance(value, dict):
             return {k: replace_value(v) for k, v in value.items()}
@@ -254,9 +241,7 @@ def find_file_in_dirs(_filename: str, _directories: list[str]):
             return full_path
 
     # If the file is not found, raise FileNotFoundError
-    raise FileNotFoundError(
-        f"File '{_filename}' not found in any of the provided directories."
-    )
+    raise FileNotFoundError(f"File '{_filename}' not found in any of the provided directories.")
 
 
 def get_unique_filenames_in_dirs(dir_paths: list[str], pattern: str = "*"):
@@ -501,10 +486,7 @@ def safe_file_name(filename: str) -> str:
     return re.sub(r"[^a-zA-Z0-9-._]", "_", filename)
 
 
-def read_text_files_in_dir(
-    dir_path: str, max_size: int = 1024 * 1024
-) -> dict[str, str]:
-
+def read_text_files_in_dir(dir_path: str, max_size: int = 1024 * 1024) -> dict[str, str]:
     abs_path = get_abs_path(dir_path)
     if not os.path.exists(abs_path):
         return {}
@@ -524,6 +506,7 @@ def read_text_files_in_dir(
         except Exception:
             continue
     return result
+
 
 def list_files_in_dir_recursively(relative_path: str) -> list[str]:
     abs_path = get_abs_path(relative_path)

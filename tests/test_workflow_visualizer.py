@@ -32,7 +32,7 @@ class TestWorkflowVisualizer:
                 "stages": [
                     {"id": "design", "name": "Design Phase", "type": "design"},
                     {"id": "build", "name": "Build Phase", "type": "custom"},
-                    {"id": "deploy", "name": "Deploy Phase", "type": "production"}
+                    {"id": "deploy", "name": "Deploy Phase", "type": "production"},
                 ]
             }
         }
@@ -52,16 +52,12 @@ class TestWorkflowVisualizer:
         """Test diagram with explicit transitions"""
         workflow = {
             "definition": {
-                "stages": [
-                    {"id": "s1", "name": "Start"},
-                    {"id": "s2", "name": "Process"},
-                    {"id": "s3", "name": "End"}
-                ],
+                "stages": [{"id": "s1", "name": "Start"}, {"id": "s2", "name": "Process"}, {"id": "s3", "name": "End"}],
                 "transitions": [
                     {"from": "s1", "to": "s2", "condition": "data_ready"},
                     {"from": "s2", "to": "s3", "condition": "processed"},
-                    {"from": "s2", "to": "s1", "condition": "retry_needed"}
-                ]
+                    {"from": "s2", "to": "s1", "condition": "retry_needed"},
+                ],
             }
         }
 
@@ -78,7 +74,7 @@ class TestWorkflowVisualizer:
                 "stages": [
                     {"id": "design", "name": "Design"},
                     {"id": "build", "name": "Build"},
-                    {"id": "test", "name": "Test"}
+                    {"id": "test", "name": "Test"},
                 ]
             }
         }
@@ -87,7 +83,7 @@ class TestWorkflowVisualizer:
             "stage_details": [
                 {"stage_id": "design", "status": "completed"},
                 {"stage_id": "build", "status": "in_progress"},
-                {"stage_id": "test", "status": "pending"}
+                {"stage_id": "test", "status": "pending"},
             ]
         }
 
@@ -115,12 +111,7 @@ class TestWorkflowVisualizer:
 
     def test_generate_workflow_diagram_definition_only(self):
         """Test diagram when workflow is just the definition"""
-        workflow = {
-            "stages": [
-                {"id": "s1", "name": "Stage 1"},
-                {"id": "s2", "name": "Stage 2"}
-            ]
-        }
+        workflow = {"stages": [{"id": "s1", "name": "Stage 1"}, {"id": "s2", "name": "Stage 2"}]}
 
         diagram = self.visualizer.generate_workflow_diagram(workflow)
 
@@ -137,8 +128,8 @@ class TestWorkflowVisualizer:
             "tasks": [
                 {"id": "research", "name": "Research", "dependencies": []},
                 {"id": "wireframe", "name": "Wireframes", "dependencies": ["research"]},
-                {"id": "review", "name": "Review", "dependencies": ["wireframe"]}
-            ]
+                {"id": "review", "name": "Review", "dependencies": ["wireframe"]},
+            ],
         }
 
         diagram = self.visualizer.generate_task_diagram(stage)
@@ -160,7 +151,7 @@ class TestWorkflowVisualizer:
                 {"id": "init", "name": "Initialize", "dependencies": []},
                 {"id": "task_a", "name": "Task A", "dependencies": ["init"]},
                 {"id": "task_b", "name": "Task B", "dependencies": ["init"]},
-                {"id": "merge", "name": "Merge", "dependencies": ["task_a", "task_b"]}
+                {"id": "merge", "name": "Merge", "dependencies": ["task_a", "task_b"]},
             ]
         }
 
@@ -176,14 +167,11 @@ class TestWorkflowVisualizer:
         stage = {
             "tasks": [
                 {"id": "t1", "name": "Task 1", "dependencies": []},
-                {"id": "t2", "name": "Task 2", "dependencies": ["t1"]}
+                {"id": "t2", "name": "Task 2", "dependencies": ["t1"]},
             ]
         }
 
-        task_status = [
-            {"task_id": "t1", "status": "completed"},
-            {"task_id": "t2", "status": "running"}
-        ]
+        task_status = [{"task_id": "t1", "status": "completed"}, {"task_id": "t2", "status": "running"}]
 
         diagram = self.visualizer.generate_task_diagram(stage, task_status)
 
@@ -195,7 +183,7 @@ class TestWorkflowVisualizer:
         stage = {
             "tasks": [
                 {"id": "t1", "name": "Code Review", "role": "senior_dev", "dependencies": []},
-                {"id": "t2", "name": "Testing", "role": "qa", "dependencies": ["t1"]}
+                {"id": "t2", "name": "Testing", "role": "qa", "dependencies": ["t1"]},
             ]
         }
 
@@ -258,17 +246,13 @@ class TestWorkflowVisualizer:
 
     def test_generate_stage_progress(self):
         """Test generating stage progress visualization"""
-        stages = [
-            {"id": "s1", "name": "Stage 1"},
-            {"id": "s2", "name": "Stage 2"},
-            {"id": "s3", "name": "Stage 3"}
-        ]
+        stages = [{"id": "s1", "name": "Stage 1"}, {"id": "s2", "name": "Stage 2"}, {"id": "s3", "name": "Stage 3"}]
 
         execution_status = {
             "stage_details": [
                 {"stage_id": "s1", "status": "completed"},
                 {"stage_id": "s2", "status": "in_progress"},
-                {"stage_id": "s3", "status": "pending"}
+                {"stage_id": "s3", "status": "pending"},
             ]
         }
 
@@ -283,10 +267,7 @@ class TestWorkflowVisualizer:
 
     def test_generate_stage_progress_all_pending(self):
         """Test stage progress with all pending"""
-        stages = [
-            {"id": "s1", "name": "First"},
-            {"id": "s2", "name": "Second"}
-        ]
+        stages = [{"id": "s1", "name": "First"}, {"id": "s2", "name": "Second"}]
 
         execution_status = {"stage_details": []}
 
@@ -303,24 +284,14 @@ class TestWorkflowVisualizer:
         """Test generating execution timeline"""
         execution = {"execution_id": 1}
         events = [
-            {
-                "timestamp": "2024-01-15T10:00:00",
-                "event_type": "execution_started",
-                "stage_id": None,
-                "task_id": None
-            },
-            {
-                "timestamp": "2024-01-15T10:05:00",
-                "event_type": "stage_updated",
-                "stage_id": "design",
-                "task_id": None
-            },
+            {"timestamp": "2024-01-15T10:00:00", "event_type": "execution_started", "stage_id": None, "task_id": None},
+            {"timestamp": "2024-01-15T10:05:00", "event_type": "stage_updated", "stage_id": "design", "task_id": None},
             {
                 "timestamp": "2024-01-15T10:10:00",
                 "event_type": "task_updated",
                 "stage_id": "design",
-                "task_id": "research"
-            }
+                "task_id": "research",
+            },
         ]
 
         timeline = self.visualizer.generate_timeline(execution, events)
@@ -348,7 +319,7 @@ class TestWorkflowVisualizer:
         skills = [
             {"skill_id": "python", "name": "Python", "category": "technical", "current_level": 4, "completions": 30},
             {"skill_id": "docker", "name": "Docker", "category": "tool", "current_level": 3, "completions": 15},
-            {"skill_id": "agile", "name": "Agile", "category": "process", "current_level": 2, "completions": 8}
+            {"skill_id": "agile", "name": "Agile", "category": "process", "current_level": 2, "completions": 8},
         ]
 
         chart = self.visualizer.generate_skill_chart(skills)
@@ -371,9 +342,7 @@ class TestWorkflowVisualizer:
 
     def test_generate_skill_chart_star_count(self):
         """Test skill chart has correct star counts"""
-        skills = [
-            {"skill_id": "s1", "name": "Skill1", "category": "cat", "current_level": 3, "completions": 0}
-        ]
+        skills = [{"skill_id": "s1", "name": "Skill1", "category": "cat", "current_level": 3, "completions": 0}]
 
         chart = self.visualizer.generate_skill_chart(skills)
 
@@ -389,9 +358,9 @@ class TestWorkflowVisualizer:
             "modules": [
                 {"module_id": "basics", "id": "basics", "required": True, "prerequisites": []},
                 {"module_id": "intermediate", "id": "intermediate", "required": True, "prerequisites": ["basics"]},
-                {"module_id": "advanced", "id": "advanced", "required": False, "prerequisites": ["intermediate"]}
+                {"module_id": "advanced", "id": "advanced", "required": False, "prerequisites": ["intermediate"]},
             ],
-            "certification": {"name": "Certified Developer"}
+            "certification": {"name": "Certified Developer"},
         }
 
         progress = {"modules_completed": ["basics"]}
@@ -411,7 +380,7 @@ class TestWorkflowVisualizer:
         path = {
             "modules": [
                 {"module_id": "m1", "required": True},
-                {"module_id": "m2", "required": True, "prerequisites": ["m1"]}
+                {"module_id": "m2", "required": True, "prerequisites": ["m1"]},
             ]
         }
 
@@ -422,10 +391,7 @@ class TestWorkflowVisualizer:
 
     def test_generate_learning_path_map_no_certification(self):
         """Test learning path map without certification"""
-        path = {
-            "modules": [{"module_id": "m1", "required": True}],
-            "certification": None
-        }
+        path = {"modules": [{"module_id": "m1", "required": True}], "certification": None}
 
         diagram = self.visualizer.generate_learning_path_map(path)
 
@@ -441,22 +407,18 @@ class TestWorkflowVisualizer:
             "total_executions": 50,
             "total_skills": 15,
             "total_learning_paths": 5,
-            "executions_by_status": {
-                "completed": 30,
-                "running": 15,
-                "failed": 5
-            }
+            "executions_by_status": {"completed": 30, "running": 15, "failed": 5},
         }
 
         recent_executions = [
             {"name": "Project Alpha", "status": "completed"},
             {"name": "Project Beta", "status": "running"},
-            {"name": "Project Gamma", "status": "failed"}
+            {"name": "Project Gamma", "status": "failed"},
         ]
 
         skills = [
             {"skill_id": "s1", "name": "Python", "current_level": 5, "completions": 50},
-            {"skill_id": "s2", "name": "Docker", "current_level": 3, "completions": 20}
+            {"skill_id": "s2", "name": "Docker", "current_level": 3, "completions": 20},
         ]
 
         dashboard = self.visualizer.generate_dashboard(stats, recent_executions, skills)
@@ -480,7 +442,7 @@ class TestWorkflowVisualizer:
             "workflow_templates": 0,
             "total_executions": 0,
             "total_skills": 0,
-            "total_learning_paths": 0
+            "total_learning_paths": 0,
         }
 
         dashboard = self.visualizer.generate_dashboard(stats)
@@ -490,9 +452,13 @@ class TestWorkflowVisualizer:
 
     def test_generate_dashboard_no_extras(self):
         """Test dashboard without recent executions or skills"""
-        stats = {"total_workflows": 5, "total_executions": 10,
-                 "total_skills": 3, "total_learning_paths": 2,
-                 "workflow_templates": 1}
+        stats = {
+            "total_workflows": 5,
+            "total_executions": 10,
+            "total_skills": 3,
+            "total_learning_paths": 2,
+            "workflow_templates": 1,
+        }
 
         dashboard = self.visualizer.generate_dashboard(stats)
 
@@ -513,18 +479,10 @@ class TestWorkflowVisualizer:
                         "name": "Design",
                         "type": "design",
                         "duration_days": 14,
-                        "tasks": [
-                            {"id": "research", "name": "Research"},
-                            {"id": "wireframe", "name": "Wireframes"}
-                        ]
+                        "tasks": [{"id": "research", "name": "Research"}, {"id": "wireframe", "name": "Wireframes"}],
                     },
-                    {
-                        "id": "build",
-                        "name": "Build",
-                        "type": "poc",
-                        "duration_days": 21
-                    }
-                ]
+                    {"id": "build", "name": "Build", "type": "poc", "duration_days": 21},
+                ],
             }
         }
 
@@ -541,12 +499,7 @@ class TestWorkflowVisualizer:
 
     def test_generate_gantt_custom_start_date(self):
         """Test Gantt chart with custom start date"""
-        workflow = {
-            "definition": {
-                "name": "Project",
-                "stages": [{"id": "s1", "name": "Stage 1"}]
-            }
-        }
+        workflow = {"definition": {"name": "Project", "stages": [{"id": "s1", "name": "Stage 1"}]}}
 
         gantt = self.visualizer.generate_gantt(workflow, start_date="2025-06-01")
 
@@ -560,8 +513,8 @@ class TestWorkflowVisualizer:
                 "name": "Simple Workflow",
                 "stages": [
                     {"id": "phase1", "name": "Phase 1", "duration_days": 7},
-                    {"id": "phase2", "name": "Phase 2", "duration_days": 14}
-                ]
+                    {"id": "phase2", "name": "Phase 2", "duration_days": 14},
+                ],
             }
         }
 
@@ -581,12 +534,7 @@ class TestWorkflowVisualizerEdgeCases:
     def test_unicode_in_names(self):
         """Test handling unicode characters in names"""
         workflow = {
-            "definition": {
-                "stages": [
-                    {"id": "设计", "name": "设计阶段 📐"},
-                    {"id": "构建", "name": "构建阶段 🏗️"}
-                ]
-            }
+            "definition": {"stages": [{"id": "设计", "name": "设计阶段 📐"}, {"id": "构建", "name": "构建阶段 🏗️"}]}
         }
 
         diagram = self.visualizer.generate_workflow_diagram(workflow)
@@ -599,7 +547,7 @@ class TestWorkflowVisualizerEdgeCases:
         stage = {
             "tasks": [
                 {"id": "t1", "name": "Task with 'quotes'", "dependencies": []},
-                {"id": "t2", "name": "Task & ampersand", "dependencies": ["t1"]}
+                {"id": "t2", "name": "Task & ampersand", "dependencies": ["t1"]},
             ]
         }
 
@@ -616,7 +564,7 @@ class TestWorkflowVisualizerEdgeCases:
                 "name": "This is a very long skill name that should be truncated",
                 "category": "test",
                 "current_level": 3,
-                "completions": 10
+                "completions": 10,
             }
         ]
 
@@ -627,15 +575,9 @@ class TestWorkflowVisualizerEdgeCases:
 
     def test_blocked_stage_status(self):
         """Test blocked stage status styling"""
-        workflow = {
-            "definition": {
-                "stages": [{"id": "blocked_stage", "name": "Blocked"}]
-            }
-        }
+        workflow = {"definition": {"stages": [{"id": "blocked_stage", "name": "Blocked"}]}}
 
-        execution_status = {
-            "stage_details": [{"stage_id": "blocked_stage", "status": "blocked"}]
-        }
+        execution_status = {"stage_details": [{"stage_id": "blocked_stage", "status": "blocked"}]}
 
         diagram = self.visualizer.generate_workflow_diagram(workflow, execution_status)
 

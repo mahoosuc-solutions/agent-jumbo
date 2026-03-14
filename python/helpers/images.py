@@ -27,10 +27,10 @@ def compress_image(image_data: bytes, *, max_pixels: int = 256_000, quality: int
         img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
     # convert to RGB if needed (for JPEG)
-    if img.mode in ('RGBA', 'P'):
-        img = img.convert('RGB')
+    if img.mode in ("RGBA", "P"):
+        img = img.convert("RGB")
 
     # save as JPEG with compression
     output = io.BytesIO()
-    img.save(output, format='JPEG', quality=quality, optimize=True)
+    img.save(output, format="JPEG", quality=quality, optimize=True)
     return output.getvalue()

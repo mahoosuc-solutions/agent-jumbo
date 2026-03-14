@@ -96,7 +96,7 @@ class AgentContext:
         self.data = data or {}
         self.output_data = output_data or {}
         self._queue_lock = threading.Lock()
-        self._message_queue: deque["QueuedMessage"] = deque()
+        self._message_queue: deque[QueuedMessage] = deque()
         self._runtime_state = "idle"
         self._dispatch_status: dict[str, Any] = {
             "accepted": True,
@@ -719,7 +719,7 @@ class Agent:
                 type="warning",
                 heading="prompt build timeout",
                 content=(
-                    f"message_loop_prompts_after exceeded {extension_timeout}s. " "Continuing with base prompt context."
+                    f"message_loop_prompts_after exceeded {extension_timeout}s. Continuing with base prompt context."
                 ),
                 temp=True,
             )
@@ -819,9 +819,7 @@ class Agent:
             self.context.log.log(
                 type="warning",
                 heading="system prompt timeout",
-                content=(
-                    f"system_prompt extensions exceeded {extension_timeout}s. " "Continuing with core prompt only."
-                ),
+                content=(f"system_prompt extensions exceeded {extension_timeout}s. Continuing with core prompt only."),
                 temp=True,
             )
         return system_prompt

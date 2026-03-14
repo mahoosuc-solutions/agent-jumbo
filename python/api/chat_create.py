@@ -5,8 +5,8 @@ from python.helpers.api import ApiHandler, Input, Output, Request
 
 class CreateChat(ApiHandler):
     async def process(self, input: Input, request: Request) -> Output:
-        current_ctxid = input.get("current_context", "") # current context id
-        new_ctxid = input.get("new_context", guids.generate_id()) # given or new guid
+        current_ctxid = input.get("current_context", "")  # current context id
+        new_ctxid = input.get("new_context", guids.generate_id())  # given or new guid
 
         # context instance - get or create
         current_context = AgentContext.get(current_ctxid)

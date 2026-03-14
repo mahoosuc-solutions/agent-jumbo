@@ -1,4 +1,3 @@
-
 from python.helpers import files, projects
 from python.helpers.api import ApiHandler, Request, Response
 
@@ -14,7 +13,7 @@ class GetChatFilesPath(ApiHandler):
         if project_name:
             folder = files.normalize_a0_path(projects.get_project_folder(project_name))
         else:
-            folder = "/root" # root in container
+            folder = "/root"  # root in container
 
         return {
             "ok": True,

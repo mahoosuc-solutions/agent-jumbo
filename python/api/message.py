@@ -67,7 +67,7 @@ class Message(ApiHandler):
 
         hint_var = "CLAUDE_CLI_PATH" if backend == "claude_code" else "CODEX_CLI_PATH"
         raise RuntimeError(
-            f"{backend} CLI is not installed or not in PATH. " f"Install it, or set {hint_var} to the executable path."
+            f"{backend} CLI is not installed or not in PATH. Install it, or set {hint_var} to the executable path."
         )
 
     async def process(self, input: dict, request: Request) -> dict | Response:
@@ -315,7 +315,7 @@ class Message(ApiHandler):
                         type="warning",
                         heading="stale chat task reset",
                         content=(
-                            f"Previous chat run was active for {int(age)}s. " "Resetting it so the new message can run."
+                            f"Previous chat run was active for {int(age)}s. Resetting it so the new message can run."
                         ),
                         temp=True,
                     )
@@ -383,7 +383,7 @@ class Message(ApiHandler):
             cfg = settings.get_settings()
             cloud_fallback_enabled = bool(cfg.get("llm_cloud_fallback_enabled", False))
             if not cloud_fallback_enabled:
-                message = f"{backend} failed and cloud fallback is disabled. " f"Error: {e}"
+                message = f"{backend} failed and cloud fallback is disabled. Error: {e}"
                 context.log.log(
                     type="error",
                     heading=f"{backend} failed",
@@ -441,8 +441,7 @@ class Message(ApiHandler):
             )
         except FileNotFoundError as e:
             raise RuntimeError(
-                f"{backend} executable not found ({e.filename}). "
-                "Switch backend to Native, or configure the CLI path."
+                f"{backend} executable not found ({e.filename}). Switch backend to Native, or configure the CLI path."
             ) from e
         try:
             try:

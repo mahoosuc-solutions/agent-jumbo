@@ -116,9 +116,9 @@ class RalphLoop(Tool):
         return Response(
             message=f"""
 🛑 **Ralph Loop Cancelled**
-- Loop ID: {result['loop_id']}
-- Iterations completed: {result['iterations_completed']}
-- Reason: {result['reason']}
+- Loop ID: {result["loop_id"]}
+- Iterations completed: {result["iterations_completed"]}
+- Reason: {result["reason"]}
 """,
             break_loop=False,
         )
@@ -265,9 +265,9 @@ class RalphLoop(Tool):
         return Response(
             message=f"""
 ▶️ **Loop Resumed**
-- Loop ID: {result['loop_id']}
-- Current iteration: {result['current_iteration']}
-- Completion promise: {result.get('completion_promise') or 'None'}
+- Loop ID: {result["loop_id"]}
+- Current iteration: {result["current_iteration"]}
+- Completion promise: {result.get("completion_promise") or "None"}
 
 The loop will continue from where it left off.
 """,
@@ -290,12 +290,12 @@ The loop will continue from where it left off.
 
 | Metric | Value |
 |--------|-------|
-| Total Loops | {stats['total_loops']} |
-| Active | {stats['active_loops']} |
-| Completed | {stats['completed_loops']} |
-| Cancelled | {stats['cancelled_loops']} |
-| Total Iterations | {stats['total_iterations']} |
-| Avg per Loop | {stats['avg_iterations_per_loop']} |
+| Total Loops | {stats["total_loops"]} |
+| Active | {stats["active_loops"]} |
+| Completed | {stats["completed_loops"]} |
+| Cancelled | {stats["cancelled_loops"]} |
+| Total Iterations | {stats["total_iterations"]} |
+| Avg per Loop | {stats["avg_iterations_per_loop"]} |
 """,
             break_loop=False,
         )
@@ -310,23 +310,23 @@ The loop will continue from where it left off.
 
 | Property | Value |
 |----------|-------|
-| Loop ID | {result['loop_id']} |
-| Name | {result['name']} |
-| Status | {result['status']} |
-| Iteration | {result['current_iteration']} |
-| Max Iterations | {result['max_iterations']} |
-| Completion Promise | {result.get('completion_promise') or 'None'} |
+| Loop ID | {result["loop_id"]} |
+| Name | {result["name"]} |
+| Status | {result["status"]} |
+| Iteration | {result["current_iteration"]} |
+| Max Iterations | {result["max_iterations"]} |
+| Completion Promise | {result.get("completion_promise") or "None"} |
 
 **How it works:**
 1. Work on the task described in the prompt
 2. Your changes persist in files between iterations
-3. When done, output: `<promise>{result.get('completion_promise') or 'DONE'}</promise>`
+3. When done, output: `<promise>{result.get("completion_promise") or "DONE"}</promise>`
 4. The loop will automatically continue until completion or max iterations
 
 **Controls:**
-- Check status: `{{ralph_loop(action="get_status", loop_id={result['loop_id']})}}`
-- Cancel: `{{ralph_loop(action="cancel_loop", loop_id={result['loop_id']})}}`
-- Pause: `{{ralph_loop(action="pause_loop", loop_id={result['loop_id']})}}`
+- Check status: `{{ralph_loop(action="get_status", loop_id={result["loop_id"]})}}`
+- Cancel: `{{ralph_loop(action="cancel_loop", loop_id={result["loop_id"]})}}`
+- Pause: `{{ralph_loop(action="pause_loop", loop_id={result["loop_id"]})}}`
 """
 
     def _format_status(self, result: dict) -> str:
@@ -344,16 +344,16 @@ The loop will continue from where it left off.
 
 | Property | Value |
 |----------|-------|
-| Loop ID | {result['loop_id']} |
-| Name | {result['name']} |
-| Status | {result['status']} |
-| Current Iteration | {result['current_iteration']} |
-| Max Iterations | {result['max_iterations']} |
-| Completion Promise | {result.get('completion_promise') or 'None'} |
-| Started | {result['started_at']} |
-| Completed | {result.get('completed_at') or '-'} |
-| Workflow Execution | {result.get('workflow_execution_id') or '-'} |
-| Task ID | {result.get('task_id') or '-'} |
+| Loop ID | {result["loop_id"]} |
+| Name | {result["name"]} |
+| Status | {result["status"]} |
+| Current Iteration | {result["current_iteration"]} |
+| Max Iterations | {result["max_iterations"]} |
+| Completion Promise | {result.get("completion_promise") or "None"} |
+| Started | {result["started_at"]} |
+| Completed | {result.get("completed_at") or "-"} |
+| Workflow Execution | {result.get("workflow_execution_id") or "-"} |
+| Task ID | {result.get("task_id") or "-"} |
 """
 
     def _format_loop_list(self, loops: list) -> str:
