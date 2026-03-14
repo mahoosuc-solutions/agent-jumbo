@@ -111,6 +111,13 @@ Documentation = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/tree/m
 Discussions = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/discussions"
 
 # ============================================
+# Setuptools Package Discovery
+# ============================================
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["python*", "instruments*"]
+
+# ============================================
 # Ruff Configuration for Agent Jumbo
 # ============================================
 [tool.ruff]
