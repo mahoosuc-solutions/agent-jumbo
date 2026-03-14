@@ -133,4 +133,3 @@ docker/run/
 data/llm_router.db
 docker/run-bak-*
 docker/run-old-*
-knowledge/custom/architectural_patterns/adrs/
