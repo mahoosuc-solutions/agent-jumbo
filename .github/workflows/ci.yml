@@ -47,7 +47,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade setuptools
+          pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
           pip install pytest pytest-cov pytest-asyncio
 
@@ -103,7 +103,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade setuptools
+          pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
@@ -136,7 +136,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade setuptools
+          pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
           pip install pyright
 
