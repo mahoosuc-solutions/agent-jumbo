@@ -2,15 +2,12 @@ import json
 import subprocess
 from pathlib import Path
 
-FIXTURE_MODULE = (
-    "/mnt/wdblack/dev/projects/agent-jumbo/webui/components/settings/observability/observability-fixture.js"
-)
-OBSERVABILITY_HTML = Path(
-    "/mnt/wdblack/dev/projects/agent-jumbo/webui/components/settings/observability/observability.html"
-)
-OBSERVABILITY_STORE = Path(
-    "/mnt/wdblack/dev/projects/agent-jumbo/webui/components/settings/observability/observability-store.js"
-)
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_OBS_DIR = _REPO_ROOT / "webui" / "components" / "settings" / "observability"
+
+FIXTURE_MODULE = str(_OBS_DIR / "observability-fixture.js")
+OBSERVABILITY_HTML = _OBS_DIR / "observability.html"
+OBSERVABILITY_STORE = _OBS_DIR / "observability-store.js"
 
 
 def _run_node_eval(script: str) -> str:
