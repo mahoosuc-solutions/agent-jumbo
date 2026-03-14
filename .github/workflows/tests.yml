@@ -23,8 +23,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip setuptools wheel
-        pip install --no-build-isolation openai-whisper==20240930
+        python -m pip install --upgrade pip "setuptools<78" wheel
         pip install -e ".[dev]"
 
     - name: Lint with ruff

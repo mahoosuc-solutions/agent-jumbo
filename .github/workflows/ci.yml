@@ -47,8 +47,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install --no-build-isolation openai-whisper==20240930
+          pip install --upgrade pip "setuptools<78" wheel
           pip install -r requirements.txt
           pip install pytest pytest-cov pytest-asyncio
 
@@ -104,8 +103,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install --no-build-isolation openai-whisper==20240930
+          pip install --upgrade pip "setuptools<78" wheel
           pip install -r requirements.txt
           pip install pytest pytest-asyncio
 
@@ -138,8 +136,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install --no-build-isolation openai-whisper==20240930
+          pip install --upgrade pip "setuptools<78" wheel
           pip install -r requirements.txt
           pip install pyright
 
