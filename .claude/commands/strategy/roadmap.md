@@ -343,7 +343,7 @@ Advanced Layer:
 Capstone Layer:
   └─ Initiative H (Q5-Q6) [depends on F, G]
 
-```
+```text
 
 ## Quarterly Roadmap
 
@@ -581,7 +581,7 @@ Generate visual representation:
 
 **Text-Based Gantt Chart:**
 
-```
+```text
 2025 Roadmap - [Business Name]
 
 Q1 2025: Foundation Building
@@ -611,7 +611,7 @@ Milestones:
 
 **Dependency Map (ASCII):**
 
-```
+```text
 Initiative Flow Diagram:
 
 Start

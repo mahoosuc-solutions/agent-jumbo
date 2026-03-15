@@ -159,7 +159,7 @@ stripe trigger "$@"
 
 **Output**:
 
-```
+```text
 Available Stripe webhook events:
 
 Payment Intents:

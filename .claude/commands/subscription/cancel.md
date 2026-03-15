@@ -58,7 +58,7 @@ Process subscription cancellations while maximizing save rate through personaliz
 
 3. **Display Current Subscription**
 
-   ```
+   ```text
    ╔════════════════════════════════════════════════════════════════╗
    ║            SUBSCRIPTION CANCELLATION REQUEST                   ║
    ╠════════════════════════════════════════════════════════════════╣
@@ -75,7 +75,7 @@ Process subscription cancellations while maximizing save rate through personaliz
 
 If `--reason` not provided, use `AskUserQuestion`:
 
-```
+```text
 Why are you cancelling? Understanding helps us improve.
 
 Options:
@@ -119,7 +119,7 @@ LIMIT 3;
 
 #### 3.3 Present Retention Offer
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                BEFORE YOU GO - SPECIAL OFFER                   ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -173,7 +173,7 @@ WHERE id = '${offer_id}';
 
 **SECOND APPROVAL REQUIRED**:
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║              CONFIRM SUBSCRIPTION CANCELLATION                 ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -256,7 +256,7 @@ INSERT INTO subscription_events (
 
 ### Phase 7: Trigger Exit Survey (Optional)
 
-```
+```text
 Would you like to share additional feedback?
 
 [Open text input for feedback]
@@ -266,7 +266,7 @@ This helps us improve for future customers.
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                 SUBSCRIPTION CANCELLATION PROCESSED
 ═══════════════════════════════════════════════════════════════════

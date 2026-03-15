@@ -32,7 +32,7 @@ Agent Jumbo now supports UI-based Gmail account setup through the Settings panel
    - Choose **"Web application"** as the application type
    - Add authorized redirect URI:
 
-     ```
+     ```text
      http://localhost:5000/gmail_oauth_callback
      ```
 
@@ -179,7 +179,7 @@ The OAuth2 flow uses state tokens to prevent CSRF attacks:
 1. Verify credentials.json is valid JSON
 2. Check redirect URI in Google Cloud Console matches:
 
-   ```
+   ```text
    http://localhost:5000/gmail_oauth_callback
    ```
 

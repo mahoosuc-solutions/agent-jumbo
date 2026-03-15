@@ -50,7 +50,7 @@ This guide will show you how to setup a local development environment for Agent 
 
 1. Notice the prompt in lower right corner of the screenshot above to install recommended extensions, this comes from the `.vscode/extensions.json` file. It contains Python language support, debugger and error helper, install them by confirming the popup or manually in Extensions tab of your IDE. These are the extensions mentioned:
 
-```
+```text
 usernamehw.errorlens
 ms-python.debugpy
 ms-python.python

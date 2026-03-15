@@ -65,7 +65,7 @@ Monitor capacity, manage workload, and prevent overcommitment.
 
 ### Team Member Profile
 
-```
+```text
 TEAM MEMBER: John Developer
 ═════════════════════════════════════════════════════════════
 
@@ -123,7 +123,7 @@ CAREER DEVELOPMENT
 
 ### Team Capacity Dashboard
 
-```
+```text
 TEAM CAPACITY OVERVIEW
 ═════════════════════════════════════════════════════════════
 
@@ -208,7 +208,7 @@ Create tasks, delegate to team members, track progress.
 
 ### Task Template
 
-```
+```text
 TASK: Implement user authentication for E-commerce Platform
 ═════════════════════════════════════════════════════════════
 
@@ -307,7 +307,7 @@ Track task status, sprint velocity, and team performance.
 
 ### Sprint Planning
 
-```
+```text
 SPRINT 2 PLANNING (Jan 22 - Feb 5)
 ═════════════════════════════════════════════════════════════
 
@@ -362,7 +362,7 @@ SPRINT FORECAST
 
 ### Sprint Standup
 
-```
+```text
 SPRINT 2 STANDUP - WEDNESDAY JAN 24
 ═════════════════════════════════════════════════════════════
 
@@ -418,7 +418,7 @@ SPRINT PROGRESS
 
 ### Task Status Tracking
 
-```
+```text
 TASK STATUS BOARD
 ═════════════════════════════════════════════════════════════
 
@@ -459,7 +459,7 @@ Review performance, provide feedback, plan growth.
 
 ### Performance Review
 
-```
+```text
 PERFORMANCE REVIEW: John Developer
 REVIEW PERIOD: Q1 2025 (Jan - Mar)
 ═════════════════════════════════════════════════════════════
@@ -528,7 +528,7 @@ RETENTION SCORE: 9/10 (Very likely to stay)
 
 ### Team Performance Dashboard
 
-```
+```text
 TEAM PERFORMANCE SCORECARD
 ═════════════════════════════════════════════════════════════
 
@@ -579,7 +579,7 @@ Connect team work to business objectives.
 
 ### Business Goal Alignment
 
-```
+```text
 BUSINESS GOAL: Build $200K/year software business
 ═════════════════════════════════════════════════════════════
 
@@ -643,7 +643,7 @@ Team and task data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/team.json
 ├── Team member profiles (capacity, performance, salary)
 ├── Tasks and assignments (status, deadlines, DRI)
@@ -654,7 +654,7 @@ Team and task data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 team_members table
 ├── member_id, name, role, salary, capacity
 ├── hire_date, performance_score
@@ -681,7 +681,7 @@ sprints table
 
 Team capacity should respect personal life goals:
 
-```
+```text
 LIFE GOAL: Work-Life Balance (Work ≤40 hrs/week)
 ├── John's allocation: 40 hrs/week (at limit)
 │   └── No buffer for emergency requests (RISK)

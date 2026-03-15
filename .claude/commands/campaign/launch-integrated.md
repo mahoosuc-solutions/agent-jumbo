@@ -262,7 +262,7 @@ Create unified tracking dashboard:
 
 ## Example Output
 
-```
+```text
 ═══════════════════════════════════════════════════════
  INTEGRATED CAMPAIGN LAUNCH: Cloud Cost Optimizer
 ═══════════════════════════════════════════════════════

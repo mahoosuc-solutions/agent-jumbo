@@ -4,7 +4,7 @@
 
 ### Ask the Agent
 
-```
+```text
 "Create a flowchart for user authentication"
 "Show me a sequence diagram of the API flow"
 "Generate a class diagram for the Tool system"
@@ -88,7 +88,7 @@ classDiagram
 
 ## 📁 File Locations
 
-```
+```text
 /a0/instruments/custom/diagram_generator/
 ├── generate_mermaid.py
 ├── generate_excalidraw.py

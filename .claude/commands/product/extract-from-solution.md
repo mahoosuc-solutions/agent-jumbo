@@ -389,7 +389,7 @@ await Write(outputPath, JSON.stringify(productDefinition, null, 2))
 
 Display summary to user:
 
-```
+```text
 ✓ Product Extraction Complete
 
 📦 Product: AI Email Assistant
@@ -424,7 +424,7 @@ Next Steps:
 
 After successful extraction, ask user:
 
-```
+```text
 Would you like me to run /product:define now with the extracted data?
 
 This will:
@@ -576,7 +576,7 @@ Assign confidence levels based on data source completeness:
 
 If confidence is LOW, warn user:
 
-```
+```text
 ⚠️ Low Confidence Extraction
 
 Only found: README.md
@@ -594,7 +594,7 @@ Proceed with limited data? [Yes/No]
 
 ### Error 1: Folder Not Found
 
-```
+```text
 ❌ Error: Solution folder not found
 
 Path: test-outputs/scenario-4-invalid/
@@ -609,7 +609,7 @@ Usage: /product:extract-from-solution <folder-path>
 
 ### Error 2: No Extractable Data
 
-```
+```text
 ⚠️ Warning: No completion reports or README found
 
 Folder: custom-solution/
@@ -632,7 +632,7 @@ Would you like to:
 
 ### Error 3: Partial Data Extraction
 
-```
+```text
 ⚠️ Partial extraction completed
 
 Found data:

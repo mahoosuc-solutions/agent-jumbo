@@ -248,7 +248,7 @@ echo "✓ Output validation complete (prompt is $FILE_SIZE bytes)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         PROMPT GENERATION COMPLETE ✓
 ═══════════════════════════════════════════════════

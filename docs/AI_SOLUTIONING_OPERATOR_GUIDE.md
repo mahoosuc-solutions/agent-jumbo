@@ -10,7 +10,7 @@ This guide covers the complete AI solutioning workflow for operators using Agent
 
 ### 1. Start a New AI Solutioning Project
 
-```
+```json
 {{workflow_engine(
   action="create_from_template",
   template_path="templates/ai_solutioning.json",
@@ -20,7 +20,7 @@ This guide covers the complete AI solutioning workflow for operators using Agent
 
 ### 2. Begin Execution
 
-```
+```json
 {{workflow_engine(
   action="start_workflow",
   workflow_name="Client ABC - AI Automation Project"
@@ -29,7 +29,7 @@ This guide covers the complete AI solutioning workflow for operators using Agent
 
 ### 3. Track Progress
 
-```
+```json
 {{workflow_engine(action="get_status", execution_id=1)}}
 ```
 
@@ -64,7 +64,7 @@ This guide covers the complete AI solutioning workflow for operators using Agent
 
 **Example Design Flow:**
 
-```
+```markdown
 # 1. Search for patterns
 {{knowledge_search(query="Event Driven Architecture for AI Agents")}}
 
@@ -84,7 +84,7 @@ For extremely complex projects (e.g., analyzing 50+ business processes simultane
 
 **Example Swarm Command:**
 
-```
+```json
 {{swarm_batch(
   tasks=[
     "Analyze the manufacturing supply chain flow",
@@ -117,7 +117,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 **Example Discovery Flow:**
 
-```
+```markdown
 # 1. Add customer
 {{customer_lifecycle(
   action="add_customer",
@@ -164,7 +164,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 **Example Design Flow:**
 
-```
+```markdown
 # 1. Identify quick wins
 {{ai_migration(
   action="identify_quick_wins",
@@ -206,7 +206,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 **Example Proposal Flow:**
 
-```
+```markdown
 # 1. Calculate ROI
 {{ai_migration(
   action="project_roi",
@@ -242,7 +242,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 **Example POC Setup:**
 
-```
+```python
 # Scaffold POC project
 {{project_scaffold(
   action="scaffold_project",
@@ -275,7 +275,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 **Example Deployment Flow:**
 
-```
+```markdown
 # 1. Generate CI/CD
 {{deployment_orchestrator(
   action="generate_cicd",
@@ -323,7 +323,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 ### Your Skills Progress
 
-```
+```json
 {{workflow_training(
   action="get_proficiency",
   agent_id="operator_1"
@@ -334,7 +334,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 
 When you complete a task successfully:
 
-```
+```json
 {{workflow_training(
   action="assess_skill",
   skill_id="business_analysis",
@@ -362,7 +362,7 @@ When you complete a task successfully:
 
 Fast-track to start delivering AI solutions.
 
-```
+```json
 {{workflow_training(
   action="enroll_path",
   path_id="quick_start_operator",
@@ -374,7 +374,7 @@ Fast-track to start delivering AI solutions.
 
 Complete certification path covering all skills.
 
-```
+```json
 {{workflow_training(
   action="enroll_path",
   path_id="ai_solution_architect",
@@ -445,7 +445,7 @@ Access the workflow dashboard in the UI:
 
 ### Morning Routine
 
-```
+```python
 # Check active workflows
 {{workflow_engine(action="list_workflows", status="in_progress")}}
 
@@ -458,7 +458,7 @@ Access the workflow dashboard in the UI:
 
 ### Working on Projects
 
-```
+```python
 # Start working on a task
 {{workflow_engine(action="start_task", execution_id=1, task_id="business_xray")}}
 
@@ -480,7 +480,7 @@ Access the workflow dashboard in the UI:
 
 ### End of Day
 
-```
+```python
 # Update skill progress
 {{workflow_training(
   action="assess_skill",

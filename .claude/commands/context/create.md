@@ -57,7 +57,7 @@ As you add new properties, clients, or projects, you need a fast way to set up n
 
 ### Interactive Mode (Default)
 
-```
+```text
 Creating new business context...
 
 === CONTEXT BASICS ===
@@ -162,7 +162,7 @@ Ready to switch to new context? (y/n)
 
 ### Quick Mode Output
 
-```
+```text
 Creating context: my-new-property
 Type: Property | Template: property
 

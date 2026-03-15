@@ -101,7 +101,7 @@ WHERE organization_id = '${org_id}'
 
 ### Phase 3: Calculate Charges
 
-```
+```text
 USAGE CALCULATION FORMULA:
 
 For each metric:
@@ -115,7 +115,7 @@ Total Usage Charges = SUM(all metric charges)
 
 ### Phase 4: Usage Report
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    USAGE BILLING REPORT                         ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -179,7 +179,7 @@ GROUP BY DATE_TRUNC('month', recorded_at), metric_type
 ORDER BY month, metric_type;
 ```
 
-```
+```text
 USAGE TREND (6 months):
 ────────────────────────────────────────────────────────────────
 Month       │ API Calls │ Storage │ Exports │ Charges
@@ -268,7 +268,7 @@ FROM usage_quotas uq
 WHERE uq.customer_id = '${customer_id}';
 ```
 
-```
+```text
 QUOTA STATUS:
 ├─ API Calls: 32,450 / 25,000 (130%) - OVER LIMIT ⚠️
 ├─ Storage: 48 GB / 50 GB (96%) - Near limit
@@ -329,7 +329,7 @@ QUOTA STATUS:
 
 ### Approaching Limit (80%)
 
-```
+```text
 Subject: Usage Alert: API calls at 80% of included limit
 
 Hi,
@@ -349,7 +349,7 @@ OPTIONS:
 
 ### Limit Exceeded
 
-```
+```yaml
 Subject: Usage Alert: API call limit exceeded
 
 Hi,

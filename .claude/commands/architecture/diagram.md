@@ -526,7 +526,7 @@ graph TB
 
 ### Recommended Structure
 
-```
+```text
 docs/
   architecture/
     diagrams/

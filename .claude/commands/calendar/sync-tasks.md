@@ -281,7 +281,7 @@ for (const task of unscheduledTasks) {
 
 ### 6. Generate Summary Report
 
-```
+```text
 ╔════════════════════════════════════════════════════════╗
 ║         📅 CALENDAR SYNC COMPLETE                     ║
 ╠════════════════════════════════════════════════════════╣
@@ -355,7 +355,7 @@ Quick Actions:
 
 ## n8n Workflow Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │  TRIGGER: Cron (Hourly 9-5) OR Manual Command      │
 └─────────────┬───────────────────────────────────────┘

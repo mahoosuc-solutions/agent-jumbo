@@ -252,7 +252,7 @@ Validate the agent design:
 
 ### Step 8: Output Summary
 
-```
+```text
 ✓ Agent Design Complete: {agent-name}
 
 📁 File Created:

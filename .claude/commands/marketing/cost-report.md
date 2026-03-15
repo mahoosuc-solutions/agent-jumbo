@@ -47,7 +47,7 @@ if (daysFlag) {
 
 Show what report will be generated:
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     MARKETING COST TRACKING REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -108,7 +108,7 @@ The track-costs.ts script outputs formatted reports. Display them directly, then
 
 ### Report Mode Output
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 COST TRACKING REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -182,7 +182,7 @@ The track-costs.ts script outputs formatted reports. Display them directly, then
 
 ### Projection Mode Output
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📈 MONTHLY COST PROJECTION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -249,7 +249,7 @@ The track-costs.ts script outputs formatted reports. Display them directly, then
 
 ### Budget Mode Output
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💰 BUDGET COMPLIANCE CHECK
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -336,7 +336,7 @@ The track-costs.ts script outputs formatted reports. Display them directly, then
 
 **Output** (if cost-tracking.csv doesn't exist):
 
-```
+```text
 ⚠️  NO COST DATA FOUND
 
 The cost tracking file does not exist yet.
@@ -361,7 +361,7 @@ TO START TRACKING COSTS:
 
 **Output**:
 
-```
+```text
 ❌ Invalid budget values: abc, xyz
 
 Budget values must be numbers (dollars).
@@ -380,7 +380,7 @@ EXAMPLES:
 
 **Output**:
 
-```
+```text
 ❌ Invalid --days value: abc
 
 Days must be a positive integer.

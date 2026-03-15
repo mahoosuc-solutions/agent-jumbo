@@ -334,7 +334,7 @@ for (const issue of issues) {
 
 **Display comprehensive summary**:
 
-```
+```text
 ═══════════════════════════════════════════════════
             UNIT TEST GENERATION REPORT
 ═══════════════════════════════════════════════════

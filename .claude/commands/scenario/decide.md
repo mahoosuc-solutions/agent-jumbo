@@ -54,7 +54,7 @@ Make a final decision on a scenario, document your rationale, set confidence lev
 
 ## Decision Workflow
 
-```
+```text
 SCENARIO CREATED
       ↓
 ANALYSIS COMPLETE
@@ -113,7 +113,7 @@ When you make a decision, the system captures:
 
 ## Example: Hire Full-Time Developer Decision
 
-```
+```text
 /scenario:decide sc-1733596400000-abc123 --chosen --rationale "Higher long-term value and team morale boost. Financial ROI strong at 12-month mark." --confidence 82 --next-steps "Week 1: Post opening + Review resumes; Week 2: First round interviews; Week 3: Final interviews and offer; Week 4: Onboarding" --notify team@company.com
 
 ========================================

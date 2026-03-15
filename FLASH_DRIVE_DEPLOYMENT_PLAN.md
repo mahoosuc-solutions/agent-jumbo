@@ -117,7 +117,7 @@
 
 ### Architecture
 
-```
+```text
 flash-drive/
 ├── agent-jumbo/                 # Source code (stripped)
 │   ├── agents/
@@ -503,7 +503,7 @@ docker-compose exec agent-jumbo bash
 - Docker needs 4-8GB RAM allocated
 - Settings → Resources in Docker Desktop
 
-```
+```text
 
 ---
 
@@ -527,7 +527,7 @@ agent-jumbo-portable/
 
 Total: ~10-11GB
 
-```
+```text
 
 ### Pre-Assembly Checklist
 

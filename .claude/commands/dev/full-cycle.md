@@ -274,7 +274,7 @@ echo "  Summary: $SUMMARY_FILE ($FILE_SIZE bytes)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
       FULL-CYCLE DEVELOPMENT COMPLETE ✓
 ═══════════════════════════════════════════════════

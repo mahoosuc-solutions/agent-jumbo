@@ -93,7 +93,7 @@ Generate comprehensive report with:
 
 **Detailed Metrics**
 
-```
+```text
 Recency Score:     [##########] 23/25  (Last contact: 3 days ago)
 Frequency Score:   [########  ] 18/25  (5 touchpoints/month)
 Sentiment Score:   [##########] 22/25  (85% positive sentiment)
@@ -191,7 +191,7 @@ TOTAL HEALTH:      [##########] 83/100  HEALTHY 🟡
 
 **Example 1: Tenant Relationship**
 
-```
+```yaml
 Contact: Sarah Johnson (Tenant - 123 Main St)
 Health Score: 88/100 (Healthy 🟡)
 
@@ -208,7 +208,7 @@ Actions:
 
 **Example 2: Vendor Relationship**
 
-```
+```yaml
 Contact: Mike's Plumbing Services
 Health Score: 72/100 (Healthy 🟡)
 
@@ -225,7 +225,7 @@ Actions:
 
 **Example 3: Investor Relationship**
 
-```
+```yaml
 Contact: David Chen (Investment Partner)
 Health Score: 95/100 (Thriving 🟢)
 

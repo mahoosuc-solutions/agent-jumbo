@@ -171,7 +171,7 @@ echo "✓ Output validation complete ($COMPONENT_COUNT components created)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         DESIGN SHELL COMPLETE ✓
 ═══════════════════════════════════════════════════

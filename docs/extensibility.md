@@ -249,7 +249,7 @@ This allows power users to, for example, change the AI model, context window siz
 
 ### Example Subagent Structure
 
-```
+```text
 /agents/_example/
 ├── extensions/
 │   └── agent_init/
@@ -281,7 +281,7 @@ Projects provide isolated workspaces for individual chats, keeping prompts, memo
 
 Each project directory contains a hidden `.a0proj` folder with project metadata and configuration:
 
-```
+```text
 /a0/usr/projects/{project_name}/
 └── .a0proj/
     ├── project.json          # project metadata and settings

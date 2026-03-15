@@ -360,7 +360,7 @@ Failed tests:
 - Error Propagation > rate limit shows appropriate message
 - Cache Invalidation > realtime updates via WebSocket
 
-```
+```text
 
 ## Issues Found
 
@@ -391,7 +391,7 @@ Failed tests:
 
 ### Step 6: Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════
         FULL-STACK INTEGRATION VERIFIED
 ═══════════════════════════════════════════════════

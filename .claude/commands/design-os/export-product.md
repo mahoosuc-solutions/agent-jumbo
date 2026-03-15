@@ -208,7 +208,7 @@ echo "✓ Output validation complete ($ASSET_COUNT assets catalogued)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         EXPORT PRODUCT COMPLETE ✓
 ═══════════════════════════════════════════════════

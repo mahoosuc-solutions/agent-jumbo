@@ -46,7 +46,7 @@ If $ARGUMENTS contains a specific ID:
 
 For each pending operation, show:
 
-```
+```text
 ═══════════════════════════════════════════════════
            PENDING OPERATION APPROVAL
 ═══════════════════════════════════════════════════
@@ -107,7 +107,7 @@ Automatically analyze the operation for:
 
 Display results:
 
-```
+```text
 RISK ANALYSIS:
 ✓ Data quality: PASSED
 ✓ Compliance: PASSED (HIPAA, CAN-SPAM)
@@ -146,7 +146,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 1. **Pre-Execution Checks**:
 
-   ```
+   ```text
    Running pre-flight checks...
    ✓ API credentials valid
    ✓ System connectivity OK
@@ -162,7 +162,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 3. **Post-Execution Validation**:
 
-   ```
+   ```text
    ✓ Operation completed successfully
    ✓ Data integrity verified
    ✓ Audit trail recorded
@@ -171,7 +171,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 4. **Display Results**:
 
-   ```
+   ```text
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ✓ OPERATION COMPLETED SUCCESSFULLY
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -206,7 +206,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 2. Save scheduled operation:
 
-   ```
+   ```text
    ✓ Operation scheduled successfully
 
    Scheduled Execution: 2025-12-01 09:00:00 EST
@@ -226,7 +226,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 2. Send back to requester:
 
-   ```
+   ```text
    ✓ Change request submitted
 
    Operation: PENDING-12345
@@ -248,7 +248,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 2. Record rejection:
 
-   ```
+   ```text
    ✓ Operation rejected and cancelled
 
    Operation ID: PENDING-12345
@@ -322,7 +322,7 @@ Use **AskUserQuestion** to collect approval decision:
 
 Track these KPIs to measure workflow effectiveness:
 
-```
+```text
 APPROVAL WORKFLOW METRICS (Last 30 Days)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -380,7 +380,7 @@ If execution fails after approval:
 
 3. **Recovery Options**:
 
-   ```
+   ```text
    EXECUTION FAILED - RECOVERY OPTIONS
 
    Error: API rate limit exceeded

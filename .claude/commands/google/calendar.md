@@ -158,7 +158,7 @@ Automatically uses calendar from active context:
 
 4. **Confirmation**
 
-   ```
+   ```text
    ✓ Event created successfully
 
    📅 Team Standup
@@ -196,7 +196,7 @@ Automatically uses calendar from active context:
 
 3. **Display Calendar View**
 
-   ```
+   ```text
    📅 Today's Schedule (Tuesday, Jan 21, 2025)
 
    08:00 - 09:00  ☕ Morning Routine (blocked)
@@ -269,7 +269,7 @@ This is a complex n8n workflow that protects your time:
 
 4. **Report Optimization Results**
 
-   ```
+   ```text
    ✅ Calendar Optimized
 
    🧠 Deep Work Protected:
@@ -315,7 +315,7 @@ This is a complex n8n workflow that protects your time:
 
 3. **Display Next Event**
 
-   ```
+   ```text
    ⏰ Next Event
 
    📅 Team Standup

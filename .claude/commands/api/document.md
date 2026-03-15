@@ -407,9 +407,10 @@ Welcome to our API documentation. This API follows REST principles and returns J
 ## Base URL
 
 ```
+
 <https://api.example.com/v1>
 
-```
+```text
 
 ## Authentication
 
@@ -419,7 +420,7 @@ All API requests require authentication using a Bearer token:
 
 Authorization: Bearer YOUR_API_KEY
 
-```
+```text
 
 ## Rate Limiting
 
@@ -454,7 +455,7 @@ Errors follow this format:
 
 List endpoints support cursor-based pagination:
 
-```
+```text
 GET /users?cursor=eyJpZCI6MTIzfQ&limit=20
 ```
 
@@ -496,7 +497,7 @@ EOF
 
 echo "✓ Markdown documentation generated"
 
-```
+```python
 
 ## Step 7: Generate Interactive Examples
 
@@ -612,7 +613,7 @@ curl -X POST "https://api.example.com/v1/users" \
 
 EOF
 
-```
+```python
 
 ## Step 8: Generate GraphQL Documentation
 
@@ -792,7 +793,7 @@ Import the Postman collection:
 
 EOF
 
-```
+```python
 
 ## Step 11: Generate Changelog
 
@@ -838,7 +839,7 @@ EOF
 
 ## Step 12: Display Summary
 
-```
+```python
 ════════════════════════════════════════════════════════
        API DOCUMENTATION GENERATED
 ════════════════════════════════════════════════════════

@@ -8,9 +8,35 @@ Used by:
 All methods are fire-and-forget safe: wrapped in try/except, never crash the caller.
 """
 
+import logging
 import os
-import traceback
 from typing import Any
+
+logger = logging.getLogger("mos.orchestrator")
+
+
+def _resolve_keys(*names: str) -> dict[str, str]:
+    """Resolve API keys/settings from settings store or env vars."""
+    result: dict[str, str] = {}
+    settings: dict[str, Any] = {}
+    try:
+        from python.helpers.settings import get_settings
+
+        settings = get_settings()
+    except Exception:
+        pass
+
+    env_map = {
+        "linear_api_key": "LINEAR_API_KEY",
+        "linear_default_team_id": "LINEAR_DEFAULT_TEAM_ID",
+        "motion_api_key": "MOTION_API_KEY",
+        "motion_workspace_id": "MOTION_WORKSPACE_ID",
+        "notion_api_key": "NOTION_API_KEY",
+        "notion_default_database_id": "NOTION_DEFAULT_DATABASE_ID",
+    }
+    for name in names:
+        result[name] = settings.get(name, "") or os.getenv(env_map.get(name, ""), "")
+    return result
 
 
 class MOSOrchestrator:
@@ -26,31 +52,24 @@ class MOSOrchestrator:
             from instruments.custom.motion_integration.motion_manager import MotionManager
             from python.helpers import files
 
+            keys = _resolve_keys("motion_api_key", "linear_api_key", "motion_workspace_id")
+            if not all(keys.values()):
+                missing = [k for k, v in keys.items() if not v]
+                logger.info("sync_linear_to_motion skipped: missing %s", missing)
+                return {"skipped": True, "reason": f"Missing: {', '.join(missing)}"}
+
             db_path = files.get_abs_path("./instruments/custom/motion_integration/data/motion_integration.db")
-            motion_api_key = os.getenv("MOTION_API_KEY", "")
-            linear_api_key = os.getenv("LINEAR_API_KEY", "")
-            workspace_id = os.getenv("MOTION_WORKSPACE_ID", "")
-
-            try:
-                from python.helpers.settings import get_settings
-
-                s = get_settings()
-                motion_api_key = s.get("motion_api_key", "") or motion_api_key
-                linear_api_key = s.get("linear_api_key", "") or linear_api_key
-            except Exception:
-                pass
-
-            if not all([motion_api_key, linear_api_key, workspace_id]):
-                return {"skipped": True, "reason": "Missing API keys or workspace_id"}
-
-            manager = MotionManager(db_path, api_key=motion_api_key)
-            return await manager.sync_from_linear(
-                workspace_id=workspace_id,
-                linear_api_key=linear_api_key,
+            manager = MotionManager(db_path, api_key=keys["motion_api_key"])
+            logger.info("sync_linear_to_motion: starting")
+            result = await manager.sync_from_linear(
+                workspace_id=keys["motion_workspace_id"],
+                linear_api_key=keys["linear_api_key"],
             )
-        except Exception as e:
-            traceback.print_exc()
-            return {"error": str(e)}
+            logger.info("sync_linear_to_motion: completed — %s", result)
+            return result
+        except Exception:
+            logger.exception("sync_linear_to_motion failed")
+            return {"error": "sync_linear_to_motion failed — see logs"}
 
     @staticmethod
     async def sync_linear_activity_to_digest() -> dict[str, Any]:
@@ -60,23 +79,20 @@ class MOSOrchestrator:
             from instruments.custom.linear_integration.linear_manager import LinearManager
             from python.helpers import files
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            api_key = os.getenv("LINEAR_API_KEY", "")
-            try:
-                from python.helpers.settings import get_settings
-
-                api_key = get_settings().get("linear_api_key", "") or api_key
-            except Exception:
-                pass
-
-            if not api_key:
+            keys = _resolve_keys("linear_api_key")
+            if not keys["linear_api_key"]:
+                logger.info("sync_linear_activity_to_digest skipped: no LINEAR_API_KEY")
                 return {"skipped": True, "reason": "No LINEAR_API_KEY"}
 
-            manager = LinearManager(db_path, api_key=api_key)
-            return await manager.sync_pipeline()
-        except Exception as e:
-            traceback.print_exc()
-            return {"error": str(e)}
+            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
+            manager = LinearManager(db_path, api_key=keys["linear_api_key"])
+            logger.info("sync_linear_activity_to_digest: starting")
+            result = await manager.sync_pipeline()
+            logger.info("sync_linear_activity_to_digest: completed — %s", result)
+            return result
+        except Exception:
+            logger.exception("sync_linear_activity_to_digest failed")
+            return {"error": "sync_linear_activity_to_digest failed — see logs"}
 
     # ── Event hooks (fire-and-forget) ────────────────────────────────
 
@@ -91,30 +107,22 @@ class MOSOrchestrator:
             from instruments.custom.linear_integration.linear_manager import LinearManager
             from python.helpers import files
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            api_key = os.getenv("LINEAR_API_KEY", "")
-            team_id = os.getenv("LINEAR_DEFAULT_TEAM_ID", "")
-            try:
-                from python.helpers.settings import get_settings
-
-                s = get_settings()
-                api_key = s.get("linear_api_key", "") or api_key
-                team_id = s.get("linear_default_team_id", "") or team_id
-            except Exception:
-                pass
-
-            if not api_key or not team_id:
+            keys = _resolve_keys("linear_api_key", "linear_default_team_id")
+            if not keys["linear_api_key"] or not keys["linear_default_team_id"]:
                 return
 
-            manager = LinearManager(db_path, api_key=api_key)
+            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
+            manager = LinearManager(db_path, api_key=keys["linear_api_key"])
+            title = f"New Lead: {customer_name}" + (f" ({company})" if company else "")
+            logger.info("on_lead_captured: creating Linear issue — %s", title)
             await manager.create_issue(
-                title=f"New Lead: {customer_name}" + (f" ({company})" if company else ""),
-                team_id=team_id,
+                title=title,
+                team_id=keys["linear_default_team_id"],
                 description=f"Lead captured via customer_lifecycle.\nCustomer ID: {customer_id}",
                 priority=3,  # Medium
             )
         except Exception:
-            traceback.print_exc()
+            logger.exception("on_lead_captured failed for %s", customer_name)
 
     @staticmethod
     async def on_deployment_success(
@@ -129,25 +137,15 @@ class MOSOrchestrator:
             from instruments.custom.linear_integration.linear_manager import LinearManager
             from python.helpers import files
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            api_key = os.getenv("LINEAR_API_KEY", "")
-            team_id = os.getenv("LINEAR_DEFAULT_TEAM_ID", "")
-            try:
-                from python.helpers.settings import get_settings
-
-                s = get_settings()
-                api_key = s.get("linear_api_key", "") or api_key
-                team_id = s.get("linear_default_team_id", "") or team_id
-            except Exception:
-                pass
-
-            if not api_key:
+            keys = _resolve_keys("linear_api_key", "linear_default_team_id")
+            if not keys["linear_api_key"]:
                 return
 
-            manager = LinearManager(db_path, api_key=api_key)
-
-            # Get "Done" state ID for the team
+            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
+            manager = LinearManager(db_path, api_key=keys["linear_api_key"])
             client = manager._get_client()
+
+            team_id = keys["linear_default_team_id"]
             if team_id:
                 states = await client.get_workflow_states(team_id)
                 done_state = next(
@@ -155,10 +153,15 @@ class MOSOrchestrator:
                     None,
                 )
                 if done_state:
+                    logger.info(
+                        "on_deployment_success: closing %d issues for %s",
+                        len(related_issue_ids),
+                        project_name,
+                    )
                     for issue_id in related_issue_ids:
                         await manager.update_issue(
                             issue_id=issue_id,
                             state_id=done_state["id"],
                         )
         except Exception:
-            traceback.print_exc()
+            logger.exception("on_deployment_success failed for %s", project_name)

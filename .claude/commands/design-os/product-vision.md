@@ -260,7 +260,7 @@ echo "✓ Output validation complete"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         PRODUCT VISION COMPLETE ✓
 ═══════════════════════════════════════════════════

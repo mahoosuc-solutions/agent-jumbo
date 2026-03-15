@@ -66,7 +66,7 @@ echo "📝 Found $COMMIT_COUNT commits"
 
 Parse commit data:
 
-```
+```text
 Commits data structure:
 - Hash
 - Author name
@@ -537,7 +537,7 @@ If format is HTML, save to file and offer to open in browser.
 
 Suggest related commands:
 
-```
+```text
 📌 Follow-Up Actions:
 
 1. **Update Knowledge Base**
@@ -604,7 +604,7 @@ Suggest related commands:
 
 If user wants to compare two periods:
 
-```
+```text
 Would you like to compare with a previous period?
 
 Options:
@@ -625,7 +625,7 @@ Comparing periods shows:
 
 Extract feature commits and format as release notes:
 
-```
+```text
 Generate release notes for version ${version}?
 
 This will create a RELEASE_NOTES.md with:

@@ -16,7 +16,7 @@ Publish Shopify product with campaign: **${ARGUMENTS}**
 
 ## Workflow
 
-```
+```text
 STEP 1: Fetch Product from Shopify
    ├─ Validate product ID exists
    ├─ Retrieve product data (title, price, URL)

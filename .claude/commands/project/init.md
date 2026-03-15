@@ -186,7 +186,7 @@ Initializes an existing project folder with complete Claude Code infrastructure 
 
 ## Directory Structure Created
 
-```
+```text
 project-root/
 ├── .claude/
 │   ├── CLAUDE.md                      # Project configuration
@@ -421,7 +421,7 @@ else
 fi
 ```
 
-```
+```python
 
 ### Step 5: Setup Git Configuration
 
@@ -674,7 +674,7 @@ Complete list of available Claude Code commands for this project.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```
+```python
 
 ## Customization
 

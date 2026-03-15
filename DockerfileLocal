@@ -1,4 +1,6 @@
-# Prefer a reusable local base image when available.
+# Local development Dockerfile — requires agent0ai/agent-zero-base image
+# with /ins/ and /exe/ scripts pre-installed.
+# CI Docker build test is disabled until base image alignment is verified.
 ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
 FROM ${BASE_IMAGE}
 

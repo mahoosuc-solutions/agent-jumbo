@@ -177,7 +177,7 @@ const dashboard = {
 
 ### 5. Display Results
 
-```
+```text
 ╔════════════════════════════════════════════════════════╗
 ║           📧 MORNING EMAIL TRIAGE COMPLETE            ║
 ╠════════════════════════════════════════════════════════╣
@@ -253,7 +253,7 @@ Quick Actions:
 
 ## n8n Workflow Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │  TRIGGER: Cron (6:00 AM daily) OR Manual Command   │
 └─────────────┬───────────────────────────────────────┘

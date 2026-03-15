@@ -53,7 +53,7 @@ Two professional parallel development teams are ready to execute on:
 
 ### Team A: Calendar Hub Integration
 
-```
+```yaml
 Worktree: /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
 Branch: feature/pms-calendar-sync
 Status: ✅ Ready
@@ -68,7 +68,7 @@ pytest tests/test_pms_calendar_sync.py -v
 
 ### Team B: Guest Communication Automation
 
-```
+```yaml
 Worktree: /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
 Branch: feature/pms-messaging-automation
 Status: ✅ Ready
@@ -217,7 +217,7 @@ cat /home/webemo-aaron/projects/agent-jumbo/TEAM_QUICKSTART.md
 
 ### Phase 1: RED (Tests Fail)
 
-```
+```text
 Team writes test specification
 ↓
 pytest runs test
@@ -227,7 +227,7 @@ Test fails (not yet implemented)
 
 ### Phase 2: GREEN (Tests Pass)
 
-```
+```text
 Team implements minimal code to pass test
 ↓
 pytest runs test
@@ -237,7 +237,7 @@ Test passes ✓
 
 ### Phase 3: REFACTOR (Clean Up)
 
-```
+```text
 Team refactors code for quality
 ↓
 Tests still pass
@@ -297,7 +297,7 @@ def test_create_event_from_reservation(self):
 
 ### What's Already Implemented (Do Not Modify)
 
-```
+```text
 ✅ Core Infrastructure
 - Canonical Data Models (Property, Unit, Guest, Reservation, Message, etc.)
 - Abstract PMSProvider base class
@@ -331,7 +331,7 @@ def test_create_event_from_reservation(self):
 
 ### What Teams Are Building (New Features)
 
-```
+```text
 🔨 Team A: Calendar Hub Integration
 - New service: CalendarSyncService
 - New API endpoints: pms_calendar_sync
@@ -419,7 +419,7 @@ manager.create_event(calendar_id, title, start, end, attendees, notes)
 
 ### Day 1: Setup & Analysis
 
-```
+```yaml
 Morning:   Team setup, documentation review
 Midday:    Test specification understanding
 Afternoon: First tests written (RED phase)
@@ -428,7 +428,7 @@ Evening:   Status sync
 
 ### Days 2-3: Implementation
 
-```
+```yaml
 Morning:   Implement features (GREEN phase)
 Midday:    Test coverage check
 Afternoon: Code refactoring (REFACTOR phase)
@@ -437,7 +437,7 @@ Evening:   Status sync, blockers discussion
 
 ### Day 4: Integration & Optimization
 
-```
+```yaml
 Morning:   Integration testing with main branch
 Midday:    Error handling, edge cases
 Afternoon: Performance optimization
@@ -446,7 +446,7 @@ Evening:   Final testing, merge preparation
 
 ### Day 5: Merge & Validation
 
-```
+```yaml
 Morning:   Final code review
 Midday:    Merge to main
 Afternoon: Full test suite validation

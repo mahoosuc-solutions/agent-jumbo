@@ -97,7 +97,7 @@ Every follow-up email includes essential elements:
 
 **Example Follow-Up Email (Sales Discovery Call):**
 
-```
+```yaml
 From: John Smith <john@yourcompany.com>
 To: Robert Martinez <robert@enterprisetech.com>, Lisa Wong <lisa@enterprisetech.com>
 CC: Sarah Johnson <sarah@yourcompany.com>
@@ -252,7 +252,7 @@ Customize email based on relationship and context:
 
 **Example Personalization:**
 
-```
+```text
 Generic Version (BAD):
 "Thank you for meeting with me today. I've attached the meeting notes. Please review the action items. Let me know if you have questions."
 
@@ -274,7 +274,7 @@ Connect action items to task management and calendar:
 
 **Task Management Integration:**
 
-```
+```text
 Within follow-up email:
 
 ACTION ITEMS:
@@ -296,7 +296,7 @@ ACTION ITEMS:
 
 **Calendar Integration:**
 
-```
+```text
 Next Meetings Automatically Added to Calendar:
 
 • Technical Deep-Dive: March 18 @ 2:00 PM EST
@@ -310,7 +310,7 @@ Next Meetings Automatically Added to Calendar:
 
 **CRM Integration (Sales Meetings):**
 
-```
+```text
 Automatic CRM Updates:
 
 • Contact record (Robert Martinez): Meeting notes attached, next step updated
@@ -345,7 +345,7 @@ Include relevant documents and resources:
 
 **Link Management:**
 
-```
+```text
 Attached Documents:
 • Meeting Notes (Board Meeting Q1 2024).pdf [Attached, 156 KB]
 • Q1 Performance Dashboard [Google Drive Link - Request Access]
@@ -386,7 +386,7 @@ Optimize when follow-ups are sent:
 
 **Follow-Up Sequence (Multi-Touch):**
 
-```
+```text
 Sales Follow-Up Sequence:
 
 Touch 1: Meeting Follow-Up (Day 0, within 1 hour)
@@ -424,7 +424,7 @@ For high-stakes meetings, require approval before sending:
 
 **Approval UI:**
 
-```
+```text
 Draft Follow-Up Email Ready for Review
 
 Meeting: Discovery Call - Enterprise Tech Solutions (March 12)
@@ -484,7 +484,7 @@ Monitor follow-up effectiveness and iterate:
 
 **Example Metrics Dashboard:**
 
-```
+```text
 Follow-Up Effectiveness (Last 90 Days)
 
 Overall Performance:
@@ -546,7 +546,7 @@ Each template includes variables:
 
 **Example Template (Sales Discovery):**
 
-```
+```yaml
 Template: Sales Discovery Follow-Up
 
 Subject: Follow-up: {{meeting_title}} ({{meeting_date}})
@@ -597,7 +597,7 @@ P.S. - {{personal_rapport_note}}
 
 **Output:**
 
-```
+```text
 Follow-Up Email Generated: Discovery Call - TechCorp
 
 ─────────────────────────────────────────────

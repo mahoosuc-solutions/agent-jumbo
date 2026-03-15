@@ -59,7 +59,7 @@ Generate a comprehensive, day-by-day GTM playbook for product launches including
 
 ### Output Structure
 
-```
+```text
 /gtm-plans/[product-name]/
 ├── 1-pre-launch/
 │   ├── beta-program-plan.md (Beta recruitment, onboarding, feedback loops)
@@ -107,7 +107,7 @@ Before generating the GTM plan, Claude will ask you strategic questions:
 
 ### Product Questions
 
-```
+```text
 1. What problem does your product solve?
    - Example: "Email overload - professionals waste 10+ hours/week"
 
@@ -130,7 +130,7 @@ Before generating the GTM plan, Claude will ask you strategic questions:
 
 ### Market Questions
 
-```
+```text
 1. Who is your ideal customer?
    - Demographics: Age, location, job title, income
    - Psychographics: Values, pain points, goals
@@ -151,7 +151,7 @@ Before generating the GTM plan, Claude will ask you strategic questions:
 
 ### Budget Questions
 
-```
+```text
 1. What's your total marketing budget?
    - Example: "$10,000 for 90-day launch period"
 
@@ -417,7 +417,7 @@ Best,
 [Product Name] Founder
 [Email] | [Twitter] | [Product URL]
 
-```
+```text
 
 **Follow-Up Strategy**:
 - Day 3: Polite follow-up if no response
@@ -477,7 +477,7 @@ Would you be interested? Happy to send you early access to test.
 Best,
 [Your Name]
 
-```
+```text
 
 **Influencer Brief** (What to send if they agree):
 - Product overview (1-page summary)
@@ -706,7 +706,7 @@ Try it free for 14 days: [link]
 
 Happy to answer any questions! 🙏
 
-```
+```text
 
 **Comment Engagement Strategy**:
 - Respond to EVERY comment within 15 minutes (first 2 hours critical)
@@ -2119,7 +2119,7 @@ Verify all 20 files created:
 
 **Output to user**: `⏳ Step 11/11: Finalizing GTM plan...`
 
-```
+```text
 ════════════════════════════════════════════════════════════
    ✅ GTM PLAN GENERATED: [Product Name]
 ════════════════════════════════════════════════════════════

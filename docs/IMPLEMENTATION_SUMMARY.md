@@ -121,7 +121,7 @@ This document summarizes the complete 3-phase email integration for the Agent Ju
 
 ### Component Hierarchy
 
-```
+```text
 Agent Jumbo Platform
 │
 ├── Phase 1: SMTP/IMAP Layer
@@ -147,19 +147,19 @@ Agent Jumbo Platform
 
 **Phase 1 Flow (SMTP):**
 
-```
+```python
 Agent → email.py → email_sender.py → SMTP Server → Recipient
 ```
 
 **Phase 2 Flow (Gmail API):**
 
-```
+```python
 Agent → email_advanced.py → gmail_api_client.py → gmail_oauth2.py → Gmail API → Recipient
 ```
 
 **Phase 3 Flow (Push Notifications):**
 
-```
+```python
 Gmail → Pub/Sub → gmail_push_notifications.py → Event Callback → Agent Action
 ```
 

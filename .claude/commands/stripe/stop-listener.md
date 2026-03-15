@@ -71,7 +71,7 @@ echo "To start again: /stripe:listen"
 
 ## Example Output
 
-```
+```text
 🛑 Stopping Stripe webhook listener...
    PID: 12345
 

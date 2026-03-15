@@ -12,7 +12,7 @@ Choose your setup path based on your needs:
 
 1. **Get Gmail App Password**
 
-   ```
+   ```text
    → Go to https://myaccount.google.com/security
    → Enable 2-Factor Authentication
    → Create app password for "Mail"
@@ -56,7 +56,7 @@ Choose your setup path based on your needs:
 
 1. **Create Google Cloud Project**
 
-   ```
+   ```text
    → Go to https://console.cloud.google.com
    → Create new project "email-automation"
    → Note the Project ID
@@ -64,7 +64,7 @@ Choose your setup path based on your needs:
 
 2. **Enable Gmail API**
 
-   ```
+   ```text
    → In Google Cloud Console
    → Navigate to "APIs & Services" > "Library"
    → Search "Gmail API"
@@ -73,7 +73,7 @@ Choose your setup path based on your needs:
 
 3. **Create OAuth2 Credentials**
 
-   ```
+   ```text
    → Go to "APIs & Services" > "Credentials"
    → Click "Create Credentials" > "OAuth 2.0 Client ID"
    → Application type: "Desktop app"
@@ -144,7 +144,7 @@ Choose your setup path based on your needs:
 
 1. **Enable Pub/Sub API**
 
-   ```
+   ```text
    → In Google Cloud Console
    → Navigate to "APIs & Services" > "Library"
    → Search "Cloud Pub/Sub API"
@@ -153,7 +153,7 @@ Choose your setup path based on your needs:
 
 2. **Create Service Account**
 
-   ```
+   ```text
    → Go to "IAM & Admin" > "Service Accounts"
    → Click "Create Service Account"
    → Name: "gmail-pubsub"

@@ -138,7 +138,7 @@ Decompose script into discrete visual units:
 
 **Example Breakdown:**
 
-```
+```text
 SCRIPT: "Sarah walks into the coffee shop, orders a latte, and sits
 down at a window table while checking her phone."
 
@@ -197,7 +197,7 @@ Plan framing and composition for each shot:
 
 **Visual Notation:**
 
-```
+```text
 SHOT 5: Product Close-Up
 ┌─────────────────────────────┐
 │         [SKY/CEILING]       │ ← Upper third
@@ -234,7 +234,7 @@ Include cinematography and equipment details:
 
 **Example Technical Note:**
 
-```
+```text
 SHOT 5: Latte Preparation ECU
 Camera: 100mm macro lens, f/2.8, 1/50s, ISO 400, 24fps
 Lighting: Key from camera right (soft box), rim from back left,
@@ -257,7 +257,7 @@ Synchronize sound with visual elements:
 
 **Format:**
 
-```
+```text
 SHOT 5: Latte Preparation ECU
 
 VISUAL: Barista's hands expertly pouring steamed milk, creating
@@ -291,7 +291,7 @@ Connect shots with transitions and rhythm:
 
 **Pacing Patterns:**
 
-```
+```text
 SLOW BUILD:
 Shot 1: 8 sec → Shot 2: 6 sec → Shot 3: 5 sec → Shot 4: 4 sec
 
@@ -304,7 +304,7 @@ Shot 1: 2 sec → Shot 2: 2 sec → Shot 3: 8 sec (moment of peace)
 
 **Example Transition Note:**
 
-```
+```text
 SHOT 4 → SHOT 5 TRANSITION:
 Type: Match Cut on Action
 Details: As Sarah's hand reaches for cup (Shot 4), cut to barista's
@@ -362,7 +362,7 @@ Add practical guidance for shoot day:
 
 **Example Production Note:**
 
-```
+```text
 SHOT 5: Latte Preparation ECU
 
 LOCATION: Stellar Coffee, 123 Main St (confirmed booking 9am-12pm)
@@ -388,7 +388,7 @@ Design the actual storyboard illustrations:
 
 **Frame Layout:**
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │ SHOT #5                                    DURATION: 4 SEC  │
 ├─────────────────────────────────────────────────────────────┤
@@ -485,7 +485,7 @@ Quality control and stakeholder approval:
 
 **Generated Storyboard:**
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                     RAPIDBREW COFFEE MAKER
               30-Second Commercial Storyboard
@@ -649,7 +649,7 @@ SPECIAL NOTES:
 
 **Generated Storyboard:**
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
             URBAN ROOTS DOCUMENTARY - B-ROLL
                 Interview Subject: Marcus Chen
@@ -759,7 +759,7 @@ EDITORIAL INTENT:
 
 **Generated Storyboard:**
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
           "BREAKING WAVES" - CHORUS STORYBOARD
            Artist: The Coastline | Duration: 30s
@@ -856,7 +856,7 @@ POST-PRODUCTION:
 
 **Generated Storyboard:**
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
       "THE LAST LIBRARY" - Discovery Scene Storyboard
            2D Animation Proof of Concept | 20 Seconds
@@ -996,7 +996,7 @@ ESTIMATED BUDGET:
 
 **Generated Storyboard:**
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
               FITLIFE APP - INSTAGRAM STORY ADS
          3-Part Sequence | 15 seconds each | 9:16 Vertical

@@ -425,7 +425,7 @@ if (context.meeting_settings.send_summary_to_attendees) {
 
 ### 9. Confirmation
 
-```
+```text
 ✓ Meeting workflow complete
 
 📝 Team Standup - Jan 22, 2025 9:00 AM

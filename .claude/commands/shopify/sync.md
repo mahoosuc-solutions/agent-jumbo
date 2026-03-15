@@ -16,7 +16,7 @@ Sync AI solution folders to Shopify: **${ARGUMENTS}**
 
 ## Workflow Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │                    SHOPIFY SYNC WORKFLOW                     │
 └─────────────────────────────────────────────────────────────┘

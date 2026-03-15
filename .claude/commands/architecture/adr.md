@@ -267,7 +267,7 @@ We will [action] because [primary reason].
 
 ### Status Transitions
 
-```
+```text
 Proposed → Accepted → [In Use] → Deprecated → Superseded
          ↓
       Rejected (document why, but don't delete)
@@ -277,7 +277,7 @@ Proposed → Accepted → [In Use] → Deprecated → Superseded
 
 ### Recommended Directory Structure
 
-```
+```text
 docs/
   architecture/
     decisions/

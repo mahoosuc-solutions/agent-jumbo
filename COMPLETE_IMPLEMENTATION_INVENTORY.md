@@ -51,7 +51,7 @@ Agent Jumbo is a **production-ready multi-agent AI orchestration framework** wit
 
 **8-Stage Processing**:
 
-```
+```text
 Stage 1: monologue_start
 ├─ memory_init: Load relevant memories
 └─ chat_rename: Auto-title conversations
@@ -196,7 +196,7 @@ Stage 8: message_loop_end & monologue_end
 
 **POC Strategies** (Framework complete, SDK pending)
 
-```
+```text
 SSH Strategy (paramiko/fabric pending)
 ├─ Structure: validate_config(), execute_deployment(), rollback()
 ├─ Testing: 7 unit tests
@@ -220,7 +220,7 @@ GitHub Actions Strategy (GitHub API pending)
 
 **Error Handling Infrastructure**
 
-```
+```python
 deployment_retry.py (120 lines):
 ✅ TransientDeploymentError classification
 ✅ PermanentDeploymentError classification
@@ -231,7 +231,7 @@ deployment_retry.py (120 lines):
 
 **Health Checking** (65 lines)
 
-```
+```python
 deployment_health.py:
 ✅ HTTP endpoint validation
 ✅ Configurable timeout (default 30s)
@@ -243,7 +243,7 @@ deployment_health.py:
 
 **Progress Reporting** (44 lines)
 
-```
+```python
 deployment_progress.py:
 ✅ StreamingProgressReporter (async generator)
 ✅ LoggingProgressReporter (debug output)
@@ -261,7 +261,7 @@ deployment_progress.py:
 
 **Hook Points**: 40+ strategic locations throughout message loop
 
-```
+```text
 INITIALIZATION (2 hooks)
 ├─ agent_init: Agent startup
 └─ monologue_start: Conversation setup
@@ -348,7 +348,7 @@ TELEMETRY & TRACKING (3 hooks)
 
 ### 4.3 API & Communication
 
-```
+```python
 ✅ email_client.py: Account management
 ✅ gmail_api_client.py: Gmail integration
 ✅ telegram_client.py: Messaging
@@ -359,7 +359,7 @@ TELEMETRY & TRACKING (3 hooks)
 
 ### 4.4 System & Infrastructure
 
-```
+```python
 ✅ shell_ssh.py: Remote execution
 ✅ shell_local.py: Local execution
 ✅ docker.py: Container management
@@ -370,7 +370,7 @@ TELEMETRY & TRACKING (3 hooks)
 
 ### 4.5 Data & Storage
 
-```
+```python
 ✅ vector_db.py: FAISS embeddings
 ✅ cache_metrics.py: Cache tracking
 ✅ memory_consolidation.py: Memory mgmt
@@ -381,7 +381,7 @@ TELEMETRY & TRACKING (3 hooks)
 
 ### 4.6 Utilities
 
-```
+```python
 ✅ log.py: Structured logging
 ✅ print_style.py: Colored output
 ✅ strings.py: String manipulation
@@ -497,7 +497,7 @@ TELEMETRY & TRACKING (3 hooks)
 
 **Deployment System Tests** (66 passing, 6 skipped)
 
-```
+```python
 test_deployment_retry.py (7 tests)
 ├─ Error classification (transient/permanent)
 ├─ Retry logic validation
@@ -521,7 +521,7 @@ test_integration_deployment.py (14 tests)
 
 **Tool Tests**
 
-```
+```python
 test_security_audit.py
 test_workflow_db.py
 test_plugin_registry.py
@@ -531,7 +531,7 @@ test_specialist_agent_framework.py
 
 **Integration Tests**
 
-```
+```python
 test_agents_import.py
 test_connections_api.py
 test_documentation_import.py
@@ -543,7 +543,7 @@ test_analytics_roi_calculator.py
 
 ### 6.2 Test Metrics
 
-```
+```text
 Total Tests: 100+
 Passing: 94+ (66 deployment tests)
 Skipped: 6 (POC strategies - expected)
@@ -570,7 +570,7 @@ Execution Time: 7.60 seconds (deployment suite)
 
 ### 7.2 Architecture & Design Documentation
 
-```
+```text
 ✅ AI_OPS_AGENT_IMPLEMENTATION.md
 ✅ BUSINESS_XRAY_IMPLEMENTATION.md
 ✅ DEPLOYMENT_DECISION_SUMMARY.md
@@ -580,7 +580,7 @@ Execution Time: 7.60 seconds (deployment suite)
 
 ### 7.3 Integration & Setup
 
-```
+```text
 ✅ AUTHENTICATE.md
 ✅ AUTH_UPDATE.md
 ✅ APPLY_MCP_CONFIG.md
@@ -590,7 +590,7 @@ Execution Time: 7.60 seconds (deployment suite)
 
 ### 7.4 Analysis & Strategy
 
-```
+```text
 ✅ COMPARISON_DEVOPS_VS_MOLTBOT_OPENSOURCING.md
 ✅ COMPARISON_OPENCLAW_MOLTBOT.md
 ```
@@ -601,7 +601,7 @@ Execution Time: 7.60 seconds (deployment suite)
 
 ### 8.1 Profile System
 
-```
+```text
 agents/{profile}/
 ├─ tools/: Custom tools per agent
 ├─ prompts/: Domain-specific prompts
@@ -611,7 +611,7 @@ agents/{profile}/
 
 ### 8.2 Runtime Configuration
 
-```
+```text
 conf/
 ├─ model_providers.yaml: LLM settings
 ├─ projects.default.gitignore: Templates
@@ -620,7 +620,7 @@ conf/
 
 ### 8.3 Environment Setup
 
-```
+```text
 .env: Secrets & API keys
 .env.example: Template
 settings.py: Runtime configuration
@@ -781,7 +781,7 @@ providers.py: Model provider config
 
 ### 12.1 Maturity Levels
 
-```
+```text
 PRODUCTION READY (Go-Live Capable):
 ├─ Core Agent Framework ..................... ✅
 ├─ Message Loop Processing .................. ✅
@@ -838,7 +838,7 @@ NOT YET IMPLEMENTED:
 
 ### 13.1 Size & Scope
 
-```
+```python
 Python Files: 150+
 Total Lines of Code: 50,000+
 Test Files: 30+
@@ -851,7 +851,7 @@ Worktrees: 13
 
 ### 13.2 Tool Statistics
 
-```
+```text
 Native Tools: 80+
 Extension Hooks: 40+
 API Endpoints: 120+
@@ -861,7 +861,7 @@ Deployment Strategies: 5 (1 real, 4 POC)
 
 ### 13.3 Testing Statistics
 
-```
+```text
 Unit Tests: 50+
 Integration Tests: 30+
 E2E Tests: 20+

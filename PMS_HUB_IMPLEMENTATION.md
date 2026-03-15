@@ -145,7 +145,7 @@ A comprehensive, production-ready multi-provider PMS integration system supporti
 
 ## 📊 Architecture Summary
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │              AirBnb & Other Platforms               │
 ├────────────┬────────────┬────────────┬──────────────┤
@@ -241,7 +241,7 @@ A comprehensive, production-ready multi-provider PMS integration system supporti
 
 ## 📁 File Structure
 
-```
+```text
 instruments/custom/pms_hub/
 ├── __init__.py                          # Package initialization
 ├── README.md                            # Complete documentation

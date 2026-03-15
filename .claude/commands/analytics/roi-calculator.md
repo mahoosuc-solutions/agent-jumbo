@@ -13,7 +13,7 @@ Calculate ROI for: **${ARGUMENTS:-automation}**
 
 Ask user:
 
-```
+```text
 Automation ROI Calculator
 
 1. Manual Process Time (minutes per execution)

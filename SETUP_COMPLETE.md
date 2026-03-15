@@ -12,7 +12,7 @@
 
 ### Git Infrastructure ✅
 
-```
+```text
 Main Repository (Production)
 ├── Branch: main (b0417ed)
 ├── Status: 91 tests, 98.9% pass rate
@@ -38,7 +38,7 @@ Team B Worktree (Guest Communication)
 
 **Team A - Calendar Hub Integration**
 
-```
+```python
 tests/test_pms_calendar_sync.py (16 KB, 45+ test specs)
 ├── TestCalendarSyncServiceInitialization (2 tests)
 ├── TestCalendarEventCreation (6 tests)
@@ -59,7 +59,7 @@ tests/test_pms_calendar_sync.py (16 KB, 45+ test specs)
 
 **Team B - Guest Communication Automation**
 
-```
+```python
 tests/test_pms_communication_workflows.py (20 KB, 53+ test specs)
 ├── TestCommunicationWorkflowInitialization (3 tests)
 ├── TestPreArrivalWorkflows (8 tests)
@@ -125,7 +125,7 @@ tests/test_pms_communication_workflows.py (20 KB, 53+ test specs)
 
 **Deliverables**:
 
-```
+```text
 New Files (1,100 lines total):
 - instruments/custom/pms_hub/calendar_sync.py (350 lines)
 - python/tools/pms_calendar_sync.py (120 lines)
@@ -160,7 +160,7 @@ Quality Gate:
 
 **Deliverables**:
 
-```
+```text
 New Files (1,340 lines total):
 - instruments/custom/pms_hub/communication_workflows.py (450 lines)
 - instruments/custom/pms_hub/message_templates.py (180 lines)
@@ -220,7 +220,7 @@ pytest.ini configured with:
 
 ### Day 1: Understand the System
 
-```
+```text
 Team A:
 1. cd .worktrees/pms-calendar
 2. Read TEAM_QUICKSTART.md
@@ -238,7 +238,7 @@ Team B:
 
 ### Days 2-4: Implement Features (TDD)
 
-```
+```text
 RED Phase:
 - Replace pytest.skip() with actual test code
 - Run tests - they fail (that's expected)
@@ -255,7 +255,7 @@ REFACTOR Phase:
 
 ### Day 5: Merge & Deploy
 
-```
+```text
 1. Final code review
 2. Ensure 100% test pass rate
 3. Ensure >95% code coverage
@@ -271,7 +271,7 @@ REFACTOR Phase:
 
 ### Current Metrics
 
-```
+```text
 Foundation (PMS Hub Core):
 - 91 tests passing (98.9% pass rate)
 - 16 production files
@@ -345,7 +345,7 @@ pytest tests/test_pms_communication_workflows.py -v  # See test specs
 
 ## 📚 Documentation Structure
 
-```
+```text
 README Files (alphabetical)
 ├── FEATURE_TEAMS_DEPLOYMENT.md    ← Execution plan
 ├── FEATURE_TEAMS_READY.md          ← Executive summary
@@ -395,7 +395,7 @@ Teams can follow the existing test patterns to implement new tests.
 
 ## 🔐 Quality Assurance Built-In
 
-```
+```text
 Pre-Merge Checklist Provided:
 ✅ Test execution
 ✅ Code coverage verification
@@ -415,7 +415,7 @@ All items automated or documented
 
 ## 🤝 Collaboration Features
 
-```
+```text
 Parallel Development:
 ✅ Isolated worktrees (no conflicts)
 ✅ Independent feature branches

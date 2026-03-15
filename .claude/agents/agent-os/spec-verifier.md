@@ -171,7 +171,7 @@ Create/update `agent-os/specs/[spec-name]/verification-report.md`:
 
 ### Step 6: Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════
         VERIFICATION COMPLETE
 ═══════════════════════════════════════════════════

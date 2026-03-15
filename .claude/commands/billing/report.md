@@ -68,7 +68,7 @@ WHERE created_at >= '${period_start}'
   AND created_at < '${period_end}';
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    REVENUE REPORT                               ║
 ║                    January 2025                                 ║
@@ -129,7 +129,7 @@ ORDER BY
   END;
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║              ACCOUNTS RECEIVABLE AGING REPORT                   ║
 ║                    As of January 31, 2025                       ║
@@ -185,7 +185,7 @@ WHERE event_type = 'refund'
   AND created_at < '${period_end}';
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    REFUNDS REPORT                               ║
 ║                    January 2025                                 ║
@@ -242,7 +242,7 @@ SELECT
   CASE WHEN internal_amount = stripe_amount THEN '✓' ELSE '⚠️' END as status;
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║               STRIPE RECONCILIATION REPORT                      ║
 ║                    January 2025                                 ║
@@ -283,7 +283,7 @@ SELECT
 
 ### Usage Billing Summary (--type usage)
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  USAGE BILLING SUMMARY                          ║
 ║                    January 2025                                 ║

@@ -362,7 +362,7 @@ No changes recommended. All systems can be used in production.
 
 ## 2.1 Production-Ready (85%)
 
-```
+```text
 FULLY IMPLEMENTED AND TESTED:
 ├─ Core Agent Framework (100%)
 ├─ Message Loop Pipeline (100%)
@@ -387,7 +387,7 @@ Status: PRODUCTION-READY
 
 ## 2.2 Partial Implementation (10%)
 
-```
+```text
 POC FRAMEWORK READY, SDK PENDING:
 ├─ SSH Deployment (90% - paramiko/fabric pending)
 ├─ AWS Deployment (90% - boto3 pending)
@@ -412,7 +412,7 @@ Status: READY FOR SDK INTEGRATION
 
 ## 2.3 Not Yet Implemented (5%)
 
-```
+```text
 FUTURE WORK:
 ├─ Distributed Agent Coordination
 ├─ Real-time Multi-user Collaboration
@@ -432,7 +432,7 @@ Status: PLANNED FOR FUTURE RELEASES
 
 ## 2.4 Mentioned But Not Implemented
 
-```
+```text
 IN SCOPE BUT INCOMPLETE:
 ├─ Mahoosuc Integration
 │  └─ 3 high-value commands converted
@@ -828,7 +828,7 @@ IN SCOPE BUT INCOMPLETE:
 
 ### Week 1
 
-```
+```text
 □ Finalize open source decision
 □ Create GitHub organization (agent-jumbo-deploy)
 □ Prepare launch blog post
@@ -838,7 +838,7 @@ IN SCOPE BUT INCOMPLETE:
 
 ### Week 2-3
 
-```
+```text
 □ Complete SSH deployment SDK integration
 □ Expand WebUI with deployment dashboard
 □ Create getting started guide
@@ -847,7 +847,7 @@ IN SCOPE BUT INCOMPLETE:
 
 ### Month 1
 
-```
+```text
 □ Launch on GitHub
 □ Publish blog post on Dev.to/Medium
 □ Announce in DevOps communities
@@ -857,7 +857,7 @@ IN SCOPE BUT INCOMPLETE:
 
 ### Month 2-3
 
-```
+```text
 □ Complete AWS/GCP/GitHub SDK integrations
 □ Add canary deployment support
 □ Implement basic observability integration
@@ -866,7 +866,7 @@ IN SCOPE BUT INCOMPLETE:
 
 ### Month 3-6
 
-```
+```text
 □ Grow community engagement
 □ Implement enterprise features
 □ Expand documentation based on feedback

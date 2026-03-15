@@ -103,7 +103,7 @@ echo "Listener PID: $LISTENER_PID"
 
 ## Example Output
 
-```
+```text
 🎧 Starting Stripe webhook listener...
 📍 Forwarding to: http://localhost:3000/webhook
 Starting listener (logs: /home/user/.stripe/webhook-listener.log)...

@@ -239,7 +239,7 @@ Tracked for 90 days post-implementation:
 - No service degradation reported
 - Team productivity unaffected
 
-```
+```javascript
 
 **Citation Probability**: 88% - Proven results with specifics
 
@@ -997,7 +997,7 @@ const citationHalfLife = {
 
 ### Citations by Month
 
-```
+```yaml
 Oct: ████████████████ 78 citations
 Nov: ███████████████████ 95 citations
 Dec: ███████████ 52 citations (holiday drop)
@@ -1058,7 +1058,7 @@ Jan: ██████████████████████ 112 cita
 - **Net Gain**: $38,000/quarter = $152,000/year
 - **ROI**: 977% annually
 
-```
+```text
 
 ## Best Practices for Citation-Worthy Content
 

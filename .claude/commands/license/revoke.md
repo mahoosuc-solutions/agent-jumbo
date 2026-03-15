@@ -67,7 +67,7 @@ WHERE l.id = '${license_id}';
 
 ### Phase 2: Impact Assessment
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  ⚠️  LICENSE REVOCATION PREVIEW                 ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -106,7 +106,7 @@ For `piracy`, `fraud`, `security`, `abuse`, or `legal` reasons:
 
 Use `AskUserQuestion`:
 
-```
+```text
 ELEVATED APPROVAL REQUIRED
 
 This revocation will immediately terminate access for 45 active users.
@@ -203,7 +203,7 @@ INSERT INTO license_audit_logs (
 
 #### Piracy/Fraud (No Advance Notice)
 
-```
+```text
 Subject: Important Security Notice - License Suspended
 
 Dear John,
@@ -234,7 +234,7 @@ Security Team
 
 #### Customer Request (Confirmation)
 
-```
+```text
 Subject: License Cancellation Confirmed
 
 Dear John,
@@ -293,7 +293,7 @@ WHERE id = '${new_license_id}';
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                    LICENSE REVOKED
 ═══════════════════════════════════════════════════════════════════

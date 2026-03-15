@@ -53,7 +53,7 @@ WHERE s.id = '${subscription_id}' AND s.status = 'active';
 
 **Valid Downgrade Paths**:
 
-```
+```text
 enterprise → pro → starter → free
                   ↘
 enterprise → starter → free
@@ -90,7 +90,7 @@ SELECT
 
 ### Phase 4: Downgrade Preview
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                   SUBSCRIPTION DOWNGRADE                        ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -133,7 +133,7 @@ SELECT
 
 Use `AskUserQuestion` to collect downgrade reason:
 
-```
+```text
 Why are you downgrading? This helps us improve.
 
 Options:
@@ -157,7 +157,7 @@ Options:
 
 #### 5.3 Present Retention Offer
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║               BEFORE YOU DOWNGRADE - SPECIAL OFFER             ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -193,7 +193,7 @@ Use `AskUserQuestion`:
 
 If active seats > new limit, BLOCK downgrade until resolved:
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║              ⚠️  SEAT REDUCTION REQUIRED                        ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -295,7 +295,7 @@ Send email with:
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                SUBSCRIPTION DOWNGRADE SCHEDULED
 ═══════════════════════════════════════════════════════════════════

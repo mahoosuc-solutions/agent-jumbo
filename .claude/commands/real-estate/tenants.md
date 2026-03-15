@@ -65,7 +65,7 @@ Screen new applicant with systematic evaluation.
 
 ### Application Template
 
-```
+```text
 TENANT APPLICATION - 123 Oak Street
 ═════════════════════════════════════════════════════════════
 
@@ -174,7 +174,7 @@ Create lease agreements and track lease lifecycle.
 
 ### Lease Template
 
-```
+```text
 LEASE AGREEMENT
 PROPERTY: 123 Oak Street, Austin, TX 78701
 ═════════════════════════════════════════════════════════════
@@ -250,7 +250,7 @@ View and update tenant information.
 
 ### Tenant Profile
 
-```
+```text
 TENANT PROFILE: John Smith
 Property: 123 Oak Street
 ═════════════════════════════════════════════════════════════
@@ -319,7 +319,7 @@ Record all tenant communications for legal protection.
 
 ### Communication Log
 
-```
+```text
 COMMUNICATION LOG: John Smith (123 Oak St)
 ═════════════════════════════════════════════════════════════
 
@@ -369,7 +369,7 @@ Monitor rent payments and collection status.
 
 ### Rent Collection Dashboard
 
-```
+```text
 RENT COLLECTION SUMMARY (Property: 123 Oak St)
 ═════════════════════════════════════════════════════════════
 
@@ -425,7 +425,7 @@ Tenant data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/tenants.json
 ├── Tenant profiles (contact, application, screening)
 ├── Lease agreements (terms, dates, renewals)
@@ -436,7 +436,7 @@ Tenant data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 tenants table
 ├── tenant_id, property_id, name, contact_info
 ├── lease_start, lease_end, rent_amount
@@ -461,7 +461,7 @@ rent_payments table
 
 Good tenant management = reliable passive income toward financial independence:
 
-```
+```text
 LIFE GOAL: Financial Independence
 ├── Real estate generates passive income: YES
 │   ├── Reliable tenants = consistent rent collection

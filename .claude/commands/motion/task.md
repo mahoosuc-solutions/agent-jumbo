@@ -221,7 +221,7 @@ Calendar: ${calendarEvent.htmlLink}
 
 ### 5. Confirmation
 
-```
+```text
 ✓ Task created and AI-scheduled by Motion
 
 📋 "Complete API integration"

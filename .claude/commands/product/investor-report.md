@@ -87,7 +87,7 @@ ${ARGUMENTS}
 
 **Folder Structure** (AI solution folder):
 
-```
+```text
 ./ai-solutions/cloud-cost-optimizer/
 ├── product-info.md (REQUIRED - auto-generated if missing)
 ├── README.md (used for extraction)
@@ -289,7 +289,7 @@ Weighted scoring:
 
 ## Example Output
 
-```
+```text
 ═══════════════════════════════════════════════════════
  INVESTOR READINESS REPORT: Cloud Cost Optimizer
 ═══════════════════════════════════════════════════════

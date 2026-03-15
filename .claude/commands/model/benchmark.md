@@ -67,7 +67,7 @@ Test models on generating test cases.
 
 **Expected Output:**
 
-```
+```text
 Claude Model Benchmark Suite
 =============================
 Running comprehensive benchmarks...
@@ -325,7 +325,7 @@ Configuration Changes:
 
 **Expected Output:**
 
-```
+```text
 Security Auditing Benchmark
 ============================
 Category: Security
@@ -443,7 +443,7 @@ Human Validation Results:
 
 **Expected Output:**
 
-```
+```text
 Custom Benchmark: E-Commerce Platform Tasks
 ============================================
 
@@ -561,7 +561,7 @@ vs. All-Opus: $1,000/month (73% savings, equivalent quality)
 
 **Expected Output:**
 
-```
+```text
 Continuous Benchmarking Mode
 =============================
 
@@ -580,7 +580,7 @@ Dashboard: http://localhost:3000/benchmarks
 
 **Daily Email Report:**
 
-```
+```text
 Daily Benchmark Report - Nov 25, 2025
 ======================================
 
@@ -753,7 +753,7 @@ Create custom benchmarks for your specific needs:
 
 **Benchmark Failures:**
 
-```
+```text
 ⚠️ Benchmark Failure
 
 Task: Security Audit
@@ -775,7 +775,7 @@ Recommendation: Review task complexity or increase timeout
 
 **Quality Validation Disagreement:**
 
-```
+```text
 ⚠️ Human Validation Conflict
 
 Task: Code Review

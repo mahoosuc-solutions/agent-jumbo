@@ -59,7 +59,7 @@ Submit maintenance requests and create work orders.
 
 ### Work Order Template
 
-```
+```text
 WORK ORDER: 123 Oak Street
 ═════════════════════════════════════════════════════════════
 
@@ -150,7 +150,7 @@ View all work orders and track progress.
 
 ### Work Order Dashboard
 
-```
+```text
 WORK ORDER STATUS (Property: 123 Oak Street)
 ═════════════════════════════════════════════════════════════
 
@@ -199,7 +199,7 @@ Track vendors with ratings and contact information.
 
 ### Vendor Profile
 
-```
+```text
 VENDOR: ABC HVAC Services
 ═════════════════════════════════════════════════════════════
 
@@ -256,7 +256,7 @@ Monitor maintenance expenses and identify trends.
 
 ### Expense Tracking
 
-```
+```text
 MAINTENANCE EXPENSE SUMMARY (2025)
 ═════════════════════════════════════════════════════════════
 
@@ -322,7 +322,7 @@ Maintenance data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/maintenance.json
 ├── Work orders (requests, status, completion)
 ├── Vendor directory (contacts, ratings, history)
@@ -332,7 +332,7 @@ Maintenance data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 work_orders table
 ├── wo_id, property_id, priority
 ├── description, status, completion_date
@@ -358,7 +358,7 @@ maintenance_expenses table
 
 Well-maintained properties = preserved asset value and reliable cash flow:
 
-```
+```text
 LIFE GOAL: Financial Independence
 ├── Real estate generates passive income: YES
 │   ├── Preventive maintenance = avoid major repairs

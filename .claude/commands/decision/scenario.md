@@ -38,7 +38,7 @@ Extract from user input:
 
 For each option, generate:
 
-```
+```text
 OPTION [X]: [Description]
 ==========================
 
@@ -223,7 +223,7 @@ RECOMMENDED RISK MITIGATION:
 
 Identify which assumptions matter most:
 
-```
+```text
 SENSITIVITY ANALYSIS
 ====================
 
@@ -289,7 +289,7 @@ Optimizing these 3 assumptions moves us from Most-Likely to Best-Case scenario.
 
 If user requests `--monte-carlo <runs>`, run probabilistic simulation:
 
-```
+```text
 MONTE CARLO SIMULATION
 ======================
 Runs: 10,000 simulations
@@ -346,7 +346,7 @@ Suggested actions:
 
 For sequential decisions:
 
-```
+```text
 DECISION TREE
 =============
 
@@ -407,7 +407,7 @@ Don't expand if: You have <$300K cash (failure = game over)
 
 ### Example 1: Should we hire a VP of Sales?
 
-```
+```text
 OPTION A: Hire VP Sales Now ($150K salary)
 ==========================================
 

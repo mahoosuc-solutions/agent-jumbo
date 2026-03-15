@@ -119,7 +119,7 @@ Implementation details and architecture
 
 ### Core Implementation
 
-```
+```text
 /home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/
 ├── pms_provider.py                    # Abstract interface (256 lines)
 ├── provider_registry.py               # Configuration management (327 lines)
@@ -134,7 +134,7 @@ Implementation details and architecture
 
 ### API Endpoints
 
-```
+```text
 /home/webemo-aaron/projects/agent-jumbo/python/api/
 ├── pms_webhook_receive.py             # Webhook handler (142 lines)
 ├── pms_settings_get.py                # Configuration GET (81 lines)
@@ -143,14 +143,14 @@ Implementation details and architecture
 
 ### Tool Integration
 
-```
+```text
 /home/webemo-aaron/projects/agent-jumbo/python/tools/
 └── pms_hub_tool.py                    # Agent-zero interface (436 lines)
 ```
 
 ### Configuration Storage
 
-```
+```text
 ~/.pms_hub/
 ├── providers.json                     # Provider credentials (plaintext)
 └── events.db                          # SQLite event audit log

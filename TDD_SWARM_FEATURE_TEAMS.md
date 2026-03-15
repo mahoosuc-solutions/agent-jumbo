@@ -24,7 +24,7 @@ Implement two major feature enhancements using **parallel TDD Swarm teams** with
 
 #### New Files to Create
 
-```
+```python
 instruments/custom/pms_hub/calendar_sync.py          # Calendar sync service
 python/tools/pms_calendar_sync.py                    # Calendar sync tool
 python/api/pms_calendar_sync.py                      # Calendar sync API
@@ -34,7 +34,7 @@ tests/test_pms_calendar_pricing.py                   # 20+ tests
 
 #### Integration Points
 
-```
+```text
 PMS Reservation → Canonical Model → Calendar Sync Service
     ↓
 EventBus (pms.reservation.*)
@@ -156,7 +156,7 @@ self.event_bus.subscribe("pms.pricing_rule.updated", self._on_pricing_updated)
 
 #### New Files to Create
 
-```
+```python
 instruments/custom/pms_hub/communication_workflows.py # Workflow engine
 python/tools/pms_communication.py                     # Communication tool
 python/api/pms_communication_send.py                  # Send API
@@ -167,7 +167,7 @@ tests/test_pms_message_templates.py                   # 20+ tests
 
 #### Integration Points
 
-```
+```text
 PMS Reservation Event → Workflow Trigger
     ↓
 Communication Service → Message Template Rendering
@@ -311,7 +311,7 @@ self.event_bus.subscribe("pms.issue.reported", self._on_issue_reported)
 
 ### Development Process
 
-```
+```text
 Sprint Timeline:
 ├── Day 1: Setup & Test Writing (TDD)
 │   ├── Create feature branch + worktree
@@ -400,7 +400,7 @@ git log --oneline
 
 ### Pre-Merge Checklist (Each Team)
 
-```
+```text
 Feature Branch: feature/pms-calendar-sync
 ├── [ ] All tests passing (local)
 ├── [ ] 95%+ code coverage
@@ -432,7 +432,7 @@ Feature Branch: feature/pms-messaging-automation
 
 ## 📁 Worktree Structure
 
-```
+```text
 .worktrees/
 ├── pms-calendar/
 │   ├── instruments/custom/pms_hub/calendar_sync.py

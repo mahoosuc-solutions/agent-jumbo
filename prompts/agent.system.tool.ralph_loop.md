@@ -15,7 +15,7 @@ Ralph Loop enables Agent Jumbo to work on tasks iteratively, continuing until th
 
 ## Quick Start
 
-```
+```json
 {{ralph_loop(
   action="start_loop",
   name="Implement Feature",
@@ -33,7 +33,7 @@ Ralph Loop enables Agent Jumbo to work on tasks iteratively, continuing until th
 
 Start a new Ralph loop.
 
-```
+```json
 {{ralph_loop(
   action="start_loop",
   name="Task Name",
@@ -54,7 +54,7 @@ Start a new Ralph loop.
 
 Check current loop status.
 
-```
+```json
 {{ralph_loop(action="get_status", loop_id=1)}}
 ```
 
@@ -64,7 +64,7 @@ If `loop_id` is omitted, returns status of the active loop for the current agent
 
 Cancel an active loop.
 
-```
+```json
 {{ralph_loop(action="cancel_loop", loop_id=1, reason="Need to change approach")}}
 ```
 
@@ -72,7 +72,7 @@ Cancel an active loop.
 
 List Ralph loops.
 
-```
+```json
 {{ralph_loop(action="list_loops", status="active")}}
 ```
 
@@ -85,7 +85,7 @@ List Ralph loops.
 
 View iteration history.
 
-```
+```json
 {{ralph_loop(action="get_loop_history", loop_id=1)}}
 ```
 
@@ -95,7 +95,7 @@ View iteration history.
 
 Start a Ralph loop for a workflow task.
 
-```
+```json
 {{ralph_loop(
   action="start_task_loop",
   workflow_execution_id=1,
@@ -110,7 +110,7 @@ Start a Ralph loop for a workflow task.
 
 Link an existing loop to a workflow execution.
 
-```
+```json
 {{ralph_loop(
   action="link_to_workflow",
   loop_id=1,
@@ -125,7 +125,7 @@ Link an existing loop to a workflow execution.
 
 Update the completion promise mid-loop.
 
-```
+```json
 {{ralph_loop(action="set_completion_promise", loop_id=1, completion_promise="NEW_CRITERIA")}}
 ```
 
@@ -133,7 +133,7 @@ Update the completion promise mid-loop.
 
 Update the iteration limit.
 
-```
+```json
 {{ralph_loop(action="set_max_iterations", loop_id=1, max_iterations=100)}}
 ```
 
@@ -141,7 +141,7 @@ Update the iteration limit.
 
 Pause an active loop (can resume later).
 
-```
+```json
 {{ralph_loop(action="pause_loop", loop_id=1)}}
 ```
 
@@ -149,7 +149,7 @@ Pause an active loop (can resume later).
 
 Resume a paused loop.
 
-```
+```json
 {{ralph_loop(action="resume_loop", loop_id=1)}}
 ```
 
@@ -159,7 +159,7 @@ Resume a paused loop.
 
 View Ralph loop statistics.
 
-```
+```text
 {{ralph_loop(action="get_stats")}}
 ```
 
@@ -167,13 +167,13 @@ View Ralph loop statistics.
 
 The completion promise is how the loop knows when a task is done. When you complete the task, output:
 
-```
+```html
 <promise>YOUR_COMPLETION_PROMISE</promise>
 ```
 
 For example, if your promise is `ALL_TESTS_PASSING`, output:
 
-```
+```html
 <promise>ALL_TESTS_PASSING</promise>
 ```
 
@@ -189,7 +189,7 @@ For example, if your promise is `ALL_TESTS_PASSING`, output:
 
 ✅ Clear completion criteria:
 
-```
+```json
 {{ralph_loop(
   action="start_loop",
   prompt="Build a REST API for todos with:
@@ -205,7 +205,7 @@ For example, if your promise is `ALL_TESTS_PASSING`, output:
 
 ✅ Incremental goals:
 
-```
+```json
 {{ralph_loop(
   action="start_loop",
   prompt="Phase 1: Create database schema
@@ -221,7 +221,7 @@ For example, if your promise is `ALL_TESTS_PASSING`, output:
 
 ✅ Self-correction instructions:
 
-```
+```json
 {{ralph_loop(
   action="start_loop",
   prompt="Implement feature X following TDD:
@@ -241,14 +241,14 @@ For example, if your promise is `ALL_TESTS_PASSING`, output:
 
 ❌ Vague prompts:
 
-```
+```python
 # Bad - no clear success criteria
 {{ralph_loop(prompt="Make the code better")}}
 ```
 
 ❌ Impossible tasks:
 
-```
+```python
 # Bad - no clear path to completion
 {{ralph_loop(prompt="Write perfect code with no bugs")}}
 ```
@@ -273,7 +273,7 @@ Ralph Loop integrates with the AI Solutioning workflow:
 
 ## Example: Building a Feature
 
-```
+```python
 # Start the loop
 {{ralph_loop(
   action="start_loop",

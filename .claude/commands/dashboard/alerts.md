@@ -47,7 +47,7 @@ Multi-business operators face alert fatigue from scattered notifications across 
 
 ## Dashboard Structure
 
-```
+```text
 ╔═════════════════════════════════════════════════════════════════════════════╗
 ║                         CROSS-BUSINESS ALERTS DASHBOARD                     ║
 ║                                                                             ║

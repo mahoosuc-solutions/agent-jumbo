@@ -276,7 +276,7 @@ Best,
 
 [Link to book meeting]
 
-```
+```text
 
 **Touch 2 - Day 3: In-App Notification**
 - **Trigger**: Next time champion logs in
@@ -309,7 +309,7 @@ Can we schedule 20 minutes this week to walk through the numbers?
 Best,
 [CSM Name]
 
-```
+```text
 
 **Touch 4 - Day 14: Phone/Video Call**
 - **Objective**: Personalized demo of Enterprise features
@@ -531,7 +531,7 @@ Tasks to Create:
 2. [CSM Name] - Schedule demo with [Customer] - Due: [date]
 ...
 
-```
+```text
 
 **Approval Required**: Yes/No
 [If yes, request confirmation to proceed with CRM updates]

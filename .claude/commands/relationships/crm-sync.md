@@ -36,7 +36,7 @@ Pull contact data from Zoho CRM into relationship intelligence system.
 
 **Import Process**:
 
-```
+```text
 1. Connect to Zoho CRM API
 2. Fetch all contacts (or filtered subset)
 3. Extract relationship-relevant data
@@ -60,7 +60,7 @@ Push relationship intelligence back to Zoho CRM.
 
 **Export Process**:
 
-```
+```text
 1. Calculate relationship intelligence for all contacts
 2. Format data for Zoho CRM custom fields
 3. Preview changes (if --dry-run)
@@ -243,7 +243,7 @@ Deep analysis of CRM data to extract strategic insights.
 
 ### Full Sync Process (Import + Enrich + Export)
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────┐
 │  STEP 1: IMPORT FROM ZOHO CRM                               │
 ├─────────────────────────────────────────────────────────────┤

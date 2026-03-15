@@ -310,7 +310,7 @@ echo "  Upstream: $UPSTREAM"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
      FEATURE BRANCH CREATED SUCCESSFULLY ✓
 ═══════════════════════════════════════════════════

@@ -80,7 +80,7 @@ Audit your current time usage and calculate goal alignment percentage.
 
 **Example**:
 
-```
+```text
 WEEKLY TIME AUDIT
 ├── Sleep: 56h (Health) ✅ PROTECTED
 ├── Work: 40h (Financial + Career) ✅ PROTECTED
@@ -167,7 +167,7 @@ Design your ideal week with protected time blocks.
 
 **Weekly Structure**:
 
-```
+```text
 MONDAY
 ├── 6-7am: Exercise (1h) → Health goal
 ├── 7-8am: Morning routine + breakfast
@@ -453,7 +453,7 @@ Track your actual time for 1 week and categorize.
 
 ### Daily Log Template
 
-```
+```text
 MONDAY (Dec 9, 2024)
 ├── 6:00-7:00am - Exercise (1h) → [Health goal]
 ├── 7:00-8:00am - Breakfast + morning routine (1h)
@@ -493,7 +493,7 @@ Time data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/time-tracking.json
 ├── Time blocks (schedule)
 ├── Weekly audits (historical)
@@ -504,7 +504,7 @@ Time data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 time_blocks table
 ├── block_id, day_of_week, start_time, end_time
 ├── activity_name, goal_id, alignment_score
@@ -518,7 +518,7 @@ time_blocks table
 
 Each time block should ladder back to `/life:goals`:
 
-```
+```yaml
 GOAL: Financial Independence
 ├── Business Goal: Build $200K/year software product
 │   └── Deep work blocks: Mon/Wed/Fri 8am-12pm (12h/week)

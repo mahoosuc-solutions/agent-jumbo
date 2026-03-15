@@ -70,7 +70,7 @@ Tasks are evaluated on 5 dimensions (1-5 each, total 5-25 points):
 
 **Expected Output:**
 
-```
+```text
 Task Complexity Analysis
 ========================
 
@@ -105,7 +105,7 @@ ROI: Optimal choice - Haiku perfect for simple edits
 
 **Expected Output:**
 
-```
+```text
 Task Complexity Analysis
 ========================
 
@@ -142,7 +142,7 @@ Alternative: If budget is tight and task is well-documented, try Haiku first
 
 **Expected Output:**
 
-```
+```text
 Task Complexity Analysis
 ========================
 
@@ -179,7 +179,7 @@ ROI: CRITICAL INVESTMENT - Opus prevents compliance violations (potential $50K+ 
 
 **Input file (tasks.txt):**
 
-```
+```sql
 Update button color in CSS
 Refactor user authentication module
 Add logging to payment processor
@@ -320,7 +320,7 @@ The analysis engine uses:
 
 **Ambiguous Tasks:**
 
-```
+```text
 ⚠️ Task ambiguity detected (score: 5/5)
 Recommended action: Request clarification before selecting model
 
@@ -334,7 +334,7 @@ Tentative recommendation: Start with Sonnet, escalate to Opus if needed
 
 **Budget Conflicts:**
 
-```
+```text
 ⚠️ Budget constraint conflict
 Recommended model: Opus ($0.001)
 Budget allows: Sonnet ($0.0003)

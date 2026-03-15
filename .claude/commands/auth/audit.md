@@ -379,7 +379,7 @@ Re-audit recommended after implementing Critical and High findings.
 
 Next Audit Due: 2024-04-15 (90 days)
 
-```
+```bash
 
 ## Automated Security Scanning
 

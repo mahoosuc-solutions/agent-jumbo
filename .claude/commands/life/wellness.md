@@ -74,7 +74,7 @@ Track exercise and movement:
 
 Example daily log:
 
-```
+```text
 MONDAY EXERCISE
 ├── Type: Strength training
 ├── Duration: 60 minutes
@@ -109,7 +109,7 @@ Track eating habits and food quality:
 
 Example daily log:
 
-```
+```text
 MONDAY NUTRITION
 ├── Breakfast: Eggs + oatmeal (quality: 8/10)
 ├── Lunch: Grilled chicken + vegetables (quality: 9/10)
@@ -146,7 +146,7 @@ Track sleep quality and quantity:
 
 Example nightly log:
 
-```
+```text
 MONDAY SLEEP
 ├── Bedtime: 10:30pm
 ├── Wake time: 6:30am
@@ -185,7 +185,7 @@ Track mental clarity, stress, and emotional well-being:
 
 Example daily log:
 
-```
+```text
 MONDAY MENTAL HEALTH
 ├── Mood: 7/10 (good)
 ├── Stress: 4/10 (low)
@@ -279,7 +279,7 @@ Measure how wellness metrics correlate with productivity and energy.
 - Track: Sleep hours vs. Daily productivity rating (1-10)
 - Example:
 
-  ```
+  ```yaml
   Monday: 7 hours sleep → Productivity: 7/10
   Tuesday: 6 hours sleep → Productivity: 5/10
   Wednesday: 8 hours sleep → Productivity: 9/10
@@ -293,7 +293,7 @@ Measure how wellness metrics correlate with productivity and energy.
 - Track: Exercise hours/week vs. Average daily energy (1-10)
 - Example:
 
-  ```
+  ```text
   Week 1: 3 hours exercise → Average energy: 5.5/10
   Week 2: 5 hours exercise → Average energy: 7/10
   Week 3: 7 hours exercise → Average energy: 8/10
@@ -307,7 +307,7 @@ Measure how wellness metrics correlate with productivity and energy.
 - Track: Daily nutrition quality (1-10) vs. Mental clarity (1-10)
 - Example:
 
-  ```
+  ```yaml
   Monday: Nutrition 7/10 → Mental clarity: 6/10
   Tuesday: Nutrition 9/10 → Mental clarity: 8/10
   Wednesday: Nutrition 5/10 → Mental clarity: 4/10
@@ -321,7 +321,7 @@ Measure how wellness metrics correlate with productivity and energy.
 - Track: Daily stress level vs. Night sleep quality
 - Example:
 
-  ```
+  ```yaml
   Monday: Stress 7/10 → Sleep quality: 5/10
   Tuesday: Stress 3/10 → Sleep quality: 9/10
   Wednesday: Stress 5/10 → Sleep quality: 7/10
@@ -335,7 +335,7 @@ Measure how wellness metrics correlate with productivity and energy.
 - Track: Meditation minutes/day vs. Stress rating
 - Example:
 
-  ```
+  ```yaml
   Monday: 0 min meditation → Stress: 8/10
   Tuesday: 10 min meditation → Stress: 5/10
   Wednesday: 20 min meditation → Stress: 3/10
@@ -390,7 +390,7 @@ Track how wellness impacts life goal progress:
 - Track: Monthly wellness score vs. Monthly revenue/progress
 - Example:
 
-  ```
+  ```text
   Month 1: Wellness score 6/10 → Revenue: $8K → Goal progress: 60%
   Month 2: Wellness score 8/10 → Revenue: $12K → Goal progress: 85%
   Month 3: Wellness score 9/10 → Revenue: $15K → Goal progress: 95%
@@ -404,7 +404,7 @@ Track how wellness impacts life goal progress:
 - Track: Sleep hours vs. Work quality rating
 - Example:
 
-  ```
+  ```text
   Week with 6 hrs/night sleep → Work quality: 6/10 → Client satisfaction: 70%
   Week with 7.5 hrs/night sleep → Work quality: 8/10 → Client satisfaction: 85%
 
@@ -423,7 +423,7 @@ For each wellness domain, define 3-month targets:
 
 **FITNESS GOALS**:
 
-```
+```text
 Objective: Build strength and endurance
 ├── Key Result 1: Exercise 5+ hours/week (target: 80%+ consistency)
 ├── Key Result 2: Complete 1 workout class per week (consistency: 100%)
@@ -433,7 +433,7 @@ Objective: Build strength and endurance
 
 **NUTRITION GOALS**:
 
-```
+```text
 Objective: Optimize nutrition for energy and clarity
 ├── Key Result 1: Drink 8+ glasses water daily (target: 90%+ days)
 ├── Key Result 2: Eat vegetables with every meal (target: 85%+ meals)
@@ -443,7 +443,7 @@ Objective: Optimize nutrition for energy and clarity
 
 **SLEEP GOALS**:
 
-```
+```text
 Objective: Achieve consistent, high-quality sleep
 ├── Key Result 1: Sleep 7.5-8 hours every night (target: 85%+ nights)
 ├── Key Result 2: Consistent bedtime (within 30 min): 10:30pm
@@ -453,7 +453,7 @@ Objective: Achieve consistent, high-quality sleep
 
 **MENTAL HEALTH GOALS**:
 
-```
+```text
 Objective: Reduce stress and increase mental clarity
 ├── Key Result 1: Daily meditation 10+ minutes (target: 85%+ days)
 ├── Key Result 2: Stress rating <5 on 80%+ days (current: <50%)
@@ -467,7 +467,7 @@ Connect each wellness goal to broader life goals:
 
 **LIFE GOAL: Financial Independence**
 
-```
+```text
 ├── Business Goal: Build $200K/year software business
 │   └── Requires: 40+ hours/week of deep work
 │       └── Requires: High energy and mental clarity
@@ -491,7 +491,7 @@ Connect each wellness goal to broader life goals:
 
 **LIFE GOAL: Health & Wellness**
 
-```
+```text
 ├── Fitness: Run a half-marathon
 │   └── Requires: 5+ hours/week endurance training
 │       ├── Current: 3 hours/week
@@ -528,7 +528,7 @@ Track overall wellness on a 0-10 scale:
 
 **Example this month**:
 
-```
+```text
 Sleep quality: 8/10
 Exercise consistency: 85% → 8.5/10
 Nutrition quality: 7/10
@@ -618,7 +618,7 @@ Once wearable data is integrated:
 
 **Daily Correlation Report**:
 
-```
+```text
 TODAY'S METRICS
 ├── Sleep: 7.5 hours (quality: 8/10) ✅
 ├── Heart Rate Variability: 65 (good recovery)
@@ -639,7 +639,7 @@ RECOMMENDATIONS
 
 **Weekly Correlation Analysis**:
 
-```
+```text
 THIS WEEK'S METRICS
 ├── Average sleep: 7.4 hours
 ├── Average HRV: 62 (stable)
@@ -702,7 +702,7 @@ Connect wellness metrics to goal alignment score.
 
 Each goal gets a **Wellness Multiplier**:
 
-```
+```text
 Base Goal Alignment Score: 75/100
 ├── Sleep Quality Bonus: +5 (if 7.5+ hours last night)
 ├── Exercise Consistency Bonus: +3 (if on track this week)
@@ -713,7 +713,7 @@ Base Goal Alignment Score: 75/100
 
 **Example**:
 
-```
+```text
 BUSINESS GOAL: Build $200K/year software business
 ├── Base alignment: 75/100
 ├── Sleep: 7.5h (full +5 bonus) = 80/100
@@ -726,7 +726,7 @@ BUSINESS GOAL: Build $200K/year software business
 
 If wellness scores are low:
 
-```
+```text
 FINANCIAL GOAL: Same goal, poor wellness day
 ├── Base alignment: 75/100
 ├── Sleep: 5.5h (no bonus, -2 penalty) = 73/100
@@ -746,7 +746,7 @@ Wellness data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/wellness.json
 ├── Daily metrics (fitness, nutrition, sleep, mental)
 ├── Weekly summaries
@@ -757,7 +757,7 @@ Wellness data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 wellness_metrics table
 ├── date, metric_type (fitness/nutrition/sleep/mental)
 ├── value, target, quality_rating
@@ -777,7 +777,7 @@ correlations table
 
 Each wellness goal ladder backs to `/life:goals`:
 
-```
+```text
 LIFE GOAL: Health & Wellness (Wellness domain)
 ├── Fitness Objective: Run half-marathon by June
 │   └── Requires: 5 hours/week training

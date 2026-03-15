@@ -98,7 +98,7 @@ Add a prospect or new client to your CRM.
 
 ### Client Template
 
-```
+```text
 CLIENT: TechCorp Solutions (Company)
 
 ┌─ CONTACT INFORMATION
@@ -152,7 +152,7 @@ See all clients organized by stage in pipeline.
 
 ### Client Pipeline Dashboard
 
-```
+```text
 CLIENT PIPELINE
 ═════════════════════════════════════════════════════════════
 
@@ -258,7 +258,7 @@ View complete client record and manage relationship.
 
 ### Client Detail View
 
-```
+```text
 CLIENT: TechCorp Solutions
 ═════════════════════════════════════════════════════════════
 
@@ -356,7 +356,7 @@ Track all communication with clients.
 
 ### Communication Log Template
 
-```
+```yaml
 CLIENT: TechCorp Solutions
 DATE: Jan 25, 2025
 
@@ -417,7 +417,7 @@ Evaluate each client on multiple dimensions.
 
 ### Client Value Scorecard
 
-```
+```text
 CLIENT: TechCorp Solutions
 ═════════════════════════════════════════════════════════════
 
@@ -514,7 +514,7 @@ COMPARABLE CLIENTS
 
 ### Portfolio Distribution Goal
 
-```
+```text
 CURRENT CLIENT PORTFOLIO
 ├── A+ clients (8.5+): 2 (25% of portfolio)
 ├── A clients (7.5-8.5): 4 (50% of portfolio)
@@ -544,7 +544,7 @@ Client data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/clients.json
 ├── Client information (contact, company, history)
 ├── Pipeline status (stage, probability, value)
@@ -556,7 +556,7 @@ Client data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 clients table
 ├── client_id, name, company, email, phone
 ├── status (lead, qualified, active, completed)
@@ -581,7 +581,7 @@ projects table (linked to clients)
 
 Each client relationship should serve business and life goals:
 
-```
+```text
 BUSINESS GOAL: Build $200K/year software business
 ├── Client TechCorp: $35,000 project + $25,000 Phase 2 potential
 ├── Client SmallBiz: $12,000 project + $5,000 retainer

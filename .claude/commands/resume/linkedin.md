@@ -250,7 +250,7 @@ For each position:
 
 ### Example 1: Tech Professional LinkedIn Transformation
 
-```
+```text
 User: Optimize my LinkedIn profile for senior software engineering roles
 Current Headline: "Software Engineer at Tech Company"
 Optimized Headline: "Senior Software Engineer | Building Scalable Cloud Infrastructure | Python, Kubernetes, AWS | Tech Leadership"
@@ -272,7 +272,7 @@ Results: 340% increase in recruiter views, 5 interviews in 3 months
 
 ### Example 2: Career Transition LinkedIn Repositioning
 
-```
+```yaml
 User: Transitioning from teaching to corporate training, update LinkedIn
 Current Headline: "High School Teacher"
 Optimized Headline: "Learning & Development Professional | Instructional Design & Training Delivery | EdTech Enthusiast"
@@ -289,7 +289,7 @@ Results: 15 L&D recruiter connections in first month, 3 informational interviews
 
 ### Example 3: Executive Personal Branding
 
-```
+```yaml
 User: Build thought leadership profile for C-suite consulting practice
 Headline: "CFO & Financial Transformation Consultant | Scaling $50M-$500M Companies | Private Equity Portfolio Leadership"
 
@@ -306,7 +306,7 @@ Results: 50+ C-suite connections, 3 consulting engagements, speaking invitation
 
 ### Example 4: Entry-Level Graduate Profile
 
-```
+```yaml
 User: New graduate seeking first marketing role
 Headline: "Recent Marketing Graduate | Digital Marketing & Content Creation | Google Analytics Certified"
 
@@ -319,7 +319,7 @@ Results: 20 recruiter messages first month, 2 entry-level offers within 8 weeks
 
 ### Example 5: Freelancer/Consultant Profile
 
-```
+```yaml
 User: Freelance web developer seeking more clients
 Headline: "Freelance Web Developer | Building Custom E-commerce Solutions for Small Businesses | Shopify, WordPress, React"
 
@@ -332,7 +332,7 @@ Results: 30% increase in project inquiries, higher quality leads
 
 ### Example 6: Industry Switcher (Finance to Tech)
 
-```
+```yaml
 User: Financial analyst moving to fintech product management
 Headline: "Product Manager | Fintech & Financial Services | Bridging Finance Expertise with Product Innovation"
 

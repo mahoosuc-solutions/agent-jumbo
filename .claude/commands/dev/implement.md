@@ -217,7 +217,7 @@ echo "  Ready for testing: $READY_FOR_TESTING"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
       IMPLEMENTATION COMPLETE ✓
 ═══════════════════════════════════════════════════

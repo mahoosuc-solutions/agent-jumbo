@@ -69,38 +69,30 @@ class TestMOSOrchestrator:
         """Should skip gracefully when config is missing."""
         from python.helpers.mos_orchestrator import MOSOrchestrator
 
-        with patch.dict(os.environ, {}, clear=True):
-            os.environ.pop("MOTION_API_KEY", None)
-            os.environ.pop("LINEAR_API_KEY", None)
-            os.environ.pop("MOTION_WORKSPACE_ID", None)
-
-            # Patch settings to not be available
-            with patch(
-                "python.helpers.mos_orchestrator.get_settings",
-                side_effect=ImportError,
-                create=True,
-            ):
-                result = await MOSOrchestrator.sync_linear_to_motion()
-                assert result.get("skipped") is True
+        # Mock _resolve_keys to return empty values
+        with patch(
+            "python.helpers.mos_orchestrator._resolve_keys",
+            return_value={
+                "motion_api_key": "",
+                "linear_api_key": "",
+                "motion_workspace_id": "",
+            },
+        ):
+            result = await MOSOrchestrator.sync_linear_to_motion()
+            assert result.get("skipped") is True
 
     @pytest.mark.asyncio
     async def test_sync_linear_activity_skips_without_key(self):
         """Should skip gracefully when no Linear API key."""
         from python.helpers.mos_orchestrator import MOSOrchestrator
 
-        with patch.dict(os.environ, {}, clear=True):
-            os.environ.pop("LINEAR_API_KEY", None)
-
-            # Also patch settings so it doesn't provide a key
-            with patch(
-                "python.helpers.mos_orchestrator.get_settings",
-                side_effect=ImportError,
-                create=True,
-            ):
-                # Patch the actual settings import inside the method
-                with patch("python.helpers.settings.get_settings", side_effect=ImportError):
-                    result = await MOSOrchestrator.sync_linear_activity_to_digest()
-                    assert result.get("skipped") is True
+        # Mock _resolve_keys to return empty values
+        with patch(
+            "python.helpers.mos_orchestrator._resolve_keys",
+            return_value={"linear_api_key": ""},
+        ):
+            result = await MOSOrchestrator.sync_linear_activity_to_digest()
+            assert result.get("skipped") is True
 
 
 class TestMOSSchedulerInit:

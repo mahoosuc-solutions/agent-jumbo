@@ -223,7 +223,7 @@ const behaviorData = {
 
 ### 1. What Works (Proven Patterns)
 
-```
+```text
 🎯 HIGH-IMPACT AUTOMATIONS (Ranked by ROI)
 
 [1] Email Smart Reply (Phase 3)
@@ -284,7 +284,7 @@ const behaviorData = {
 
 ### 2. What Doesn't Work (Lessons Learned)
 
-```
+```text
 ⚠️  CHALLENGES & SOLUTIONS
 
 [1] Over-Aggressive Automation
@@ -331,7 +331,7 @@ const behaviorData = {
 
 ### 3. Implementation Methodology
 
-```
+```text
 📋 AI SOLUTIONING METHODOLOGY (Data-Driven)
 
 Based on 3 months of real-world data from 21-command productivity system:
@@ -404,7 +404,7 @@ CRITICAL SUCCESS FACTORS:
 
 ### 4. Client Solutioning Framework
 
-```
+```text
 🎯 AI SOLUTIONING FRAMEWORK (For Client Engagements)
 
 Based on proven methodology from personal productivity system:
@@ -480,7 +480,7 @@ PROVEN RESULTS:
 
 Generates:
 
-```
+```text
 AI SOLUTIONING INSIGHTS REPORT
 Period: [Date Range]
 
@@ -512,7 +512,7 @@ CASE STUDY: Your Productivity System
 
 Generates:
 
-```
+```text
 CASE STUDY: AI-Powered Productivity Autopilot
 Real-World Results from 3-Month Implementation
 

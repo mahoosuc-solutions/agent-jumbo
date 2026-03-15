@@ -49,7 +49,7 @@ We're executing a comprehensive 7-week modernization to transform this platform 
 
 1. **Hook Directory Structure**
 
-   ```
+   ```text
    .claude/hooks/
    ├── pre-commit/quality-gate.yaml
    ├── post-deploy/verification.yaml

@@ -257,7 +257,7 @@ Use **AskUserQuestion** to collect required variables:
 - Assigned To: [text or auto-assign]
 - Additional notes: [optional text]
 
-```
+```text
 WORKFLOW CONFIGURATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -332,7 +332,7 @@ For each stage in dependency order:
 
 1. **Check Dependencies**:
 
-   ```
+   ```yaml
    STAGE: enrich_data
    DEPENDENCIES: [collect_data]
 
@@ -344,7 +344,7 @@ For each stage in dependency order:
 
 2. **Execute Stage**:
 
-   ```
+   ```text
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    STAGE 2/8: Enrich Lead Data
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -369,7 +369,7 @@ For each stage in dependency order:
 
 3. **Handle Parallel Stages**:
 
-   ```
+   ```text
    PARALLEL EXECUTION GROUP: data_processing
 
    Running in parallel:
@@ -386,7 +386,7 @@ For each stage in dependency order:
 
 4. **Handle Approval Gates**:
 
-   ```
+   ```text
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ⏸ APPROVAL REQUIRED
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -421,7 +421,7 @@ For each stage in dependency order:
 
 5. **Wait for Approval**:
 
-   ```
+   ```text
    WORKFLOW STATUS: Waiting for Approval
 
    Stage: create_crm_lead
@@ -435,7 +435,7 @@ For each stage in dependency order:
 
 6. **Resume After Approval**:
 
-   ```
+   ```text
    ✓ APPROVAL GRANTED
 
    Approval ID: PENDING-67890
@@ -451,7 +451,7 @@ For each stage in dependency order:
 
 7. **Handle Stage Failures**:
 
-   ```
+   ```text
    ✗ STAGE FAILED: send_welcome_email
 
    Error: SMTP connection timeout
@@ -468,7 +468,7 @@ For each stage in dependency order:
 
 8. **Update Progress**:
 
-   ```
+   ```text
    WORKFLOW PROGRESS
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -493,7 +493,7 @@ For each stage in dependency order:
 
 When all stages complete successfully:
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✓ WORKFLOW COMPLETED SUCCESSFULLY
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -562,7 +562,7 @@ View detailed execution log:
 
 If critical failure occurs:
 
-```
+```text
 ✗ WORKFLOW FAILED
 
 Stage: create_crm_lead
@@ -610,7 +610,7 @@ RECOVERY OPTIONS:
 
 For stages with `on_failure: "continue"`:
 
-```
+```text
 ⚠ STAGE FAILED (Non-Critical)
 
 Stage: enrich_data
@@ -737,7 +737,7 @@ Shows current workflow status, progress, and outputs.
 
 ## Success Metrics
 
-```
+```text
 WORKFLOW ORCHESTRATION METRICS (Last 30 Days)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

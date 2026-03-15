@@ -279,7 +279,7 @@ Include clear technical instructions for production team.
 
 **Output:**
 
-```
+```text
 [TOTAL RUNTIME: 45:00]
 
 COLD OPEN [0:00-0:45]
@@ -357,7 +357,7 @@ bias even get into the code?"
 
 **Output:**
 
-```
+```text
 [TOTAL RUNTIME: 30:00]
 
 COLD OPEN [0:00-1:00]
@@ -419,7 +419,7 @@ building tension to the heist...]
 
 **Output:**
 
-```
+```text
 [TOTAL RUNTIME: 60:00]
 
 COLD OPEN [0:00-0:30]
@@ -495,7 +495,7 @@ TicketFlow, the best way to get playoff tickets..."
 
 **Output:**
 
-```
+```text
 [TOTAL RUNTIME: 20:00]
 
 COLD OPEN [0:00-0:30]
@@ -562,7 +562,7 @@ step-by-step demo, real-world application examples...]
 
 **Output:**
 
-```
+```text
 [TOTAL RUNTIME: 50:00]
 
 COLD OPEN [0:00-0:45]

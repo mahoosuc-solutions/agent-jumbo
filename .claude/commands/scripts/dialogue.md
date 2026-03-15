@@ -274,7 +274,7 @@ Refine dialogue to ensure it sounds natural when performed aloud.
 
 **Output:**
 
-```
+```text
 SARAH
 Tom, I need you to explain something.
 
@@ -319,7 +319,7 @@ No. We're talking about it now.
 
 **Output:**
 
-```
+```text
 MARCUS
 It's your turn to drive. I drove the last
 two hours, which means--
@@ -372,7 +372,7 @@ Why would you trust me with your life?
 
 **Output:**
 
-```
+```text
 REBECCA
 So, how long have you been on these apps?
 
@@ -437,7 +437,7 @@ Something safer.
 
 **Output:**
 
-```
+```text
 DR. MARTINEZ
 We need to try the new protocol.
 
@@ -489,7 +489,7 @@ She doesn't have time for long-term studies.
 
 **Output:**
 
-```
+```text
 JORDAN
 Can we talk about something?
 

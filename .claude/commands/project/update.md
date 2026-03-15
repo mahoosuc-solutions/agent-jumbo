@@ -96,7 +96,7 @@ Updates an existing Claude Code project setup to the latest standards, adding ne
 
 **Example changes:**
 
-```
+```text
 Added:
 - /dev:profile - Performance profiling
 - /db:query - Interactive database queries
@@ -130,7 +130,7 @@ Preserved:
 
 **Example changes:**
 
-```
+```text
 Added:
 - dependency-security-scanner
 - code-complexity-analyzer
@@ -163,7 +163,7 @@ Preserved:
 
 **Example changes:**
 
-```
+```text
 Added:
 - automation/scripts/performance-monitoring.sh
 - automation/scripts/security-scan.sh
@@ -197,7 +197,7 @@ Preserved:
 
 **Example changes:**
 
-```
+```text
 Added:
 - .github/workflows/security-scan.yml
 - .github/workflows/performance-test.yml
@@ -230,7 +230,7 @@ Preserved:
 
 **Example changes:**
 
-```
+```text
 Added:
 - docs/SECURITY.md
 - docs/PERFORMANCE.md
@@ -295,7 +295,7 @@ When conflicts detected:
 
 ### Strategy 1: Preserve Custom (Default)
 
-```
+```text
 Your custom version is kept.
 Standard version saved as: file.md.standard
 Review manually: diff file.md file.md.standard
@@ -303,7 +303,7 @@ Review manually: diff file.md file.md.standard
 
 ### Strategy 2: Update with Note
 
-```
+```text
 Your custom version updated.
 Your original saved as: file.md.backup
 Custom parts preserved and noted.
@@ -311,7 +311,7 @@ Custom parts preserved and noted.
 
 ### Strategy 3: Manual Review (Force Mode)
 
-```
+```text
 Both versions saved:
 - file.md.yours
 - file.md.standard
@@ -325,7 +325,7 @@ Choose one or merge manually.
 
 Every update creates backup:
 
-```
+```text
 .claude.backup-20250124-143022/
 ├── commands/
 ├── skills/
@@ -685,7 +685,7 @@ diff .claude/commands/dev/deploy.md{,.standard}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```
+```text
 
 ## Best Practices
 

@@ -314,7 +314,7 @@ Continuously improve budget efficiency based on data:
 
 **Output:**
 
-```
+```text
 Budget Created: Young Professional - House Savings Plan
 
 Monthly Net Income: $5,100 ($85K salary after taxes, 401k)
@@ -368,7 +368,7 @@ NEXT STEPS:
 
 **Output:**
 
-```
+```text
 Variable Income Budget - Freelance Designer
 
 BASELINE BUDGET (Based on $4,000 minimum monthly income):
@@ -446,7 +446,7 @@ ALERTS:
 
 **Output:**
 
-```
+```text
 Small Business Budget - Marketing Agency
 
 MONTHLY REVENUE: $75,000 (average recurring + project-based)
@@ -516,7 +516,7 @@ QUARTERLY GOALS:
 
 **Output:**
 
-```
+```text
 Family Debt Payoff Budget
 
 MONTHLY NET INCOME: $7,500 (Combined after taxes)
@@ -609,7 +609,7 @@ ALERTS:
 
 **Output:**
 
-```
+```text
 Retirement Budget - Fixed Income Planning
 
 MONTHLY INCOME ($4,500):

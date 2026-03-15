@@ -4,7 +4,7 @@
 
 The dev container failed to build with the error:
 
-```
+```text
 ERROR: failed to build: failed to solve: error from sender: open /mnt/wdblack/dev/projects/agent-zero/docker/run/agent-zero/tmp/codex-home/tmp/arg0: permission denied
 ```
 
@@ -22,7 +22,7 @@ The `docker/run/` directory contained runtime artifacts (specifically root-owned
 
 Moved `docker/run/` exclusion to the top for early processing:
 
-```
+```text
 docker/run/
 docker/run/**
 ```

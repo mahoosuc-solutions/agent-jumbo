@@ -217,7 +217,7 @@ await Task({
 
 The complete agent-os workflow is now modernized:
 
-```
+```text
 /agent-os/plan-product          → product-planner ✅
   ↓
 /agent-os/init-spec             → bash-only ✅

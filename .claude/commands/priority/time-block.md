@@ -104,7 +104,7 @@ Design optimized daily/weekly schedules that protect 3-4 hours of uninterrupted 
 
 ### Rule 1: Protect the Sacred Hours
 
-```
+```text
 IF deep_work_block THEN
   - Decline all meeting requests
   - Auto-respond to non-urgent messages
@@ -115,7 +115,7 @@ END
 
 ### Rule 2: Batch Similar Tasks
 
-```
+```text
 IF task_type == "communication" THEN
   - Group all emails in one block
   - Stack phone calls back-to-back
@@ -131,7 +131,7 @@ END
 
 ### Rule 3: Energy-Task Matching
 
-```
+```text
 IF time == peak_energy AND task == high_cognitive_load THEN
   - Schedule creative work (proposals, strategy)
 END
@@ -143,7 +143,7 @@ END
 
 ### Rule 4: Meeting Limits
 
-```
+```text
 DEFAULT: max_meetings_per_day = 2
 IF urgent_client_need THEN max_meetings_per_day = 3
 IF property_emergency THEN override_all_limits = true
@@ -151,7 +151,7 @@ IF property_emergency THEN override_all_limits = true
 
 ### Rule 5: Context Switching Cost
 
-```
+```text
 MIN_task_duration = 25 minutes (Pomodoro)
 BETWEEN_different_task_types = 10 min buffer
 BETWEEN_same_task_types = 5 min buffer
@@ -521,7 +521,7 @@ Week of: [Date]
 
 ### Auto-Decline Meeting Requests
 
-```
+```text
 IF meeting_request.time IN deep_work_block THEN
   RESPOND: "I'm in a focus block during that time. I'm available [alternative times]. Is this urgent?"
 END

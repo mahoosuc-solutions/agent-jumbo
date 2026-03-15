@@ -226,7 +226,7 @@ ${relatedContent.map(item => `- [${item.title}](${item.url})`).join('\n')}
 
 ### 6. Confirmation
 
-```
+```text
 ✓ Note saved to Notion
 
 📝 "Tenant prefers email for maintenance requests"

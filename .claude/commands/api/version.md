@@ -82,7 +82,7 @@ Ask user to select versioning strategy:
 
 ### Option 1: URL Versioning (Recommended for REST)
 
-```
+```text
 https://api.example.com/v1/users
 https://api.example.com/v2/users
 
@@ -103,7 +103,7 @@ Best for: REST APIs, public APIs, microservices
 
 ### Option 2: Header Versioning
 
-```
+```text
 GET /users
 Accept-Version: v1
 
@@ -125,7 +125,7 @@ Best for: Internal APIs, APIs with stable URLs
 
 ### Option 3: Content Negotiation
 
-```
+```text
 GET /users
 Accept: application/vnd.company.v1+json
 
@@ -147,7 +147,7 @@ Best for: APIs following strict REST principles
 
 ### Option 4: Query Parameter (Not Recommended)
 
-```
+```text
 GET /users?version=1
 GET /users?version=2
 
@@ -503,7 +503,7 @@ while (true) {
 
 **New Headers**:
 
-```
+```text
 X-Rate-Limit-Limit: 1000
 X-Rate-Limit-Remaining: 999
 X-Rate-Limit-Reset: 1640000000
@@ -750,7 +750,7 @@ EOF
 
 echo "✓ Migration guide generated: docs/migrations/v${FROM_VERSION}-to-v${TO_VERSION}.md"
 
-```
+```javascript
 
 ## Step 5: Implement Version Routing
 
@@ -905,7 +905,7 @@ cat > docs/version-comparison.md <<'EOF'
 
 GET /v1/users?page=1&limit=20&api_key=KEY
 
-```
+```text
 
 **v2**:
 ```
@@ -913,7 +913,7 @@ GET /v1/users?page=1&limit=20&api_key=KEY
 GET /v2/users?cursor=CURSOR&limit=20
 Authorization: Bearer TOKEN
 
-```
+```text
 
 [Full comparison continues...]
 
@@ -957,7 +957,7 @@ app.use('/v1', sunsetEnforcement(new Date('2024-07-15')))
 
 ## Step 9: Display Summary
 
-```
+```text
 ════════════════════════════════════════════════════════
          API VERSIONING CONFIGURED
 ════════════════════════════════════════════════════════

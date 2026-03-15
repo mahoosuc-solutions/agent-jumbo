@@ -63,7 +63,7 @@ product_management:
 
 ### Registry File Location
 
-```
+```text
 .claude/agents/registry.yaml
 ```
 

@@ -12,7 +12,7 @@
 
 ## 📊 Project Structure
 
-```
+```text
 /home/webemo-aaron/projects/agent-jumbo
 ├── Main Branch (main)
 │   ├── [Core PMS Hub System] ✓ Complete
@@ -48,7 +48,7 @@
 
 ### Git Branch
 
-```
+```text
 feature/pms-calendar-sync (created at commit b0417ed)
 ```
 
@@ -161,7 +161,7 @@ pytest tests/test_pms_calendar_*.py -m asyncio -v
 
 ### Git Branch
 
-```
+```text
 feature/pms-messaging-automation (created at commit b0417ed)
 ```
 
@@ -285,7 +285,7 @@ pytest tests/test_pms_communication_*.py -m asyncio -v
 
 ### Day 1: Setup & Analysis
 
-```
+```text
 09:00 - Team Setup & Documentation Review
 10:00 - Test Suite Planning
 11:00 - Test Writing (Red Phase)
@@ -295,7 +295,7 @@ pytest tests/test_pms_communication_*.py -m asyncio -v
 
 ### Days 2-3: Implementation
 
-```
+```text
 09:00 - Implementation (Green Phase)
 11:00 - Test Status Check
 13:00 - Lunch Break
@@ -306,7 +306,7 @@ pytest tests/test_pms_communication_*.py -m asyncio -v
 
 ### Day 4: Integration
 
-```
+```text
 09:00 - Integration Testing
 11:00 - Error Handling & Edge Cases
 13:00 - Lunch Break
@@ -317,7 +317,7 @@ pytest tests/test_pms_communication_*.py -m asyncio -v
 
 ### Day 5: Merge & Validation
 
-```
+```text
 09:00 - Final Code Review
 10:00 - Conflict Resolution (if needed)
 11:00 - Merge to Main
@@ -420,7 +420,7 @@ pytest tests/test_pms_communication_*.py -m asyncio -v
 
 ### Code Coverage
 
-```
+```text
 Baseline (Main Branch): ~98%
 Target (After Features): >98% overall
   - Team A: >95% calendar_sync.py
@@ -429,7 +429,7 @@ Target (After Features): >98% overall
 
 ### Test Coverage
 
-```
+```yaml
 Baseline: 91 tests (from PMS Hub)
 Additions: 100+ new tests
   - Team A: 45+ tests
@@ -439,7 +439,7 @@ Target: 200+ tests total passing
 
 ### Performance
 
-```
+```text
 Team A: <500ms per calendar event sync
 Team B: <1s per message send
 Integration: <2s for full sync cycle
@@ -447,7 +447,7 @@ Integration: <2s for full sync cycle
 
 ### Quality Gate
 
-```
+```text
 ✅ 100% test pass rate
 ✅ >95% code coverage
 ✅ Zero security issues
@@ -571,7 +571,7 @@ git rebase origin/main
 
 ### Team A: Calendar Hub Integration
 
-```
+```text
 New Files:
 - instruments/custom/pms_hub/calendar_sync.py (350 lines)
 - python/tools/pms_calendar_sync.py (120 lines)
@@ -589,7 +589,7 @@ Documentation:
 
 ### Team B: Guest Communication Automation
 
-```
+```text
 New Files:
 - instruments/custom/pms_hub/communication_workflows.py (450 lines)
 - instruments/custom/pms_hub/message_templates.py (180 lines)

@@ -514,7 +514,7 @@ When migrating commands in Phase 2:
 
 Copy and paste this prompt to resume:
 
-```
+```text
 Continue the Claude Code modernization project. We're at 40% completion of Phase 1.
 
 Last session accomplished:

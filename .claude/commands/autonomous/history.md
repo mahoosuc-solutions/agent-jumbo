@@ -27,7 +27,7 @@ Options:
 
 When decision-id provided:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════════════════
                          DECISION DETAILS
 ═══════════════════════════════════════════════════════════════════════════════
@@ -171,7 +171,7 @@ Similar Decisions (Last 30 days):
 
 Default history view:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════════════════
                          DECISION HISTORY
                          Last 24 Hours
@@ -261,7 +261,7 @@ Avg Execution Time:    4.8 seconds
 
 When `--approve` specified:
 
-```
+```text
 /autonomous:history dec_003 --approve
 
 ═══════════════════════════════════════════════════════════
@@ -308,7 +308,7 @@ Decision will execute when all approvals received.
 
 When `--reject` specified:
 
-```
+```text
 /autonomous:history dec_004 --reject --reason "Need load testing results"
 
 ═══════════════════════════════════════════════════════════

@@ -310,7 +310,7 @@ echo "  Safety backup: $SAFETY_BACKUP"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         DATABASE RESTORE COMPLETE ✓
 ═══════════════════════════════════════════════════

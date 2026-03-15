@@ -141,7 +141,7 @@ curl -s -X POST "http://localhost:3001/api/v1/swarm-knowledge" \
 
 ### 10. Display Resume Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                     SWARM RESUMED
 ═══════════════════════════════════════════════════════════
@@ -201,7 +201,7 @@ All services healthy, checkpoint valid - standard resume.
 
 ### Services Unavailable
 
-```
+```text
 ⚠️  Some services are unavailable:
 
   ✗ Cross-Domain Intelligence: Connection refused
@@ -213,7 +213,7 @@ Waiting for services...
 
 ### Swarm Not Paused
 
-```
+```text
 ⚠️  Swarm is not in paused state
 
 Current Status: RUNNING
@@ -223,7 +223,7 @@ The swarm is already running. No action needed.
 
 ### No Checkpoint Found
 
-```
+```text
 ⚠️  No checkpoint found for swarm
 
 The swarm has no saved checkpoint. Resume will start fresh.

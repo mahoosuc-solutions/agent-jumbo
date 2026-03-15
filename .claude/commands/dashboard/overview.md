@@ -45,7 +45,7 @@ Managing multiple businesses requires understanding the complete picture without
 
 ## Dashboard Structure
 
-```
+```text
 ╔═════════════════════════════════════════════════════════════════════════════╗
 ║                  UNIFIED BUSINESS INTELLIGENCE DASHBOARD                    ║
 ║                                                                             ║
@@ -209,7 +209,7 @@ Dashboard pulls data from:
 
 ### CSV Export
 
-```
+```text
 Business,Monthly Revenue,Net Profit,Occupancy %,Growth %,Status,Alert Count
 Main St Rentals,28500,10200,100,12,ON_TRACK,0
 Elm Court Apts,18750,6300,100,8,ON_TRACK,0

@@ -362,7 +362,7 @@ Actions:
 
 ## Example Analysis Output
 
-```
+```text
 🔍 CONTEXT ANALYSIS REPORT
 Period: Jan 15-21, 2025 (Last Week)
 

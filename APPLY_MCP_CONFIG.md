@@ -13,7 +13,7 @@ I've prepared a comprehensive MCP configuration for you. Here's how to apply it:
 
 When you open Settings (⚙️ button), you'll see **tabs** across the top. Look for:
 
-```
+```text
 Agent Settings  │  External  │  ►MCP/A2A◄  │  Developer  │  Scheduler
                                   ↑
                             CLICK THIS TAB!
@@ -21,7 +21,7 @@ Agent Settings  │  External  │  ►MCP/A2A◄  │  Developer  │  Schedule
 
 **Inside the MCP/A2A tab**, you'll see a **JSON code editor**:
 
-```
+```text
 ┌──────────────────────────────────────────┐
 │  MCP Client Configuration                │
 │  ┌────────────────────────────────────┐  │
@@ -43,7 +43,7 @@ Agent Settings  │  External  │  ►MCP/A2A◄  │  Developer  │  Schedule
 
 Open your browser and navigate to:
 
-```
+```text
 http://localhost:8080
 ```
 
@@ -112,7 +112,7 @@ http://localhost:8080
 - ❌ `puppeteer` - Official one not published (use `puppeteer-mcp-server` instead if needed)
 - ❌ `sqlite` - Not published
 
-```
+```text
 
 4. **After pasting, click "Format JSON"** button (if available) to ensure it's properly formatted
 
@@ -150,13 +150,13 @@ You should see MCP servers being initialized.
 
 Ask Agent Jumbo:
 
-```
+```text
 What MCP tools are available?
 ```
 
 Or test a specific tool:
 
-```
+```text
 Use the filesystem server to list files in /a0
 ```
 

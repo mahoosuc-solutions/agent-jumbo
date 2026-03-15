@@ -61,7 +61,7 @@ Ask user to clarify workflow intent:
 
 ### Visual Workflow Structure
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │                 WORKFLOW CANVAS                         │
 ├─────────────────────────────────────────────────────────┤
@@ -118,7 +118,7 @@ Ask user to clarify workflow intent:
 
 ### Step 1: Receive Property Lead
 
-```
+```text
 Trigger: Webhook
   - Listens on: /webhook/property-lead
   - Expected fields: name, email, phone, property_id, move_in_date
@@ -127,7 +127,7 @@ Trigger: Webhook
 
 ### Step 2: Create CRM Lead
 
-```
+```text
 Action: Zoho CRM - Create Lead
   - Input mapping:
     - Full Name: ${name}
@@ -140,7 +140,7 @@ Action: Zoho CRM - Create Lead
 
 ### Step 3: Check Tenant Status
 
-```
+```text
 Logic: Condition
   - If: Application Status = "Pre-Approved"
     - Go to: Step 4 (Automated onboarding)
@@ -150,7 +150,7 @@ Logic: Condition
 
 ### Step 4: Automated Onboarding
 
-```
+```text
 Action: Multi-step sequence
   - Send welcome email
   - Create tenant portal access
@@ -162,7 +162,7 @@ Action: Multi-step sequence
 
 ### Step 5: Manual Review
 
-```
+```text
 Action: Approval Flow
   - Route to: Property manager
   - Approval timeout: 24 hours
@@ -172,7 +172,7 @@ Action: Approval Flow
 
 ### Step 6: Log Completion
 
-```
+```text
 Action: Update CRM
   - Set status: Tenant Onboarded
   - Set completion date: ${today}
@@ -245,7 +245,7 @@ Logging:
 
 For workflows requiring human approval:
 
-```
+```text
 Approval Gate Configuration:
   - When triggered: On high-value operations
   - Approvers: Role-based (Manager, Finance, Legal)
@@ -361,7 +361,7 @@ Activation Options:
 
 ## Step 11: Display Workflow Summary
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                     WORKFLOW CREATED
 ═══════════════════════════════════════════════════════════
@@ -413,7 +413,7 @@ NEXT STEPS:
 
 ### Example 1: Lead-to-Tenant Complete Flow
 
-```
+```text
 Trigger: Property Lead Form Submission
   ↓
 Create CRM Lead
@@ -435,7 +435,7 @@ Log in CRM + Create Activity
 
 ### Example 2: Maintenance Request Workflow
 
-```
+```text
 Trigger: Mobile App Maintenance Request
   ↓
 Create CRM Ticket
@@ -462,7 +462,7 @@ Send Tenant Follow-up
 
 ### Example 3: Rent Collection Automation
 
-```
+```text
 Trigger: Monthly rent due date
   ↓
 Generate Invoice

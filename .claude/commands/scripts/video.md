@@ -140,7 +140,7 @@ Create attention-grabbing openings:
 
 **Hook Formula:**
 
-```
+```text
 [ATTENTION GRABBER] + [BENEFIT PREVIEW] + [TIMEFRAME]
 
 Example: "In the next 90 seconds, I'll show you the exact formula that
@@ -153,7 +153,7 @@ Organize content for maximum retention:
 
 **YouTube Long-Form Structure:**
 
-```
+```text
 [0:00-0:08] Hook
 [0:08-0:30] Introduction + credibility
 [0:30-1:00] Preview of what's covered
@@ -168,7 +168,7 @@ Organize content for maximum retention:
 
 **TikTok/Short-Form Structure:**
 
-```
+```text
 [0:00-0:02] Visual hook
 [0:02-0:05] Verbal hook + promise
 [0:05-0:45] Rapid delivery of value
@@ -179,7 +179,7 @@ Organize content for maximum retention:
 
 **Corporate Training Structure:**
 
-```
+```text
 [0:00-0:30] Learning objectives
 [0:30-1:00] Why this matters
 [1:00-8:00] Step-by-step instruction
@@ -204,7 +204,7 @@ Annotate every section with visual guidance:
 
 **Annotation Format:**
 
-```
+```yaml
 SCRIPT: "The first step is to identify your target audience."
 
 [B-ROLL: Graph animation showing audience segmentation]
@@ -289,7 +289,7 @@ Strategically place CTAs:
 
 **CTA Formulation:**
 
-```
+```text
 [SPECIFIC ACTION] + [CLEAR BENEFIT] + [URGENCY/SCARCITY]
 
 Example: "Click the link below to download the free checklist
@@ -302,7 +302,7 @@ Create production-ready document:
 
 **Script Format:**
 
-```
+```text
 ===============================================
 VIDEO TITLE: [SEO-Optimized Title]
 PLATFORM: [YouTube/TikTok/etc.]
@@ -417,7 +417,7 @@ Final optimization checklist:
 
 **Generated Script:**
 
-```
+```text
 ===============================================
 HOW TO CREATE PROFESSIONAL INSTAGRAM REELS IN 2025
 Platform: YouTube | Length: 10:00 | Format: Tutorial
@@ -456,7 +456,7 @@ into customers - even if you've never edited a video before."
 
 **Generated Script:**
 
-```
+```text
 ===============================================
 MEAL PREP CONTAINERS THAT ACTUALLY WORK
 Platform: TikTok | Length: 0:45 | Format: Product Demo
@@ -537,7 +537,7 @@ PRODUCTION NOTES:
 
 **Generated Script:**
 
-```
+```text
 ===============================================
 THE REMOTE WORK SHIFT NO ONE IS TALKING ABOUT
 Platform: LinkedIn | Length: 1:30 | Format: Thought Leadership
@@ -627,7 +627,7 @@ PRODUCTION NOTES:
 
 **Generated Script:**
 
-```
+```text
 ===============================================
 MASTERING CUSTOMER SERVICE EMAIL COMMUNICATION
 Platform: Corporate LMS | Length: 5:00 | Format: Training
@@ -744,7 +744,7 @@ RESOURCES PROVIDED:
 
 **Generated Scripts:**
 
-```
+```text
 ===============================================
 REEL 1: APERTURE EXPLAINED
 Platform: Instagram Reels | Length: 0:30 | Part 1 of 3

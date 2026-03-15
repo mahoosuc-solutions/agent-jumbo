@@ -235,7 +235,7 @@ echo "  Files created: $FILE_COUNT"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
        PROJECT SCAFFOLDING COMPLETE ✓
 ═══════════════════════════════════════════════════

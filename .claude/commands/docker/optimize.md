@@ -104,7 +104,7 @@ RUN apt-get update && apt-get install -y package && \
 
 **Strategy 4: Use .dockerignore Effectively**:
 
-```
+```python
 # Reduces build context from 500 MB to 50 MB
 node_modules/
 .git/
@@ -338,7 +338,7 @@ COPY . .
 - **Savings**: Faster uploads, 90% context reduction
 - **Effort**: Low (5 minutes)
 
-```
+```text
 node_modules/
 .git/
 test/
@@ -449,7 +449,7 @@ Would you like to:
 3. **Preview changes only** (review before applying)
 4. **Custom selection** (choose specific optimizations)
 
-```
+```python
 
 #### 5. Benchmarking and Validation
 

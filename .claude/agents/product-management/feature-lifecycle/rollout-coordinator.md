@@ -226,7 +226,7 @@ Before progressing to next stage:
 
 ### Monitoring Loop
 
-```
+```text
 EVERY 5 MINUTES:
   1. Collect metrics from monitoring
   2. Calculate health gate status

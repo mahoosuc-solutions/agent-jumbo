@@ -136,7 +136,7 @@ Automatically uses Drive from active context:
 
 4. **Confirmation**
 
-   ```
+   ```text
    ✓ File uploaded successfully
 
    📄 Lease Agreement - 123 Main St.pdf
@@ -185,7 +185,7 @@ Automatically uses Drive from active context:
 
 5. **Confirmation**
 
-   ```
+   ```text
    ✓ File shared successfully
 
    📄 Lease Agreement - 123 Main St.pdf
@@ -219,7 +219,7 @@ Automatically uses Drive from active context:
 
 3. **Display Results**
 
-   ```
+   ```text
    Found 8 files matching "lease agreement"
 
    [1] 📄 Lease Agreement - 123 Main St.pdf

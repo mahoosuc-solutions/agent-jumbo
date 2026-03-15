@@ -411,7 +411,7 @@ echo "  Report: $MERGE_REPORT"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
        MERGE COMPLETED SUCCESSFULLY ✓
 ═══════════════════════════════════════════════════

@@ -17,7 +17,7 @@ Categorize tasks into 4 quadrants (Do, Schedule, Delegate, Eliminate) based on u
 
 Named after President Dwight D. Eisenhower who said: *"What is important is seldom urgent, and what is urgent is seldom important."*
 
-```
+```text
                  URGENT                    NOT URGENT
         ┌──────────────────────┬──────────────────────┐
         │                      │                      │
@@ -227,7 +227,7 @@ Ask: **"Does this significantly impact my business goals/revenue/values?"**
 
 ### ASCII Matrix (Default: --output ascii)
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                     EISENHOWER MATRIX
                    Generated: 2025-11-25
@@ -511,7 +511,7 @@ For each task, determine:
 
 ### Step 3: Assign Quadrants
 
-```
+```text
 IF urgent AND important THEN Q1
 IF NOT urgent AND important THEN Q2
 IF urgent AND NOT important THEN Q3
@@ -577,7 +577,7 @@ IF NOT urgent AND NOT important THEN Q4
 
 **Long-term Success Pattern**:
 
-```
+```text
 High Performers:
   Q1: 20-25% (handle crises efficiently)
   Q2: 60-65% (strategic, proactive)

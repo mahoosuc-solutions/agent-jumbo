@@ -22,7 +22,7 @@ Browse the official Model Context Protocol marketplace to discover, review, and 
 
 Output:
 
-```
+```python
 MCP MARKETPLACE - Featured Servers
 ═══════════════════════════════════════════════════════════════════════
 
@@ -105,7 +105,7 @@ Show more | Next page | Filter | Search
 
 Output:
 
-```
+```text
 Search Results for "database" (12 servers found)
 
 1. PostgreSQL MCP                                    ★★★★★ (1,456 reviews)
@@ -155,7 +155,7 @@ Available Categories:
 
 Output:
 
-```
+```text
 MCP Servers - Communication Category (18 servers)
 
 1. Slack MCP                                         ★★★★☆ (1,245 reviews)
@@ -202,7 +202,7 @@ MCP Servers - Communication Category (18 servers)
 
 Output:
 
-```
+```text
 GitHub MCP - Detailed Information
 ═══════════════════════════════════════════════════════════════════════
 
@@ -451,7 +451,7 @@ Feedback: Report issues or suggest features
 
 Installation process:
 
-```
+```text
 Installing GitHub MCP from marketplace...
 
 Step 1: Downloading server (8.4 MB)
@@ -503,7 +503,7 @@ Installs multiple servers in sequence.
 
 Output:
 
-```
+```text
 MCP Servers - Data Category (sorted by rating, showing top 10)
 
 1. PostgreSQL MCP                                    ★★★★★ (1,456 reviews)
@@ -539,7 +539,7 @@ Shows workflow automation and integration servers:
 
 Output:
 
-```
+```text
 GitHub MCP - User Reviews (Showing 1-10 of 2,847)
 
 ★★★★★ "Best GitHub integration I've found"
@@ -575,7 +575,7 @@ View older | View newest | View most helpful
 
 Output:
 
-```
+```text
 PostgreSQL MCP - Compatibility Check
 ═════════════════════════════════════════════════════════════════════
 
@@ -612,7 +612,7 @@ Ready to install? /mcp:marketplace --install postgres
 
 Output:
 
-```
+```text
 MCP Servers Recommended for: Automation
 
 Based on popular use cases:

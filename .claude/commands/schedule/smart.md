@@ -372,7 +372,7 @@ if (context.integrations.notion.enabled) {
 
 ### Confirmation
 
-```
+```text
 ✓ Meeting scheduled with AI optimization
 
 📅 "${meetingName}"

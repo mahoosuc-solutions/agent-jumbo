@@ -189,7 +189,7 @@ The command provides:
 
 ### 1. v0.dev Design Prompt
 
-```
+```sql
 Create a modern landing page for [Product Name]
 
 [Detailed v0 prompt with all specifications]
@@ -273,7 +273,7 @@ vercel domains add www.yourdomain.com
 
 **DNS Configuration:**
 
-```
+```text
 CNAME www → cname.vercel-dns.com
 A     @   → 76.76.21.21
 ```

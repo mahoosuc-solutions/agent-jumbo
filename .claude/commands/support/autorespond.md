@@ -590,7 +590,7 @@ Save to: support-responses/auto-response-\${TICKET_ID}-\${DATE}.md
 
 **Password Reset** (Confidence: 95% → Auto-sent):
 
-```
+```text
 Hi Sarah,
 
 I can help you reset your password right away!
@@ -609,7 +609,7 @@ Support Team
 
 **Billing Question** (Confidence: 88% → Sent with follow-up):
 
-```
+```text
 Hi John,
 
 Your next billing date is March 15, 2024 for $99/month.
@@ -623,7 +623,7 @@ Was this helpful? [Yes] [No, I need more help]
 
 **Complex Bug** (Confidence: 65% → Escalated):
 
-```
+```text
 [Internal note to agent:]
 AI Analysis:
 Intent: Bug Report

@@ -55,7 +55,7 @@
 
 ### Server Status ✅
 
-```
+```yaml
 Server: Running on http://localhost:5000
 Process: Active (PID: $(pgrep -f run_ui.py))
 Environment: Python 3.11.0 in .venv

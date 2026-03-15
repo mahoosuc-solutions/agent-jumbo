@@ -12,7 +12,7 @@ The TDD Swarm for PMS Hub feature development is **actively executing**. Team A 
 
 ### Current Progress
 
-```
+```text
 Team A: Calendar Hub Integration
 ├─ ✅ CalendarSyncService class created
 ├─ ✅ Core event sync methods implemented
@@ -37,7 +37,7 @@ Overall: 63 total tests (8 passing, 55 pending)
 
 ### Files Created/Modified
 
-```
+```text
 Committed to Repository:
 ✅ instruments/custom/pms_hub/calendar_sync.py (245 lines)
    - CalendarSyncService class
@@ -58,7 +58,7 @@ Committed to Repository:
 
 ### Test Results
 
-```
+```text
 Current Test Status:
 pytest tests/test_pms_calendar_sync.py -v
 
@@ -191,7 +191,7 @@ def test_calendar_sync_service_creation(self):
 
 Each test set should follow this pattern:
 
-```
+```text
 1. Read test file section
 2. Understand test expectations
 3. Replace pytest.skip() with actual test code
@@ -206,7 +206,7 @@ Each test set should follow this pattern:
 
 ### Daily Development Flow
 
-```
+```yaml
 Morning:   Implement 1-2 test classes
 Midday:    Run full test suite, review coverage
 Afternoon: Implement features to pass tests
@@ -219,7 +219,7 @@ Evening:   Refactor, commit, daily standup
 
 ### Test Coverage Target
 
-```
+```python
 Calendar Sync Service (calendar_sync.py):
 Current:  4 methods implemented, 8 tests passing
 Target:   Complete implementation with 45+ tests passing
@@ -235,7 +235,7 @@ Day 5: Final polish & merge (5+ tests)
 
 ### Code Quality Metrics
 
-```
+```text
 Lines of Code:
 - calendar_sync.py: 245 lines (core implementation)
 - test_pms_calendar_sync.py: 525 lines (tests)
@@ -487,7 +487,7 @@ git log --oneline -n 5
 
 ## 🎯 Current State Summary
 
-```
+```text
 PMS Hub Project Status
 ═══════════════════════════════════════════════════════════
 

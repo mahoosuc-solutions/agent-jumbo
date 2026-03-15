@@ -108,7 +108,7 @@ git commit -m "feat(calendar): implement event updates with 4 tests"
 
 ### Recommended Schedule for Team A
 
-```
+```text
 Day 1 (Today):
 ├─ Review this guidance (30 min)
 ├─ Review current implementation (30 min)
@@ -313,7 +313,7 @@ pytest tests/test_pms_communication_workflows.py::TestPreArrivalWorkflows -v
 
 ### Recommended Schedule for Team B
 
-```
+```text
 Day 1 (Tomorrow after Team A starts):
 ├─ Review guidance and Team A patterns (1-2 hours)
 ├─ Create communication_workflows.py file (30 min)
@@ -371,7 +371,7 @@ Complete by Day 5:
 
 #### Daily Sync (5 minutes)
 
-```
+```text
 09:00 - Daily standup
 ├─ How many tests passed today?
 ├─ What blockers came up?
@@ -413,7 +413,7 @@ git branch  # Should be: feature/pms-messaging-automation
 
 ### Team A Checklist
 
-```
+```text
 Day 1:
 - [ ] Review current implementation
 - [ ] Implement 3-4 more test classes (12+ tests)
@@ -452,7 +452,7 @@ Day 5:
 
 ### Team B Checklist
 
-```
+```text
 Day 1 (Start after Team A):
 - [ ] Review Team A patterns
 - [ ] Create communication_workflows.py

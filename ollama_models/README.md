@@ -53,7 +53,7 @@ MODEL_VERSION=20260113-220000 ./scripts/build.sh
 
 ## Directory Structure
 
-```
+```text
 ollama_models/
 ├── models/          # Ollama model manifests (gitignored)
 ├── blobs/           # Model binary blobs (gitignored)
@@ -74,7 +74,7 @@ This file **IS tracked in Git** to document which models are expected.
 
 ## GCP Bucket Structure
 
-```
+```text
 gs://agent-jumbo-models/
 ├── 20260113-220000/     # Versioned model snapshots
 │   ├── models/

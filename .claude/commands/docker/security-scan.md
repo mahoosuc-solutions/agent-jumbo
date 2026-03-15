@@ -504,7 +504,7 @@ services:
 - ✅ Schedule Phase 2 this week (2 hours)
 - ℹ️ Plan Phase 3 for next sprint (4 hours)
 
-```
+```python
 
 #### 3. Security Hardening Recommendations
 

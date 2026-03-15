@@ -289,7 +289,7 @@ const overallScore = (stats.killed / (stats.killed + stats.survived)) * 100
 
 ## Step 6: Display Mutation Testing Report
 
-```
+```text
 ═══════════════════════════════════════════════════
           MUTATION TESTING REPORT
 ═══════════════════════════════════════════════════
@@ -641,7 +641,7 @@ jobs:
 
 ## Step 10: Final Report
 
-```
+```text
 ═══════════════════════════════════════════════════
         MUTATION TESTING IMPROVEMENT SUMMARY
 ═══════════════════════════════════════════════════

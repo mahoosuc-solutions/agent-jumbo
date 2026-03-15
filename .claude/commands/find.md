@@ -261,7 +261,7 @@ const sortedResults = rankedResults.map(index => allResults[index]);
 
 ### 4. Format and Display
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║  🔍 SEARCH RESULTS FOR: "tenant email preference"             ║
 ╠════════════════════════════════════════════════════════════════╣

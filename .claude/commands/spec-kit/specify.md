@@ -71,7 +71,7 @@ Ask: "Let's create user stories. How many user stories do you need?" (3-10)
 
 For each user story, collect in format:
 
-```
+```text
 As a [user type]
 I want [functionality]
 So that [benefit]
@@ -79,7 +79,7 @@ So that [benefit]
 
 Example:
 
-```
+```text
 As a customer
 I want to search for products by category
 So that I can find items I'm interested in quickly
@@ -143,7 +143,7 @@ The API will:
 
 Show a comprehensive summary:
 
-```
+```text
 ✅ Specification Generated Successfully!
 
 Design ID: {design_id}
@@ -239,7 +239,7 @@ All artifacts stored in database and workspace:
 • Export specification: /spec-kit:specify {design_id} --export ./specs/
 • Generate all formats: /spec-kit:specify {design_id} --all-formats
 
-```
+```text
 
 ### Step 6: Optional Actions
 
@@ -324,7 +324,7 @@ If design has linked constitution:
 
 Display compliance results:
 
-```
+```text
 🔒 Constitution Compliance Check
 
 Constitution: SaaS Best Practices (const-abc-123)
@@ -386,7 +386,7 @@ Recommendations:
 
 **If design not found:**
 
-```
+```text
 ❌ Design not found: {design_id}
 
 Available designs:
@@ -400,7 +400,7 @@ Or create new design: /design:solution "New Project"
 
 **If workflow not initialized:**
 
-```
+```text
 ⚠️ No spec-kit workflow found for this design.
 
 Would you like to:
@@ -412,7 +412,7 @@ Would you like to:
 
 **If validation fails:**
 
-```
+```text
 ⚠️ Specification validation found issues:
 
 Errors (2):
@@ -429,7 +429,7 @@ Fix these issues and try again, or continue anyway? (fix/continue)
 
 ### Example 1: E-commerce API
 
-```
+```yaml
 User: /spec-kit:specify design-abc-123 --format openapi
 Assistant: Generating OpenAPI specification...
   User stories: 8 collected
@@ -442,7 +442,7 @@ Assistant: ✅ OpenAPI specification generated!
 
 ### Example 2: Event-Driven System
 
-```
+```yaml
 User: /spec-kit:specify design-def-456 --format asyncapi
 Assistant: Generating AsyncAPI specification...
   Events: order.created, payment.processed, shipment.tracking
@@ -455,7 +455,7 @@ Assistant: ✅ AsyncAPI 2.6 specification generated!
 
 ### Example 3: All Formats
 
-```
+```yaml
 User: /spec-kit:specify design-ghi-789 --all-formats
 Assistant: Generating all specification formats...
   OpenAPI: ✓ Generated (1,234 lines)

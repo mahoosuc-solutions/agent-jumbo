@@ -87,7 +87,7 @@ curl -s -X POST "http://localhost:3001/api/v1/cross-domain/signals/$SIGNAL_ID/tr
 
 ### 5. Display Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                   WORK ASSIGNED
 ═══════════════════════════════════════════════════════════

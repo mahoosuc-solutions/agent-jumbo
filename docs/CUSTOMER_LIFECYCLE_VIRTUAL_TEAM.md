@@ -13,7 +13,7 @@ This guide covers the new **Customer Lifecycle Manager** and **Virtual Team Orch
 
 These features are installed as custom instruments in Agent Jumbo:
 
-```
+```text
 instruments/custom/
 ├── customer_lifecycle/
 │   ├── lifecycle_db.py          # Database schema
@@ -411,7 +411,7 @@ python test_virtual_team.py
 
 ### Pattern 1: Lead to Delivery
 
-```
+```text
 Customer Lifecycle → Virtual Team → Portfolio Manager
 ```
 
@@ -426,7 +426,7 @@ Customer Lifecycle → Virtual Team → Portfolio Manager
 
 ### Pattern 2: Parallel Development
 
-```
+```text
 Virtual Team (parallel tasks) → Customer Lifecycle (updates)
 ```
 
@@ -441,14 +441,14 @@ Virtual Team (parallel tasks) → Customer Lifecycle (updates)
 
 **Problem**: Database file not found
 
-```
+```text
 Solution: Databases auto-create in instruments/custom/*/data/
 Check file permissions in data/ directory
 ```
 
 **Problem**: SQLite locked error
 
-```
+```text
 Solution: Close connections properly
 Restart Agent Jumbo if needed
 ```
@@ -457,7 +457,7 @@ Restart Agent Jumbo if needed
 
 **Problem**: No agent available for task
 
-```
+```text
 Solution: Check agent initialization in VirtualTeamOrchestrator
 Verify agent role matches task requirements
 Call list_agents to see registered agents
@@ -465,7 +465,7 @@ Call list_agents to see registered agents
 
 **Problem**: Task stuck in pending
 
-```
+```text
 Solution: Check task_queue for pending tasks
 Manually assign using assign_task
 Verify workflow dependencies

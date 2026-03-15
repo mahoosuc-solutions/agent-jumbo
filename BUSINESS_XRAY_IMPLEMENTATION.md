@@ -239,7 +239,7 @@ diagram_tool(
 
 ## File Structure
 
-```
+```text
 agent-jumbo/
 ├── instruments/custom/business_xray/
 │   ├── business_xray.md              # Instrument specification
@@ -264,7 +264,7 @@ Total Lines of Code: ~2,600
 
 **Comprehensive Analysis:**
 
-```
+```yaml
 User: "Run a comprehensive business x-ray for my company 'Tech Startup Inc'"
 
 Agent: Executes all 5 modules, generates:
@@ -280,7 +280,7 @@ Agent: Executes all 5 modules, generates:
 
 **Focused Analysis:**
 
-```
+```yaml
 User: "Find automation opportunities in my business"
 
 Agent: Identifies:
@@ -292,7 +292,7 @@ Total: $56,784/year potential savings
 
 **Balance Check:**
 
-```
+```yaml
 User: "Check my work-life balance"
 
 Agent: Reports:
@@ -411,7 +411,7 @@ Before production use, test these scenarios:
 
 ### Documentation Hierarchy
 
-```
+```text
 docs/
 ├── README.md                  # Main index (updated)
 ├── business_xray.md          # User guide (NEW)

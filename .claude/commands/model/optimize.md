@@ -51,7 +51,7 @@ Identify recurring task patterns and create optimized routing rules.
 
 **Expected Output:**
 
-```
+```text
 AI Model Optimization Analysis
 ==============================
 
@@ -140,7 +140,7 @@ Apply these optimizations? (y/n)
 
 **Expected Output:**
 
-```
+```text
 AI Model Optimization (Auto-Apply Mode)
 ========================================
 
@@ -185,7 +185,7 @@ Rollback command: /model:optimize --rollback 2025-11-25-14-30-00
 
 **Expected Output:**
 
-```
+```text
 Agent Optimization: documentation-expert-agent
 ===============================================
 
@@ -251,7 +251,7 @@ Apply optimization? (y/n)
 
 **Expected Output:**
 
-```
+```text
 Workflow Optimization: /dev:full-cycle
 =======================================
 
@@ -509,7 +509,7 @@ budget:
 
 Every optimization creates a timestamped backup:
 
-```
+```text
 .claude/backups/optimization-2025-11-25-14-30-00/
 ├── agents/
 ├── commands/
@@ -543,7 +543,7 @@ Every optimization creates a timestamped backup:
 
 **Insufficient Data:**
 
-```
+```text
 ⚠️ Insufficient usage data for optimization
 Current data: 47 tasks over 7 days
 Recommended: 200+ tasks over 30 days
@@ -556,7 +556,7 @@ Suggestions:
 
 **Conflicting Requirements:**
 
-```
+```text
 ⚠️ Optimization conflict detected
 
 Agent: security-audit-agent

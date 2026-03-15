@@ -166,7 +166,7 @@ Generate a comprehensive OKR document with:
 
 Save to organized location:
 
-```
+```text
 /home/webemo-aaron/strategy/{business-name}/okrs/
   - {year}-{quarter}-okrs.md
   - current-okrs.md (symlink to latest)

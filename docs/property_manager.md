@@ -5,6 +5,7 @@ The Property Manager is a comprehensive rental property management tool for resi
 ## Your Properties
 
 The system is pre-configured for:
+
 - **West Bethel Motel** - Commercial/Motel in Bethel, ME
 - **3 Houses** - Residential properties (update addresses as needed)
 
@@ -24,7 +25,7 @@ The system is pre-configured for:
 
 Set up your initial properties:
 
-```
+```text
 Initialize my property portfolio
 ```
 
@@ -32,25 +33,25 @@ Initialize my property portfolio
 
 Get an overview of your portfolio:
 
-```
+```text
 Show me my property management dashboard
 ```
 
 ### 3. Add a Tenant
 
-```
+```text
 Add tenant John Smith with email john@email.com and phone 207-555-1234
 ```
 
 ### 4. Create a Lease
 
-```
+```sql
 Create a lease for tenant 1 at property 1 starting 2024-02-01 at $1500/month
 ```
 
 ### 5. Record Rent Payment
 
-```
+```text
 Record rent payment of $1500 for lease 1
 ```
 
@@ -72,6 +73,7 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 ## Actions Reference
 
 ### Overview
+
 | Action | Description |
 |--------|-------------|
 | `dashboard` | Complete portfolio overview |
@@ -80,6 +82,7 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 | `setup_initial` | Initialize your properties |
 
 ### Properties
+
 | Action | Description |
 |--------|-------------|
 | `list_properties` | List all properties |
@@ -88,12 +91,14 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 | `update_property` | Update property info |
 
 ### Units
+
 | Action | Description |
 |--------|-------------|
 | `add_units` | Add units to property |
 | `generate_motel_units` | Auto-generate motel rooms |
 
 ### Tenants
+
 | Action | Description |
 |--------|-------------|
 | `add_tenant` | Add new tenant |
@@ -101,6 +106,7 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 | `tenant_history` | View tenant history |
 
 ### Leases
+
 | Action | Description |
 |--------|-------------|
 | `create_lease` | Create new lease |
@@ -109,6 +115,7 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 | `expiring_leases` | View expiring leases |
 
 ### Rent
+
 | Action | Description |
 |--------|-------------|
 | `record_payment` | Record rent payment |
@@ -116,12 +123,14 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 | `overdue_rent` | View overdue payments |
 
 ### Expenses
+
 | Action | Description |
 |--------|-------------|
 | `record_expense` | Record expense |
 | `expense_report` | View expense report |
 
 ### Maintenance
+
 | Action | Description |
 |--------|-------------|
 | `create_maintenance` | Create request |
@@ -130,6 +139,7 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 | `maintenance_schedule` | View schedule |
 
 ### Financial
+
 | Action | Description |
 |--------|-------------|
 | `cash_flow` | Cash flow projection |
@@ -139,17 +149,20 @@ Property data is stored at `/a0/data/properties.db` (persisted across container 
 For the motel, use short-term lease management:
 
 ### Generate Rooms
-```
+
+```text
 Generate 20 motel rooms at $89/night for property 1
 ```
 
 ### Check-In Guest
-```
+
+```sql
 Create short-term lease for property 1, unit 5, guest John Doe from 2024-02-15 to 2024-02-17 at $178
 ```
 
 ### Check Occupancy
-```
+
+```text
 Show property 1 details
 ```
 
@@ -193,5 +206,6 @@ Show property 1 details
 ## Integration
 
 Works with:
+
 - **Diagram Tool**: Visualize property portfolio and cash flow
 - **Business X-Ray**: Analyze rental business opportunities

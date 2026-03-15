@@ -353,7 +353,7 @@ The Agent Jumbo project underwent comprehensive analysis to document **all imple
 
 ### Production Ready (85%)
 
-```
+```text
 ✅ Core Agent Framework (100%)
 ✅ Message Loop (100%)
 ✅ Tool System (80+ tools, 100%)
@@ -370,7 +370,7 @@ The Agent Jumbo project underwent comprehensive analysis to document **all imple
 
 ### Partial/POC (10%)
 
-```
+```text
 🟡 SSH Deployment (90% - SDK pending)
 🟡 AWS Deployment (90% - SDK pending)
 🟡 GCP Deployment (90% - SDK pending)
@@ -382,7 +382,7 @@ The Agent Jumbo project underwent comprehensive analysis to document **all imple
 
 ### Not Yet Implemented (5%)
 
-```
+```text
 ❌ Distributed Coordination (0%)
 ❌ Real-time Collaboration (0%)
 ❌ Agent Marketplace (0%)
@@ -455,7 +455,7 @@ The Agent Jumbo project underwent comprehensive analysis to document **all imple
 
 ## Document Navigation Map
 
-```
+```text
 DEEP_DIVE_COMPLETE_ANALYSIS_INDEX.md (this file)
 ├─ COMPLETE_VS_COMPLETE_COMPARISON.md
 │  └─ Full specification, all details, no omissions

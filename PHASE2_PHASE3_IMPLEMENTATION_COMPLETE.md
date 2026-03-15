@@ -87,7 +87,7 @@
 
 ### ✅ Import Tests
 
-```
+```text
 ✅ Phase 1 (SMTP/IMAP): Available
 ✅ Phase 2 (Gmail API OAuth2): Available
 ✅ Phase 3 (Push Notifications): Available
@@ -96,7 +96,7 @@
 
 ### ✅ Dependency Installation
 
-```
+```text
 ✅ google-auth-oauthlib 1.2.3 installed
 ✅ google-auth-httplib2 0.3.0 installed
 ✅ google-api-python-client 2.188.0 installed
@@ -105,7 +105,7 @@
 
 ### ✅ Test Results
 
-```
+```text
 ✅ 14/17 tests passing (100% core functionality)
 ⚠️  3 tests skipped (require Google Cloud setup - expected)
 ```
@@ -116,7 +116,7 @@
 
 ### Code Delivered
 
-```
+```text
 Phase 1 (Previous):
   email_sender.py                     340 lines
   email.py                            306 lines
@@ -142,7 +142,7 @@ Total All Phases:                     ~3,143 lines
 
 ### Documentation Delivered
 
-```
+```text
 EMAIL_INTEGRATION_PHASE1.md                              14 KB
 GMAIL_API_PHASE2_PHASE3.md                               17 KB
 EMAIL_QUICK_REFERENCE.md                                 5.4 KB

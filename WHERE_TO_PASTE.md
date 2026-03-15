@@ -9,7 +9,7 @@
 
 You'll see tabs at the top of the Settings window:
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │ Settings                                          [X]   │
 ├────────────────────────────────────────────────────────┤
@@ -22,7 +22,7 @@ You'll see tabs at the top of the Settings window:
 
 ## 3. You'll See a JSON Code Editor
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │  MCP/A2A Tab                                           │
 ├────────────────────────────────────────────────────────┤

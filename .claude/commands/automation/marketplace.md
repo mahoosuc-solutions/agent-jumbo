@@ -25,7 +25,7 @@ Choose how to explore the marketplace:
 
 ### Featured Workflows (Popular & Recommended)
 
-```
+```text
 ════════════════════════════════════════════════════════════
                     FEATURED WORKFLOWS
 ════════════════════════════════════════════════════════════
@@ -110,7 +110,7 @@ Choose how to explore the marketplace:
 
 ### Category: Property Management (15 workflows)
 
-```
+```text
 Property Management Workflows:
 
 1. Property Lead Automation
@@ -148,7 +148,7 @@ Property Management Workflows:
 
 ### Category: CRM Integration (12 workflows)
 
-```
+```text
 CRM Workflows:
 
 1. Lead Scoring & Ranking
@@ -171,7 +171,7 @@ CRM Workflows:
 
 ### Category: Communications (8 workflows)
 
-```
+```text
 Communication Workflows:
 
 1. Multi-Channel Notifications
@@ -190,7 +190,7 @@ Communication Workflows:
 
 **Selected Workflow**: Property Lead Automation
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                PROPERTY LEAD AUTOMATION
 ═══════════════════════════════════════════════════════════
@@ -342,7 +342,7 @@ Current Marketplace: INCLUDED with your plan
 
 ## Step 5: Search & Filter Options
 
-```
+```text
 SEARCH & FILTER:
 
 Search: _____________________ [Search]
@@ -374,7 +374,7 @@ Results: Showing 1-10 of 47 matching workflows
 
 ## Step 6: Installation Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════════════
            INSTALLATION CONFIRMATION
 ═══════════════════════════════════════════════════════════
@@ -418,7 +418,7 @@ By installing, you accept:
 
 ## Step 7: Post-Installation
 
-```
+```text
 ═══════════════════════════════════════════════════════════
          WORKFLOW INSTALLED SUCCESSFULLY!
 ═══════════════════════════════════════════════════════════

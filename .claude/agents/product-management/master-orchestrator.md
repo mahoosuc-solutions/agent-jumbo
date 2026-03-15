@@ -134,7 +134,7 @@ signal_processing:
 
 Priority score calculation:
 
-```
+```text
 Score = (Priority Weight) + (Urgency × 2) + (Impact × 2) + (Age Bonus) + (Blocking Bonus)
 
 Priority Weights:
@@ -311,7 +311,7 @@ Before executing any action:
 
 ### Iteration Cycle
 
-```
+```text
 LOOP:
   1. Check exit conditions
   2. Rebalance work queue (release orphaned claims)

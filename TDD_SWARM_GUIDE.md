@@ -4,7 +4,7 @@
 
 The PMS Hub testing infrastructure uses a **TDD Swarm** approach with multiple test suites, parallel execution contexts, and git worktrees for isolated testing environments.
 
-```
+```text
 ★ Insight ─────────────────────────────────────────────
 • TDD Swarm enables comprehensive validation across all
   components through organized, parallel test contexts
@@ -19,7 +19,7 @@ The PMS Hub testing infrastructure uses a **TDD Swarm** approach with multiple t
 
 ### Test Organization
 
-```
+```text
 tests/
 ├── conftest.py                      # Shared fixtures and configuration
 ├── test_pms_canonical_models.py     # Model validation tests
@@ -85,6 +85,7 @@ Create isolated testing environments:
 ```
 
 This creates four worktrees:
+
 - `.worktrees/unit-tests/` - Unit test context
 - `.worktrees/integration-tests/` - Integration test context
 - `.worktrees/adapter-tests/` - Provider adapter tests
@@ -473,6 +474,7 @@ Ensure `asyncio_mode = auto` in `pytest.ini`
 ### Mock Not Working
 
 Verify import path in patch:
+
 ```python
 @patch('module.path.to.function')
 ```
@@ -480,6 +482,7 @@ Verify import path in patch:
 ### Fixture Not Found
 
 Check:
+
 - Fixture defined in `conftest.py`
 - Correct spelling in test parameter
 - Scope is appropriate
@@ -487,6 +490,7 @@ Check:
 ### Import Errors
 
 Add project root to path:
+
 ```python
 import sys
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -514,6 +518,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 ## Summary
 
 The TDD Swarm provides:
+
 - ✅ Comprehensive test coverage
 - ✅ Isolated test contexts with worktrees
 - ✅ Parallel test execution

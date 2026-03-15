@@ -30,7 +30,7 @@
 
 **Test Results**: ✅ All 9 tests passed
 
-```
+```text
 ✓ Lead captured
 ✓ Requirements gathered
 ✓ Solution designed
@@ -73,7 +73,7 @@
 
 **Test Results**: ✅ All 13 tests passed
 
-```
+```text
 ✓ Agent registration (7 agents)
 ✓ Task routing
 ✓ Specialist delegation
@@ -93,7 +93,7 @@
 
 ## File Structure
 
-```
+```text
 agent-jumbo/
 ├── instruments/custom/
 │   ├── customer_lifecycle/

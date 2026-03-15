@@ -214,7 +214,7 @@ echo "✓ Output validation complete ($SAMPLE_COUNT sample records)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         SAMPLE DATA COMPLETE ✓
 ═══════════════════════════════════════════════════

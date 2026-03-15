@@ -19,7 +19,7 @@ Manage end-to-end customer lifecycle including:
 
 **Capture new lead and initiate qualification process**
 
-```
+```json
 {{customer_lifecycle(
   action="capture_lead",
   name="John Smith",
@@ -52,7 +52,7 @@ Manage end-to-end customer lifecycle including:
 
 **Conduct structured requirements gathering interview**
 
-```
+```json
 {{customer_lifecycle(
   action="conduct_interview",
   customer_id=1,
@@ -94,7 +94,7 @@ Manage end-to-end customer lifecycle including:
 
 **Design solution architecture based on requirements**
 
-```
+```json
 {{customer_lifecycle(
   action="design_solution",
   customer_id=1,
@@ -123,7 +123,7 @@ Manage end-to-end customer lifecycle including:
 
 **Generate comprehensive customer proposal**
 
-```
+```json
 {{customer_lifecycle(
   action="generate_proposal",
   customer_id=1,
@@ -154,7 +154,7 @@ Manage end-to-end customer lifecycle including:
 
 **Track proposal status and follow-up actions**
 
-```
+```json
 {{customer_lifecycle(
   action="track_proposal",
   proposal_id=1,
@@ -182,7 +182,7 @@ Manage end-to-end customer lifecycle including:
 
 **Get 360-degree view of customer**
 
-```
+```json
 {{customer_lifecycle(
   action="get_customer_view",
   customer_id=1
@@ -209,7 +209,7 @@ Manage end-to-end customer lifecycle including:
 
 **Calculate customer health score and get recommendations**
 
-```
+```json
 {{customer_lifecycle(
   action="check_customer_health",
   customer_id=1
@@ -241,7 +241,7 @@ Manage end-to-end customer lifecycle including:
 
 **Get sales pipeline analytics**
 
-```
+```text
 {{customer_lifecycle(
   action="get_pipeline_summary"
 )}}
@@ -262,7 +262,7 @@ Manage end-to-end customer lifecycle including:
 
 **Manually update customer lifecycle stage**
 
-```
+```json
 {{customer_lifecycle(
   action="update_customer_stage",
   customer_id=1,
@@ -283,7 +283,7 @@ Manage end-to-end customer lifecycle including:
 
 **List customers with optional filters**
 
-```
+```json
 {{customer_lifecycle(
   action="list_customers",
   stage="prospect",
@@ -316,7 +316,7 @@ Manage end-to-end customer lifecycle including:
 
 ### Example Complete Flow
 
-```
+```python
 # Step 1: Capture lead
 {{customer_lifecycle(action="capture_lead", name="Sarah Johnson", company="MedTech Inc", email="sarah@medtech.com", industry="Healthcare")}}
 # Returns: customer_id = 5
@@ -349,7 +349,7 @@ Manage end-to-end customer lifecycle including:
 
 After proposal acceptance, create project:
 
-```
+```python
 # Customer accepted proposal
 {{customer_lifecycle(action="track_proposal", proposal_id=7, status="accepted")}}
 
@@ -361,7 +361,7 @@ After proposal acceptance, create project:
 
 Route solution design to specialized agents:
 
-```
+```python
 # Get solution architecture
 {{customer_lifecycle(action="design_solution", customer_id=5)}}
 

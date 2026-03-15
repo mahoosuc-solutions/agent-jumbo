@@ -64,7 +64,7 @@ When switching between businesses constantly, you need instant clarity:
 
 ### Full View (Default)
 
-```
+```text
 ╔═══════════════════════════════════════════════════════════════════════════════╗
 ║                    CURRENT CONTEXT: Property Management                       ║
 ╚═══════════════════════════════════════════════════════════════════════════════╝
@@ -175,7 +175,7 @@ When switching between businesses constantly, you need instant clarity:
 
 ### Summary View
 
-```
+```yaml
 CURRENT: Property Management (Main Street Properties LLC)
 Active Since: 41 days | Last Activity: Just now
 Status: ✓ Active | 2 projects | 5 tasks | On track

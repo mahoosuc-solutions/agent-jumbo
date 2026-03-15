@@ -283,7 +283,7 @@ Create comprehensive test report:
 
 Output:
 
-```
+```text
 Running smoke tests for database-architect...
 ✓ 5/5 tests passed (12s)
 
@@ -298,7 +298,7 @@ Ready for integration testing
 
 Output:
 
-```
+```text
 Running comprehensive tests for security-auditor...
 ✓ 47/50 tests passed (18m)
 ✗ 3 edge case failures

@@ -61,7 +61,7 @@ Validate inputs:
      - Business rules/constraints
    - Example for CRM Contact sync:
 
-     ```
+     ```yaml
      Source: Salesforce
      Entity: Account
      Fields:
@@ -83,7 +83,7 @@ Validate inputs:
    - Note if target supports bulk operations
    - Example for PostgreSQL:
 
-     ```
+     ```text
      Target: PostgreSQL accounts table
      Schema:
      - id (UUID, primary key)
@@ -103,7 +103,7 @@ Validate inputs:
 3. **Design Field Mapping**
    - Create mapping table for each entity:
 
-     ```
+     ```text
      Field Mapping: Salesforce Account → PostgreSQL accounts
      ┌─────────────────────┬──────────────────┬────────────────────┐
      │ Salesforce Field    │ Transformation   │ PostgreSQL Field   │
@@ -175,7 +175,7 @@ Validate inputs:
 **🔍 CHECKPOINT 1 - Mapping Validation**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Are field mappings complete and correct?
 - Is the transformation logic appropriate?
 - Should we sync all records initially or incremental only?
@@ -266,7 +266,7 @@ Options: "Mapping approved", "Add more fields", "Different tracking", "Other"
      - Requires conflict resolution
      - Diagram:
 
-       ```
+       ```text
        System A ←→ Sync Engine ←→ System B
        (changes)    (resolves)    (changes)
        ```
@@ -276,7 +276,7 @@ Options: "Mapping approved", "Add more fields", "Different tracking", "Other"
      - No conflicts
      - Diagram:
 
-       ```
+       ```text
        Master System → Sync Engine → Slave System
        (authoritative)              (copy)
        ```
@@ -286,7 +286,7 @@ Options: "Mapping approved", "Add more fields", "Different tracking", "Other"
      - Hub is master
      - Diagram:
 
-       ```
+       ```text
               System A
                  ↑
                  │
@@ -371,7 +371,7 @@ Options: "Mapping approved", "Add more fields", "Different tracking", "Other"
 **🔍 CHECKPOINT 2 - Strategy Approval**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Is the conflict resolution strategy acceptable?
 - Should we implement rollback snapshots?
 - Are edge cases handled (deletions, nulls, bulk ops)?
@@ -649,7 +649,7 @@ Options: "Strategy approved", "Adjust conflicts", "Add rollback", "Other"
 **🔍 CHECKPOINT 3 - Implementation Review**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Does the sync engine cover all use cases?
 - Is the batch size appropriate for your data volume?
 - Should we implement real-time sync via webhooks?
@@ -669,7 +669,7 @@ Options: "Implementation approved", "Adjust batch size", "Add webhooks", "Other"
 1. **Design Monitoring & Metrics**
    - Key metrics:
 
-     ```
+     ```text
      Sync Health Dashboard
      ├── Success Rate: % of sync jobs completed successfully
      ├── Sync Latency: P50, P95, P99 duration (target: < 1 hour)

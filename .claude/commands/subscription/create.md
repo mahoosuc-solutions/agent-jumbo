@@ -49,7 +49,7 @@ Create a new subscription record linked to a closed deal, set up Stripe subscrip
 
 1. **Fetch Deal from Zoho CRM**
 
-   ```
+   ```text
    Zoho Deal ID: ${DEAL_ID}
    Required Status: "Closed Won"
    Required Fields: Contact, Account, Product, Amount
@@ -69,7 +69,7 @@ Create a new subscription record linked to a closed deal, set up Stripe subscrip
 
 1. **Determine Tier and Pricing**
 
-   ```
+   ```text
    Tier Pricing (Monthly):
    - Free: $0/month (5 users, limited features)
    - Starter: $49/month (10 users, core features)
@@ -81,7 +81,7 @@ Create a new subscription record linked to a closed deal, set up Stripe subscrip
 
 2. **Calculate MRR/ARR**
 
-   ```
+   ```text
    If Monthly:
      MRR = tier_price * seats_multiplier
      ARR = MRR * 12
@@ -100,7 +100,7 @@ Create a new subscription record linked to a closed deal, set up Stripe subscrip
 
 **MANDATORY APPROVAL** - Present subscription preview for confirmation:
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════╗
 ║               SUBSCRIPTION CREATION PREVIEW                       ║
 ╠══════════════════════════════════════════════════════════════════╣
@@ -202,13 +202,13 @@ INSERT INTO subscription_events (
 
 After successful creation, recommend triggering:
 
-```
+```text
 /customer-success/onboarding --customer ${CUSTOMER_ID} --stage pre-launch
 ```
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                 SUBSCRIPTION CREATED SUCCESSFULLY
 ═══════════════════════════════════════════════════════════════════

@@ -126,7 +126,7 @@ Create interactive network maps showing how your contacts connect, identify powe
 
 **ASCII Network Map** (for terminal output)
 
-```
+```text
                     Network Map: Your Relationships
 
                     [Investors]
@@ -276,7 +276,7 @@ For each community:
 
 **Target Access Paths**
 
-```
+```text
 Goal: Connect with "Jane Doe - Institutional Investor"
 
 Path 1 (2 degrees, High confidence):

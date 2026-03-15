@@ -198,7 +198,7 @@ graph TD
 
 ### Rollback Decision Algorithm
 
-```
+```text
 Rollback Decision = weighted_score(
   error_severity × 0.30,
   latency_impact × 0.25,
@@ -533,7 +533,7 @@ After rollback:
 
 ### Monitoring Loop
 
-```
+```text
 EVERY 5 SECONDS (Critical period):
   1. Collect all configured metrics
   2. Compare against baselines and thresholds
@@ -560,7 +560,7 @@ EVERY 30 SECONDS (Standard period):
 
 ### Rollback Execution Sequence
 
-```
+```text
 1. DETECT trigger condition
 2. LOG decision with full context
 3. CREATE incident ticket
@@ -578,7 +578,7 @@ EVERY 30 SECONDS (Standard period):
 
 ### Recovery Verification
 
-```
+```text
 1. WAIT 30 seconds post-rollback
 2. CHECK error rate < baseline + 10%
 3. CHECK latency < baseline + 20%

@@ -197,7 +197,7 @@ if (options.checklist || isComplexTask(cardName)) {
 
 ### 6. Confirmation
 
-```
+```text
 ✓ Trello card created
 
 📋 "Replace broken window"

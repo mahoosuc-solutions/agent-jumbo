@@ -77,7 +77,7 @@ The system will:
 **Real-Time Capture Mode:**
 System provides structured prompts during meeting:
 
-```
+```text
 Meeting Notes: Board Meeting Q1 2024
 ===========================================
 
@@ -131,7 +131,7 @@ Next Meeting: April 15, 2024 @ 2:00 PM PST
 **Batch Processing Mode (Post-Meeting):**
 If you captured rough notes during meeting, system structures them:
 
-```
+```text
 Input (Your Rough Notes):
 --------------------------
 board meeting today
@@ -201,7 +201,7 @@ System automatically enhances raw notes with:
 
 **Example Enhancement:**
 
-```
+```text
 Raw Note:
 "michael worried about churn"
 
@@ -229,7 +229,7 @@ System identifies and structures all commitments:
 
 **Example Action Item Extraction:**
 
-```
+```text
 From Discussion:
 "Sarah, can you pull together a churn analysis by customer cohort and present it at the next board meeting? We need to understand if this is a product issue, customer success issue, or sales qualification issue."
 
@@ -280,7 +280,7 @@ Capture and highlight key decisions made:
 
 **Decision Format:**
 
-```
+```text
 DECISION: Focus Q2 on customer retention over growth
 
 Context:
@@ -326,7 +326,7 @@ Track participant engagement and sentiment:
 
 **Participant Analysis:**
 
-```
+```text
 Michael Lee (Board Member, Sequoia Capital)
 -------------------------------------------
 Engagement: HIGH (asked 8 questions, made 5 comments)
@@ -363,7 +363,7 @@ Generate executive summary for quick reference:
 
 **Meeting Summary Template:**
 
-```
+```text
 MEETING SUMMARY: Board Meeting Q1 2024
 Date: March 10, 2024
 Duration: 90 minutes
@@ -439,7 +439,7 @@ Export action items to task management system:
 
 **Export Format:**
 
-```
+```text
 Action Item Export → Asana
 
 Project: Board of Directors
@@ -585,7 +585,7 @@ Continuously improve note quality and process:
 
 **Output:**
 
-```
+```text
 MEETING NOTES: Discovery Call - TechCorp
 Date: March 12, 2024
 Duration: 45 minutes
@@ -828,7 +828,7 @@ Transcript: Link
 
 **Output:**
 
-```
+```text
 MEETING NOTES: Sprint Planning - Q2 Features
 Date: March 11, 2024
 Duration: 90 minutes

@@ -96,7 +96,7 @@ operate. It represents a paradigm shift in IT infrastructure...</p>
 
 **AI Engine Output**:
 
-```
+```yaml
 User: "What is cloud computing?"
 
 AI: "Cloud computing is the delivery of computing services (servers, storage,
@@ -170,7 +170,7 @@ First, you'll need to assess your current infrastructure...</p>
 
 **AI Engine Output**:
 
-```
+```yaml
 User: "How to migrate to the cloud?"
 
 AI: "Here's how to migrate to the cloud in 5 steps (30 days total):
@@ -270,7 +270,7 @@ Azure integrates well with Microsoft products, and GCP is known for machine lear
 
 **AI Engine Output**:
 
-```
+```yaml
 User: "AWS vs Azure vs Google Cloud?"
 
 AI: "Here's a comparison of the three major cloud platforms:
@@ -344,7 +344,7 @@ AI: "Here's a comparison of the three major cloud platforms:
 
 **AI Engine Output**:
 
-```
+```yaml
 User: "What percentage of companies use cloud?"
 
 AI: "94% of enterprises use cloud services as of 2024, up from 89% in 2023.
@@ -433,7 +433,7 @@ Additionally:
 
 **AI Engine Output**:
 
-```
+```yaml
 User: "Types of cloud deployment models?"
 
 AI: "There are three main cloud deployment models:

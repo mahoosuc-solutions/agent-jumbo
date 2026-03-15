@@ -264,7 +264,7 @@ Create comprehensive specifications for any solution type (workflow chains, feat
 
 **Example**:
 
-```
+```text
 /design:solution
 
 Solution Name: Revenue Growth Automation
@@ -302,7 +302,7 @@ Test solutions without side effects using three emulation methods to find design
 
 **Example Results**:
 
-```
+```text
 DRY-RUN: Executed 8 workflow steps in 2.4 seconds
 - Found 0 critical errors, 0 high severity issues
 
@@ -369,7 +369,7 @@ Validate design from 4 perspectives (Security, Performance, Cost, UX) before gen
 
 **Example Results**:
 
-```
+```yaml
 SECURITY: 82/100 ✅
 - JWT with refresh tokens ✅
 - Encryption at rest/transit ✅
@@ -448,7 +448,7 @@ Generate production-ready specifications with 4 types of artifacts (diagrams, Op
 
 **Example Output**:
 
-```
+```text
 Specifications Generated Successfully ✅
 
 ARTIFACTS:

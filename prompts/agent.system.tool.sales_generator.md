@@ -22,7 +22,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Generate a full proposal document**
 
-```
+```json
 {{sales_generator(
   action="generate_proposal",
   title="Website Redesign Proposal",
@@ -55,7 +55,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Get full proposal details**
 
-```
+```json
 {{sales_generator(
   action="get_proposal",
   proposal_id=1
@@ -68,7 +68,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **List proposals with filters**
 
-```
+```json
 {{sales_generator(
   action="list_proposals",
   customer_id=5,
@@ -87,7 +87,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Update proposal status**
 
-```
+```json
 {{sales_generator(
   action="update_proposal_status",
   proposal_id=1,
@@ -103,7 +103,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Create a demo specification**
 
-```
+```json
 {{sales_generator(
   action="create_demo",
   title="Product Demo for Acme",
@@ -135,7 +135,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Retrieve demo details or list demos**
 
-```
+```json
 {{sales_generator(action="get_demo", demo_id=1)}}
 {{sales_generator(action="list_demos", customer_id=5)}}
 ```
@@ -148,7 +148,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Calculate ROI with projections**
 
-```
+```json
 {{sales_generator(
   action="calculate_roi",
   title="Automation ROI Analysis",
@@ -190,7 +190,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Retrieve ROI calculation or list all**
 
-```
+```json
 {{sales_generator(action="get_roi", roi_id=1)}}
 {{sales_generator(action="list_roi", customer_id=5)}}
 ```
@@ -203,7 +203,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Generate a case study from a completed project**
 
-```
+```json
 {{sales_generator(
   action="generate_case_study",
   project_name="E-Commerce Platform Migration",
@@ -239,7 +239,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 #### 10. get_case_study / list_case_studies
 
-```
+```json
 {{sales_generator(action="get_case_study", case_study_id=1)}}
 {{sales_generator(action="list_case_studies", industry="healthcare")}}
 ```
@@ -252,7 +252,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Generate a portfolio presentation**
 
-```
+```json
 {{sales_generator(
   action="generate_portfolio_showcase",
   title="Healthcare Solutions Portfolio",
@@ -288,7 +288,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 #### 12. get_showcase / list_showcases
 
-```
+```json
 {{sales_generator(action="get_showcase", showcase_id=1)}}
 {{sales_generator(action="list_showcases", target_industry="fintech")}}
 ```
@@ -301,7 +301,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Build a comprehensive business case**
 
-```
+```json
 {{sales_generator(
   action="build_business_case",
   title="Digital Transformation Initiative",
@@ -343,7 +343,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 #### 14. get_business_case / list_business_cases
 
-```
+```json
 {{sales_generator(action="get_business_case", case_id=1)}}
 {{sales_generator(action="list_business_cases", customer_id=5)}}
 ```
@@ -356,7 +356,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Create competitive comparison**
 
-```
+```json
 {{sales_generator(
   action="create_comparison",
   title="CRM Platform Comparison",
@@ -384,7 +384,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 #### 16. get_comparison / list_comparisons
 
-```
+```json
 {{sales_generator(action="get_comparison", comparison_id=1)}}
 {{sales_generator(action="list_comparisons")}}
 ```
@@ -397,7 +397,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 **Get overall statistics**
 
-```
+```text
 {{sales_generator(action="get_stats")}}
 ```
 
@@ -409,7 +409,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 ### Complete Sales Cycle
 
-```
+```markdown
 # 1. Get customer requirements from customer_lifecycle
 {{customer_lifecycle(action="get_customer_view", customer_id=5)}}
 
@@ -449,7 +449,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 ### Industry-Focused Showcase
 
-```
+```markdown
 # 1. Pull relevant case studies
 {{sales_generator(action="list_case_studies", industry="healthcare")}}
 
@@ -473,7 +473,7 @@ The **sales_generator** tool creates customer-facing materials including proposa
 
 Link all materials to customer records:
 
-```
+```json
 {{sales_generator(action="generate_proposal", customer_id=5, ...)}}
 ```
 
@@ -481,7 +481,7 @@ Link all materials to customer records:
 
 Pull project data for showcases:
 
-```
+```json
 {{portfolio_manager_tool(action="list")}}
 {{sales_generator(action="generate_portfolio_showcase", projects=[...])}}
 ```
@@ -490,7 +490,7 @@ Pull project data for showcases:
 
 Use analysis for ROI calculations:
 
-```
+```json
 {{business_xray_tool(action="get_analysis", customer_id=5)}}
 {{sales_generator(action="calculate_roi", ...)}}
 ```
@@ -499,7 +499,7 @@ Use analysis for ROI calculations:
 
 Include architecture visuals in proposals:
 
-```
+```json
 {{diagram_architect(action="generate_system_diagram", analysis_id=1)}}
 # Reference diagram in proposal content
 ```

@@ -14,7 +14,7 @@ The Design-OS commands follow the **exact same migration pattern** as Agent-OS (
 
 The Design-OS provides a structured approach to product design before implementation:
 
-```
+```text
 /design-os/product-vision      → Define vision, problems, solutions
   ↓
 /design-os/product-roadmap     → Create buildable sections, prioritize

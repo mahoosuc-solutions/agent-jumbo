@@ -31,7 +31,7 @@ ls -la /a0/data/
 
 **User Input:**
 
-```
+```text
 Scan my projects folder at ~/projects for portfolio
 ```
 
@@ -52,7 +52,7 @@ sqlite3 /a0/data/portfolio.db "SELECT name, language, sale_readiness FROM projec
 
 **User Input:**
 
-```
+```text
 Show me my portfolio dashboard
 ```
 
@@ -68,7 +68,7 @@ Show me my portfolio dashboard
 
 **User Input:**
 
-```
+```text
 Analyze project at ~/projects/my-tool for sale readiness
 ```
 
@@ -82,7 +82,7 @@ Analyze project at ~/projects/my-tool for sale readiness
 
 **User Input:**
 
-```
+```sql
 Create a product from project ID 1
 ```
 
@@ -102,7 +102,7 @@ sqlite3 /a0/data/portfolio.db "SELECT id, name, base_price FROM products;"
 
 **User Input:**
 
-```
+```text
 Add Acme Corp as a lead for product 1 with deal value $499
 ```
 
@@ -114,7 +114,7 @@ Add Acme Corp as a lead for product 1 with deal value $499
 
 **View Pipeline:**
 
-```
+```text
 Show my sales pipeline
 ```
 
@@ -124,7 +124,7 @@ Show my sales pipeline
 
 **User Input:**
 
-```
+```text
 Initialize my property portfolio
 ```
 
@@ -146,7 +146,7 @@ sqlite3 /a0/data/properties.db "SELECT COUNT(*) FROM units WHERE property_id=1;"
 
 **User Input:**
 
-```
+```text
 Show me my property management dashboard
 ```
 
@@ -162,7 +162,7 @@ Show me my property management dashboard
 
 **User Input:**
 
-```
+```text
 Add tenant John Smith with email john@email.com and phone 207-555-1234
 ```
 
@@ -181,7 +181,7 @@ sqlite3 /a0/data/properties.db "SELECT id, first_name, last_name, email FROM ten
 
 **User Input:**
 
-```
+```sql
 Create a lease for tenant 1 at property 1 unit 5 starting 2026-02-01 at $89/night
 ```
 
@@ -202,7 +202,7 @@ sqlite3 /a0/data/properties.db "SELECT unit_number, status FROM units WHERE id=5
 
 **User Input:**
 
-```
+```text
 Record rent payment of $89 for lease 1
 ```
 
@@ -213,7 +213,7 @@ Record rent payment of $89 for lease 1
 
 **View Rent Roll:**
 
-```
+```text
 Show rent roll for 2026-02
 ```
 
@@ -221,7 +221,7 @@ Show rent roll for 2026-02
 
 **User Input:**
 
-```
+```sql
 Create maintenance request for property 1 unit 5 - leaky faucet - priority normal
 ```
 
@@ -233,7 +233,7 @@ Create maintenance request for property 1 unit 5 - leaky faucet - priority norma
 
 **View Maintenance:**
 
-```
+```text
 Show maintenance schedule
 ```
 
@@ -241,7 +241,7 @@ Show maintenance schedule
 
 **User Input:**
 
-```
+```text
 Record expense for property 1 - maintenance - HVAC repair - $450
 ```
 
@@ -252,7 +252,7 @@ Record expense for property 1 - maintenance - HVAC repair - $450
 
 **View Expenses:**
 
-```
+```text
 Show expense report for property 1
 ```
 
@@ -260,7 +260,7 @@ Show expense report for property 1
 
 **User Input:**
 
-```
+```text
 Show financials for property 1 for 2026
 ```
 
@@ -277,7 +277,7 @@ Show financials for property 1 for 2026
 
 **User Input:**
 
-```
+```sql
 Create a diagram showing my portfolio structure
 ```
 
@@ -290,7 +290,7 @@ Create a diagram showing my portfolio structure
 
 **User Input:**
 
-```
+```text
 Show cash flow projection for property 1 for next 12 months
 ```
 
@@ -361,7 +361,7 @@ Expected tables:
 
 **Test:** Try to create lease without required fields
 
-```
+```sql
 Create a lease for tenant 1
 ```
 
@@ -371,7 +371,7 @@ Create a lease for tenant 1
 
 **Test:** Try to get non-existent project
 
-```
+```text
 Show me project 9999
 ```
 
@@ -381,7 +381,7 @@ Show me project 9999
 
 **Test:** Search for non-existent tenant
 
-```
+```text
 Search for tenant ZZZ999
 ```
 
@@ -393,7 +393,7 @@ Search for tenant ZZZ999
 
 **Test:** Scan a folder with 50+ projects
 
-```
+```text
 Scan ~/all-projects for portfolio
 ```
 
@@ -475,7 +475,7 @@ ls -la /home/webemo-aaron/projects/agent-jumbo/prompts/agent.system.tool.propert
 
 Use this template to document test results:
 
-```
+```markdown
 ## Test Report - [Date]
 
 ### Environment

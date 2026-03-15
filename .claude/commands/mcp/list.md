@@ -18,7 +18,7 @@ Display comprehensive inventory of available and installed Model Context Protoco
 
 ### Default View (Quick Status)
 
-```
+```text
 MCP Servers Installed (4 servers, 3 connected)
 
 ✅ GITHUB                       | Connected | 2 repos | 47 ops | Since: 2 hours
@@ -37,7 +37,7 @@ MCP Servers Available for Installation (8 servers)
 
 ### Detailed View
 
-```
+```text
 INSTALLED MCP SERVERS
 ═════════════════════════════════════════════════════════════════
 
@@ -165,7 +165,7 @@ Server: N8N
 
 ### Monitor View
 
-```
+```text
 MCP SERVERS - REAL-TIME MONITORING
 ═════════════════════════════════════════════════════════════════
 
@@ -248,7 +248,7 @@ Shows complete information for each server:
 
 Pings all installed MCP servers and reports connectivity status:
 
-```
+```text
 Testing MCP Server Connections...
 
 GitHub

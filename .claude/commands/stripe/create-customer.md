@@ -143,7 +143,7 @@ echo "$CUSTOMER_ID"
 
 ## Example Output
 
-```
+```text
 👤 Creating Stripe test customer...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

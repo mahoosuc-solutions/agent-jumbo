@@ -21,7 +21,7 @@ You need to switch it to use your local Ollama/Qwen model.
 
 **Chat Model Provider:**
 
-```
+```text
 ollama
 ```
 
@@ -29,19 +29,19 @@ ollama
 
 **Chat Model Name:**
 
-```
+```text
 qwen2.5-coder:7b
 ```
 
 **Chat Model API Base:**
 
-```
+```text
 http://host.docker.internal:11434
 ```
 
 **Chat Model Temperature:**
 
-```
+```text
 0
 ```
 

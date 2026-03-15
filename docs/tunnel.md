@@ -41,7 +41,7 @@ If you encounter issues with the tunnel feature:
 
 To add basic authentication to your Agent Jumbo instance when using tunnels, you can set the following environment variables:
 
-```
+```bash
 AUTH_LOGIN=your_username
 AUTH_PASSWORD=your_password
 ```

@@ -71,7 +71,7 @@ Request access to Stripe data for the specified time period:
 
 **Format output:**
 
-```
+```text
 Total Revenue: $X (+Y% vs last period)
 Avg Transaction: $Z
 Transaction Count: N
@@ -96,7 +96,7 @@ Growth Trend: [Accelerating|Steady|Declining]
 
 **Format output:**
 
-```
+```text
 Top 10 Customers:
 1. [Name/ID]: $X (Y% of revenue)
    - Transactions: N
@@ -124,7 +124,7 @@ Top 10 Customers:
 
 **Format output:**
 
-```
+```yaml
 MRR: $X (+Y% vs last month)
 ARR: $Z
 Churn Rate: A% (target: <5%)
@@ -152,7 +152,7 @@ Net MRR Growth: $D
 
 **Format output:**
 
-```
+```text
 Payment Success Rate: X% (target: >94%)
 Top Failure Reasons:
 1. Card declined: Y%
@@ -184,7 +184,7 @@ Recommended Actions:
 
 **Format output:**
 
-```
+```text
 Anomalies Detected:
 🚨 Revenue spike on [Date]: +X% vs daily average
    Correlation: [Event/Campaign]
@@ -216,7 +216,7 @@ Anomalies Detected:
 
 **Format insights clearly:**
 
-```
+```text
 ✅ Positive Signals:
 - [Insight 1 with data]
 - [Insight 2 with data]
@@ -253,7 +253,7 @@ Anomalies Detected:
 
 **Format recommendations:**
 
-```
+```text
 Priority 1: Reduce Pro plan churn
 - Root cause: [Analysis finding]
 - Action: [Specific steps]

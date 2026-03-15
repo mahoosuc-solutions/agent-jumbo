@@ -78,7 +78,7 @@ Achieve **zero failed production deployments** through:
 
 ### Validation Gates
 
-```
+```text
 Gate 1: Code Quality
 ├── Unit tests passed
 ├── Integration tests passed
@@ -196,7 +196,7 @@ graph TD
 
 ### Risk Assessment Algorithm
 
-```
+```text
 Deployment Risk Score =
   (Service Criticality × 0.25) +
   (Change Size × 0.20) +
@@ -571,7 +571,7 @@ Before approving deployment:
 
 ### Validation Sequence
 
-```
+```text
 1. RECEIVE deployment request
 2. VALIDATE request format and completeness
 3. CHECK change window
@@ -592,7 +592,7 @@ Before approving deployment:
 
 ### Emergency Protocol
 
-```
+```text
 FOR emergency deployments:
   1. Require P1 incident reference
   2. Skip non-critical validations

@@ -117,7 +117,7 @@ Create a new scenario for analyzing "what-if" situations. Scenarios let you eval
 
 ### Scenario 1: "Hire Full-Time Developer"
 
-```
+```yaml
 Name: Hire Full-Time Developer
 Description: Hire a full-time developer to expand our capacity
 
@@ -133,7 +133,7 @@ Parameters:
 
 ### Scenario 2: "Outsource to Agency"
 
-```
+```yaml
 Name: Outsource to Agency
 Description: Contract with external agency instead of hiring
 
@@ -148,7 +148,7 @@ Parameters:
 
 ### Scenario 3: "Buy Property X"
 
-```
+```yaml
 Name: Acquire 456 Elm Avenue
 Description: Purchase duplex investment property
 

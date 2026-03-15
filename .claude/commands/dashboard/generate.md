@@ -13,7 +13,7 @@ Generate dashboard: **$ARGUMENTS**
 
 Ask user:
 
-```
+```text
 Dashboard Configuration
 
 1. Purpose (dev metrics, business KPIs, project health)

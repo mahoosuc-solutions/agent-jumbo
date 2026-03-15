@@ -20,7 +20,7 @@ Orchestrate a virtual team of specialized agents including:
 
 **Automatically route task to best-suited agent based on task type**
 
-```
+```json
 {{virtual_team(
   action="route_task",
   task_name="Design microservices architecture",
@@ -59,7 +59,7 @@ Orchestrate a virtual team of specialized agents including:
 
 **Explicitly delegate task to specific specialist role**
 
-```
+```json
 {{virtual_team(
   action="delegate_to_specialist",
   task_name="Optimize database queries",
@@ -96,7 +96,7 @@ Orchestrate a virtual team of specialized agents including:
 
 **Start multi-agent workflow using template or custom tasks**
 
-```
+```json
 {{virtual_team(
   action="start_workflow",
   workflow_name="Build Customer Portal",
@@ -158,7 +158,7 @@ custom_tasks=[
 
 **Get workflow progress and status**
 
-```
+```json
 {{virtual_team(
   action="get_workflow_progress",
   workflow_id=1
@@ -177,7 +177,7 @@ custom_tasks=[
 
 **Coordinate multiple tasks to run in parallel**
 
-```
+```json
 {{virtual_team(
   action="coordinate_parallel_tasks",
   task_specs=[
@@ -212,7 +212,7 @@ custom_tasks=[
 
 **Escalate task to different agent or higher tier**
 
-```
+```json
 {{virtual_team(
   action="escalate_task",
   task_id=5,
@@ -235,7 +235,7 @@ custom_tasks=[
 
 **Get pending task queue, optionally filtered by role**
 
-```
+```json
 {{virtual_team(
   action="get_task_queue",
   role="developer"
@@ -254,7 +254,7 @@ custom_tasks=[
 
 **Get current workload for specific agent or role**
 
-```
+```json
 {{virtual_team(
   action="get_agent_workload",
   role="developer"
@@ -274,7 +274,7 @@ custom_tasks=[
 
 **Get team-wide analytics and metrics**
 
-```
+```text
 {{virtual_team(
   action="get_team_dashboard"
 )}}
@@ -288,7 +288,7 @@ custom_tasks=[
 
 **Update task status and progress**
 
-```
+```json
 {{virtual_team(
   action="update_task_status",
   task_id=5,
@@ -311,7 +311,7 @@ custom_tasks=[
 
 **Get detailed task information**
 
-```
+```json
 {{virtual_team(
   action="get_task_details",
   task_id=5
@@ -330,7 +330,7 @@ custom_tasks=[
 
 **List all agents with optional filters**
 
-```
+```json
 {{virtual_team(
   action="list_agents",
   role="developer",
@@ -351,7 +351,7 @@ custom_tasks=[
 
 **Get list of available workflow templates**
 
-```
+```text
 {{virtual_team(
   action="get_available_workflows"
 )}}
@@ -365,7 +365,7 @@ custom_tasks=[
 
 **Get all available agent roles with capabilities**
 
-```
+```text
 {{virtual_team(
   action="get_available_roles"
 )}}
@@ -387,7 +387,7 @@ custom_tasks=[
 
 ### Example Complete Flow
 
-```
+```python
 # Step 1: Design system architecture
 {{virtual_team(action="route_task", task_name="Design payment system", task_type="architecture_design")}}
 # Returns: task_id = 1, assigned to architect
@@ -417,7 +417,7 @@ custom_tasks=[
 
 ### With Customer Lifecycle
 
-```
+```python
 # Customer requirements gathered
 {{customer_lifecycle(action="design_solution", customer_id=5)}}
 
@@ -427,7 +427,7 @@ custom_tasks=[
 
 ### With Portfolio Manager
 
-```
+```python
 # Create project
 {{portfolio_manager_tool(action="create_project", project_name="E-Commerce Platform")}}
 # Returns: project_id = 10

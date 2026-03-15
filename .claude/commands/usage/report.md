@@ -111,7 +111,7 @@ LEFT JOIN previous_period p ON p.metric_type = c.metric_type;
 
 #### Summary Format
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    USAGE REPORT                                 ║
 ║                    January 2025                                 ║
@@ -150,7 +150,7 @@ LEFT JOIN previous_period p ON p.metric_type = c.metric_type;
 
 #### Detailed Format
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                     DETAILED USAGE REPORT
                     January 2025
@@ -294,7 +294,7 @@ org_abc123,Acme Corporation,2025-01,exports,85,100,85.0,0
 
 ### Usage Across All Customers
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                 AGGREGATE USAGE REPORT                          ║
 ║                    January 2025                                 ║

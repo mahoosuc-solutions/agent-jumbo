@@ -102,7 +102,7 @@ Verify the integration includes:
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         INTEGRATION ARCHITECTURE DESIGNED
 ═══════════════════════════════════════════════════

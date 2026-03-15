@@ -83,7 +83,7 @@ n8n Configuration:
 
 ## Step 4: Available n8n Integrations
 
-```
+```text
 ┌─────────────────────────────────────────────────────────┐
 │          n8n SUPPORTED INTEGRATIONS (400+)              │
 ├─────────────────────────────────────────────────────────┤
@@ -128,7 +128,7 @@ Analytics & Reporting:
 
 **Example: Property Lead to CRM Automation**
 
-```
+```text
 STEP 1: Define Trigger
 ┌──────────────────────────────────┐
 │  Webhook Trigger                 │
@@ -210,7 +210,7 @@ STEP 6: Log & Notify
 
 n8n provides drag-and-drop interface:
 
-```
+```text
 ┌────────────────────────────────────────────────────────┐
 │  n8n Visual Workflow Builder                            │
 ├────────────────────────────────────────────────────────┤
@@ -311,7 +311,7 @@ Production Checklist:
 
 After workflow activated, get webhook URL:
 
-```
+```text
 WEBHOOK URL:
 https://your-n8n-instance.com/webhook/property-lead-abc123
 
@@ -369,7 +369,7 @@ GET http://localhost:5678/api/v1/executions?workflow_id=ABC123
 
 **Example Dashboard Metrics**:
 
-```
+```yaml
 Workflow: Property Lead Automation
 Time Period: Last 24 hours
 
@@ -514,7 +514,7 @@ Backoff: Handle missed executions
 
 ### Example 1: Lead-to-Tenant Complete Flow
 
-```
+```text
 Webhook (Form) → Validate → CRM Create
 → Check Status → [IF Pre-Approved: Auto-Onboard | ELSE: Wait Approval]
 → Tenant Portal Setup → Lease Documents
@@ -524,7 +524,7 @@ Webhook (Form) → Validate → CRM Create
 
 ### Example 2: Maintenance Request with AI
 
-```
+```text
 Webhook (Mobile) → Extract Request
 → OpenAI (Categorize & Prioritize)
 → CRM Create Ticket
@@ -536,7 +536,7 @@ Webhook (Mobile) → Extract Request
 
 ### Example 3: Rent Collection with Accounting Sync
 
-```
+```text
 Scheduled (1st of month) → Generate Invoice
 → Send Email + SMS → Wait for Payment
 → Check Payment Status → Receipt → CRM Update

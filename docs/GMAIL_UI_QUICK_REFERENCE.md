@@ -8,7 +8,7 @@ Agent Jumbo now supports **web-based Gmail account setup** through the Settings 
 
 ### New API Endpoints (4 files, 9.6K)
 
-```
+```text
 python/api/
 ├── gmail_oauth_start.py      (2.2K) - Start OAuth2 flow
 ├── gmail_oauth_callback.py   (3.5K) - Handle OAuth2 redirect
@@ -18,7 +18,7 @@ python/api/
 
 ### Updated Core Files (4 files)
 
-```
+```text
 python/helpers/
 ├── settings.py          - Added gmail_accounts field & UI section
 ├── gmail_oauth2.py      - Added web OAuth2 methods
@@ -30,7 +30,7 @@ webui/js/
 
 ### Documentation (4 files)
 
-```
+```text
 docs/
 ├── GMAIL_API_PHASE2_PHASE3.md         - Complete Gmail API guide
 ├── GMAIL_UI_SETUP.md                  - UI setup instructions
@@ -243,7 +243,7 @@ Location: **Settings → External tab → Gmail Accounts**
 
 ### Token Storage
 
-```
+```text
 data/gmail_credentials/
 ├── token_sales.pickle
 ├── token_support.pickle
@@ -339,14 +339,14 @@ See `docs/GMAIL_UI_TESTING.md` for complete test plan.
 
 ### Send Email
 
-```
+```yaml
 User: "Send email to john@example.com about the meeting"
 Agent: Uses email_advanced with account_name="sales"
 ```
 
 ### Read Emails
 
-```
+```yaml
 User: "Check my unread emails from support@company.com"
 Agent: {
     "action": "read_gmail",
@@ -357,7 +357,7 @@ Agent: {
 
 ### Manage Labels
 
-```
+```yaml
 User: "Create a label called 'Important Clients'"
 Agent: {
     "action": "create_label",

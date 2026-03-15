@@ -696,7 +696,7 @@ docker buildx create --name multiplatform --use
 **Status**: 🟢 Production Ready
 **Annual ROI**: $60,000
 
-```
+```text
 
 ## ROI Impact
 

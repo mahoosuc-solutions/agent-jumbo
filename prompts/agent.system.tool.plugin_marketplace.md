@@ -28,7 +28,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Add a new marketplace source**
 
-```
+```json
 {{plugin_marketplace(
   action="add_marketplace",
   name="my-registry",
@@ -52,7 +52,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **List configured marketplaces**
 
-```
+```json
 {{plugin_marketplace(action="list_marketplaces")}}
 {{plugin_marketplace(action="list_marketplaces", enabled_only=true)}}
 ```
@@ -63,7 +63,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Manage marketplaces**
 
-```
+```json
 {{plugin_marketplace(action="remove_marketplace", marketplace_id=5)}}
 {{plugin_marketplace(action="toggle_marketplace", marketplace_id=1, enabled=false)}}
 ```
@@ -76,7 +76,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Sync plugins from a specific marketplace**
 
-```
+```json
 {{plugin_marketplace(action="sync_marketplace", marketplace_id=1)}}
 {{plugin_marketplace(action="sync_marketplace", name="claude-plugins-dev")}}
 ```
@@ -87,7 +87,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Sync all enabled marketplaces**
 
-```
+```text
 {{plugin_marketplace(action="sync_all")}}
 ```
 
@@ -101,7 +101,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Search plugins by name/description**
 
-```
+```json
 {{plugin_marketplace(
   action="search_plugins",
   query="code review",
@@ -129,7 +129,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **List plugins with sorting**
 
-```
+```json
 {{plugin_marketplace(
   action="list_plugins",
   sort_by="downloads",
@@ -150,7 +150,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Quick access to popular/recent plugins**
 
-```
+```json
 {{plugin_marketplace(action="list_popular", limit=10)}}
 {{plugin_marketplace(action="list_trending", limit=10)}}
 ```
@@ -161,7 +161,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Browse plugins by tag**
 
-```
+```json
 {{plugin_marketplace(action="browse_by_tag", tag="development")}}
 {{plugin_marketplace(action="browse_by_tag", tag="productivity", limit=30)}}
 ```
@@ -172,7 +172,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Get detailed plugin information**
 
-```
+```json
 {{plugin_marketplace(
   action="get_plugin_details",
   identifier="@anthropics/feature-dev"
@@ -189,7 +189,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Install a plugin from marketplace**
 
-```
+```json
 {{plugin_marketplace(
   action="install_plugin",
   identifier="@wshobson/pr-review-toolkit"
@@ -221,7 +221,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Uninstall a plugin**
 
-```
+```json
 {{plugin_marketplace(action="uninstall_plugin", identifier="plugin-name")}}
 ```
 
@@ -231,7 +231,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **List installed plugins**
 
-```
+```text
 {{plugin_marketplace(action="list_installed")}}
 ```
 
@@ -243,7 +243,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Check for available updates**
 
-```
+```text
 {{plugin_marketplace(action="check_updates")}}
 ```
 
@@ -253,7 +253,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Update a plugin to latest version**
 
-```
+```json
 {{plugin_marketplace(action="update_plugin", identifier="plugin-name")}}
 ```
 
@@ -265,7 +265,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 **Import installed plugin into Agent Jumbo**
 
-```
+```json
 {{plugin_marketplace(
   action="import_to_agent_jumbo",
   identifier="@anthropics/feature-dev"
@@ -287,7 +287,7 @@ This uses the `skill_importer` tool to:
 
 **Get marketplace statistics**
 
-```
+```text
 {{plugin_marketplace(action="get_stats")}}
 ```
 
@@ -299,7 +299,7 @@ This uses the `skill_importer` tool to:
 
 ### Discover and Install a Plugin
 
-```
+```markdown
 # 1. Sync marketplaces first
 {{plugin_marketplace(action="sync_all")}}
 
@@ -318,14 +318,14 @@ This uses the `skill_importer` tool to:
 
 ### Browse Popular Plugins
 
-```
+```json
 {{plugin_marketplace(action="list_popular", limit=20)}}
 {{plugin_marketplace(action="browse_by_tag", tag="productivity")}}
 ```
 
 ### Keep Plugins Updated
 
-```
+```json
 {{plugin_marketplace(action="check_updates")}}
 {{plugin_marketplace(action="update_plugin", identifier="outdated-plugin")}}
 ```
@@ -338,13 +338,13 @@ This uses the `skill_importer` tool to:
 
 After installation, use `import_to_agent_jumbo` to make plugins available in Agent Jumbo:
 
-```
+```json
 {{plugin_marketplace(action="import_to_agent_jumbo", identifier="plugin-name")}}
 ```
 
 This is equivalent to:
 
-```
+```json
 {{skill_importer(action="import_plugin", plugin_path="~/.claude/plugins/plugin-name")}}
 ```
 

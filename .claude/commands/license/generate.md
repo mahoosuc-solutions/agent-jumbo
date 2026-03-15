@@ -83,7 +83,7 @@ WHERE d.zoho_deal_id = '${deal_id}'
 
 ### Phase 3: License Preview
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  LICENSE GENERATION PREVIEW                     ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -232,7 +232,7 @@ Use `AskUserQuestion`:
 
 #### 7.2 Email Template
 
-```
+```text
 Subject: Your [Product] License Key - Acme Corporation
 
 Dear John,
@@ -267,7 +267,7 @@ The [Product] Team
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                  LICENSE GENERATED SUCCESSFULLY
 ═══════════════════════════════════════════════════════════════════
@@ -317,7 +317,7 @@ NEXT STEPS:
 
 ## LICENSE KEY FORMAT
 
-```
+```yaml
 Format: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX (25 chars + 4 dashes)
 
 Encoding: Base32 (A-Z, 2-7, excluding confusable chars)

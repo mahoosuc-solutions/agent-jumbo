@@ -4,7 +4,7 @@
 
 Dev container failed to build due to permission denied error when Docker tried to access root-owned files in `docker/run/agent-zero/tmp/codex-home/`.
 
-```
+```text
 ERROR: failed to build: failed to solve: error from sender: open .../docker/run/agent-zero/tmp/codex-home/tmp/arg0: permission denied
 ```
 
@@ -21,7 +21,7 @@ ERROR: failed to build: failed to solve: error from sender: open .../docker/run/
 
 Moved `docker/run/` to top of file for early exclusion:
 
-```
+```text
 docker/run/
 docker/run/**
 ```
@@ -47,7 +47,7 @@ COPY ./docker/run/fs/ /
 
 Added `docker/run/` to prevent committing runtime artifacts:
 
-```
+```python
 # Docker runtime artifacts (generated when running Docker containers)
 docker/run/
 ```

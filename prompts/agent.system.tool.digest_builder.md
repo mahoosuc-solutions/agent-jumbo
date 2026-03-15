@@ -6,7 +6,7 @@ Build daily or weekly digests from ingested items.
 
 ### build_digest
 
-```
+```json
 {{digest_builder(
   action="build_digest",
   window_hours=24,
@@ -17,13 +17,13 @@ Build daily or weekly digests from ingested items.
 
 ### list_digests
 
-```
+```json
 {{digest_builder(action="list_digests", limit=10)}}
 ```
 
 ### build_architecture_review
 
-```
+```json
 {{digest_builder(
   action="build_architecture_review",
   context="Problem brief",

@@ -172,7 +172,7 @@ WHERE id = '${alert_id}';
 
 Individual events recorded immediately:
 
-```
+```text
 POST /usage/track
 {
   "customer_id": "org_abc123",
@@ -190,7 +190,7 @@ POST /usage/track
 
 Multiple events in single request:
 
-```
+```text
 POST /usage/track/batch
 {
   "customer_id": "org_abc123",
@@ -230,7 +230,7 @@ GROUP BY customer_id, organization_id, metric_type,
 
 ### Success Response
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    USAGE EVENT RECORDED                         ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -256,7 +256,7 @@ GROUP BY customer_id, organization_id, metric_type,
 
 ### Quota Exceeded Response
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  ⚠️  QUOTA EXCEEDED                             ║
 ╠════════════════════════════════════════════════════════════════╣

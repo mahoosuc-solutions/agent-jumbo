@@ -47,7 +47,7 @@ Trigger lead discovery for a specific organization and optionally filter by plat
 
 ## Expected Output
 
-```
+```text
 🔎 Starting manual lead discovery...
 📋 Organization: Mahoosuc Solutions (550e8400-e29b-41d4-a716-446655440000)
 🌐 Platforms: reddit, stackoverflow, hackernews, devto

@@ -267,7 +267,7 @@ await mcp.gmail.createLabel({
 
 ### 7. Confirmation & Summary
 
-```
+```text
 ✓ Email converted to task successfully
 
 📧 Email: "Project deadline moved to Friday"
@@ -410,7 +410,7 @@ Universal search:
 
 ## n8n Workflow Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  TRIGGER: Gmail Label "Action Required"    │
 │  OR Manual /workflow:email-to-task         │

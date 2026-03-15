@@ -103,7 +103,7 @@ Automatically uses credentials from active context:
 
 2. **Approval Workflow** (if enabled in context)
 
-   ```
+   ```text
    ┌─────────────────────────────────────────┐
    │  EMAIL PREVIEW                          │
    ├─────────────────────────────────────────┤
@@ -139,7 +139,7 @@ Automatically uses credentials from active context:
 
 4. **Confirmation**
 
-   ```
+   ```text
    ✓ Email sent successfully
    Message ID: <msg_abc123>
    Sent at: 2025-01-20 14:32:15
@@ -164,7 +164,7 @@ Automatically uses credentials from active context:
 
 3. **Display Results**
 
-   ```
+   ```text
    Found 12 emails matching "from:tenant subject:maintenance"
 
    [1] 🔴 URGENT: Water leak in Unit 2B

@@ -518,7 +518,7 @@ npm test auth -- --verbose
 
 ## Test Coverage Report
 
-```
+```text
 PASS tests/auth.test.js
   Authentication System
     POST /auth/login

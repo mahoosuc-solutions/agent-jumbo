@@ -238,7 +238,7 @@ echo "  Spec: $SPEC_FILE ($FILE_SIZE bytes)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
       FEATURE SPECIFICATION CREATED ✓
 ═══════════════════════════════════════════════════

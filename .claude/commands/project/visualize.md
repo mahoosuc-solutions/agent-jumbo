@@ -60,7 +60,7 @@ This command implements a **4-phase workflow** that automatically detects your p
 
 ### Output Structure
 
-```
+```text
 docs/diagrams/
 ├── architecture/
 │   ├── 01-c4-context.mmd
@@ -117,7 +117,7 @@ ls -la [project-path] | head -20
 
 **Detection Output Example:**
 
-```
+```text
 Project Analysis Complete
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Project Type: Full-Stack Next.js Application
@@ -143,7 +143,7 @@ Detected Patterns:
 
 **Step 2.1: Generate Recommendations**
 
-```
+```text
 RECOMMENDED DIAGRAMS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -168,7 +168,7 @@ UI (Detected React):
 
 **Step 2.2: Prompt User**
 
-```
+```text
 Proceed with recommended diagrams? (7 total)
 [1] Generate all recommended (default)
 [2] Focus on specific category
@@ -194,7 +194,7 @@ Proceed with recommended diagrams? (7 total)
 
 **Progress Indicator:**
 
-```
+```text
 Generating Diagrams... [████████░░] 7/9
 
 ✓ C4 Context (2 min 15s)
@@ -206,7 +206,7 @@ Generating Diagrams... [████████░░] 7/9
 
 **Checkpoint 2: Diagram Review**
 
-```
+```text
 Review generated diagrams:
 [1] All diagrams look good (proceed)
 [2] Refine specific diagram
@@ -217,7 +217,7 @@ Review generated diagrams:
 
 **Step 4.1: Create Directory Structure**
 
-```
+```text
 docs/diagrams/
 ├── architecture/
 ├── data/
@@ -244,7 +244,7 @@ Consolidated view of all diagrams with:
 
 **Checkpoint 3: Final Review**
 
-```
+```text
 Documentation complete!
 ✓ 7 diagrams generated
 ✓ docs/diagrams/ created
@@ -387,7 +387,7 @@ Analyzes different project directory.
 
 ## Command Workflow
 
-```
+```text
 START
   ↓
 Phase 1: Detect Project (5-10 min)

@@ -938,7 +938,7 @@ Review thumbnail designs against optimization checklist and establish performanc
 
 **Input:**
 
-```
+```yaml
 Video: "How to Build a Website in 15 Minutes"
 Platform: YouTube
 Niche: Web development tutorials
@@ -947,7 +947,7 @@ Goal: 8%+ CTR
 
 **Output:**
 
-```
+```text
 THUMBNAIL DESIGN SPECIFICATION:
 
 Dimensions: 1280x720 pixels
@@ -1006,7 +1006,7 @@ EXPECTED CTR: 9-12% based on educational niche benchmarks
 
 **Input:**
 
-```
+```yaml
 Content: 5 productivity hacks
 Platform: Instagram Reels
 Niche: Entrepreneur lifestyle
@@ -1015,7 +1015,7 @@ Goal: High saves and shares
 
 **Output:**
 
-```
+```text
 THUMBNAIL DESIGN SPECIFICATION:
 
 Dimensions: 1080x1920 pixels (9:16 vertical)
@@ -1090,7 +1090,7 @@ EXPECTED PERFORMANCE:
 
 **Input:**
 
-```
+```yaml
 Video: "Why Everyone Quit Their Tech Job"
 Platform: YouTube
 Niche: Tech industry commentary
@@ -1099,7 +1099,7 @@ Goal: Maximize CTR, viral potential
 
 **Output:**
 
-```
+```text
 THUMBNAIL DESIGN SPECIFICATION:
 
 Dimensions: 1280x720 pixels
@@ -1179,7 +1179,7 @@ RISK: May attract negative comments, but high engagement
 
 **Input:**
 
-```
+```yaml
 Content: Hybrid work framework case study
 Platform: LinkedIn
 Niche: Business leadership
@@ -1188,7 +1188,7 @@ Goal: Connection requests and credibility
 
 **Output:**
 
-```
+```text
 THUMBNAIL DESIGN SPECIFICATION:
 
 Dimensions: 1200x627 pixels (link preview format)
@@ -1275,7 +1275,7 @@ EXPECTED PERFORMANCE:
 
 **Input:**
 
-```
+```yaml
 Content: Viral life hack
 Platform: TikTok
 Niche: Life hacks / productivity
@@ -1284,7 +1284,7 @@ Goal: For You Page placement
 
 **Output:**
 
-```
+```text
 THUMBNAIL DESIGN SPECIFICATION:
 
 Dimensions: 1080x1920 pixels (9:16 vertical)
@@ -1374,7 +1374,7 @@ EXPECTED PERFORMANCE:
 
 **Input:**
 
-```
+```yaml
 Content: Course launch announcement
 Platforms: YouTube, Instagram, LinkedIn, Facebook
 Goal: Consistent branding across platforms
@@ -1382,7 +1382,7 @@ Goal: Consistent branding across platforms
 
 **Output:**
 
-```
+```text
 MULTI-PLATFORM THUMBNAIL SYSTEM:
 
 MASTER DESIGN (1920x1080 safe zone):

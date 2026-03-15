@@ -75,7 +75,7 @@ Guide users through detailed solution design for each sub-problem, creating arch
      - Output: status, progress, error_count, records_synced
      - SLA: <100ms response time
 
-   ```
+   ```text
    ```
 
 2. **Non-Functional Requirements Assessment**
@@ -232,7 +232,7 @@ Sync Engine
 
 Notifications → Users
 
-```
+```text
 ```
 
 **🔍 CHECKPOINT 1: Design Approach Approval**
@@ -417,7 +417,7 @@ Use `AskUserQuestion`:
 
 3. **Service Architecture**
 
-   ```
+   ```text
    ┌─────────────────────────────────────────────┐
    │         Salesforce API                      │
    └──────────┬──────────────────────────────────┘

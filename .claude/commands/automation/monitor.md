@@ -27,7 +27,7 @@ Choose what to monitor:
 
 Get high-level view of all automations:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                  AUTOMATION MONITORING DASHBOARD
 ═══════════════════════════════════════════════════════════════
@@ -108,7 +108,7 @@ YOUR WORKFLOWS:
 
 Deep dive into specific workflow performance:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
               WORKFLOW DETAILS: Property Lead Automation
 ═══════════════════════════════════════════════════════════════
@@ -150,7 +150,7 @@ Detailed Metrics by Step:
 | 4 | Email: Welcome | 846 | 99.9% | 0.2s | 0 |
 | 5 | Slack: Notify | 846 | 100% | 0.1s | 0 |
 
-```
+```text
 
 Success Breakdown:
 ```
@@ -169,7 +169,7 @@ Success Breakdown:
 
 ⚠️ Warnings: 0
 
-```
+```text
 
 Execution Timeline (Last 24 hours):
 ```
@@ -184,7 +184,7 @@ Time  | Count | Success | Avg Time | Status
 13:00 | 47    | 100%    | 0.9s     | ✓
 14:00 | 39    | 100%    | 0.8s     | ✓
 
-```
+```text
 
 Traffic Distribution:
 ```
@@ -199,7 +199,7 @@ Traffic Distribution:
 └─ Night (12 AM - 8 AM): 13% of executions
    └─ Avg Success: 99.9%
 
-```
+```text
 
 ═══════════════════════════════════════════════════════════════
 
@@ -214,7 +214,7 @@ Time | Status | Duration | Details
 14:29 | ✓ SUCCESS | 1.1s | lead_id: L-456787
 14:28 | ✓ SUCCESS | 0.8s | lead_id: L-456786
 
-```
+```text
 
 ═══════════════════════════════════════════════════════════════
 ```
@@ -223,7 +223,7 @@ Time | Status | Duration | Details
 
 See what's going wrong and get recommendations:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                     ERROR ANALYSIS (24h)
 ═══════════════════════════════════════════════════════════════
@@ -276,7 +276,7 @@ ERROR TIMELINE:
   Recovery: Queued for retry (automatic)
   Impact: Email delayed but will be sent
 
-```
+```text
 
 ERROR PATTERN ANALYSIS:
 ```
@@ -300,7 +300,7 @@ Overall Error Health:
   ✓ No data loss
   ✓ User impact: Minimal to none
 
-```
+```text
 
 RECOMMENDATIONS:
   1. Monitor CRM latency during 9-10 AM peak
@@ -313,7 +313,7 @@ RECOMMENDATIONS:
 
 Get speed and efficiency insights:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                PERFORMANCE & OPTIMIZATION ANALYSIS
 ═══════════════════════════════════════════════════════════════
@@ -342,7 +342,7 @@ Step | Name | Executions | Avg | P95 | Max | Issue
 5 | Update CRM | 155 | 0.6s | 1.2s | 1.8s | Okay
 6 | Send Email | 155 | 0.4s | 0.8s | 1.2s | Okay
 
-```
+```text
 
 ROOT CAUSE: CRM Query Step
 ```
@@ -383,7 +383,7 @@ Optimization Recommendations:
 
 OPTIMIZATION IMPACT (Estimated):
 
-```
+```text
 Current: 4.2s average
   - Add field projection: -0.7s → 3.5s
   - Add caching: -0.4s → 3.1s
@@ -405,7 +405,7 @@ Rent Collection | 4,680 | $2.34 | $0.0005 | → | Could optimize
 ...more | ... | ... | ... | ... | ...
 TOTAL | 2,847,000 | $1,424 | $0.0005 | → | Great ROI
 
-```
+```text
 
 Potential Savings from Optimization:
   • Rent Collection Optimization: $0.60/day ($18/month)
@@ -419,7 +419,7 @@ Potential Savings from Optimization:
 
 Configure and manage alerts:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                      ALERT MANAGEMENT
 ═══════════════════════════════════════════════════════════════
@@ -493,7 +493,7 @@ Dashboard:
 
 Analyze long-term patterns:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
                HISTORICAL TRENDS (30-Day View)
 ═══════════════════════════════════════════════════════════════
@@ -517,7 +517,7 @@ Min: 97.1% (Jan 8 - Issue with CRM API)
 Max: 99.9% (Jan 15 - Current)
 Trend: ↗ Improving
 
-```
+```text
 
 Execution Speed Trend:
 ```
@@ -536,7 +536,7 @@ Min: 0.9s (Jan 12 - Optimized CRM query)
 Max: 4.2s (Jan 15 - Current - High latency alert)
 Trend: ↘ Degrading (needs attention)
 
-```
+```text
 
 Execution Volume by Hour (Pattern):
 ```
@@ -546,7 +546,7 @@ Off-Peak: 2-4 AM (5-10 executions/hour)
 Weekend: 30% lower volume
 Holiday: No automation run (scheduled pause)
 
-```
+```text
 
 Error Rate by Workflow (30 days):
 ```
@@ -557,7 +557,7 @@ Rent Collection: 1.25% (15 errors / 1,200 executions) ← Highest
 Communication: 0.05% (2 errors / 4,050 executions)
 Data Sync: 0.30% (5 errors / 1,670 executions)
 
-```
+```text
 
 ═══════════════════════════════════════════════════════════════
 ```
@@ -566,7 +566,7 @@ Data Sync: 0.30% (5 errors / 1,670 executions)
 
 Export monitoring data:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
               GENERATE PERFORMANCE REPORTS
 ═══════════════════════════════════════════════════════════════
@@ -622,7 +622,7 @@ Recipients:
 
 Get AI-powered optimization suggestions:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════
            OPTIMIZATION RECOMMENDATIONS (AI-Generated)
 ═══════════════════════════════════════════════════════════════
@@ -705,7 +705,7 @@ OPTIMIZATION QUICK ACTIONS:
 
 Automate report delivery:
 
-```
+```text
 SCHEDULED REPORTS:
 
 Daily Digest (9 AM):

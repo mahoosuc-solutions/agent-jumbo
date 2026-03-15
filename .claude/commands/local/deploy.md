@@ -56,7 +56,7 @@ WHERE l.id = '${license_id}' AND l.status = 'active';
 
 Gather deployment parameters:
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║              DEPLOYMENT CONFIGURATION                           ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -464,7 +464,7 @@ server {
 
 ### Architecture Overview
 
-```
+```text
                     ┌─────────────────┐
                     │  Load Balancer  │
                     │  (HAProxy/F5)   │

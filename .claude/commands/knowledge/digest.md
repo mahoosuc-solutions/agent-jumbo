@@ -243,7 +243,7 @@ Generate comprehensive report based on format selection:
 
 #### SUMMARY FORMAT
 
-```
+```text
 📊 Knowledge Digest: [Period]
 ═══════════════════════════════════════════════════════════════
 🗓️  Period: [start-date] to [end-date] ([X] days)
@@ -319,7 +319,7 @@ Next Digest: /knowledge:digest --period [next-period]
 
 #### DETAILED FORMAT
 
-```
+```text
 📚 Detailed Knowledge Digest: [Period]
 ═══════════════════════════════════════════════════════════════
 
@@ -458,7 +458,7 @@ Recommended Focus for Next [Period]:
 
 #### INSIGHTS FORMAT
 
-```
+```text
 💡 Knowledge Insights: [Period]
 ═══════════════════════════════════════════════════════════════
 
@@ -646,13 +646,13 @@ Next digest: /knowledge:digest --period [next-period] --format insights
 
 Save digest to:
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/digests/[YYYY]/[period]-[start-date].md
 ```
 
 Example:
 
-```
+```text
 knowledge-base/digests/2025/weekly-2025-11-18.md
 knowledge-base/digests/2025/monthly-2025-11.md
 ```
@@ -685,7 +685,7 @@ This creates a meta-knowledge layer: insights about your insights.
 
 **Expected Output**:
 
-```
+```text
 📊 Daily Knowledge Digest: November 25, 2025
 
 📝 Today's Captures: 4 notes
@@ -738,7 +738,7 @@ Next Digest: Tomorrow at 5pm
 
 **Expected Output**:
 
-```
+```text
 💡 Weekly Knowledge Insights: Nov 18-25, 2025
 
 Analyzed 12 notes from the past week
@@ -857,7 +857,7 @@ Next Digest: /knowledge:digest --period weekly --format insights
 
 **Expected Output**:
 
-```
+```text
 📚 Monthly Knowledge Digest: November 2025
 
 📝 Notes Captured: 47 notes
@@ -988,7 +988,7 @@ Next Digest: /knowledge:digest --period monthly
 
 **Expected Output**:
 
-```
+```text
 📊 Finance Knowledge Digest: Nov 18-25, 2025
 
 📝 Finance Notes: 5 notes (out of 12 total notes this week)
@@ -1045,7 +1045,7 @@ Focus for Next Week:
 
 **Expected Output**:
 
-```
+```text
 💡 Property Operations Insights: November 2025
 
 28 property-related notes analyzed
@@ -1204,7 +1204,7 @@ Schedule automatic digests:
 
 ### No Notes in Period
 
-```
+```text
 ℹ️  No notes captured in [period]
 
 This is unusual for you. Average: [X.X] notes/[period]
@@ -1224,7 +1224,7 @@ Even busy periods have insights. Try quick captures:
 
 ### Insufficient Data for Patterns
 
-```
+```text
 ⚠️  Limited data for pattern analysis
 
 Notes in period: [X] (need 10+ for good pattern detection)

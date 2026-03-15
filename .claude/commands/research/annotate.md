@@ -170,7 +170,7 @@ Create hierarchical tag system:
 
 **Tag Hierarchy Structure:**
 
-```
+```markdown
 #research
   #research/methodology
     #research/methodology/quantitative
@@ -377,7 +377,7 @@ Export annotations to various formats:
 
 **Sample Margin Note**:
 
-```
+```text
 Section 3.2 - Deep Learning Performance
 
 SUMMARY: Transformer architectures outperform CNNs on NLP tasks
@@ -492,7 +492,7 @@ Only 3/8 papers address small farms; need more research
 
 **Sample Teaching Notes**:
 
-```
+```text
 LECTURE SLIDE 3: The Dopamine Reward System
 
 CORE CONCEPT (from highlight):

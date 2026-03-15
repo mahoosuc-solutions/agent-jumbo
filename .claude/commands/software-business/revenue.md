@@ -82,7 +82,7 @@ Log revenue and expenses as they occur or monthly.
 
 ### Revenue Log Template
 
-```
+```text
 REVENUE TRACKING - JANUARY 2025
 ═════════════════════════════════════════════════════════════
 
@@ -149,7 +149,7 @@ JANUARY SUMMARY
 
 At the end of each month, summarize:
 
-```
+```text
 MONTHLY SUMMARY - JANUARY 2025
 ═════════════════════════════════════════════════════════════
 
@@ -194,7 +194,7 @@ Project revenue and expenses for next 90 days.
 
 ### 90-Day Cash Flow Forecast
 
-```
+```text
 90-DAY CASH FLOW FORECAST
 ═════════════════════════════════════════════════════════════
 
@@ -261,7 +261,7 @@ For each forecast item, rate confidence:
 
 Example:
 
-```
+```text
 FEBRUARY REVENUE BREAKDOWN
 ├── Confirmed (95%): $12,000 (Website completion - in contract)
 ├── Expected (75%): $20,000 (Mobile App - proposal sent, 75% likely)
@@ -277,7 +277,7 @@ Analyze profit margins, efficiency, and trends.
 
 ### Profitability Analysis
 
-```
+```text
 2025 PROFITABILITY ANALYSIS (Year-to-date)
 ═════════════════════════════════════════════════════════════
 
@@ -339,7 +339,7 @@ OPPORTUNITIES TO INCREASE PROFIT
 
 ### Profit Per Project Analysis
 
-```
+```text
 PROFIT PER PROJECT RANKING (2025 YTD)
 ═════════════════════════════════════════════════════════════
 
@@ -383,7 +383,7 @@ Track progress toward business and life financial goals.
 
 ### Business Goal Progress
 
-```
+```text
 BUSINESS GOAL: Build $200K/year software business
 ═════════════════════════════════════════════════════════════
 
@@ -425,7 +425,7 @@ NEXT MILESTONE
 
 ### Life Goal - Financial Independence
 
-```
+```text
 LIFE GOAL: Financial Independence (in 10 years)
 ═════════════════════════════════════════════════════════════
 
@@ -471,7 +471,7 @@ LEVERS TO ACCELERATE
 
 ### Key Financial Metrics Dashboard
 
-```
+```text
 FINANCIAL METRICS SCORECARD
 ═════════════════════════════════════════════════════════════
 
@@ -520,7 +520,7 @@ OVERALL FINANCIAL HEALTH: 8.2/10 ✅
 
 ## Revenue Optimization Recommendations
 
-```
+```text
 3-MONTH OPTIMIZATION PLAN
 
 MONTH 1: INCREASE PRICES (Potential +$25K/year)
@@ -555,7 +555,7 @@ Revenue data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/revenue.json
 ├── Monthly revenue logs (projects, retainers, products)
 ├── Cash flow forecasts (90-day projections)
@@ -566,7 +566,7 @@ Revenue data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 revenue table
 ├── revenue_id, source_type, amount, date
 ├── project_id, client_id (if applicable)
@@ -590,7 +590,7 @@ financial_goals table
 
 Revenue directly supports financial independence:
 
-```
+```text
 LIFE GOAL: Financial Independence (10-year plan)
 ├── Business Goal: $200K/year revenue → $100K+ profit
 │   └── Current: $250K+ revenue → $125K+ profit ✅

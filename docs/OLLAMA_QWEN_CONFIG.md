@@ -35,7 +35,7 @@ Agent Jumbo is now configured to use **Ollama with Qwen 2.5 Coder 7B** model.
 
 ### Architecture
 
-```
+```text
 ┌─────────────────┐
 │  Agent Jumbo UI  │
 │   Port: 50080   │
@@ -106,7 +106,7 @@ docker exec ollama ollama list
 
 Expected output:
 
-```
+```text
 NAME                ID              SIZE    MODIFIED
 qwen2.5-coder:7b   dae161e27b0e    4.7 GB  X hours ago
 ```
@@ -115,7 +115,7 @@ qwen2.5-coder:7b   dae161e27b0e    4.7 GB  X hours ago
 
 The qwen2.5-coder:7b model (4.7GB) is now permanently stored in:
 
-```
+```text
 ./ollama_models/
 ├── models/
 │   ├── manifests/
@@ -152,13 +152,13 @@ docker exec ollama ollama list
 
 1. **Access Agent Jumbo UI**
 
-   ```
+   ```text
    http://localhost:50080
    ```
 
 2. **Test with a simple prompt**
 
-   ```
+   ```python
    "Write a Python function to calculate fibonacci numbers"
    ```
 

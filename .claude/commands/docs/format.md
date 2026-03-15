@@ -361,7 +361,7 @@ Recent advances in artificial intelligence (Johnson et al., 2024)...
 pip install numpy
 ```
 
-```
+```text
 
 **Output**: Multi-format ebook with:
 - Creative typography with custom fonts
@@ -405,7 +405,7 @@ pip install numpy
 
 **Input**: Directory containing multiple report files
 
-```
+```text
 ./reports/
   01-introduction.md
   02-methodology.md

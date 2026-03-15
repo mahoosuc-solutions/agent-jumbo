@@ -137,7 +137,7 @@ For frontend implementations:
 
 When all task groups complete:
 
-```
+```text
 ═══════════════════════════════════════════════════
         IMPLEMENTATION COMPLETE
 ═══════════════════════════════════════════════════

@@ -648,7 +648,7 @@ const validateSchema = async (url, schema) => {
 "datePublished": "2024-01-15T08:00:00+00:00"
 ```
 
-```
+```text
 
 ### Implementation Steps
 

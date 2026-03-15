@@ -283,7 +283,7 @@ echo "✓ Output validation complete ($SECTION_COUNT sections defined)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         PRODUCT ROADMAP COMPLETE ✓
 ═══════════════════════════════════════════════════

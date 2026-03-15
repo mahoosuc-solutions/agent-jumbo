@@ -180,7 +180,7 @@ await Task({
 
 ## Validation Library Structure
 
-```
+```text
 .claude/validation/
 ├── README.md                    # Validation library guide
 ├── schemas/                     # Reusable validation schemas

@@ -310,7 +310,7 @@ echo "✓ Output validation complete ($FLOW_COUNT user flows defined)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         SECTION SPEC COMPLETE ✓
 ═══════════════════════════════════════════════════

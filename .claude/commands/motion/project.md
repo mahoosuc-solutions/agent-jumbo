@@ -95,7 +95,7 @@ for (const task of aiTasks) {
 
 ### Confirmation
 
-```
+```text
 ✓ Project created and AI-scheduled by Motion
 
 🎯 "Website Redesign"

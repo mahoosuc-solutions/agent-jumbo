@@ -281,7 +281,7 @@ CMD ["node", "dist/index.js"]
 
 **Complete .dockerignore**:
 
-```
+```python
 # Dependencies
 node_modules/
 npm-debug.log*
@@ -700,7 +700,7 @@ docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ## Architecture
 
-```
+```python
 ┌─────────────────────────────────────┐
 │         Nginx (Port 80/443)         │
 │      Reverse Proxy & SSL            │
@@ -903,7 +903,7 @@ deploy:
 **Image Size**: 180 MB (optimized)
 **Annual ROI**: $60,000
 
-```
+```text
 
 ## ROI Impact
 

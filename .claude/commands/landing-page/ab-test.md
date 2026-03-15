@@ -49,7 +49,7 @@ Creates multiple variants of landing page elements for A/B testing to optimize c
 
 **Example output:**
 
-```
+```text
 Variant A (Data-driven):
 "Join 10,000+ Teams Closing Deals 3X Faster"
 
@@ -74,7 +74,7 @@ Variant D (Question):
 
 **Example output:**
 
-```
+```text
 Variant A: "Start Free Trial" (action)
 Variant B: "Save 10 Hours/Week" (benefit)
 Variant C: "Get Instant Access" (urgency)
@@ -189,7 +189,7 @@ Based on your traffic:
 
 **Provides calculator:**
 
-```
+```text
 Current conversion rate: 5%
 Minimum detectable change: 20% (to 6%)
 Required sample size per variant: 3,841 visitors
