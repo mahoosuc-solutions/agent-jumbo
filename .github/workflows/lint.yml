@@ -23,6 +23,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install ruff mypy
 
+    - name: Check for nosec inside f-strings
+      run: |
+        if grep -rn --include='*.py' -E 'f"""[[:space:]]*#[[:space:]]*nosec' . | grep -v __pycache__; then
+          echo "::error::Found # nosec comments inside f-strings. Move the comment to the execute() call line."
+          exit 1
+        fi
+
     - name: Run ruff check
       run: ruff check . --output-format=github
 
