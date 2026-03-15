@@ -40,7 +40,7 @@ class TelegramSend(Tool):
                 data=data,
                 headers={"Content-Type": "application/json"},
             )
-            with urllib.request.urlopen(request, timeout=20) as response:
+            with urllib.request.urlopen(request, timeout=20) as response:  # nosec B310 - configured Telegram API URL
                 raw = response.read().decode("utf-8", errors="ignore")
             return Response(message=f"Telegram send ok: {raw}", break_loop=False)
         except Exception as exc:

@@ -21,7 +21,7 @@ class SSHInteractiveSession:
         self.username = username
         self.password = password
         self.client = paramiko.SSHClient()
-        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        self.client.set_missing_host_key_policy(paramiko.AutoAddPolicy())  # nosec B507 - user-configured SSH host
         self.shell = None
         self.full_output = b""
         self.last_command = b""

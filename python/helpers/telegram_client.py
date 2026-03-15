@@ -21,6 +21,6 @@ def send_message(token: str, chat_id: str, text: str, parse_mode: str = "Markdow
         data=data,
         headers={"Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(request, timeout=20) as response:
+    with urllib.request.urlopen(request, timeout=20) as response:  # nosec B310 - configured Telegram API URL
         raw = response.read().decode("utf-8", errors="ignore")
     return {"raw": raw}

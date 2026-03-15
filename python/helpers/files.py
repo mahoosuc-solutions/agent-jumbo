@@ -320,10 +320,10 @@ def delete_dir(relative_path: str):
                 for root, dirs, files in os.walk(abs_path, topdown=False):
                     for name in files:
                         file_path = os.path.join(root, name)
-                        os.chmod(file_path, 0o777)
+                        os.chmod(file_path, 0o777)  # nosec B103 - intentional permission reset for cleanup
                     for name in dirs:
                         dir_path = os.path.join(root, name)
-                        os.chmod(dir_path, 0o777)
+                        os.chmod(dir_path, 0o777)  # nosec B103 - intentional permission reset for cleanup
 
                 # try again after changing permissions
                 shutil.rmtree(abs_path, ignore_errors=True)

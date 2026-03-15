@@ -25,7 +25,7 @@ class KnowledgeImport(TypedDict):
 
 
 def calculate_checksum(file_path: str) -> str:
-    hasher = hashlib.md5()
+    hasher = hashlib.md5()  # nosec B324 - MD5 used for content dedup, not security
     with open(file_path, "rb") as f:
         buf = f.read()
         hasher.update(buf)

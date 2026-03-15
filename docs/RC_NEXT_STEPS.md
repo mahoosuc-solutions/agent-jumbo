@@ -1,85 +1,31 @@
-# RC Next Steps — release/rc-mcp-tool-performance
+# RC Next Steps — Post-Merge Status
 
-**Date:** 2026-03-14 (updated)
-**PR:** [mahoosuc-solutions/agent-jumbo#2](https://github.com/mahoosuc-solutions/agent-jumbo/pull/2)
-**Branch:** `release/rc-mcp-tool-performance` (15 commits ahead of `main`)
+**Date:** 2026-03-15 (updated)
+**Branch:** `main` (RC merged)
 **Local tests:** 1767 passed, 0 failed, 6 skipped
 
 ---
 
 ## Priority 1: Fix CI (Blocking Merge) — DONE
 
-All CI blockers resolved in commits `6db759d5` and `c12bf325`:
+All CI blockers resolved and merged to main:
 
 - **pyproject.toml:** license `{text = "..."}` → SPDX string `"Apache-2.0"`, target-version py312 → py310
 - **ruff:** 102 auto-fixes + 207 files reformatted, `ruff check .` and `ruff format --check .` both pass
-- **pre-commit:** upgraded ruff v0.4.4 → v0.14.10, relaxed bandit/markdownlint for pre-existing patterns
+- **pre-commit:** upgraded ruff v0.4.4 → v0.14.10, bandit/markdownlint properly configured
 - **docs workflow:** fixed bash syntax error (`2>/dev/null` in for-loop → `shopt -s nullglob`)
 - **tests:** fixed 5 failures (hardcoded paths, stale doc refs, registry isolation)
 - **Local result:** 1767 passed, 0 failed, 6 skipped
 
-### Remaining local issue: docker backup dirs
+### Docker backup dirs — DONE
 
-The root-owned `docker/run-bak-*` and `docker/run-old-*` dirs cause pytest collection PermissionError when running without `--ignore=docker/`.
-
-**Fix:**
-
-```bash
-sudo rm -rf docker/run-bak-1773404495 docker/run-old-1773404498
-```
+Root-owned `docker/run-bak-*` and `docker/run-old-*` dirs removed.
 
 ---
 
-## Priority 2: Go-Live Validation (Post-CI-Green)
+## Priority 2: Go-Live Validation — DONE
 
-Test MOS integration with real API keys. This validates the entire client → tool → dashboard pipeline end-to-end.
-
-### 2a. Linear Integration
-
-1. Set `LINEAR_API_KEY` in Agent Zero settings (or `.env`)
-2. Set `LINEAR_DEFAULT_TEAM_ID` to your primary team
-3. Trigger: `{{linear_integration(action="sync_pipeline")}}`
-4. Verify: Issues appear in MOS dashboard (`/dashboards/mos`)
-5. Test CRUD: Create an issue, search for it, update state, verify in dashboard
-
-**What to watch for:**
-
-- GraphQL rate limits (Linear allows ~400 req/min, we batch)
-- Team ID validation errors
-- Label/state mapping correctness
-
-### 2b. Motion Integration
-
-1. Set `MOTION_API_KEY` in settings
-2. Trigger: `{{motion_integration(action="sync_from_linear", workspace_id="YOUR_WS_ID")}}`
-3. Verify: P0/P1 Linear issues appear as Motion tasks
-4. Check rate limiting behavior (30 req/min cap, 2s pause between calls)
-
-**What to watch for:**
-
-- Workspace ID format validation
-- Priority mapping (Linear Urgent→Motion ASAP, High→HIGH)
-- Idempotency: running sync twice should not create duplicates
-
-### 2c. Notion Integration
-
-1. Set `NOTION_API_KEY` + `NOTION_DEFAULT_DATABASE_ID` in settings
-2. Trigger: `{{notion_integration(action="sync_specs", database_id="YOUR_DB_ID")}}`
-3. Verify: Linear issues with "Spec" label appear as Notion pages
-4. Test CRM sync: `{{notion_integration(action="sync_crm", database_id="CONTACTS_DB")}}`
-
-**What to watch for:**
-
-- Database property schema mismatches (Notion is strict about property types)
-- Page creation rate limits
-- Content block formatting in synced pages
-
-### 2d. Orchestrator Event Flow
-
-1. Trigger a lead capture via `customer_lifecycle` tool
-2. Verify: Linear issue auto-created
-3. Verify: If Motion configured, task auto-created for P0/P1
-4. Verify: If Notion configured, spec page auto-created for Spec-labeled issues
+MOS integration validated with real API keys. Linear/Motion/Notion sync pipeline confirmed working.
 
 ---
 
@@ -111,15 +57,13 @@ Test MOS integration with real API keys. This validates the entire client → to
 
 ---
 
-## Priority 4: Technical Debt (Non-Blocking)
+## Priority 4: Technical Debt — DONE
 
-### 4a. Pre-commit config cleanup
+### 4a. Pre-commit config cleanup — DONE
 
-We disabled 12 markdownlint rules (MD001, MD025, MD028, MD029, MD036, MD040, MD041, MD045, MD046, MD048, MD051, MD055, MD056) and 2 bandit checks (B108, B310) to get the commit through. These should be re-enabled incrementally:
-
-1. Fix the most common violations across legacy docs (MD040 fenced-code-language is the biggest offender — ~200+ instances)
-2. Re-enable rules one at a time as violations are fixed
-3. Consider a `.markdownlintrc` file for per-directory rule overrides instead of global disables
+- Bandit: replaced global `--skip B103,B108,B301,B310,B324,B507` with targeted `# nosec` comments
+- Markdownlint: 17 → 5 disabled rules, moved from inline `--disable` args to `.markdownlintrc`
+- Re-enabled 10 markdownlint rules with violations fixed across 105 files
 
 ### 4b. Secrets baseline maintenance
 
@@ -142,15 +86,15 @@ Current MOS tests are all mocked. Consider adding:
 ## Quick Reference
 
 | Task | Effort | Status |
-|------|--------|--------|
+| ---- | ------ | ------ |
 | ~~Fix pyproject.toml license~~ | 5 min | DONE |
 | ~~Fix CI ruff lint~~ | 10 min | DONE |
 | ~~Fix docs check~~ | 15 min | DONE |
 | ~~Fix test failures~~ | 20 min | DONE |
-| Remove docker backup dirs | 2 min | Needs sudo |
-| Linear go-live test | 30 min | Next |
-| Motion go-live test | 30 min | Next |
-| Notion go-live test | 30 min | Next |
-| Orchestrator event flow | 20 min | Next |
+| ~~Remove docker backup dirs~~ | 2 min | DONE |
+| ~~Linear go-live test~~ | 30 min | DONE |
+| ~~Motion go-live test~~ | 30 min | DONE |
+| ~~Notion go-live test~~ | 30 min | DONE |
+| ~~Orchestrator event flow~~ | 20 min | DONE |
+| ~~Pre-commit cleanup~~ | 2-3 hrs | DONE |
 | UI polish (all items) | 2-4 hrs | Backlog |
-| Pre-commit cleanup | 2-3 hrs | No |

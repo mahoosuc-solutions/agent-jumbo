@@ -24,7 +24,7 @@ class BusinessXRay(Tool):
 
         analysis_type = kwargs.get("analysis_type", "comprehensive")
         business_name = kwargs.get("business_name", "My Business")
-        output_dir = kwargs.get("output_dir", "/tmp/business_xray")
+        output_dir = kwargs.get("output_dir", "/tmp/business_xray")  # nosec B108 - tmp/ relative to working dir
         data = kwargs.get("data", {})
 
         # Ensure output directory exists

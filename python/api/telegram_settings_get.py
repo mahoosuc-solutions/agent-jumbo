@@ -12,7 +12,7 @@ class TelegramSettingsGet(ApiHandler):
         if token:
             try:
                 endpoint = f"https://api.telegram.org/bot{token}/getWebhookInfo"
-                with urllib.request.urlopen(endpoint, timeout=15) as response:
+                with urllib.request.urlopen(endpoint, timeout=15) as response:  # nosec B310 - configured Telegram API URL
                     webhook_info = json.loads(response.read().decode("utf-8"))
             except Exception as exc:
                 webhook_info = {"ok": False, "error": str(exc)}

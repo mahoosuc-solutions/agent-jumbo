@@ -28,7 +28,7 @@ repos:
     rev: 1.7.8
     hooks:
       - id: bandit
-        args: ["-ll", "-ii", "-x", "tests/", "--skip", "B103,B108,B301,B310,B324,B507"]
+        args: ["-ll", "-ii", "-x", "tests/", "--skip", "B608"]
         files: ^(python|instruments)/
 
   # Markdown lint
@@ -36,7 +36,7 @@ repos:
     rev: v0.40.0
     hooks:
       - id: markdownlint
-        args: ["--fix", "--disable", "MD013", "MD024", "MD025", "MD036", "MD041", "--"]
+        args: ["--fix", "--"]
         exclude: "^(logs/|docs/res/)"
 
   # Check for secrets

@@ -83,7 +83,7 @@ class GmailOAuth2Handler:
             return None
 
         with open(token_path, "rb") as token:
-            creds = pickle.load(token)
+            creds = pickle.load(token)  # nosec B301 - trusted OAuth credential file
 
         # Refresh if expired
         if creds and creds.expired and creds.refresh_token:

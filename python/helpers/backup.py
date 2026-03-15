@@ -79,7 +79,7 @@ class BackupService:
 
 # User data
 {agent_root}/usr/**
-"""
+"""  # nosec B108 - tmp/ is relative to agent root, not system /tmp
 
     def _get_agent_jumbo_version(self) -> str:
         """Get current Agent Jumbo version"""
