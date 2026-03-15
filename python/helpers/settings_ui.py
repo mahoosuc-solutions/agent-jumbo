@@ -1648,6 +1648,13 @@ def convert_out(settings: Settings) -> SettingsOutput:
             "value": (PASSWORD_PLACEHOLDER if settings.get("motion_api_key") else ""),
         },
         {
+            "id": "motion_workspace_id",
+            "title": "Motion Workspace ID",
+            "description": "Default workspace for task sync. Find in Motion URL or API.",
+            "type": "text",
+            "value": settings.get("motion_workspace_id", ""),
+        },
+        {
             "id": "notion_api_key",
             "title": "Notion API Key",
             "description": "Internal integration token from notion.so/my-integrations.",

@@ -195,6 +195,7 @@ class Settings(TypedDict):
     linear_api_key: str
     linear_default_team_id: str
     motion_api_key: str
+    motion_workspace_id: str
     notion_api_key: str
     notion_default_database_id: str
 
@@ -569,6 +570,7 @@ def get_default_settings() -> Settings:
         linear_api_key=dotenv.get_dotenv_value("LINEAR_API_KEY", ""),
         linear_default_team_id=dotenv.get_dotenv_value("LINEAR_DEFAULT_TEAM_ID", ""),
         motion_api_key=dotenv.get_dotenv_value("MOTION_API_KEY", ""),
+        motion_workspace_id=dotenv.get_dotenv_value("MOTION_WORKSPACE_ID", ""),
         notion_api_key=dotenv.get_dotenv_value("NOTION_API_KEY", ""),
         notion_default_database_id=dotenv.get_dotenv_value("NOTION_DEFAULT_DATABASE_ID", ""),
     )
