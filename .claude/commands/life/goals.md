@@ -76,7 +76,7 @@ For each category, you'll define:
 
 ### Example 5-Year Vision
 
-```
+```text
 FINANCIAL INDEPENDENCE
 Vision: Earn $200K/year in software business, have $1M invested, generate $50K/year passive income
 Current: Earn $120K/year, have $200K invested, zero passive income
@@ -87,7 +87,7 @@ Gap: Build software product revenue streams, invest additional $800K
 
 For Year 1, convert 5-year vision into annual Objectives & Key Results:
 
-```
+```text
 Objective: Build software product for market
 Key Result 1: Launch product with 100+ users
 Key Result 2: Achieve $10K MRR by Q4
@@ -107,7 +107,7 @@ Total weights must sum to 100 across all goals.
 
 Break annual OKRs into quarterly milestones:
 
-```
+```text
 Q1 2025:
 - Research market and validate idea (Key Result 1)
 - Set up business entity and get first customer (Key Result 2)
@@ -193,7 +193,7 @@ See how life goals align with business and real estate goals.
 
 **By Domain:**
 
-```
+```text
 LIFE GOALS (Foundation)
 ├── Health & Wellness: 8/10 alignment
 ├── Financial Independence: 9/10 alignment
@@ -234,7 +234,7 @@ Goals are saved in two places:
 
 **JSON File** (CLI-first, version controllable):
 
-```
+```text
 .claude/data/life-goals.json
 ├── 5-year vision statements
 ├── Annual OKRs with priorities
@@ -244,7 +244,7 @@ Goals are saved in two places:
 
 **PostgreSQL** (Web UI, analytics, historical):
 
-```
+```text
 life_goals table
 ├── id, name, description, category
 ├── priority (1-10)

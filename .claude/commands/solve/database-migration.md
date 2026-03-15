@@ -165,7 +165,7 @@ ALTER TABLE users ADD COLUMN email VARCHAR(255) NOT NULL DEFAULT '';
 | Slave lag (replication) | Medium | Monitor replication lag during migration |
 | Application confusion | Low | Deploy code changes after DB change |
 
-```
+```text
 
 **🔍 CHECKPOINT 1: Impact Review**
 

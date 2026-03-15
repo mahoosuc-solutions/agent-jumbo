@@ -85,7 +85,7 @@ Created `/python/tools/diagram_tool.py`:
 
 ### Created Files
 
-```
+```text
 webui/vendor/mermaid.min.js
 instruments/custom/diagram_generator/diagram_generator.md
 instruments/custom/diagram_generator/generate_mermaid.py
@@ -101,7 +101,7 @@ DIAGRAM_IMPLEMENTATION_SUMMARY.md
 
 ### Modified Files
 
-```
+```text
 webui/index.html - Added Mermaid.js script
 webui/js/messages.js - Added renderMermaidDiagrams() function
 prompts/agent.system.response_tool_tips.md - Added diagram tips
@@ -114,7 +114,7 @@ docker/run/fs/ins/install_additional.sh - Added mermaid-cli installation
 
 Simply ask:
 
-```
+```text
 "Create a flowchart showing the user login process"
 "Generate a sequence diagram for API authentication"
 "Draw a class diagram for the tool hierarchy"
@@ -126,7 +126,7 @@ The agent will respond with inline Mermaid diagrams that render automatically.
 
 Ask:
 
-```
+```text
 "Create a Gantt chart for the project timeline and save it as PNG"
 "Generate an architecture diagram and export it"
 ```
@@ -224,7 +224,7 @@ Creates a professional sequence diagram image.
 
 ### Architecture
 
-```
+```python
 User Request
     ↓
 Agent Processing

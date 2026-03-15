@@ -487,7 +487,7 @@ code .claude/commands/design-os/[command-name].md
 
 ### 5. Update Completion Message
 
-```
+```text
 ═══════════════════════════════════════════════════
         [COMMAND NAME] COMPLETE ✓
 ═══════════════════════════════════════════════════

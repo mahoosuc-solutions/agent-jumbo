@@ -54,7 +54,7 @@ When customers check in today, they automatically receive:
 
 **Example:**
 
-```
+```text
 Hi John! Welcome to Property prop_001! 🎉
 
 We're excited to host you! Check-in is ready. If you have any questions,
@@ -63,7 +63,7 @@ reply here or call. Enjoy your stay!
 
 ### Message Workflow
 
-```
+```text
 1. DETECT CHECK-INS
    └─ System queries PMS for today's reservations
 
@@ -85,7 +85,7 @@ reply here or call. Enjoy your stay!
 
 All messages are stored in SQLite:
 
-```
+```text
 instruments/custom/google_voice/data/google_voice.db
 
 Tables:
@@ -114,7 +114,7 @@ This test:
 
 **Expected Output:**
 
-```
+```text
 [1/5] DRAFTING MESSAGE
 ✓ Drafted message ID: 1
   To: +14155551234

@@ -166,7 +166,7 @@ For each candidate note, calculate relevance score (0-100):
 
 **Scoring Algorithm**:
 
-```
+```text
 Total Score = (
     Tag Overlap Score * 0.25 +
     Content Similarity Score * 0.30 +
@@ -179,7 +179,7 @@ Total Score = (
 
 **Tag Overlap Score** (0-100):
 
-```
+```text
 Score = (Shared Tags / Total Unique Tags) * 100
 
 Example:
@@ -192,7 +192,7 @@ Score = (2/7) * 100 = 28.6
 
 **Content Similarity Score** (0-100):
 
-```
+```text
 Use semantic similarity (TF-IDF or embeddings)
 - Same key concepts: high score
 - Similar terminology: medium score
@@ -201,7 +201,7 @@ Use semantic similarity (TF-IDF or embeddings)
 
 **Entity Overlap Score** (0-100):
 
-```
+```text
 Score = (Shared Entities / Total Entities) * 100
 
 Entities include:
@@ -214,7 +214,7 @@ Entities include:
 
 **Temporal Proximity Score** (0-100):
 
-```
+```text
 Days Apart | Score
 -----------|------
 0-7 days   | 100
@@ -226,7 +226,7 @@ Days Apart | Score
 
 **Context Relevance Score** (0-100):
 
-```
+```text
 Same primary context: 100
 Related contexts: 60
 Different contexts: 20
@@ -234,7 +234,7 @@ Different contexts: 20
 
 **Connection Type Bonus** (+0-20 points):
 
-```
+```text
 Sequential relationship detected: +20
 Causal relationship detected: +15
 Entity-based relationship: +10
@@ -286,7 +286,7 @@ Add backlinks to connected notes:
 
 Store structured connection data at:
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/graph/connections.json
 ```
 
@@ -376,7 +376,7 @@ Group highly connected notes into thematic clusters:
 
 Provide detailed report of connections created:
 
-```
+```text
 🔗 Knowledge Connection Report
 
 ═══════════════════════════════════════════════════════════════
@@ -471,7 +471,7 @@ If `--visualize` flag provided, generate visual representation:
 
 **ASCII Graph** (for terminal):
 
-```
+```text
 📊 Knowledge Graph: [Note Title]
 
                     [Central Note]
@@ -541,7 +541,7 @@ graph TD
 
 Save to:
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/graph/[note-id]-graph.json
 ```
 
@@ -570,7 +570,7 @@ Save to:
 
 **Expected Output**:
 
-```
+```text
 🔗 Connecting: HVAC Contractor Recommendation
 
 Searching for related notes...
@@ -622,7 +622,7 @@ Next: View connections in note or explore cluster
 
 **Expected Output**:
 
-```
+```text
 📊 Knowledge Graph: HVAC Maintenance Schedule
 
                     [HVAC Maintenance Schedule]
@@ -669,7 +669,7 @@ Suggested Navigation:
 
 **Expected Output**:
 
-```
+```text
 🔗 Building Complete Knowledge Graph
 
 Analyzing 147 notes...
@@ -738,7 +738,7 @@ Next Steps:
 
 **Expected Output**:
 
-```
+```text
 🔗 Connecting with expanded relevance (50%+ threshold)
 
 Found 12 connections (vs 5 at 60% threshold):
@@ -778,7 +778,7 @@ Add these weaker connections? (y/n)
 
 **Expected Output**:
 
-```
+```text
 🔗 Extended Network Analysis (Depth 2)
 
 Direct Connections (Depth 1): 5 notes
@@ -843,7 +843,7 @@ Explore depth 3? This would show [X] additional notes.
 
 **Network Value Formula**:
 
-```
+```text
 Value = N² (where N = number of notes)
 
 10 notes × 10 = 100 value units
@@ -924,7 +924,7 @@ Shows all notes related to specific property, person, or vendor.
 
 ### Note Not Found
 
-```
+```text
 ❌ Note not found: [note-id]
 
 Searched:
@@ -940,7 +940,7 @@ Available commands:
 
 ### No Connections Found
 
-```
+```text
 ⚠️  No connections found above 60% relevance threshold
 
 This note appears to be unique or isolated.
@@ -959,7 +959,7 @@ Note details:
 
 ### Graph Data Corruption
 
-```
+```text
 ⚠️  Knowledge graph data corrupted or missing
 
 Rebuilding graph from notes...

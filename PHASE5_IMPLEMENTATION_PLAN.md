@@ -171,7 +171,7 @@ Phase 5 builds upon Phase 4's autonomous agent framework with human-AI collabora
 
 ### Layer 4: Explainability & Oversight (NEW)
 
-```
+```text
 ┌──────────────────────────────────────────────────────┐
 │   Layer 4: Explainability & Human Oversight          │
 ├──────────────────────────────────────────────────────┤
@@ -369,7 +369,7 @@ Phase 5 builds upon Phase 4's autonomous agent framework with human-AI collabora
 
 ### Team L Modules
 
-```
+```text
 instruments/custom/explainability_framework/
 ├── __init__.py
 ├── decision_explainer.py
@@ -379,7 +379,7 @@ instruments/custom/explainability_framework/
 
 ### Team M Modules
 
-```
+```text
 instruments/custom/oversight_security_framework/
 ├── __init__.py
 ├── approval_workflow.py

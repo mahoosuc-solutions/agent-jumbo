@@ -45,7 +45,7 @@ All 3 phases of email integration for Agent Jumbo are now **complete, tested, an
 
 ### Core Infrastructure (Phase 1)
 
-```
+```python
 python/helpers/email_sender.py          (340 lines)  - SMTP/IMAP client
 python/tools/email.py                   (306 lines)  - Basic email tool
 tests/test_email_standalone.py          (7 tests)    - Phase 1 tests
@@ -53,34 +53,34 @@ tests/test_email_standalone.py          (7 tests)    - Phase 1 tests
 
 ### Gmail API Layer (Phase 2)
 
-```
+```python
 python/helpers/gmail_oauth2.py          (271 lines)  - OAuth2 handler
 python/helpers/gmail_api_client.py      (658 lines)  - Gmail API wrapper
 ```
 
 ### Push Notifications (Phase 3)
 
-```
+```python
 python/helpers/gmail_push_notifications.py (414 lines) - Pub/Sub integration
 ```
 
 ### Advanced Tool (Phase 2/3)
 
-```
+```python
 python/tools/email_advanced.py          (554 lines)  - 13 advanced actions
 tests/test_gmail_api_phase2_phase3.py   (14 tests)   - Phase 2/3 tests
 ```
 
 ### Integration Points
 
-```
+```python
 python/tools/customer_lifecycle.py      (modified)   - 4 email methods
 python/tools/virtual_team.py            (modified)   - 3 email methods
 ```
 
 ### Documentation
 
-```
+```text
 docs/EMAIL_INTEGRATION_PHASE1.md        - Phase 1 complete guide
 docs/GMAIL_API_PHASE2_PHASE3.md         - Phase 2/3 complete guide
 docs/EMAIL_QUICK_REFERENCE.md           - Quick action reference
@@ -92,7 +92,7 @@ docs/PHASE2_PHASE3_COMPLETE.md          - Phase 2/3 summary (NEW)
 
 ### Dependencies
 
-```
+```text
 requirements.txt                        - 6 new packages added:
   - aiosmtplib>=3.0.0                     (Phase 1)
   - aiofiles>=23.0.0                      (Phase 1)

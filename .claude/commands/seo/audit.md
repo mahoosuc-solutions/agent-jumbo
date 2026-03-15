@@ -220,7 +220,7 @@ H1: Project Management Made Simple (1)
     H3: Enterprise Plan (1)
   H2: Testimonials (1)
 
-```
+```text
 - Hierarchy: ✅ Logical structure
 - Skipped levels: ❌ None
 - Multiple H1s: ✅ Only one

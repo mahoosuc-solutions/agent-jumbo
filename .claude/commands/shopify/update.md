@@ -16,7 +16,7 @@ Update Shopify product from solution folder: **${ARGUMENTS}**
 
 ## Workflow
 
-```
+```text
 STEP 1: Parse Arguments
    ├─ --folder: Solution folder path
    ├─ --product-id: Existing Shopify product ID

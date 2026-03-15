@@ -88,7 +88,7 @@ After approval, create lead in Zoho CRM with all data.
 
 ## Example Output
 
-```
+```text
 Lead Qualification Report
 ═══════════════════════════════════
 Lead: john.smith@acme.com

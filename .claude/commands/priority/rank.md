@@ -91,7 +91,7 @@ Calculate: (Revenue Impact + Risk Mitigation) / Hours Required
 
 **Formula**:
 
-```
+```text
 Priority Score = (Urgency × 1.5) + (Importance × 1.3) + (Effort × 0.8) + (ROI × 1.2) + (Dependency × 1.0)
 
 Maximum Score: 58 points
@@ -280,7 +280,7 @@ tasks=$(cat)
 
 **Input Tasks**:
 
-```
+```text
 - Respond to tenant complaint about leaky faucet
 - Review and sign new lease for 123 Main St
 - Schedule annual HVAC maintenance (10 properties)
@@ -300,7 +300,7 @@ tasks=$(cat)
 
 **Input Tasks**:
 
-```
+```text
 - Finish proposal for $25K consulting project (due tomorrow)
 - Invoice client for last month's work ($5K)
 - Update LinkedIn profile
@@ -320,7 +320,7 @@ tasks=$(cat)
 
 **Input Tasks**:
 
-```
+```text
 - Property: Fix broken gate at Oak Street property
 - Consulting: Send contract to new client
 - Personal: Schedule dentist appointment

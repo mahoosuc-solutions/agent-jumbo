@@ -39,7 +39,7 @@ Use the `list_memories` tool to get all available memories.
 
 Display in organized format:
 
-```
+```text
 📚 Available Serena Memories:
 
 Project Architecture:
@@ -78,7 +78,7 @@ This helps users who may not know exactly what to document.
 
 Ask:
 
-```
+```text
 What type of knowledge would you like to add to Serena's memory?
 
 Options:
@@ -129,7 +129,7 @@ Map knowledge types to memory files:
 
 If memory file exists:
 
-```
+```text
 📝 Suggested memory file: ${suggestedMemory}
 
 This file currently contains:
@@ -144,7 +144,7 @@ Options:
 
 If memory doesn't exist:
 
-```
+```text
 📝 Creating new memory file: ${memoryName}
 
 This will be a new memory file for ${category}.
@@ -160,7 +160,7 @@ Use `read_memory` tool to get current content.
 
 Show user a summary:
 
-```
+```text
 📖 Current content of ${memoryName}:
 
 Structure:
@@ -189,7 +189,7 @@ Depending on knowledge type:
 
 ### For Architectural Decisions
 
-```
+```text
 Please provide the following information:
 
 1. Decision Title
@@ -213,7 +213,7 @@ Please provide the following information:
 
 ### For Patterns/Conventions
 
-```
+```text
 Please provide:
 
 1. Pattern Name
@@ -234,7 +234,7 @@ Please provide:
 
 ### For Troubleshooting
 
-```
+```text
 Please provide:
 
 1. Problem/Error
@@ -255,7 +255,7 @@ Please provide:
 
 ### For Tools/Dependencies
 
-```
+```text
 Please provide:
 
 1. Tool/Library Name
@@ -275,7 +275,7 @@ Please provide:
 
 ### For Project Context
 
-```
+```text
 Please provide:
 
 1. Topic/Area
@@ -348,7 +348,7 @@ Use clear formatting so user can review.
 
 If updating existing memory:
 
-```
+```text
 📋 Preview of changes to ${memoryName}:
 
 === NEW CONTENT TO BE ADDED ===
@@ -364,7 +364,7 @@ Confirm? (y/n)
 
 If creating new memory:
 
-```
+```text
 📋 Preview of new memory file ${memoryName}:
 
 ${fullContent}
@@ -422,7 +422,7 @@ Use `read_memory` to verify the update was applied correctly.
 
 Show confirmation:
 
-```
+```text
 ✅ Memory updated successfully!
 
 Memory file: ${memoryName}
@@ -444,7 +444,7 @@ Help build a knowledge graph by linking related topics.
 This makes knowledge discovery easier later.
 </commentary>
 
-```
+```text
 Would you like to link this to related memories?
 
 Related topics detected:
@@ -466,7 +466,7 @@ If yes:
 
 Remind user about memory maintenance:
 
-```
+```text
 💡 Memory Maintenance Tips:
 
 1. Review and update memories when context changes
@@ -538,7 +538,7 @@ ${relatedMemories.map(m => `- ${m.name} (${m.relation})`).join('\n')}
 
 If user has existing documentation:
 
-```
+```text
 Would you like to import content from existing docs?
 
 Options:
@@ -562,7 +562,7 @@ Process:
 
 Provide templates for common memory types:
 
-```
+```text
 Choose a template:
 
 1. ADR (Architectural Decision Record)
@@ -588,7 +588,7 @@ If `--search` flag is used:
 1. Search across all memories for keyword
 2. Show matching memories:
 
-   ```
+   ```text
    Found 3 memories matching "authentication":
 
    1. security-patterns.md (5 matches)
@@ -615,7 +615,7 @@ If `--search` flag is used:
 
 ### Memory File Not Found
 
-```
+```text
 ❌ Error: Memory file "${memoryName}" not found
 
 Available memories:
@@ -629,7 +629,7 @@ Options:
 
 ### Invalid Content Format
 
-```
+```text
 ⚠️  Warning: Content format may need adjustment
 
 Suggestions:
@@ -643,7 +643,7 @@ Continue anyway? (y/n)
 
 ### Write Permission Error
 
-```
+```text
 ❌ Error: Cannot write to memory file
 
 Check:

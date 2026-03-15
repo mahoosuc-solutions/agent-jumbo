@@ -91,7 +91,7 @@ curl -s -X GET "http://localhost:3001/api/v1/swarm-knowledge?limit=20" \
 
 Format and display comprehensive report:
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════════════════
                          SWARM ACTIVITY REPORT
                          Period: [PERIOD] (Last [DAYS] days)

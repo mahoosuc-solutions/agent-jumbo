@@ -90,7 +90,7 @@ git push origin v1.4.0
 
 **Process**:
 
-```
+```text
 Time 0:
   Blue (v1.3.0): 100% traffic ✓
   Green (v1.4.0): 0% traffic (warming up)
@@ -335,7 +335,7 @@ export $(vault kv get -format=env secret/agent-jumbo/prod)
 
 **Common Searches**:
 
-```
+```python
 # Find all errors in past hour
 level:ERROR AND @timestamp:[now-1h TO now]
 
@@ -444,7 +444,7 @@ for: 10m
 
 #### Playbook 1: High Error Rate
 
-```
+```bash
 1. CHECK: What's the error rate? (should be <0.1%)
    curl https://prometheus.internal:9090/api/v1/query?query=rate(http_errors_total[5m])
 
@@ -470,7 +470,7 @@ for: 10m
 
 #### Playbook 2: Database Slow/Unavailable
 
-```
+```python
 1. VERIFY: Is database actually down?
    psql -h prod-db-primary.internal -U operator -c "SELECT 1"
 
@@ -494,7 +494,7 @@ for: 10m
 
 #### Playbook 3: Memory Leak / High Memory Usage
 
-```
+```python
 1. CHECK: Memory trend
    kubectl top pod agent-jumbo-xxx
    # Compare to baseline (should be <2GB)

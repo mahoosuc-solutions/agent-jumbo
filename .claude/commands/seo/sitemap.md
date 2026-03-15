@@ -444,7 +444,7 @@ curl -X POST \
 
 **robots.txt Integration**:
 
-```
+```python
 # robots.txt
 User-agent: *
 Allow: /

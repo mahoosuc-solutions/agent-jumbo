@@ -183,7 +183,7 @@ echo "  Size: $FILE_SIZE bytes"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
     INFRASTRUCTURE MONITORING SETUP COMPLETE ✓
 ═══════════════════════════════════════════════════

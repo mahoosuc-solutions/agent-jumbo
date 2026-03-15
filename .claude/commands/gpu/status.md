@@ -53,7 +53,7 @@ Display a formatted summary showing:
 
 ## Expected Output Format
 
-```
+```text
 GPU Status Report
 =================
 GPU: NVIDIA GeForce RTX 3050 Ti Laptop GPU

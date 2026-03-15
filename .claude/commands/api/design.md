@@ -109,7 +109,7 @@ Generate comprehensive REST API design:
 
 **Resource Identification**:
 
-```
+```text
 Identify primary resources:
 - Users → /users
 - Products → /products
@@ -123,7 +123,7 @@ Identify sub-resources:
 
 **HTTP Methods Mapping**:
 
-```
+```text
 GET    /users          → List all users (with pagination)
 GET    /users/{id}     → Get specific user
 POST   /users          → Create new user
@@ -137,7 +137,7 @@ POST   /users/{id}/deactivate → Deactivate user account
 
 **Status Codes**:
 
-```
+```text
 200 OK                  → Successful GET, PUT, PATCH
 201 Created             → Successful POST with new resource
 204 No Content          → Successful DELETE or action with no response body
@@ -224,7 +224,7 @@ POST   /users/{id}/deactivate → Deactivate user account
 
 **Security Headers**:
 
-```
+```yaml
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 Content-Type: application/json
 Accept: application/json
@@ -242,7 +242,7 @@ ETag: "33a64df551425fcc55e4d42a148795d9f25f89d4"
 
 **Pagination Strategies**:
 
-```
+```text
 Offset-based:
 GET /users?page=2&limit=20
 GET /users?offset=20&limit=20
@@ -566,7 +566,7 @@ Implementation:
 
 **OWASP API Security Top 10**:
 
-```
+```text
 1. Broken Object Level Authorization (BOLA)
    → Validate user owns resource before access
 
@@ -604,7 +604,7 @@ Define versioning approach:
 
 **URL Versioning** (Recommended for REST):
 
-```
+```text
 https://api.example.com/v1/users
 https://api.example.com/v2/users
 
@@ -614,7 +614,7 @@ Cons: URL pollution, harder to deprecate
 
 **Header Versioning**:
 
-```
+```text
 GET /users
 Accept: application/vnd.example.v1+json
 
@@ -993,7 +993,7 @@ app.use(validator.middleware({
 
 ## Step 10: Display Summary and Next Steps
 
-```
+```text
 ════════════════════════════════════════════════════════
           API DESIGN COMPLETED
 ════════════════════════════════════════════════════════

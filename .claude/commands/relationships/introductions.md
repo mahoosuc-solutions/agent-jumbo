@@ -74,7 +74,7 @@ Each potential introduction is scored across 5 dimensions:
 
 **Example:**
 
-```
+```text
 Person A: Sarah (PropTech CEO) - Looking for property management beta testers
 Person B: You (Property Manager) - Always seeking tech to improve operations
 Mutual Value: Sarah gets beta tester, You get early access to new tech
@@ -90,7 +90,7 @@ Score: 92/100 (Exceptional)
 
 **Example:**
 
-```
+```text
 Person A: David (Experienced Investor) - Enjoys mentoring new investors
 Person B: Alex (First-time Investor) - Seeking investment guidance
 Mutual Value: David gives back, Alex learns from expert
@@ -106,7 +106,7 @@ Score: 85/100 (Exceptional)
 
 **Example:**
 
-```
+```text
 Person A: Mike (Plumber) - Looking for more property management clients
 Person B: Jennifer (Property Manager) - Needs reliable plumbing vendor
 Mutual Value: Mike gets client, Jennifer gets trusted vendor
@@ -122,7 +122,7 @@ Score: 78/100 (Strong)
 
 **Example:**
 
-```
+```text
 Person A: Sarah (Tenant) - New to city, loves hiking
 Person B: Emily (Your friend) - Avid hiker, always welcoming
 Mutual Value: Both gain local connection, shared interest
@@ -138,7 +138,7 @@ Score: 68/100 (Strong)
 
 **Example:**
 
-```
+```text
 Person A: David (Investor) - Looking for Phoenix market opportunities
 Person B: Carlos (Phoenix Property Manager) - Has off-market deal flow
 Mutual Value: David gets local intel, Carlos gets funding partner
@@ -244,7 +244,7 @@ schedule a demo.
 Let me know if I can be helpful!
 [Your Name]
 
-```
+```text
 
 **Action Required**: Draft and send introduction (approval needed)
 
@@ -356,7 +356,7 @@ Let me know if I can be helpful!
 
 **Template 1: Double Opt-In Introduction** (Most Respectful)
 
-```
+```text
 Subject: May I introduce you to [Person B]?
 
 Hi [Person A],
@@ -391,7 +391,7 @@ Let me know!
 
 **Template 2: Direct Introduction** (When confident both will value it)
 
-```
+```text
 Subject: Intro: [Person A] <> [Person B] - [Brief value prop]
 
 Hi [Person A] and [Person B],
@@ -416,7 +416,7 @@ Best,
 
 **Template 3: Strategic Partnership Introduction**
 
-```
+```text
 Subject: Strategic Intro: [Person A] + [Person B] = [Outcome]
 
 Hi [Person A] and [Person B],
@@ -448,7 +448,7 @@ Best,
 
 **Template 4: Community/Personal Introduction**
 
-```
+```text
 Subject: You two should meet! [Shared interest]
 
 Hi [Person A] and [Person B],
@@ -582,7 +582,7 @@ Enjoy!
 
 **How to Decline Intro Requests**:
 
-```
+```text
 "Thanks for thinking of me! I don't know [Person] well enough to make
 that introduction, but you might try [alternative path]."
 
@@ -597,7 +597,7 @@ revisit in [timeframe]."
 
 **Example 1: Investor <> Property Manager**
 
-```
+```text
 Subject: Intro: David (Investor) <> Carlos (Phoenix PM) - Phoenix Opportunities
 
 Hi David and Carlos,
@@ -625,7 +625,7 @@ Best,
 
 **Example 2: Vendor <> Property Manager**
 
-```
+```text
 Subject: Intro: Mike (Excellent Plumber) <> Jennifer (PM Needing Plumber)
 
 Hi Mike and Jennifer,
@@ -650,7 +650,7 @@ I'll let you two take it from here!
 
 **Example 3: Tenant <> Local Community**
 
-```
+```text
 Subject: You two should meet! (Fellow hikers in Boulder)
 
 Hi Sarah and Emily,

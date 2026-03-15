@@ -18,7 +18,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Import a single skill from a markdown file**
 
-```
+```json
 {{skill_importer(
   action="import_skill",
   source_path="/path/to/skill.md",
@@ -39,7 +39,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **List all imported skills**
 
-```
+```json
 {{skill_importer(
   action="list_skills",
   enabled_only=true,
@@ -62,7 +62,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Get details of a specific skill**
 
-```
+```json
 {{skill_importer(
   action="get_skill",
   skill_id=1
@@ -82,7 +82,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Remove an imported skill**
 
-```
+```json
 {{skill_importer(
   action="remove_skill",
   skill_id=1
@@ -101,7 +101,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Enable or disable a skill**
 
-```
+```json
 {{skill_importer(
   action="toggle_skill",
   skill_id=1,
@@ -120,7 +120,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Generate Agent Jumbo tool prompt from imported skill**
 
-```
+```json
 {{skill_importer(
   action="generate_prompt",
   skill_id=1
@@ -139,7 +139,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Get execution context for a skill**
 
-```
+```json
 {{skill_importer(
   action="get_skill_context",
   skill_id=1
@@ -160,7 +160,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Import a complete Claude Code plugin**
 
-```
+```json
 {{skill_importer(
   action="import_plugin",
   plugin_path="/path/to/plugin"
@@ -184,7 +184,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **List all imported plugins**
 
-```
+```json
 {{skill_importer(
   action="list_plugins",
   enabled_only=true
@@ -203,7 +203,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Get details of a specific plugin**
 
-```
+```json
 {{skill_importer(
   action="get_plugin",
   plugin_id=1
@@ -223,7 +223,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Remove a plugin and all its components**
 
-```
+```json
 {{skill_importer(
   action="remove_plugin",
   plugin_id=1
@@ -242,7 +242,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Get MCP configuration for Agent Jumbo integration**
 
-```
+```json
 {{skill_importer(
   action="get_mcp_config",
   plugin_id=1
@@ -263,7 +263,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Bulk import skills from a directory**
 
-```
+```json
 {{skill_importer(
   action="sync_directory",
   directory="/path/to/plugins",
@@ -286,7 +286,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 **Get execution statistics**
 
-```
+```json
 {{skill_importer(
   action="get_stats",
   skill_id=1
@@ -305,7 +305,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 ### Import a Claude Code Plugin
 
-```
+```markdown
 # 1. Import the plugin
 {{skill_importer(action="import_plugin", plugin_path="~/.claude/plugins/my-plugin")}}
 
@@ -318,7 +318,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 ### Import Skills from Directory
 
-```
+```markdown
 # 1. Sync a plugins directory
 {{skill_importer(action="sync_directory", directory="~/.claude/plugins")}}
 
@@ -337,7 +337,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 After importing developer-focused skills, route tasks:
 
-```
+```python
 # Import developer tools plugin
 {{skill_importer(action="import_plugin", plugin_path="/plugins/dev-tools")}}
 
@@ -349,7 +349,7 @@ After importing developer-focused skills, route tasks:
 
 Import CI/CD related skills:
 
-```
+```json
 {{skill_importer(action="import_plugin", plugin_path="/plugins/deployment")}}
 {{deployment_orchestrator(action="generate_cicd", ...)}}
 ```

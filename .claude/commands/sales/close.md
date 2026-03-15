@@ -60,7 +60,7 @@ WHERE d.id = '${deal_id}';
 
 **Pre-Close Checklist** (use `AskUserQuestion` if any fail):
 
-```
+```text
 PRE-CLOSE VERIFICATION
 
 Deal: ${deal_name}
@@ -147,7 +147,7 @@ await Skill('customer-success/onboarding', `--customer ${account_id} --stage pre
 /subscription/create ${deal_id} --tier ${tier} --billing ${billing_cycle} --seats ${seats_purchased}
 ```
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
              SAAS DEAL - SUBSCRIPTION PROVISIONING
 ═══════════════════════════════════════════════════════════════════
@@ -185,7 +185,7 @@ Expected Output:
 /license/generate ${deal_id} --tier ${tier} --seats ${seats_purchased} --type ${license_type}
 ```
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
            LOCAL INSTALL DEAL - LICENSE PROVISIONING
 ═══════════════════════════════════════════════════════════════════
@@ -223,7 +223,7 @@ Expected Output:
 /license/generate ${deal_id} --tier ${tier} --seats ${local_seats} --type subscription
 ```
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
              HYBRID DEAL - DUAL PROVISIONING
 ═══════════════════════════════════════════════════════════════════
@@ -562,7 +562,7 @@ Generate deal close summary:
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    DEAL CLOSED SUCCESSFULLY                    ║
 ╠════════════════════════════════════════════════════════════════╣

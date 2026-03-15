@@ -150,7 +150,7 @@ echo "✓ Implementation validation complete"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         IMPLEMENTATION COMPLETE ✓
 ═══════════════════════════════════════════════════

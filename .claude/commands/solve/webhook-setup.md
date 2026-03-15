@@ -61,7 +61,7 @@ Validate inputs:
      - Timeout expectations (how long should handler take)
    - Document provider details:
 
-     ```
+     ```text
      Provider: Stripe
      ├── Signature Algorithm: HMAC-SHA256
      ├── Header: X-Stripe-Signature
@@ -75,7 +75,7 @@ Validate inputs:
 2. **Design Event Processing Pipeline**
    - Webhook receiver flow:
 
-     ```
+     ```text
      1. HTTP Request received
      2. Verify signature (HMAC validation)
      3. Parse JSON payload
@@ -96,7 +96,7 @@ Validate inputs:
 
    - Database schema for events:
 
-     ```
+     ```text
      webhook_events table:
      - id (UUID)
      - provider (VARCHAR: stripe, github, shopify)
@@ -216,7 +216,7 @@ Validate inputs:
 **🔍 CHECKPOINT 1 - Architecture Approval**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Does the webhook architecture match your requirements?
 - Is async processing acceptable (vs synchronous)?
 - Should we implement deduplication for idempotency?
@@ -437,7 +437,7 @@ Options: "Architecture approved", "Prefer synchronous", "Adjust event handlers",
 4. **Generate Deployment Configuration**
    - Environment variables (.env):
 
-     ```
+     ```python
      # Webhook Configuration
      STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxxxx
      GITHUB_WEBHOOK_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -529,7 +529,7 @@ Options: "Architecture approved", "Prefer synchronous", "Adjust event handlers",
 **🔍 CHECKPOINT 2 - Implementation Review**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Does the implementation cover all required event types?
 - Is the retry strategy acceptable (1m, 5m, 1hr)?
 - Should we use Redis queue for distributed processing?
@@ -590,7 +590,7 @@ Options: "Code approved", "Use Redis queue", "Adjust retry strategy", "Other"
 
    - Example Slack alert:
 
-     ```
+     ```text
      🚨 Webhook Alert
      Provider: Stripe
      Issue: Signature validation failing

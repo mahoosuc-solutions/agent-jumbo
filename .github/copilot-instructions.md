@@ -176,7 +176,7 @@ Instruments are callable Python procedures that extend agent capabilities. Locat
 
 **Required Structure:**
 
-```
+```text
 instruments/custom/my_instrument/
 ├── __init__.py           # Package marker
 ├── my_instrument.md      # Agent-facing documentation
@@ -314,7 +314,7 @@ The frontend uses **Alpine.js** with a store-based state management pattern.
 
 ### Directory Structure
 
-```
+```text
 webui/
 ├── index.js              # Main app, message handling
 ├── js/api.js             # API client with CSRF handling
@@ -400,7 +400,7 @@ Tool prompts in `prompts/agent.system.tool.*.md` should:
 
 ### Memory Flow
 
-```
+```text
 User message → Automatic recall (if enabled) → Agent processes
      ↓
 Agent saves → memory_save tool → FAISS index

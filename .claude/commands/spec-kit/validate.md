@@ -42,7 +42,7 @@ Verify current phase:
 
 If specification doesn't exist:
 
-```
+```text
 ❌ No specification found for design {design_id}
 
 Current workflow phase: {current_phase}
@@ -145,7 +145,7 @@ The API will:
 
 Show comprehensive validation report:
 
-```
+```text
 ✅ Validation Complete: {mode} Mode
 
 Design ID: {design_id}
@@ -603,7 +603,7 @@ Validate only against linked constitution without spec-kit checks.
 
 **Example Findings:**
 
-```
+```text
 🟠 Ambiguous: "The system should handle errors gracefully"
 ❓ Questions:
   - What error types? (validation, network, database)
@@ -632,7 +632,7 @@ Validate only against linked constitution without spec-kit checks.
 
 **Example Findings:**
 
-```
+```text
 🔴 Conflict Detected:
   Req 3.1: "Support 1M daily active users"
   Req 3.2: "Deploy on single t2.micro EC2 instance"
@@ -663,7 +663,7 @@ Validate only against linked constitution without spec-kit checks.
 
 **Example Findings:**
 
-```
+```text
 📋 Security Checklist: 5/12 passed
 
 ✓ Authentication present
@@ -684,7 +684,7 @@ Validate only against linked constitution without spec-kit checks.
 
 **If specification not found:**
 
-```
+```text
 ❌ No specification found for design {design_id}
 
 Available designs with specifications:
@@ -698,7 +698,7 @@ Generate specification:
 
 **If validation fails to run:**
 
-```
+```text
 ❌ Validation failed to execute: {error_message}
 
 Common causes:
@@ -714,7 +714,7 @@ Try:
 
 **If score too low to proceed:**
 
-```
+```text
 ⚠️ Validation score below threshold: {score}/100
 
 Minimum score to proceed: 70/100
@@ -735,7 +735,7 @@ Would you like to:
 
 ### Example 1: First-time Validation
 
-```
+```yaml
 User: /spec-kit:validate design-abc-123 --mode all
 Assistant: Running comprehensive validation (clarify + analyze + checklist)...
   Clarify: 12 ambiguities found
@@ -747,7 +747,7 @@ Assistant: ⚠️ Validation found critical issues
 
 ### Example 2: Quick Clarity Check
 
-```
+```yaml
 User: /spec-kit:validate design-def-456 --mode clarify
 Assistant: Running clarify mode...
   15 clarifying questions generated
@@ -758,7 +758,7 @@ Assistant: ✅ Most requirements clear
 
 ### Example 3: Final Quality Gate
 
-```
+```yaml
 User: /spec-kit:validate design-ghi-789 --mode checklist
 Assistant: Running systematic QA checklist...
   Completeness: 92/100
@@ -772,7 +772,7 @@ Assistant: ✅ Validation passed!
 
 ### Example 4: Auto-fix and Re-validate
 
-```
+```yaml
 User: /spec-kit:validate design-xyz-101 --fix-issues
 Assistant: Auto-fixing common issues...
   ✓ Added error schemas to 7 endpoints
@@ -808,7 +808,7 @@ Assistant: Re-running validation...
 
 ## Integration with Workflow
 
-```
+```text
 Constitution → Specify → **Validate** → Plan → Tasks → Implement
                             ↑             ↓
                             └─────────────┘

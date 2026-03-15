@@ -256,7 +256,7 @@ Download Ollama from the official website and install it on your machine.
 
 **On macOS:**
 
-```
+```bash
 brew install ollama
 ```
 
@@ -275,7 +275,7 @@ Visit the [Ollama model library](https://ollama.com/library) for a list of avail
 
 **On Windows, macOS, and Linux:**
 
-```
+```text
 ollama pull <model-name>
 ```
 
@@ -304,14 +304,14 @@ Once you've downloaded some models, you might want to check which ones you have 
 - **Listing downloaded models:**
   To see a list of all the models you've downloaded, use the command:
 
-  ```
+  ```text
   ollama list
   ```
 
 - **Removing a model:**
   If you need to remove a downloaded model, you can use the `ollama rm` command followed by the model name:
 
-  ```
+  ```text
   ollama rm <model-name>
   ```
 

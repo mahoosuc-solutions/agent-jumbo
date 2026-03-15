@@ -113,7 +113,7 @@ Replace non-brand colors:
 
 Create color usage guidelines:
 
-```
+```text
 Primary (#003366):
   - Use for: Main headings, primary CTA buttons, brand elements
   - Avoid: Body text, large background areas
@@ -181,7 +181,7 @@ Apply logo usage rules:
 
 Create logo placement guidelines:
 
-```
+```text
 Header Logo:
   - Position: Top-left corner
   - Size: 0.75 inches height
@@ -222,7 +222,7 @@ Configure page layout:
 
 Design branded headers:
 
-```
+```text
 Header Layout:
   ┌────────────────────────────────────────────┐
   │  [Logo]          Title          Page 5 of 23│
@@ -231,7 +231,7 @@ Header Layout:
 
 Design branded footers:
 
-```
+```text
 Footer Layout:
   ┌────────────────────────────────────────────┐
   │  Confidential  |  © 2025 Acme Corp  |  Contact│
@@ -274,7 +274,7 @@ Style figures and images:
 
 Style callout boxes:
 
-```
+```text
 Info Callout:
   - Background: Secondary color at 20% opacity
   - Border: 3pt left border in secondary color
@@ -371,7 +371,7 @@ Create comprehensive style guide document:
 
 Export brand package:
 
-```
+```text
 brand-guide-package/
   ├── brand-guide.pdf (comprehensive guide)
   ├── brand-config.json (machine-readable config)

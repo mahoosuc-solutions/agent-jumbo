@@ -190,7 +190,7 @@ Generate structured knowledge entry in markdown format:
 
 Store the knowledge entry at:
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/[YYYY]/[MM]/[YYYYMMDD]-[slug].md
 ```
 
@@ -207,7 +207,7 @@ Create directories if they don't exist.
 
 Append entry to the knowledge index at:
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/INDEX.md
 ```
 
@@ -221,7 +221,7 @@ Index entry format:
 
 Respond with:
 
-```
+```text
 ✓ Knowledge Captured Successfully
 
 Title: [Generated Title]
@@ -374,7 +374,7 @@ Quick Access:
 
 ### File Not Found
 
-```
+```text
 Error: Cannot read file at [path]
 - Check that file path is correct
 - Verify file exists: ls -la [path]
@@ -383,7 +383,7 @@ Error: Cannot read file at [path]
 
 ### Unsupported Format
 
-```
+```text
 Warning: Format '[format]' requires special handling
 - Supported: .txt, .md, .pdf, .png, .jpg, .jpeg, .mp3, .wav
 - For other formats, provide text content directly
@@ -392,7 +392,7 @@ Warning: Format '[format]' requires special handling
 
 ### Empty Content
 
-```
+```text
 Warning: No extractable content found
 - For screenshots: ensure text is clearly visible
 - For PDFs: ensure document is not password-protected
@@ -411,7 +411,7 @@ Warning: No extractable content found
 
 ### Directory Structure
 
-```
+```text
 knowledge-base/
 ├── INDEX.md                    # Master index of all notes
 ├── 2025/

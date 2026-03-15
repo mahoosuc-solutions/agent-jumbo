@@ -179,7 +179,7 @@ if (context.integrations.trello.enabled) {
 
 ### 5. Confirmation
 
-```
+```text
 ✓ Project created in Notion
 
 🎯 Property Renovation - 123 Main St

@@ -168,7 +168,7 @@ curl -s -X POST "http://localhost:3001/api/v1/swarm-knowledge/loops/start" \
 
 ### 7. Display Initialization Summary
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                  SWARM INITIALIZED
 ═══════════════════════════════════════════════════════════

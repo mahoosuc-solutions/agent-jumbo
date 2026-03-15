@@ -88,7 +88,7 @@ Validate inputs:
 **🔍 CHECKPOINT 1 - Test Plan Validation**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Review the test plan - does it cover all critical requirements?
 - Approve proceeding with automated testing?
 - Any priority areas requiring extra validation?
@@ -154,7 +154,7 @@ Options: "All good, proceed", "Skip to manual testing", "Add more tests", "Other
 4. **Document Test Results**
    - Create summary:
 
-     ```
+     ```text
      Test Execution Summary
      ├── Unit Tests: 142 passed, 0 failed, 87% coverage
      ├── Integration Tests: 28 passed, 1 failed (API timeout)
@@ -180,7 +180,7 @@ Options: "All good, proceed", "Skip to manual testing", "Add more tests", "Other
 **🔍 CHECKPOINT 2 - Test Coverage Assessment**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Are test results acceptable? (Target: >85% pass rate)
 - Is code coverage sufficient? (Target: >80% statements)
 - Should we proceed to performance testing?
@@ -268,7 +268,7 @@ Options: "All tests pass, continue", "Fix failing tests first", "Reduce scope", 
 4. **Document Results**
    - Performance benchmark report:
 
-     ```
+     ```text
      Performance Results
      ├── API Latency (P99): 245ms (Target: <500ms) ✓
      ├── Load Test (1000 users): 99.2% success rate ✓
@@ -303,7 +303,7 @@ Options: "All tests pass, continue", "Fix failing tests first", "Reduce scope", 
 1. **Generate Validation Report**
    - Create summary document with sections:
 
-     ```
+     ```text
      SOLUTION VALIDATION REPORT
      ========================
 
@@ -393,7 +393,7 @@ Options: "All tests pass, continue", "Fix failing tests first", "Reduce scope", 
 **🔍 CHECKPOINT 3 - Final Validation Decision**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Does the solution meet requirements for production?
 - Are identified issues critical blockers or can they be addressed post-release?
 - Approve solution deployment?

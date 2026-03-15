@@ -4,7 +4,7 @@
 
 ### Agent Jumbo Commands
 
-```
+```text
 "Run a comprehensive business x-ray for [Company Name]"
 "Analyze my business health"
 "Audit my time usage this week"
@@ -103,7 +103,7 @@ business_xray_tool(
 
 ## Output Files
 
-```
+```text
 /tmp/business_xray/
 ├── business_xray_TIMESTAMP.json       # Full data
 ├── executive_summary.md               # Overview

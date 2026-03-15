@@ -443,7 +443,7 @@ CREATE TABLE webhook_events (
 3. **Week 3**: Rate limiting and retry logic
 4. **Week 4**: Webhook setup and testing
 
-```
+```text
 
 **🔍 CHECKPOINT 2: Architecture Approval**
 

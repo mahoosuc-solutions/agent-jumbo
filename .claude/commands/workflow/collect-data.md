@@ -54,7 +54,7 @@ Based on selected form type, load the appropriate template:
 
 ### Lead Qualification Template
 
-```
+```yaml
 FORM: Lead Qualification
 SECTIONS: 4 (Company, Contact, Needs, Timeline)
 ESTIMATED TIME: 5-7 minutes
@@ -91,7 +91,7 @@ Section 4: Qualification
 
 ### Customer Onboarding Template
 
-```
+```yaml
 FORM: Customer Onboarding
 SECTIONS: 5 (Profile, Preferences, Technical, Team, Goals)
 ESTIMATED TIME: 10-15 minutes
@@ -101,7 +101,7 @@ ESTIMATED TIME: 10-15 minutes
 
 ### Survey/Feedback Template
 
-```
+```yaml
 FORM: Survey/Feedback
 SECTIONS: Dynamic based on survey goals
 ESTIMATED TIME: 3-10 minutes
@@ -117,7 +117,7 @@ QUESTION TYPES:
 
 ### Configuration Setup Template
 
-```
+```yaml
 FORM: Configuration Setup
 SECTIONS: Environment-specific
 ESTIMATED TIME: 5-8 minutes
@@ -185,7 +185,7 @@ Present fields as a multi-question form:
 **Data Enrichment**:
 If email domain matches website:
 
-```
+```text
 ✓ Email verified: Matches company website
 ✓ Auto-populated: Job title from LinkedIn
 ✓ Suggested: Contact preferences based on role
@@ -195,7 +195,7 @@ If email domain matches website:
 
 Based on previous answers, adapt questions:
 
-```
+```text
 IF Budget_Range = "Under $10K":
   → Skip questions about enterprise features
   → Add question about DIY vs. managed service
@@ -216,7 +216,7 @@ IF Industry = "Healthcare":
 
 As data is collected, provide immediate feedback:
 
-```
+```text
 VALIDATION FEEDBACK:
 
 ✓ Company Name: "Acme Corp" - Valid
@@ -238,7 +238,7 @@ Automatically enhance collected data:
 
 ### Company Enrichment
 
-```
+```text
 ENRICHMENT SOURCES:
 - Clearbit/FullContact: Company data
 - LinkedIn: Employee count, industry
@@ -256,7 +256,7 @@ AUTO-POPULATED:
 
 ### Contact Enrichment
 
-```
+```text
 AUTO-POPULATED FROM LINKEDIN:
 ✓ Full Job Title: "VP of Engineering"
 ✓ Seniority: Executive
@@ -267,7 +267,7 @@ AUTO-POPULATED FROM LINKEDIN:
 
 ### Lead Scoring
 
-```
+```text
 LEAD SCORE: 85/100 (High Priority)
 
 BREAKDOWN:
@@ -284,7 +284,7 @@ RECOMMENDATION: Route to senior sales rep
 
 Before finalizing, show complete data preview:
 
-```
+```text
 ═══════════════════════════════════════════════════
            DATA COLLECTION COMPLETE
 ═══════════════════════════════════════════════════
@@ -379,7 +379,7 @@ Use **AskUserQuestion** for final confirmation:
 
 2. **Trigger downstream workflows**:
 
-   ```
+   ```text
    TRIGGERED WORKFLOWS:
 
    ✓ Zoho CRM: Create lead (requires approval)
@@ -400,7 +400,7 @@ Use **AskUserQuestion** for final confirmation:
 
 3. **Display next steps**:
 
-   ```
+   ```text
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
    ✓ DATA COLLECTION SUCCESSFUL
    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -444,7 +444,7 @@ Offer export formats:
 - Excel (formatted report)
 - PDF (human-readable)
 
-```
+```text
 EXPORT OPTIONS:
 
 1. JSON (raw data)
@@ -489,7 +489,7 @@ EXPORT OPTIONS:
 
 ## Success Metrics
 
-```
+```text
 DATA COLLECTION METRICS (Last 30 Days)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -537,7 +537,7 @@ For every form collection:
 
 ### Validation Errors
 
-```
+```text
 VALIDATION ERROR
 
 Field: Email Address
@@ -552,7 +552,7 @@ SUGGESTIONS:
 
 ### Enrichment Failures
 
-```
+```text
 ENRICHMENT WARNING
 
 Unable to enrich company data from external sources.
@@ -565,7 +565,7 @@ IMPACT: Lead score may be lower than actual
 
 ### Session Timeout
 
-```
+```text
 SESSION SAVED
 
 Your form progress has been automatically saved.

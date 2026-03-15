@@ -75,7 +75,7 @@ Phase 4 Advanced Autonomy has been successfully delivered using the TDD Swarm me
 
 #### Test Files Created (3 files, 137 tests)
 
-```
+```python
 tests/test_specialist_agent_framework.py         (57 tests, ~35KB)
 tests/test_reasoning_planning_engine.py          (50 tests, ~27KB)
 tests/test_learning_improvement_system.py        (30 tests, ~15KB)
@@ -161,7 +161,7 @@ markers =
 
 ### Three-Layer Design
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │  LAYER 3: Learning & Improvement System (Team K)
 │  • Experience consolidation (1000+ interactions)
@@ -320,7 +320,7 @@ markers =
 
 ### Implementation Files
 
-```
+```text
 instruments/custom/
 ├── specialist_agent_framework/
 │   ├── __init__.py
@@ -335,7 +335,7 @@ instruments/custom/
 
 ### Test Files
 
-```
+```text
 tests/
 ├── test_specialist_agent_framework.py
 ├── test_reasoning_planning_engine.py
@@ -344,7 +344,7 @@ tests/
 
 ### Documentation Files
 
-```
+```text
 PHASE4_COMPLETION_MANIFEST.md (this file)
 DEPLOYMENT_DECISION_SUMMARY.md (decision guidance)
 DEPLOYMENT_READINESS_BRIEF.md (readiness overview)
@@ -354,7 +354,7 @@ PHASE4_VALIDATION_COMPLETE.md (validation details)
 
 ### Configuration
 
-```
+```text
 pytest.ini (updated with new markers)
 ```
 

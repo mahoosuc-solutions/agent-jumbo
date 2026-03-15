@@ -84,7 +84,7 @@ Bash({ command: `ls -d "${projectPath}"` })
 
 Show what will be tested:
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     MARKETING CONTENT QUALITY VALIDATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -164,7 +164,7 @@ The validate-quality.ts script outputs formatted results. Display them directly,
 
 ### Success Output Format
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 QUALITY VALIDATION REPORT
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -297,7 +297,7 @@ Recommendation: Use Haiku for 80-90% of content, Sonnet for critical 10-20%
 
 **Output**:
 
-```
+```text
 ❌ Project path does not exist: /nonexistent/path
 
 TROUBLESHOOTING:
@@ -314,7 +314,7 @@ TROUBLESHOOTING:
 
 **Output** (if no ANTHROPIC_API_KEY):
 
-```
+```text
 ⚠️  No API key found - using Mock mode
    Set ANTHROPIC_API_KEY in .env for AI-powered validation
 
@@ -329,7 +329,7 @@ TROUBLESHOOTING:
 
 **Output**:
 
-```
+```text
 ❌ Invalid model: gpt4
    Valid options: haiku, sonnet, opus
 

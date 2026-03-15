@@ -360,7 +360,7 @@ Each remaining command needs:
 
 ## Commit Message Template
 
-```
+```text
 feat(phase2): Complete Tier 1 migration - 11 agent-os commands modernized
 
 ## Tier 1: Agent-OS Commands (11/11) ✅

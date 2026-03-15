@@ -103,7 +103,7 @@ Manager makes final decision using `/scenario:decide` with delegation input
 
 ## Delegation Status Workflow
 
-```
+```text
 ASSIGNED → IN_PROGRESS → REVIEW → APPROVED
                          ↓
                       REJECTED (restart analysis)
@@ -123,7 +123,7 @@ ASSIGNED → IN_PROGRESS → REVIEW → APPROVED
 
 ## Example: Hire vs Outsource Delegation
 
-```
+```text
 /scenario:delegate sc-1733596400000-abc123 --to john@company.com --due 2025-12-20 --notes "Analyze both cost and team impact"
 
 ========================================
@@ -223,7 +223,7 @@ Each delegation includes:
 
 ### Deliverable Format
 
-```
+```text
 RECOMMENDATION SUMMARY
 ======================
 

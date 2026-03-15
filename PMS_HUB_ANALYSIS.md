@@ -43,7 +43,7 @@ config = {
 
 #### Authentication Flow
 
-```
+```text
 HostawayProvider.authenticate() (Line 57-75)
 ├─ _get_headers() builds Bearer token header
 ├─ GET /v1/user with Authorization: Bearer {token}
@@ -91,7 +91,7 @@ config = {
 
 #### Authentication Flow
 
-```
+```text
 LodgifyProvider.authenticate() (Line 54-72)
 ├─ _get_headers() builds Bearer token header
 ├─ GET /account with Authorization: Bearer {api_key}
@@ -166,7 +166,7 @@ config = {
 
 #### Authentication Flow
 
-```
+```text
 HostifyProvider.authenticate() (Line 47-56)
 ├─ _get_headers() builds Bearer token header
 ├─ GET /v2/accounts/me with Authorization: Bearer {api_key}
@@ -208,7 +208,7 @@ config = {
 
 #### Authentication Flow
 
-```
+```text
 ICalProvider.authenticate() (Line 47-58)
 ├─ Verify iCal feed is accessible
 ├─ GET {ical_url} with follow_redirects=True
@@ -282,7 +282,7 @@ self.config_path = config_path or Path.home() / ".pms_hub" / "providers.json"
 
 **Entry Point:** `/home/webemo-aaron/projects/agent-jumbo/python/api/pms_webhook_receive.py`
 
-```
+```text
 External Webhook (POST /api/pms/webhook/{provider}/{provider_id})
     ↓
 PMSWebhookReceive.process() (Line 36-113)
@@ -350,7 +350,7 @@ async def _verify_webhook(
 
 **Location:** `lodgify.py:513-539`
 
-```
+```yaml
 Header: X-Signature or ms-signature
 Body: JSON payload
 Secret: api_secret (configuration)
@@ -381,7 +381,7 @@ expected_signature = hmac.new(
 
 **Event Flow:**
 
-```
+```python
 webhook_receive.py:85-92
     └─ event_bus.emit(f"pms.webhook.{provider}.{event_type}", {...})
         ↓
@@ -421,7 +421,7 @@ webhook_receive.py:85-92
 
 **Integration Points:**
 
-```
+```text
 PMSSyncService.__init__() (Line 25-39)
     └─ self.registry = ProviderRegistry()
         ├─ Loads from ~/.pms_hub/providers.json
@@ -435,7 +435,7 @@ PMSSyncService.sync_all_reservations() (Line 308-340)
 
 **Data Flow:**
 
-```
+```text
 Registry Config (JSON)
     ↓
 ProviderConfig objects
@@ -458,7 +458,7 @@ Sync Service (uses provider)
 
 **Event Emission:**
 
-```
+```python
 pms_webhook_receive.py:85-92
     └─ self.event_bus.emit(
         "pms.webhook.hostaway.reservation.new",
@@ -473,7 +473,7 @@ pms_webhook_receive.py:85-92
 
 **Event Storage:**
 
-```
+```python
 EventStore.add_event() (event_bus.py:34-53)
     ├─ Hash event using hash_event() (audit.py)
     ├─ Store in SQLite: events table
@@ -487,7 +487,7 @@ EventStore.add_event() (event_bus.py:34-53)
 
 **Event Subscription:**
 
-```
+```python
 EventBus.subscribe() (event_bus.py:83-84)
     └─ self._handlers.setdefault(event_type, []).append(handler)
 
@@ -511,7 +511,7 @@ EventBus.emit() (event_bus.py:91-98)
 
 **Sync Chain:**
 
-```
+```text
 sync_reservation_to_property_manager(reservation) (Line 41-94)
     ├─ Step 1: _sync_property() → Property created in manager
     ├─ Step 2: _sync_unit() → Unit created (optional)
@@ -541,7 +541,7 @@ result = await self.pm.record_payment(payment_data)
 
 **Mapping Logic:**
 
-```
+```text
 PMS Data → PropertyManager Data
 ├─ Reservation.status → Lease.status (Line 286-306)
 │   ├─ PENDING → pending
@@ -579,7 +579,7 @@ except ImportError:
 
 #### pms_webhook_receive (POST /api/pms/webhook/{provider}/{provider_id})
 
-```
+```text
 Input:
 ├─ provider: hostaway|lodgify|hostify|ical
 ├─ provider_id: registered provider ID
@@ -601,7 +601,7 @@ Output:
 
 #### pms_settings_get (GET /api/pms/settings)
 
-```
+```text
 Input:
 └─ provider_id (optional): specific provider
 
@@ -621,7 +621,7 @@ Security:
 
 #### pms_settings_set (POST /api/pms/settings)
 
-```
+```text
 Actions:
 ├─ add: Register new provider
 ├─ update: Update credentials/options
@@ -671,7 +671,7 @@ Output:
 
 **Integration Pattern:**
 
-```
+```text
 Agent-zero Tool Call
     ↓
 pms_hub_tool.py:execute(**kwargs)
@@ -714,7 +714,7 @@ async def _get_reservations(self, kwargs) -> Response:
 
 ### 5.1 External Webhook → EventBus → Sync Service Flow
 
-```
+```python
 1. WEBHOOK RECEPTION (pms_webhook_receive.py)
    POST /api/pms/webhook/hostaway/main
    Headers: X-Signature: {...}
@@ -756,7 +756,7 @@ async def _get_reservations(self, kwargs) -> Response:
 
 ### 5.2 Agent-zero Tool Calls → API → Registry → Provider Flow
 
-```
+```python
 1. AGENT TOOL CALL (pms_hub_tool.py)
    pms_hub.execute(
        action="get_reservations",
@@ -809,7 +809,7 @@ async def _get_reservations(self, kwargs) -> Response:
 
 ### 5.3 Bi-directional Sync Coordination
 
-```
+```text
 PULL (PMS → PropertyManager):
 
 1. MANUAL TRIGGER
@@ -977,7 +977,7 @@ async def verify_webhook(self, payload: Dict[str, Any], signature: str) -> bool:
 
 **Dependency Chain:**
 
-```
+```text
 Agent-Zero Process
     ↓
 Tool Execution (pms_hub_tool.py)
@@ -1024,7 +1024,7 @@ Use Provider (hostaway.py, etc.)
 
 ### 7.1 Directory Structure
 
-```
+```text
 instruments/custom/pms_hub/
 ├── __init__.py                 # Package initialization
 ├── canonical_models.py         # Data models (Reservation, Property, etc.)
@@ -1052,7 +1052,7 @@ python/helpers/
 
 ### 7.2 Import Dependencies
 
-```
+```python
 pms_hub_tool.py
     ├─ imports: pms_hub.provider_registry
     ├─ imports: pms_hub.sync_service
@@ -1129,7 +1129,7 @@ pms_settings_set.py
 
 ### 7.3 Data Flow Between Files
 
-```
+```text
 Configuration Path:
 pms_settings_set.py
     → registry.register_provider()
@@ -1162,7 +1162,7 @@ pms_hub_tool.py:_sync_reservations()
 
 ### 8.1 Hostaway Authentication & API Call
 
-```
+```text
 ┌─────────────┐           ┌──────────────────────┐      ┌──────────────────┐
 │ Agent/Tool  │           │ HostawayProvider     │      │ Hostaway API     │
 └─────────────┘           └──────────────────────┘      └──────────────────┘
@@ -1206,7 +1206,7 @@ pms_hub_tool.py:_sync_reservations()
 
 ### 8.2 Lodgify Webhook Verification & Processing
 
-```
+```text
 ┌──────────────────┐     ┌─────────────────────┐     ┌───────────────┐
 │ Lodgify Service  │     │ pms_webhook_receive │     │ LodgifyProv   │
 └──────────────────┘     └─────────────────────┘     └───────────────┘
@@ -1263,7 +1263,7 @@ pms_hub_tool.py:_sync_reservations()
 
 ### 8.3 iCal Feed Authentication
 
-```
+```text
 ┌──────────────────┐     ┌──────────────────────┐     ┌─────────────┐
 │ Airbnb/VRBO      │     │ ICalProvider         │     │ HTTP Client │
 └──────────────────┘     └──────────────────────┘     └─────────────┘

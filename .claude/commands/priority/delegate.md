@@ -23,7 +23,7 @@ Analyze tasks using economic principles (opportunity cost, comparative advantage
 
 **The Delegation Decision Matrix**:
 
-```
+```text
                     High Value          Low Value
 High Skill     |  DO (Core work)   |  DELEGATE (Not worth your time)
 Low Skill      |  AUTOMATE         |  OUTSOURCE (Immediately)
@@ -31,7 +31,7 @@ Low Skill      |  AUTOMATE         |  OUTSOURCE (Immediately)
 
 **Cost-Benefit Formula**:
 
-```
+```text
 ROI = (Your_Hourly_Rate - Outsource_Cost) × Hours_Saved × Frequency
 ```
 
@@ -117,7 +117,7 @@ Calculate based on:
 
 **Total Time Cost**:
 
-```
+```text
 Annual_Hours = (Frequency_per_week × 52) × Hours_per_occurrence
 Annual_Cost = Annual_Hours × Your_Hourly_Rate
 ```
@@ -534,7 +534,7 @@ For each task:
 
 ### Step 4: Calculate ROI
 
-```
+```text
 For each task:
   current_cost = hours_per_month × your_hourly_rate
   outsource_cost = [market rate research]

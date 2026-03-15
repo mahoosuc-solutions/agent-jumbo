@@ -177,7 +177,7 @@ graph TD
 
 ### Threat Level Classification
 
-```
+```text
 Threat Score =
   (Market Impact × 0.25) +
   (Customer Impact × 0.25) +
@@ -407,7 +407,7 @@ Before publishing intelligence:
 
 ### Continuous Monitoring
 
-```
+```text
 EVERY 1 HOUR (Tier 1 competitors):
   1. Check product/pricing pages for changes
   2. Monitor social media feeds

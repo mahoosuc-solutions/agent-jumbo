@@ -44,7 +44,7 @@ The hook system provides **event-driven automation** for the Mahoosuc Operating 
 
 ### Directory Structure
 
-```
+```text
 .claude/hooks/
 ├── pre-commit/           # Hooks that run before git commits
 │   └── quality-gate.yaml
@@ -63,7 +63,7 @@ The hook system provides **event-driven automation** for the Mahoosuc Operating 
 
 ### Hook Lifecycle
 
-```
+```text
 Event Trigger → Hook Detection → Validation → Execution → Reporting → Metrics
 ```
 
@@ -669,7 +669,7 @@ metrics:
 
 **Log Format**:
 
-```
+```text
 [2026-01-20T18:54:23Z] [INFO] [pre-commit-quality-gate] Starting execution
 [2026-01-20T18:54:25Z] [INFO] [pre-commit-quality-gate] Step: run-tests - STARTED
 [2026-01-20T18:54:45Z] [SUCCESS] [pre-commit-quality-gate] Step: run-tests - PASSED (20s)

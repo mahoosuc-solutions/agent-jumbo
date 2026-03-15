@@ -51,7 +51,7 @@ WHERE s.id = '${subscription_id}' AND s.status = 'active';
 
 **Valid Upgrade Paths**:
 
-```
+```text
 free → starter → pro → enterprise
                 ↗
 free → pro → enterprise
@@ -75,7 +75,7 @@ free → pro → enterprise
 
 **Proration Calculation**:
 
-```
+```text
 Days Remaining = current_period_end - NOW()
 Days in Period = billing_cycle == 'monthly' ? 30 : 365
 
@@ -91,7 +91,7 @@ Net Charge Today = Proration Charge - Proration Credit
 
 ### Phase 4: Upgrade Preview
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    SUBSCRIPTION UPGRADE                        ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -191,7 +191,7 @@ After successful upgrade, enable new tier features:
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                  SUBSCRIPTION UPGRADED SUCCESSFULLY
 ═══════════════════════════════════════════════════════════════════

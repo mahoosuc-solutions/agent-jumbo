@@ -6,7 +6,7 @@ Ingest knowledge from RSS feeds, web pages, or direct text into the knowledge ba
 
 ### register_source
 
-```
+```json
 {{knowledge_ingest(
   action="register_source",
   name="Cloud Architecture RSS",
@@ -20,25 +20,25 @@ Ingest knowledge from RSS feeds, web pages, or direct text into the knowledge ba
 
 ### list_sources
 
-```
+```text
 {{knowledge_ingest(action="list_sources")}}
 ```
 
 ### ingest_source
 
-```
+```json
 {{knowledge_ingest(action="ingest_source", source_id=1, max_items=10)}}
 ```
 
 ### ingest_all
 
-```
+```json
 {{knowledge_ingest(action="ingest_all", max_items=10)}}
 ```
 
 ### ingest_text
 
-```
+```json
 {{knowledge_ingest(
   action="ingest_text",
   title="Architecture Note",
@@ -50,7 +50,7 @@ Ingest knowledge from RSS feeds, web pages, or direct text into the knowledge ba
 
 ### ingest_mcp
 
-```
+```json
 {{knowledge_ingest(
   action="ingest_mcp",
   tool_name="brave-search.search",

@@ -55,7 +55,7 @@ Generate:
 
 Creates:
 
-```
+```text
 src/auth/
 ├── jwt.ts (token generation/validation)
 ├── middleware.ts (auth middleware)

@@ -120,7 +120,7 @@ flowchart TD
 
 ### Visualization 2: Execution Timeline (Gantt Chart)
 
-```
+```text
 WORKFLOW EXECUTION TIMELINE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -197,7 +197,7 @@ graph LR
 
 ### Visualization 4: Performance Metrics Dashboard
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                        WORKFLOW PERFORMANCE METRICS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -295,7 +295,7 @@ RESOURCE UTILIZATION
 
 ### Visualization 5: Stage Performance Chart
 
-```
+```text
 STAGE DURATION COMPARISON
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -313,7 +313,7 @@ Schedule Follow-up  █ 8s
 
 ### Visualization 6: Success Rate Over Time
 
-```
+```text
 SUCCESS RATE TREND (Last 30 Days)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -335,7 +335,7 @@ Trend: ↑ Improving (+8% vs. 30 days ago)
 
 ### Visualization 7: Bottleneck Analysis
 
-```
+```text
 BOTTLENECK IDENTIFICATION
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -373,7 +373,7 @@ POTENTIAL TOTAL SAVINGS: 4.5-7.5 minutes (29-49%)
 
 When viewing dashboard ($ARGUMENTS = "dashboard"):
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
                           WORKFLOW ANALYTICS DASHBOARD
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -492,7 +492,7 @@ Compare multiple workflow executions:
 /workflow:visualize compare WF-12345 WF-12337 WF-12336
 ```
 
-```
+```text
 WORKFLOW COMPARISON
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -535,7 +535,7 @@ INSIGHTS:
 
 Offer export options:
 
-```
+```text
 EXPORT OPTIONS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -593,7 +593,7 @@ EXPORT OPTIONS
 
 ## Success Metrics
 
-```
+```text
 VISUALIZATION USAGE METRICS (Last 30 Days)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

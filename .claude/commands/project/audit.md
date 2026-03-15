@@ -160,7 +160,7 @@ Type: Node.js/TypeScript
   Location: .claude/commands/dev/deploy.md:45
   Fix: Add closing quote to --message parameter
 
-  ```
+  ```text
 
 ⚠️  **Undocumented Commands** (2)
 - `/db:backup` - No description in frontmatter
@@ -208,7 +208,7 @@ Type: Node.js/TypeScript
   Error: SKILL.md line 23: Invalid allowed-tools syntax
   Fix: Change 'Bash,Read' to array format: ['Bash', 'Read']
 
-  ```
+  ```text
 
 ⚠️  **Inactive Skills** (1)
 - `deployment-helper` - Not activated in 12 days
@@ -218,7 +218,7 @@ Type: Node.js/TypeScript
   Activation frequency: Declining (was daily, now weekly)
   Action: Review if still needed or improve activation trigger
 
-  ```
+  ```text
 
 **Recommendations:**
 1. Fix `custom-linter` SKILL.md syntax
@@ -262,7 +262,7 @@ Type: Node.js/TypeScript
   Action: Update VERCEL_TOKEN secret in GitHub
   Last successful deploy: 2025-01-21
 
-  ```
+  ```text
 
 ⚠️  **Missing Automation** (1)
 - Dependency updates not automated
@@ -272,7 +272,7 @@ Type: Node.js/TypeScript
   Impact: Security vulnerabilities, outdated packages
   Effort: 15 minutes setup
 
-  ```
+  ```text
 
 **Recommendations:**
 1. Fix Vercel deployment - update API token
@@ -380,7 +380,7 @@ Type: Node.js/TypeScript
   Recommendation: Create test suite
   Priority: Medium
 
-  ```
+  ```text
 
 ❌ **No Integration Tests** (1)
 - No tests for multi-skill workflows
@@ -391,7 +391,7 @@ Type: Node.js/TypeScript
   Example: Test stripe-revenue-analyzer + content-optimizer
   Priority: High
 
-  ```
+  ```text
 
 ⚠️  **Coverage Below Target** (1)
 - 78% coverage (target: 80%+)
@@ -400,7 +400,7 @@ Type: Node.js/TypeScript
   Gap: 2 percentage points
   Missing coverage: Error handling paths
 
-  ```
+  ```text
 
 **Recommendations:**
 1. Create tests for `code-reviewer` skill
@@ -439,7 +439,7 @@ Type: Node.js/TypeScript
   Optimization: Implement caching, parallel uploads
   Potential improvement: 40% faster (7.4s)
 
-  ```
+  ```text
 
 ⚠️  **Large Data Directory** (1)
 - analytics-data/ is 2.3 GB
@@ -449,7 +449,7 @@ Type: Node.js/TypeScript
   Recommendation: Implement data rotation (keep 90 days)
   Disk saved: ~1.8 GB
 
-  ```
+  ```text
 
 **Recommendations:**
 1. Optimize `/dev:deploy` with caching
@@ -592,7 +592,7 @@ echo ".claude/.cache" >> .gitignore
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```
+```text
 
 ## Export Formats
 

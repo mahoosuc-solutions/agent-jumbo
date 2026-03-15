@@ -365,7 +365,7 @@ Prepare final deliverables:
 
 **Output** (500 words):
 
-```
+```yaml
 Title: Deep Learning for Medical Image Segmentation: A Survey
 Authors: Zhang et al. (2024) | Journal: Medical Image Analysis | DOI: 10.1016/j.media.2024.xxxxx
 
@@ -428,7 +428,7 @@ and open-source implementations.
 
 **Output** (250 words):
 
-```
+```text
 EXECUTIVE SUMMARY: AI in Customer Service ROI Study
 
 BOTTOM LINE
@@ -471,7 +471,7 @@ with human escalation for complex problems.
 
 **Output** (1,200 words + comparison table):
 
-```
+```text
 COMPARATIVE ANALYSIS: Remote Work Productivity Studies (2022-2024)
 
 SYNTHESIS OF FINDINGS
@@ -521,7 +521,7 @@ CONVERGENT FINDINGS (Strong Consensus)
 
 **Output** (500 words - plain language):
 
-```
+```text
 BREAKTHROUGH IN SICKLE CELL DISEASE TREATMENT
 
 What the Study Found
@@ -558,7 +558,7 @@ smoothly through vessels without causing problems.
 
 **Output**: One-page PDF brief (250 words)
 
-```
+```text
 CYBERSECURITY TRENDS 2024: RESEARCH BRIEF
 
 Prepared for: Executive Team Meeting

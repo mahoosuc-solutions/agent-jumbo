@@ -396,7 +396,7 @@ async def test_full_deployment_github_actions():
 
 ## File Structure
 
-```
+```text
 python/tools/
   devops_deploy.py                    # Main tool (orchestrates strategies)
   deployment_strategies/

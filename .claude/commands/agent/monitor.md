@@ -93,7 +93,7 @@ Detailed performance metrics:
 
 ### Agent Status Grid
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │ AGENT STATUS (Last updated: 2024-01-15 14:30)  │
 ├─────────────────────────────────────────────────┤
@@ -118,7 +118,7 @@ Detailed performance metrics:
 
 ### Performance Metrics
 
-```
+```text
 📊 AGENT PERFORMANCE SUMMARY
 ════════════════════════════════════════════════
 Total Active Agents:        4

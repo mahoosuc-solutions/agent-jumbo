@@ -34,7 +34,7 @@ Verify design exists and has required phases:
 
 If design not found:
 
-```
+```text
 ❌ Design not found: {design_id}
 
 Available designs:
@@ -177,7 +177,7 @@ The API will:
 
 Show comprehensive specification package:
 
-```
+```text
 ✅ Design Specification Generated!
 
 Design ID: {design_id}
@@ -488,7 +488,7 @@ curl -X GET <http://localhost:3000/api/specifications/designs/{design_id}/export
 • Validate specification: /spec-kit:validate {design_id}
 • Generate task breakdown: /spec-kit:tasks {design_id}
 
-```
+```text
 
 ### Step 6: Optional Actions
 
@@ -620,7 +620,7 @@ curl http://localhost:4010/products
 
 **If design not found:**
 
-```
+```text
 ❌ Design not found: {design_id}
 
 Available designs:
@@ -633,7 +633,7 @@ Create design first:
 
 **If spec generation fails:**
 
-```
+```text
 ❌ Specification generation failed: {error_message}
 
 Common causes:
@@ -649,7 +649,7 @@ Try:
 
 **If format not supported:**
 
-```
+```text
 ⚠️ Format not available: {format}
 
 Without --use-spec-kit flag:
@@ -664,7 +664,7 @@ Enable spec-kit for multi-format support:
 
 ### Example 1: Quick Documentation
 
-```
+```yaml
 User: /design:spec design-abc-123
 Assistant: Generating DEVB specification...
   Architecture diagram: ✓
@@ -678,7 +678,7 @@ Assistant: ✅ Specification generated!
 
 ### Example 2: Full API Contracts
 
-```
+```yaml
 User: /design:spec design-def-456 --use-spec-kit --format all
 Assistant: Generating comprehensive specification package...
   DEVB documentation: ✓
@@ -693,7 +693,7 @@ Assistant: ✅ All formats generated!
 
 ### Example 3: Hybrid Approach
 
-```
+```yaml
 User: /design:spec design-ghi-789 --include-spec-kit
 Assistant: Using hybrid generation (DEVB + spec-kit)...
   DEVB diagrams: ✓
@@ -725,7 +725,7 @@ Assistant: ✅ Specification complete!
 
 ## Integration with Workflow
 
-```
+```text
 Design → Emulate → Validate → **Spec** → Implement
                                  ↓
                         Share with team,

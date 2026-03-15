@@ -59,7 +59,7 @@ Financial audit with budget tracking and alerts.
 
 **Expected Output:**
 
-```
+```text
 AI Model Usage Report
 =====================
 Period: Last 30 days (Oct 26 - Nov 25, 2025)
@@ -130,7 +130,7 @@ Full detailed report: /model:report --detailed
 
 **Expected Output:**
 
-```
+```text
 Generating Detailed AI Model Usage Report...
 =============================================
 
@@ -326,7 +326,7 @@ Priority 3 (LOW IMPACT):
 
 **Expected Output:**
 
-```
+```text
 AI Model Usage Trend Analysis
 ==============================
 Historical Period: Last 90 days (Aug 27 - Nov 25, 2025)
@@ -443,7 +443,7 @@ Model: Improving (data quality increasing)
 
 **Expected Output:**
 
-```
+```text
 Model Usage Comparison Report
 ==============================
 

@@ -44,7 +44,7 @@ Verify current phase:
 
 If specification doesn't exist:
 
-```
+```text
 ❌ No specification found for design {design_id}
 
 You must generate a specification first:
@@ -143,7 +143,7 @@ The API will:
 
 Show comprehensive plan structure:
 
-```
+```text
 ✅ Implementation Plan Generated!
 
 Design ID: {design_id}
@@ -379,7 +379,7 @@ project/
 └── .github/
     └── workflows/           # CI/CD pipelines
 
-```
+```text
 
 📊 TECHNICAL SPECIFICATIONS
 
@@ -469,7 +469,7 @@ graph TB
 
 If design has linked constitution, automatically validate plan:
 
-```
+```text
 🔒 Constitution Compliance
 
 Constitution: SaaS Best Practices
@@ -495,7 +495,7 @@ Plan Compliance: 92/100
 
 **If specification not found:**
 
-```
+```text
 ❌ Cannot generate plan: No specification found
 
 Workflow Phase: {current_phase}
@@ -507,7 +507,7 @@ Run specification first:
 
 **If plan generation fails:**
 
-```
+```text
 ❌ Plan generation failed: {error_message}
 
 Possible causes:
@@ -525,7 +525,7 @@ Try:
 
 ### Example 1: E-commerce Platform
 
-```
+```yaml
 User: /spec-kit:plan design-abc-123
 Assistant: Generating implementation plan...
   Architecture: Microservices
@@ -541,7 +541,7 @@ Assistant: ✅ Plan generated!
 
 ### Example 2: Mobile Backend
 
-```
+```yaml
 User: /spec-kit:plan design-def-456
 Assistant: What deployment model? (serverless/containers)
 User: serverless

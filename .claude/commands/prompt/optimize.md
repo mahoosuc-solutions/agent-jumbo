@@ -208,7 +208,7 @@ echo "✓ Output validation complete (optimized: $OPTIMIZED_SIZE bytes, report: 
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         PROMPT OPTIMIZATION COMPLETE ✓
 ═══════════════════════════════════════════════════

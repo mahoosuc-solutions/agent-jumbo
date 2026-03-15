@@ -97,7 +97,7 @@ def _get_default_patterns(self) -> str:
 
 **Example Resolved Patterns** (varies by environment):
 
-```
+```python
 # Docker container environment
 /a0/knowledge/**
 !/a0/knowledge/default/**
@@ -1246,7 +1246,7 @@ class BackupService:
 
 Add to `requirements.txt`:
 
-```
+```text
 pathspec>=0.10.0  # For gitignore-style pattern matching
 psutil>=5.8.0     # For system information collection
 ```

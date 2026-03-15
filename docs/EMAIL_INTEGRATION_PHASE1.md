@@ -129,7 +129,7 @@ async send_project_status_update(project_id, email_tool, recipients)
 
 **Test Results:**
 
-```
+```python
 tests/test_email_standalone.py::TestEmailSenderStandalone::test_email_validation PASSED
 tests/test_email_standalone.py::TestEmailSenderStandalone::test_filename_sanitization PASSED
 tests/test_email_standalone.py::TestEmailSenderStandalone::test_email_sender_initialization PASSED
@@ -406,7 +406,7 @@ await send_bulk_emails(
 
 ### Example Agent Interaction
 
-```
+```yaml
 User: "Send a proposal to the new customer"
 Agent: [Uses customer_lifecycle tool to generate proposal]
        [Uses email tool to send with attachment]

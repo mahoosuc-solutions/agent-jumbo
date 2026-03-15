@@ -76,7 +76,7 @@ WHERE la.status = 'active'
 
 ### Phase 2: Calculate Health Score
 
-```
+```text
 Health Score Components (0-100):
 ├─ Connectivity (25 pts)
 │   ├─ Last heartbeat < 5 min: 25 pts
@@ -117,7 +117,7 @@ Health Score Components (0-100):
 
 ### Summary View (Default)
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                 INSTALLATION HEALTH SUMMARY                     ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -155,7 +155,7 @@ Health Score Components (0-100):
 
 ### Detailed View (--detailed)
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                  INSTALLATION HEALTH REPORT
 ═══════════════════════════════════════════════════════════════════

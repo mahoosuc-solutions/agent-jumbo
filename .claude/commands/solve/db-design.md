@@ -60,7 +60,7 @@ Validate inputs:
      - Business rules (calculated, denormalized, foreign key)
    - Create entity reference:
 
-     ```
+     ```text
      User
      - id (UUID, primary key)
      - email (VARCHAR(255), unique, required)
@@ -89,7 +89,7 @@ Validate inputs:
 3. **Analyze Data Volume & Growth**
    - Estimate row counts per entity:
 
-     ```
+     ```yaml
      Users: 10,000 (growing 100/day)
      Orders: 100,000 (growing 1000/day)
      OrderItems: 500,000 (growing 5000/day)
@@ -127,7 +127,7 @@ Validate inputs:
 **🔍 CHECKPOINT 1 - Schema Approach Validation**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Does the entity model match your data domain?
 - Are relationship types (1-to-many, many-to-many) correct?
 - Is the growth projection realistic?
@@ -310,7 +310,7 @@ Options: "Yes, proceed", "Adjust entities first", "Different priorities", "Other
 **🔍 CHECKPOINT 2 - Schema Validation**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Does the schema accurately reflect the data model?
 - Are indexes appropriate for query patterns?
 - Is the normalization level right for your use case?
@@ -358,7 +358,7 @@ Options: "Schema looks good", "Adjust indexes", "Reconsider normalization", "Oth
    - **Horizontal scaling** (multiple servers):
      - **Read replicas**: Master writes, replicas read
 
-       ```
+       ```text
        Application → Primary DB (write)
                    ↓
               Replica 1, Replica 2, Replica 3 (read-only)
@@ -369,7 +369,7 @@ Options: "Schema looks good", "Adjust indexes", "Reconsider normalization", "Oth
 
      - **Sharding**: Split data across servers
 
-       ```
+       ```text
        Shard 1 (user_id 1-1M): orders for users 1-1M
        Shard 2 (user_id 1M-2M): orders for users 1M-2M
        Shard 3 (user_id 2M+): orders for users 2M+
@@ -395,7 +395,7 @@ Options: "Schema looks good", "Adjust indexes", "Reconsider normalization", "Oth
 3. **Capacity Planning**
    - Estimate storage over time:
 
-     ```
+     ```text
      Year 1: 500MB (Users: 10K, Orders: 100K)
      Year 2: 2GB (Users: 50K, Orders: 500K)
      Year 3: 8GB (Users: 200K, Orders: 2M)
@@ -444,7 +444,7 @@ Options: "Schema looks good", "Adjust indexes", "Reconsider normalization", "Oth
 **🔍 CHECKPOINT 3 - Architecture Approval**:
 Ask user using AskUserQuestion:
 
-```
+```text
 - Is the performance expected to meet requirements?
 - Are scalability recommendations realistic for your growth?
 - Should we implement caching (Redis) for high-read tables?

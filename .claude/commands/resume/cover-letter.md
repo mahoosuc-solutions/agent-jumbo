@@ -238,7 +238,7 @@ The Cover Letter Generator creates highly personalized, compelling cover letters
 
 ### Example 1: Tech Startup Software Engineer
 
-```
+```yaml
 User: Generate cover letter for Full Stack Engineer at early-stage AI startup
 Input: job_posting.txt + resume.pdf
 Output:
@@ -251,7 +251,7 @@ Tone: Enthusiastic but technical, demonstrating genuine product interest
 
 ### Example 2: Career Transition (Teacher to Corporate Trainer)
 
-```
+```yaml
 User: Cover letter for L&D role, transitioning from education
 Input: training_job.pdf + teaching_resume.pdf
 Output:
@@ -264,7 +264,7 @@ Gap addressed: Positioned transition as intentional career progression, not esca
 
 ### Example 3: Executive-Level CFO Application
 
-```
+```yaml
 User: Generate cover letter for CFO position at PE-backed growth company
 Input: cfo_posting.pdf + executive_resume.pdf
 Output:
@@ -277,7 +277,7 @@ Tone: Confident, strategic, data-driven. Peer-to-peer communication style with C
 
 ### Example 4: Entry-Level Marketing Coordinator
 
-```
+```yaml
 User: Cover letter for first full-time marketing role after internships
 Input: marketing_job.txt + grad_resume.pdf
 Output:
@@ -290,7 +290,7 @@ Addressed: Lack of full-time experience reframed as fresh perspective and curren
 
 ### Example 5: Remote Position Application
 
-```
+```yaml
 User: Cover letter for remote customer success manager role
 Input: remote_job.txt + resume.pdf
 Output:
@@ -303,7 +303,7 @@ Addressed: Proactively covered remote work capabilities, communication practices
 
 ### Example 6: Internal Promotion Application
 
-```
+```yaml
 User: Cover letter for promotion to team lead within same company
 Input: internal_posting.pdf + current_role_info.txt
 Output:

@@ -25,7 +25,7 @@ Multi-phase email automation system with SMTP (Phase 1), Gmail API OAuth2 (Phase
 
 ### 1. Automated Customer Communication
 
-```
+```text
 ✅ Send welcome emails to new leads automatically
 ✅ Email proposals with PDF attachments
 ✅ Automated follow-ups for pending proposals
@@ -34,7 +34,7 @@ Multi-phase email automation system with SMTP (Phase 1), Gmail API OAuth2 (Phase
 
 ### 2. Team Notifications
 
-```
+```text
 ✅ Task assignment notifications to stakeholders
 ✅ Daily digest emails with team activity
 ✅ Project status updates to clients
@@ -43,7 +43,7 @@ Multi-phase email automation system with SMTP (Phase 1), Gmail API OAuth2 (Phase
 
 ### 3. Email Management
 
-```
+```text
 ✅ Send individual emails with attachments
 ✅ Bulk email with rate limiting
 ✅ Read unread emails from inbox
@@ -84,7 +84,7 @@ python3 -m pytest tests/test_email_standalone.py -v
 
 ### Phase 1 Capabilities (SMTP/IMAP)
 
-```
+```text
 ✅ Send emails via SMTP with attachments
 ✅ Read emails via IMAP
 ✅ Search inbox with filters
@@ -94,7 +94,7 @@ python3 -m pytest tests/test_email_standalone.py -v
 
 ### Phase 2 Capabilities (Gmail API OAuth2)
 
-```
+```text
 ✅ Multi-account support (sales@, support@, dev@)
 ✅ Advanced label management (create/apply/organize)
 ✅ Draft workflows (create/review/send)
@@ -105,7 +105,7 @@ python3 -m pytest tests/test_email_standalone.py -v
 
 ### Phase 3 Capabilities (Push Notifications)
 
-```
+```text
 ✅ Real-time email notifications via Pub/Sub
 ✅ Instant response triggers (support tickets)
 ✅ Webhook endpoints for HTTP integration
@@ -274,7 +274,7 @@ Result: "📊 150 emails organized, 12 drafts pending review"
 
 ## 🔒 Security Built-In
 
-```
+```text
 ✅ Email validation (regex pattern matching)
 ✅ Filename sanitization (path traversal prevention)
 ✅ TLS encryption (STARTTLS for all connections)
@@ -304,7 +304,7 @@ Result: "📊 150 emails organized, 12 drafts pending review"
 
 ### Scenario 1: AI Solutions Company
 
-```
+```text
 1. Customer submits lead form
    → Agent captures lead
    → Sends welcome email
@@ -325,7 +325,7 @@ Result: "📊 150 emails organized, 12 drafts pending review"
 
 ### Scenario 2: Software Development Team
 
-```
+```text
 1. Project manager creates new project
    → Agent creates virtual team
    → Sends kickoff email to stakeholders

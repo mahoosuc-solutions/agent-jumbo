@@ -144,7 +144,7 @@ Your time has different values depending on activity:
 
 **Example Calculation:**
 
-```
+```yaml
 Meeting: Weekly Status Update - Marketing Team
 Duration: 60 minutes
 Your Role: Passive attendee, receive updates
@@ -204,7 +204,7 @@ Evaluate whether someone else could attend on your behalf:
 
 **Delegation Recommendations:**
 
-```
+```text
 Meeting: Technical Architecture Review
 
 YOUR ROI SCORE: 45 points (LOW VALUE for you)
@@ -258,7 +258,7 @@ Determine if meeting can be replaced with async communication:
 
 **Async Alternatives:**
 
-```
+```text
 Meeting: Weekly Team Status Update (60 minutes)
 
 ASYNC ALTERNATIVE: Written Status Update
@@ -290,7 +290,7 @@ When to Keep Synchronous:
 
 **Loom Video Alternative:**
 
-```
+```text
 Meeting: Product Demo for Customer (45 minutes)
 
 ASYNC ALTERNATIVE: Loom Video Recording
@@ -326,7 +326,7 @@ Generate actionable recommendation with alternatives:
 
 **Recommendation Format:**
 
-```
+```text
 MEETING ROI ANALYSIS: Weekly Status Update - Marketing Team
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -466,7 +466,7 @@ Analyze entire week or month to optimize calendar:
 
 **Batch Analysis Output:**
 
-```
+```text
 WEEKLY MEETING ROI ANALYSIS: Week of March 11-15, 2024
 
 Total Meetings: 18
@@ -594,7 +594,7 @@ Track meeting patterns over time to optimize calendar:
 
 **Meeting Analytics Dashboard:**
 
-```
+```text
 MEETING ANALYTICS: Last 90 Days
 
 MEETING VOLUME TRENDS:
@@ -689,7 +689,7 @@ Configure automated meeting decisions based on rules:
 
 **Auto-Pilot Configuration:**
 
-```
+```text
 MEETING AUTO-PILOT SETTINGS
 
 Automatically decline meetings that meet these criteria:
@@ -750,7 +750,7 @@ Never auto-decline:
 
 **Output:**
 
-```
+```text
 [Full detailed analysis as shown in Step 6 above]
 
 RECOMMENDATION: DECLINE & SUGGEST ASYNC ALTERNATIVE
@@ -774,7 +774,7 @@ Decline Message: [Generated, ready to send]
 
 **Output:**
 
-```
+```toml
 [Full batch analysis as shown in Step 7 above]
 
 18 meetings analyzed

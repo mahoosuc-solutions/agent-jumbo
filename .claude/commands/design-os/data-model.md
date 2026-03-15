@@ -342,7 +342,7 @@ echo "✓ Output validation complete ($ENTITY_COUNT entities defined)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         DATA MODEL COMPLETE ✓
 ═══════════════════════════════════════════════════

@@ -128,7 +128,7 @@ WHERE o.id = '${org_id}';
 
 ### Phase 4: Invoice Preview
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                      INVOICE PREVIEW                            ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -164,7 +164,7 @@ WHERE o.id = '${org_id}';
 
 Use `AskUserQuestion`:
 
-```
+```text
 Invoice Ready for Creation
 
 Customer: Acme Corporation
@@ -276,7 +276,7 @@ stripe invoices send_invoice ${INVOICE_ID}
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                   INVOICE CREATED SUCCESSFULLY
 ═══════════════════════════════════════════════════════════════════

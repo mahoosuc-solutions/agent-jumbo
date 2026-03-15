@@ -159,7 +159,7 @@ Create `agent-os/specs/[spec-name]/requirements.md`:
 
 ### Step 5: Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════
         REQUIREMENTS SHAPED
 ═══════════════════════════════════════════════════

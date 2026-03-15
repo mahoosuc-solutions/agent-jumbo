@@ -106,7 +106,7 @@ Create a new project with all essential parameters.
 
 ### Project Template
 
-```
+```text
 PROJECT: E-commerce Platform Redesign
 ├── Client: TechCorp Solutions
 ├── Description: Redesign and rebuild TechCorp's e-commerce platform for better UX and mobile
@@ -186,7 +186,7 @@ Rate each project on 5 dimensions (1-10 each):
 
 Example:
 
-```
+```text
 E-commerce Platform Redesign Evaluation
 ├── Profitability: 9/10 ($175/hr effective rate)
 ├── Goal alignment: 9/10 (Builds business, builds product)
@@ -205,7 +205,7 @@ See all projects with key metrics and status.
 
 ### Project Dashboard
 
-```
+```text
 ACTIVE PROJECTS (3 total)
 ├── E-commerce Platform Redesign (TechCorp) - IN PROGRESS
 │   ├── Progress: 45% (90/200 hrs)
@@ -287,7 +287,7 @@ For each project, log:
 
 **Example**:
 
-```
+```yaml
 PROJECT: E-commerce Platform Redesign
 DATE: Mar 1, 2025
 
@@ -313,7 +313,7 @@ Risks:
 
 Every Friday, update project status:
 
-```
+```text
 E-COMMERCE PLATFORM REDESIGN
 ┌─ PROGRESS THIS WEEK
 ├── Hours logged: 20/week
@@ -350,7 +350,7 @@ E-COMMERCE PLATFORM REDESIGN
 
 Track project load vs. life goal targets:
 
-```
+```text
 THIS WEEK'S CAPACITY
 ├── Target hours/week (from /life:goals): 40 hours
 ├── Hours budgeted to projects: 35 hours
@@ -390,7 +390,7 @@ Before marking complete:
 
 ### Project Closeout Summary
 
-```
+```yaml
 PROJECT: E-commerce Platform Redesign
 STATUS: COMPLETED ✅
 
@@ -457,7 +457,7 @@ Analyze profitability trends and optimize pricing.
 
 ### Profitability Metrics
 
-```
+```text
 2025 YEAR-TO-DATE PROJECT ANALYSIS
 
 REVENUE SUMMARY
@@ -499,7 +499,7 @@ TRENDS
 
 ### Project Profitability Ranking
 
-```
+```text
 TOP 5 MOST PROFITABLE PROJECTS
 1. Landing Page (TechStartup)
    ├── Revenue: $5,000
@@ -544,7 +544,7 @@ RECOMMENDATION
 
 ### Pricing Optimization
 
-```
+```text
 CURRENT PRICING ANALYSIS
 
 By Project Type:
@@ -585,7 +585,7 @@ Project data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/projects.json
 ├── Project definitions (timeline, deliverables, financials)
 ├── Time logs (hours tracked per day/week)
@@ -596,7 +596,7 @@ Project data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 projects table
 ├── project_id, name, client_id
 ├── start_date, target_completion, actual_completion
@@ -622,7 +622,7 @@ time_logs table
 
 Each project should ladder back to business and life goals:
 
-```
+```text
 LIFE GOAL: Financial Independence
 ├── Business Goal: Build $200K/year software business
 │   └── Projects:

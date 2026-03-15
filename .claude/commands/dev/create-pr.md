@@ -417,7 +417,7 @@ echo "  Report: $PR_REPORT"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
        PULL REQUEST CREATED SUCCESSFULLY ✓
 ═══════════════════════════════════════════════════

@@ -3,6 +3,7 @@
 Finance automation tool for ingesting transactions, categorizing expenses, and generating reports.
 
 Actions:
+
 - `connect_account(provider, mock=true)`
 - `get_auth_url(provider)`
 - `sync_transactions(account_id, start, end)`
@@ -15,7 +16,8 @@ Actions:
 - `link_property_expense(transaction_id, property_id)`
 
 Examples:
-```
+
+```json
 {{finance_manager(action="connect_account", provider="mock", mock=true)}}
 {{finance_manager(action="sync_transactions", account_id=1, start="2025-01-01", end="2025-01-31")}}
 {{finance_manager(action="generate_report", period="2025-01")}}

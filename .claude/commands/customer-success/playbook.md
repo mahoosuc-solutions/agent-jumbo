@@ -603,7 +603,7 @@ Success Rate: [Historical conversion/save rate]
 
 [Email or script customized to this customer's context, referencing specific data points, concerns, history]
 
-```
+```text
 
 ---
 
@@ -632,7 +632,7 @@ Tasks Created: [Count]
 Owner: [CSM Name]
 Target Resolution: [Date]
 
-```
+```text
 
 **Approval Required**: Yes/No
 [If yes, request confirmation to proceed with automated task creation]

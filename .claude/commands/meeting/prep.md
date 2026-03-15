@@ -122,7 +122,7 @@ Create structured agenda tailored to meeting type:
 
 **Investor Pitch Agenda (30 minutes):**
 
-```
+```text
 Opening (2 minutes):
 - Thank them for their time
 - Brief personal connection or mutual introduction context
@@ -153,7 +153,7 @@ Discussion & Questions (15 minutes):
 
 **Client Discovery Agenda (45 minutes):**
 
-```
+```text
 Warm-up (5 minutes):
 - Icebreaker and rapport building
 - Confirm meeting objective and agenda
@@ -186,7 +186,7 @@ Next Steps (10 minutes):
 
 **Partnership Discussion Agenda (60 minutes):**
 
-```
+```text
 Introduction (10 minutes):
 - Company overviews and current state
 - Previous touchpoints or connections
@@ -441,7 +441,7 @@ Execute final preparation steps day-of:
 
 **Output:**
 
-```
+```text
 Meeting Prep Complete: Series A Pitch - Sequoia Capital
 
 MEETING DETAILS:
@@ -602,7 +602,7 @@ PRE-MEETING REMINDERS:
 
 **Output:**
 
-```
+```text
 Meeting Prep Complete: Discovery Call - Enterprise Tech Solutions
 
 MEETING DETAILS:

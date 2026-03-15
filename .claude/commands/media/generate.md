@@ -80,7 +80,7 @@ Apply prompt engineering best practices:
 
 **Prompt Structure:**
 
-```
+```text
 [SUBJECT] + [STYLE MODIFIERS] + [COMPOSITION] + [LIGHTING] + [QUALITY TERMS]
 
 Example: "Professional woman presenting in modern office, photorealistic style,
@@ -178,7 +178,7 @@ Generate multiple variations efficiently:
 
 **Variation Strategies:**
 
-```
+```text
 Base Prompt: "Modern minimalist living room with large windows"
 
 Variation 1: + "sunset lighting, warm tones"
@@ -340,7 +340,7 @@ Track and manage generated assets:
 
 **Asset Management:**
 
-```
+```text
 project/
 ├── generations/
 │   ├── v1-initial-concepts/
@@ -387,7 +387,7 @@ project/
 
 **Generated Assets:**
 
-```
+```text
 PROMPT OPTIMIZATION:
 Base: "Luxury Swiss automatic watch with black leather strap, stainless steel case"
 
@@ -450,7 +450,7 @@ OUTPUT FILES:
 
 **Generated Series:**
 
-```
+```text
 BRAND GUIDELINES:
 - Colors: #FF6B35 (coral), #004E89 (navy), #FFFFFF (white)
 - Style: Modern, energetic, minimalist
@@ -520,7 +520,7 @@ BATCH SETTINGS:
 
 **Generated Video:**
 
-```
+```text
 VIDEO CONCEPT:
 Futuristic digital environment with floating holographic interfaces, data streams,
 and particle effects - perfect for tech product overlay
@@ -595,7 +595,7 @@ RENDERING TIME:
 
 **Generated Concepts:**
 
-```
+```text
 BRAND BRIEF:
 - Name: Green Bean Co.
 - Industry: Sustainable/Organic Coffee
@@ -677,7 +677,7 @@ DELIVERABLES:
 
 **Generated Icon Set:**
 
-```
+```text
 INFOGRAPHIC THEME:
 Cybersecurity Threats and Protections
 Style: Modern, tech-forward, consistent visual language

@@ -44,7 +44,7 @@ This skill automatically activates for requests like:
 
 **Structure:**
 
-```
+```yaml
 Hook: Relatable problem or surprising data
 
 Body:
@@ -82,7 +82,7 @@ CTA: Offer to help, answer questions
 
 **Structure:**
 
-```
+```yaml
 Hook: Bold opening line (standalone)
 
 Problem paragraph (2-3 lines)
@@ -123,7 +123,7 @@ CTA: What should reader do next?
 
 **Single Tweet Structure:**
 
-```
+```text
 Hook/insight (first 140 chars - visible without "show more")
 
 Supporting point or data
@@ -133,7 +133,7 @@ CTA or hashtag
 
 **Thread Structure:**
 
-```
+```text
 1/ Hook tweet with thread indicator "🧵"
 
 2/ Context or problem setup
@@ -172,7 +172,7 @@ CTA or hashtag
 
 **Structure:**
 
-```
+```text
 Technical hook or surprising decision
 
 Deep technical context:
@@ -214,7 +214,7 @@ Open questions or areas for improvement
 
 **Structure:**
 
-```
+```text
 Quick hook or question
 
 Main point (1-2 sentences)
@@ -341,7 +341,7 @@ When this skill activates, follow these steps:
 
 **Label variants clearly:**
 
-```
+```text
 VARIANT A (Data-driven):
 [Optimized content]
 

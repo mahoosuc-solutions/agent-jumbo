@@ -664,7 +664,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 #### Story 1.1: Quick Setup and First Run
 
-```
+```text
 As a solo developer named Sarah,
 I want to set up Agent Jumbo from a flash drive in < 15 minutes,
 So that I can start using it immediately without installation complexity.
@@ -680,7 +680,7 @@ Acceptance Criteria:
 
 #### Story 1.2: Offline Usage Without Internet
 
-```
+```text
 As a researcher traveling internationally,
 I want to use Agent Jumbo without internet connectivity,
 So that I can work on flights and in remote locations.
@@ -695,7 +695,7 @@ Acceptance Criteria:
 
 #### Story 1.3: Customization Without Coding
 
-```
+```text
 As a non-technical user,
 I want to customize Agent Jumbo's behavior through UI,
 So that I can adapt it to my specific needs without writing code.
@@ -711,7 +711,7 @@ Acceptance Criteria:
 
 #### Story 1.4: Mobile Access via Telegram
 
-```
+```text
 As a busy consultant,
 I want to interact with Agent Jumbo via Telegram on mobile,
 So that I can get updates and interact while away from my desk.
@@ -726,7 +726,7 @@ Acceptance Criteria:
 
 #### Story 1.5: Privacy and Data Control
 
-```
+```text
 As a privacy-conscious developer,
 I want 100% certainty that all my data stays on the flash drive,
 So that I can work with sensitive client information safely.
@@ -745,7 +745,7 @@ Acceptance Criteria:
 
 #### Story 2.1: Multi-User Team Setup
 
-```
+```text
 As a small business owner,
 I want to set up Agent Jumbo for my 8-person team,
 So that everyone can benefit from automation without individual licenses.
@@ -761,7 +761,7 @@ Acceptance Criteria:
 
 #### Story 2.2: Customer Lifecycle Automation
 
-```
+```text
 As a sales manager,
 I want to automate the journey from lead to customer,
 So that no opportunities fall through the cracks.
@@ -778,7 +778,7 @@ Acceptance Criteria:
 
 #### Story 2.3: Email Workflow Automation
 
-```
+```text
 As an operations manager,
 I want support emails routed to correct team members automatically,
 So that response time improves and nothing gets forgotten.
@@ -794,7 +794,7 @@ Acceptance Criteria:
 
 #### Story 2.4: Daily Digest Generation
 
-```
+```text
 As a business owner,
 I want a daily digest of key metrics and issues,
 So that I can make decisions without reading 100 emails.
@@ -810,7 +810,7 @@ Acceptance Criteria:
 
 #### Story 2.5: Workflow Designer (No Code)
 
-```
+```text
 As an operations manager with no coding experience,
 I want to design workflows visually,
 So that I can automate complex processes without developer help.
@@ -831,7 +831,7 @@ Acceptance Criteria:
 
 #### Story 3.1: Enterprise Deployment
 
-```
+```text
 As an IT director,
 I want to deploy Agent Jumbo to production for my department,
 So that I can automate operations at scale with enterprise controls.
@@ -848,7 +848,7 @@ Acceptance Criteria:
 
 #### Story 3.2: Advanced Compliance Tracking
 
-```
+```text
 As a compliance officer,
 I want full audit trail of all Agent Jumbo actions,
 So that I can demonstrate compliance to auditors.
@@ -865,7 +865,7 @@ Acceptance Criteria:
 
 #### Story 3.3: Enterprise API Integration
 
-```
+```text
 As a systems architect,
 I want to connect Agent Jumbo to existing enterprise systems,
 So that automation spans across tools and departments.
@@ -882,7 +882,7 @@ Acceptance Criteria:
 
 #### Story 3.4: Multi-Department Dashboard
 
-```
+```text
 As a department head,
 I want visibility into automation across my department,
 So that I can track ROI and identify additional opportunities.
@@ -899,7 +899,7 @@ Acceptance Criteria:
 
 #### Story 3.5: Advanced Knowledge Management
 
-```
+```text
 As a knowledge manager,
 I want to build a shared knowledge base that all agents leverage,
 So that institutional knowledge is preserved and leveraged across projects.
@@ -920,7 +920,7 @@ Acceptance Criteria:
 
 #### Story 4.1: Strategic AI Partnership
 
-```
+```text
 As a Chief Technology Officer,
 I want to partner with Agent Jumbo strategically,
 So that AI automation becomes core to our competitive advantage.
@@ -937,7 +937,7 @@ Acceptance Criteria:
 
 #### Story 4.2: Multi-Organization Support
 
-```
+```text
 As the CTO for a holding company,
 I want to run multiple business units with Agent Jumbo,
 So that each entity has isolation while sharing infrastructure.
@@ -953,7 +953,7 @@ Acceptance Criteria:
 
 #### Story 4.3: Enterprise Security & Compliance
 
-```
+```text
 As Chief Security Officer,
 I need FedRAMP, HIPAA, and SOC 2 compliance,
 So that we can deploy in highly regulated industries.
@@ -970,7 +970,7 @@ Acceptance Criteria:
 
 #### Story 4.4: Center of Excellence
 
-```
+```text
 As an Enterprise Architect,
 I want to build an AI Center of Excellence on Agent Jumbo,
 So that we can rapidly build custom AI solutions for the organization.
@@ -987,7 +987,7 @@ Acceptance Criteria:
 
 #### Story 4.5: Advanced Analytics & Insights
 
-```
+```text
 As Chief Operating Officer,
 I want AI-powered insights into operational efficiency,
 So that I can identify opportunities and make data-driven decisions.
@@ -1717,7 +1717,7 @@ Acceptance Criteria:
 
 **Target Hardware**:
 
-```
+```text
 Minimum:
 - CPU: 2 cores (Intel/AMD x86_64)
 - RAM: 4GB
@@ -1758,7 +1758,7 @@ Recommended:
 
 **Server Hardware** (for managed deployment):
 
-```
+```text
 Minimum:
 - vCPU: 4 cores
 - RAM: 8GB
@@ -1807,7 +1807,7 @@ Recommended:
 
 **Infrastructure** (on-premises or cloud):
 
-```
+```text
 Production Kubernetes Cluster:
 - Nodes: 3-5 (for high availability)
 - CPU: 16+ cores per node
@@ -1867,7 +1867,7 @@ Load Balancer:
 
 **Infrastructure** (multi-region, enterprise-grade):
 
-```
+```text
 Global Kubernetes Clusters (3 regions minimum):
 - Regions: US-East, US-West, EU-Central (or customer-specified)
 - Nodes: 5-10 per region (auto-scaling)

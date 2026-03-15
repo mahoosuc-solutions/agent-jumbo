@@ -85,7 +85,7 @@ This document provides a **complete specification of everything actually impleme
 
 **Stage 1: Conversation Initialization**
 
-```
+```text
 monologue_start extensions
 ├─ _10_initial_message.py: Welcome message
 └─ _15_load_profile_settings.py: Load user preferences
@@ -95,7 +95,7 @@ Result: Agent ready, profile loaded, initial prompt shown
 
 **Stage 2: Iteration Setup**
 
-```
+```text
 message_loop_start extensions
 ├─ Setup iteration state variables
 ├─ Load relevant memories
@@ -107,7 +107,7 @@ Result: Agent ready for user input/response
 
 **Stage 3: Pre-Prompt Customization**
 
-```
+```text
 message_loop_prompts_before extensions
 ├─ _50_recall_memories.py: Load contextual memories
 ├─ _80_organize_history_wait.py: Select relevant messages
@@ -118,7 +118,7 @@ Result: Prompt enriched with context and memories
 
 **Stage 4: Dynamic System Prompt Assembly**
 
-```
+```text
 system_prompt extensions + base hooks
 ├─ system_prompt/_10_system_prompt.py: Core instructions
 ├─ system_prompt/_20_behaviour_prompt.py: Personality
@@ -131,7 +131,7 @@ Result: Complete system prompt with full context
 
 **Stage 5: Post-Prompt Customization**
 
-```
+```text
 message_loop_prompts_after extensions
 ├─ _60_include_current_datetime.py: Time context
 └─ _80_prompt_enhancer.py: Final optimization
@@ -141,7 +141,7 @@ Result: Prompt finalized and ready
 
 **Stage 6: LLM Call with Streaming**
 
-```
+```text
 before_main_llm_call extensions
 ↓
 call_chat_model() with streaming:
@@ -155,7 +155,7 @@ Result: Full LLM response collected, tokens streamed
 
 **Stage 7: Tool Processing**
 
-```
+```text
 extract_tools(response) → [tool_requests]
 ↓
 For each tool:
@@ -175,7 +175,7 @@ Result: All tools executed, results in history
 
 **Stage 8: Iteration Completion**
 
-```
+```text
 message_loop_end extensions
 ├─ _10_organize_history.py: Optimize storage
 ├─ _85_ralph_loop_check.py: Trigger R+A+L if needed
@@ -223,14 +223,14 @@ Result: Iteration complete, ready for next cycle
 
 **Initialization Hooks** (2)
 
-```
+```text
 ✅ agent_init: Agent startup
 ✅ monologue_start: Conversation setup
 ```
 
 **Prompt Preparation Hooks** (7)
 
-```
+```text
 ✅ system_prompt: Dynamic assembly
 ✅ message_loop_prompts_before: Pre-LLM enhancement
 ✅ message_loop_prompts_after: Post-prompt finalization
@@ -242,7 +242,7 @@ Result: Iteration complete, ready for next cycle
 
 **Streaming & Response Hooks** (4)
 
-```
+```text
 ✅ reasoning_stream_chunk: Extended thinking processing
 ✅ response_stream_chunk: Token processing
 ✅ response_stream: Full response handling
@@ -251,7 +251,7 @@ Result: Iteration complete, ready for next cycle
 
 **Tool Execution Hooks** (5)
 
-```
+```text
 ✅ tool_execute_before: Pre-execution (secrets, approvals)
 ✅ tool_execute_after: Post-execution (masking, telemetry)
 ✅ tool_execute_error: Error handling
@@ -261,7 +261,7 @@ Result: Iteration complete, ready for next cycle
 
 **Conversation Management Hooks** (5)
 
-```
+```text
 ✅ message_loop_end: Iteration cleanup
 ✅ monologue_end: Conversation completion
 ✅ hist_add_before: Pre-message processing
@@ -271,7 +271,7 @@ Result: Iteration complete, ready for next cycle
 
 **Telemetry & Tracking Hooks** (3)
 
-```
+```text
 ✅ telemetry_start: Usage tracking start
 ✅ telemetry_end: Usage tracking end
 ✅ telemetry_error: Error tracking
@@ -283,7 +283,7 @@ Result: Iteration complete, ready for next cycle
 
 **Memory & Context** (5 extensions)
 
-```
+```python
 ✅ _10_initial_message.py: Welcome message
 ✅ _15_load_profile_settings.py: Profile loading
 ✅ _50_recall_memories.py: Memory injection
@@ -293,7 +293,7 @@ Result: Iteration complete, ready for next cycle
 
 **Prompt Customization** (4 extensions)
 
-```
+```python
 ✅ _60_include_current_datetime.py: Time context
 ✅ _80_prompt_enhancer.py: Prompt optimization
 ✅ system_prompt/* (5 system prompt variants)
@@ -302,7 +302,7 @@ Result: Iteration complete, ready for next cycle
 
 **Tool Execution** (8 extensions)
 
-```
+```python
 ✅ _10_unmask_secrets.py: Credential injection
 ✅ _20_cowork_approvals.py: Approval workflows
 ✅ _25_claude_code_approval.py: Code execution gates
@@ -315,7 +315,7 @@ Result: Iteration complete, ready for next cycle
 
 **Memory & Learning** (6 extensions)
 
-```
+```python
 ✅ _50_memorize_fragments.py: Short-term memory
 ✅ _51_memorize_solutions.py: Solution caching
 ✅ _85_ralph_loop_check.py: R+A+L triggering
@@ -326,7 +326,7 @@ Result: Iteration complete, ready for next cycle
 
 **Streaming & Response** (5 extensions)
 
-```
+```python
 ✅ _10_log_from_stream.py: Stream logging
 ✅ _15_replace_include_alias.py: Template replacement
 ✅ _20_live_response.py: Real-time display
@@ -445,7 +445,7 @@ Result: Iteration complete, ready for next cycle
 
 ## 2.2 Tool Count Summary
 
-```
+```text
 Command Execution: 7 (100%)
 Communication: 5 (100%)
 Business Analytics: 7 (100%)
@@ -519,7 +519,7 @@ rollback()
 
 **Error Classification**:
 
-```
+```text
 TransientDeploymentError (retryable):
 ├─ Network timeouts
 ├─ Connection resets
@@ -538,7 +538,7 @@ PermanentDeploymentError (fail-fast):
 
 **Retry Logic**:
 
-```
+```text
 classify_error(exception, platform) → TransientDeploymentError | PermanentDeploymentError
 
 with_retry(func, *args, **kwargs):
@@ -571,7 +571,7 @@ Result: Intelligent retry prevents cascading failures
 
 **HTTP Endpoint Validation**:
 
-```
+```text
 check_http_endpoint(url, timeout, expected_status, headers)
 ├─ ✅ Configurable timeout (default 30s)
 ├─ ✅ Custom expected status code (default 200)
@@ -612,7 +612,7 @@ check_http_endpoint(url, timeout, expected_status, headers)
 
 **StreamingProgressReporter** (async generator):
 
-```
+```python
 async def report(message, percent):
 ├─ ✅ Yields dict with message & percentage
 ├─ ✅ Real-time UI updates
@@ -622,7 +622,7 @@ async def report(message, percent):
 
 **LoggingProgressReporter** (debug output):
 
-```
+```python
 async def report(message, percent):
 ├─ ✅ Logs as JSON with timestamp
 ├─ ✅ Integration test friendly
@@ -828,7 +828,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 4.3 API & Communication
 
-```
+```python
 ✅ email_client.py: Account management
 ✅ gmail_api_client.py: Gmail integration
 ✅ telegram_client.py: Messaging
@@ -843,7 +843,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 4.4 System & Infrastructure
 
-```
+```python
 ✅ shell_ssh.py: Remote execution
 ✅ shell_local.py: Local execution
 ✅ docker.py: Container management
@@ -858,7 +858,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 4.5 Data & Storage
 
-```
+```python
 ✅ vector_db.py: FAISS embeddings
 ✅ cache_metrics.py: Cache tracking
 ✅ memory_consolidation.py: Memory management
@@ -873,7 +873,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 4.6 Utilities
 
-```
+```python
 ✅ log.py: Structured logging
 ✅ print_style.py: Colored output
 ✅ strings.py: String utilities
@@ -997,7 +997,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 6.1 Deployment System Tests (66 tests)
 
-```
+```python
 ✅ test_deployment_retry.py (7 tests)
    ├─ Error classification (transient/permanent)
    ├─ Retry logic validation
@@ -1024,7 +1024,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 6.2 Tool Tests
 
-```
+```python
 ✅ test_security_audit.py
 ✅ test_workflow_db.py
 ✅ test_plugin_registry.py
@@ -1038,7 +1038,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 6.3 Integration Tests
 
-```
+```python
 ✅ test_agents_import.py
 ✅ test_connections_api.py
 ✅ test_documentation_import.py
@@ -1076,7 +1076,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 7.2 Architecture Documentation
 
-```
+```text
 ✅ AI_OPS_AGENT_IMPLEMENTATION.md
 ✅ BUSINESS_XRAY_IMPLEMENTATION.md
 ✅ DEPLOYMENT_DECISION_SUMMARY.md
@@ -1090,7 +1090,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 7.3 Analysis Documents
 
-```
+```text
 ✅ COMPARISON_DEVOPS_VS_MOLTBOT_OPENSOURCING.md (700+ lines)
 ✅ COMPARISON_OPENCLAW_MOLTBOT.md (500+ lines)
 ✅ COMPLETE_IMPLEMENTATION_INVENTORY.md (1000+ lines)
@@ -1146,7 +1146,7 @@ class GitHubActionsStrategy(DeploymentStrategy):
 
 ## 9.1 Production-Ready Features (85%)
 
-```
+```text
 Core Agent Framework .................... ✅ 100%
 Message Loop Processing ................. ✅ 100%
 Tool System & Execution ................. ✅ 100%
@@ -1173,7 +1173,7 @@ Total: 18 major features ................. ✅ 100%
 
 ## 9.2 Partial Implementation (10%)
 
-```
+```text
 SSH Deployment .......................... 🟡 90%
 AWS Deployment .......................... 🟡 90%
 GCP Deployment .......................... 🟡 90%
@@ -1189,7 +1189,7 @@ Total: 7 features ....................... 🟡 70%
 
 ## 9.3 Not Yet Implemented (5%)
 
-```
+```text
 Distributed Agent Coordination .......... ❌ 0%
 Real-time Multi-user Collaboration ...... ❌ 0%
 Agent Marketplace ........................ ❌ 0%
@@ -1209,7 +1209,7 @@ Total: 9 features ....................... ❌ 0%
 
 ## 10.1 Project Size
 
-```
+```python
 Python Files ............................ 150+
 Total Lines of Code ..................... 50,000+
 Test Files .............................. 30+
@@ -1223,7 +1223,7 @@ Total Commits (30 days) ................. 11
 
 ## 10.2 Component Distribution
 
-```
+```text
 Tool Implementations ..................... 80+
 Extension Hooks ......................... 40+
 API Endpoints ........................... 120+
@@ -1237,7 +1237,7 @@ Database Models ......................... 25+
 
 ## 10.3 Testing Statistics
 
-```
+```text
 Unit Tests .............................. 50+
 Integration Tests ....................... 30+
 E2E Tests ............................... 20+
@@ -1340,7 +1340,7 @@ Coverage ................................ Module-level (core)
 
 ## 13.1 Complete Status
 
-```
+```text
 PRODUCTION READY: 18 major features (85%)
 ├─ Core framework: 100%
 ├─ Tools: 100% (80+ tools)

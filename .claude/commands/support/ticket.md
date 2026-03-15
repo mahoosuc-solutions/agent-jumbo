@@ -348,7 +348,7 @@ Save to: support-tickets/ticket-\${TICKET_ID}-\${DATE}.md
 
 ## Workflow Diagram
 
-```
+```text
 Customer Issue
     ↓
 AI Analysis (category, priority, sentiment)

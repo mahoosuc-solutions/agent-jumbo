@@ -5,9 +5,10 @@ Manage skill development, training modules, and learning progressions for agents
 ## User Stories
 
 ### Story 1: Onboarding a New Agent
+
 *"As a team lead, I want to onboard a new agent with the skills needed for their role."*
 
-```
+```python
 # Define the core skills for developers
 {{workflow_training(
   action="define_skill",
@@ -65,9 +66,10 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 ### Story 2: Self-Paced Learning
+
 *"As an agent, I want to learn at my own pace and track my progress."*
 
-```
+```python
 # See available learning paths
 {{workflow_training(action="list_paths", target_role="developer")}}
 
@@ -97,9 +99,10 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 ### Story 3: Skill Assessment & Leveling Up
+
 *"As an agent, I want to practice skills and level up my proficiency."*
 
-```
+```python
 # Get a practice task for my current level
 {{workflow_training(action="practice_task", skill_id="python_basics")}}
 
@@ -123,7 +126,8 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 **Level Up Response:**
-```
+
+```markdown
 ## Level Up! 🎉
 
 **Skill:** python_basics
@@ -131,9 +135,10 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 ### Story 4: Creating Training Content
+
 *"As a training coordinator, I want to create structured learning materials."*
 
-```
+```python
 # Create a training module with lessons
 {{workflow_training(
   action="create_module",
@@ -219,9 +224,10 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 ### Story 5: Team Skill Reporting
+
 *"As a manager, I want to see the skill levels across my team."*
 
-```
+```python
 # Get a full skill report for an agent
 {{workflow_training(action="skill_report", agent_id="agent_0")}}
 
@@ -233,7 +239,8 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 **Skill Report Output:**
-```
+
+```python
 ## Skill Proficiency Report
 
 **Total Skills:** 5
@@ -251,9 +258,10 @@ Manage skill development, training modules, and learning progressions for agents
 ```
 
 ### Story 6: Prerequisite-Based Learning
+
 *"As a learner, I want to ensure I have the foundational skills before advancing."*
 
-```
+```python
 # Check skill prerequisites
 {{workflow_training(action="get_skill", skill_id="api_design")}}
 
@@ -269,6 +277,7 @@ Manage skill development, training modules, and learning progressions for agents
 ## Core Concepts
 
 ### Skills
+
 Skills are tracked competencies with 5 proficiency levels:
 
 | Level | Name | Description | Typical Completions |
@@ -280,6 +289,7 @@ Skills are tracked competencies with 5 proficiency levels:
 | 5 | **Expert** | Can teach and innovate | 50+ |
 
 ### Skill Categories
+
 - **technical** - Programming, frameworks, tools
 - **process** - Methodologies, workflows, CI/CD
 - **domain** - Business domain knowledge
@@ -287,12 +297,15 @@ Skills are tracked competencies with 5 proficiency levels:
 - **soft_skill** - Communication, collaboration, leadership
 
 ### Training Modules
+
 Structured courses containing:
+
 - **Lessons** - Individual learning units with content
 - **Practice Tasks** - Hands-on exercises with success criteria
 - **Assessments** - Evaluations for proficiency verification
 
 ### Lesson Types
+
 - `concept` - Theory and explanations
 - `demonstration` - Showing how something works
 - `guided_practice` - Step-by-step practice with hints
@@ -300,7 +313,9 @@ Structured courses containing:
 - `assessment` - Evaluation and scoring
 
 ### Learning Paths
+
 Role-targeted curricula with:
+
 - Ordered modules (required/optional)
 - Prerequisites between modules
 - Certification requirements upon completion
@@ -358,9 +373,10 @@ Role-targeted curricula with:
 ## Detailed Action Reference
 
 ### define_skill
+
 Define a new skill with optional custom proficiency levels.
 
-```
+```json
 {{workflow_training(
   action="define_skill",
   skill_id="kubernetes",
@@ -383,9 +399,10 @@ Define a new skill with optional custom proficiency levels.
 ```
 
 ### create_module
+
 Create a comprehensive training module.
 
-```
+```json
 {{workflow_training(
   action="create_module",
   module_id="docker_basics",
@@ -427,9 +444,10 @@ Create a comprehensive training module.
 ```
 
 ### create_path
+
 Create a role-targeted learning path.
 
-```
+```json
 {{workflow_training(
   action="create_path",
   path_id="devops_engineer",
@@ -460,14 +478,16 @@ Create a role-targeted learning path.
 ```
 
 ### practice_task
+
 Generate a practice task appropriate for current skill level.
 
-```
+```json
 {{workflow_training(action="practice_task", skill_id="python_async")}}
 ```
 
 **Output (for intermediate level):**
-```
+
+```python
 ## Practice Task: Python Async Programming
 
 **Skill Level:** 3
@@ -487,14 +507,16 @@ Disabled at this level
 ```
 
 ### training_dashboard
+
 Get a comprehensive training overview.
 
-```
+```text
 {{workflow_training(action="training_dashboard")}}
 ```
 
 **Output:**
-```
+
+```python
 ## Training Dashboard
 
 ### Overview
@@ -523,12 +545,14 @@ Get a comprehensive training overview.
 ## Integration with Workflow Engine
 
 The training tool shares the same database as `workflow_engine`:
+
 - Skills are tracked across both tools
 - Workflow tasks can improve related skills
 - Learning paths can prepare agents for specific workflows
 
 **Example: Skill tracking from workflow tasks**
-```
+
+```python
 # When a workflow task completes, track the skill
 {{workflow_training(
   action="assess_skill",
@@ -538,7 +562,8 @@ The training tool shares the same database as `workflow_engine`:
 ```
 
 **Example: Prerequisites for workflow roles**
-```
+
+```python
 # Before assigning architect role in workflow, check skills
 {{workflow_training(action="get_proficiency")}}
 # Ensure architecture_design skill >= level 3
@@ -549,6 +574,7 @@ The training tool shares the same database as `workflow_engine`:
 ## Target Roles
 
 Learning paths can target these roles:
+
 - `architect` - System and solution architects
 - `developer` - Software developers
 - `dba` - Database administrators
@@ -581,8 +607,10 @@ Agents level up automatically when they reach the completion threshold and pass 
 ## Best Practices
 
 ### 1. Define Prerequisites
+
 Create skill dependencies to ensure proper learning progression:
-```
+
+```json
 {{workflow_training(
   action="define_skill",
   skill_id="advanced_python",
@@ -591,16 +619,20 @@ Create skill dependencies to ensure proper learning progression:
 ```
 
 ### 2. Use Practice Tasks Regularly
+
 Regular practice accelerates skill development:
-```
+
+```json
 {{workflow_training(action="practice_task", skill_id="python_basics")}}
 # Complete the task
 {{workflow_training(action="assess_skill", skill_id="python_basics", success=true)}}
 ```
 
 ### 3. Track Real Work as Skill Practice
+
 When completing actual work tasks, record them as skill practice:
-```
+
+```python
 # After completing a deployment
 {{workflow_training(
   action="assess_skill",
@@ -611,15 +643,19 @@ When completing actual work tasks, record them as skill practice:
 ```
 
 ### 4. Review Progress Regularly
+
 Use the dashboard to identify skill gaps:
-```
+
+```text
 {{workflow_training(action="training_dashboard")}}
 {{workflow_training(action="get_recommendations")}}
 ```
 
 ### 5. Create Role-Specific Paths
+
 Design learning paths that prepare agents for specific workflow roles:
-```
+
+```json
 {{workflow_training(
   action="create_path",
   path_id="architect_track",

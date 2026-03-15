@@ -9,6 +9,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ### Use Case: Department-Specific Team Communications
 
 **Scenario:** Use different email accounts for different team functions:
+
 - `team@company.com` - General team updates and digests
 - `dev@company.com` - Development team notifications
 - `projects@company.com` - Project-specific communications
@@ -103,6 +104,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ```
 
 **Benefits:**
+
 - 6,000 emails/day capacity (3 accounts × 2,000)
 - Department-specific email context
 - Organized by function (team/dev/projects)
@@ -271,6 +273,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ```
 
 **Benefits:**
+
 - Visual task organization in Gmail
 - Nested labels (tasks/, team/, status/)
 - Multi-dimensional filtering (priority + team + status)
@@ -373,6 +376,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ```
 
 **Benefits:**
+
 - Quality control for client communications
 - Manager review before sending
 - Familiar Gmail UI for editing
@@ -494,6 +498,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ```
 
 **Benefits:**
+
 - <2 second notification delivery
 - Instant acknowledgment tracking
 - Automatic escalation workflows
@@ -601,6 +606,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ```
 
 **Benefits:**
+
 - Smart filtering with advanced search
 - Personalized digests per team/role
 - Automated daily/weekly summaries
@@ -704,6 +710,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ```
 
 **Benefits:**
+
 - Complete conversation history in one thread
 - Easy context retrieval
 - No scattered email chains
@@ -715,7 +722,8 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Vir
 ## Best Practices
 
 ### 1. Label Hierarchy for Teams
-```
+
+```text
 tasks/critical
 tasks/high
 tasks/medium
@@ -741,24 +749,28 @@ digest/monthly
 ```
 
 ### 2. Account Assignment
+
 - **team@** - General team communications, digests
 - **dev@** - Development team notifications, technical discussions
 - **projects@** - Client communications, project updates
 - **oncall@** - Incident notifications, urgent alerts
 
 ### 3. Notification Priority
+
 - **Critical:** Push notifications enabled, instant delivery
 - **High:** Email within minutes, label for filtering
 - **Medium:** Daily digest inclusion
 - **Low:** Weekly digest only
 
 ### 4. Thread Management
+
 - Use `thread_id` for all related communications
 - Keep task discussions in one thread
 - Include relevant stakeholders via CC
 - Apply labels to entire thread for organization
 
 ### 5. Draft Review Process
+
 ```python
 # 1. Create draft with "needs-review" label
 # 2. Notify reviewer via separate email
@@ -768,6 +780,7 @@ digest/monthly
 ```
 
 ### 6. Digest Automation
+
 ```python
 # Daily: 9 AM - Task assignments and completions
 # Weekly: Friday 5 PM - Team summary and priorities
@@ -797,6 +810,7 @@ digest/monthly
 By integrating Gmail API (Phase 2/3) with Virtual Team:
 
 **Achieved:**
+
 - ✅ Multi-account team communications (6,000 emails/day)
 - ✅ Visual task organization with labels
 - ✅ Manager approval workflow for client emails
@@ -805,6 +819,7 @@ By integrating Gmail API (Phase 2/3) with Virtual Team:
 - ✅ Organized team discussions with thread management
 
 **Next Steps:**
+
 1. Authenticate team accounts following examples
 2. Create label structure for your team organization
 3. Enable push notifications for urgent/incident communications
@@ -813,6 +828,7 @@ By integrating Gmail API (Phase 2/3) with Virtual Team:
 6. Test thread management for task discussions
 
 **Documentation:**
+
 - Main guide: `docs/GMAIL_API_PHASE2_PHASE3.md`
 - Quick start: `docs/EMAIL_QUICK_START.md`
 - Customer integration: `docs/examples/CUSTOMER_LIFECYCLE_GMAIL_INTEGRATION.md`

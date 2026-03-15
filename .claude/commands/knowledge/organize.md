@@ -72,7 +72,7 @@ Identifies and archives outdated or completed action items.
 
 Scan the entire knowledge base and generate health report:
 
-```
+```text
 📊 Knowledge Base Health Report
 ═══════════════════════════════════════════════════════════════
 
@@ -210,7 +210,7 @@ Ensure every note has complete metadata:
 
 **Consolidation Suggestion Format**:
 
-```
+```text
 🔄 Potential Duplicate Detected
 
 Note A: [Title A] (📅 [Date A])
@@ -247,7 +247,7 @@ For orphaned notes (0 connections):
 
 **Connection Suggestion Format**:
 
-```
+```text
 🔗 Connection Suggestions for: [Note Title]
 
 Related Notes Found:
@@ -276,7 +276,7 @@ For notes with action items:
 
 **Cleanup Suggestion Format**:
 
-```
+```text
 🧹 Action Item Cleanup: [Note Title]
 
 Completed Items (can be archived):
@@ -302,7 +302,7 @@ Proceed with cleanup? (y/n)
 
 Update the master index at:
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/INDEX.md
 ```
 
@@ -359,7 +359,7 @@ Update the master index at:
 
 Provide comprehensive report of changes made:
 
-```
+```text
 ✅ Knowledge Organization Complete
 
 ═══════════════════════════════════════════════════════════════
@@ -458,7 +458,7 @@ Health Score: [XX]/100 ⭐
 
 **Expected Output**:
 
-```
+```text
 📊 Knowledge Base Health Report
 ═══════════════════════════════════════════════════════════════
 
@@ -497,7 +497,7 @@ Starting organization...
 
 **Expected Output**:
 
-```
+```text
 🏠 Organizing Property Context Notes
 
 Found 85 property-related notes
@@ -529,7 +529,7 @@ Property Knowledge Health: 78/100 → 92/100
 
 **Expected Output**:
 
-```
+```text
 🔄 Duplicate Detection and Consolidation
 
 Scanning 150 notes for duplicates...
@@ -575,7 +575,7 @@ Found 5 potential duplicate pairs:
 
 **Expected Output**:
 
-```
+```text
 🧹 Action Item Cleanup
 
 Scanning for completed and stale action items...
@@ -617,7 +617,7 @@ Stale Items (require decision):
 
 **Expected Output**:
 
-```
+```text
 🔄 Rebuilding Knowledge Base Index
 
 Scanning knowledge-base/ directory...
@@ -725,7 +725,7 @@ Automatically group related notes into topic clusters:
 
 Create hierarchical tag system:
 
-```
+```markdown
 #property
   ├─ #property-maintenance
   │   ├─ #hvac
@@ -750,7 +750,7 @@ Based on patterns, suggest:
 
 ### No Notes to Organize
 
-```
+```text
 ℹ️  Knowledge base is empty or already perfectly organized
 
 Stats:
@@ -763,7 +763,7 @@ Keep up the great work! Run /knowledge:organize after adding new notes.
 
 ### Corrupted Metadata
 
-```
+```text
 ⚠️  Found [X] notes with corrupted or missing metadata
 
 Affected notes:
@@ -780,7 +780,7 @@ Review fixed notes:
 
 ### Disk Space Warning
 
-```
+```text
 ⚠️  Knowledge base is large ([X] MB)
 
 Recommendations:

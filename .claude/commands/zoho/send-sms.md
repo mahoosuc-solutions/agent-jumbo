@@ -47,7 +47,7 @@ Validate and format phone numbers:
 
 **If Opt-In Status Unknown**:
 
-```
+```text
 ⚠️ OPT-IN CONSENT VERIFICATION REQUIRED
 
 Phone: +1234567890
@@ -78,7 +78,7 @@ Has this recipient opted in to receive SMS messages?
 
 **Template Structure**:
 
-```
+```yaml
 Template: appointment-reminder
 Length: 145 characters (1 SMS segment)
 
@@ -135,7 +135,7 @@ Optimize the message for SMS:
 
 Display comprehensive preview:
 
-```
+```text
 ═══════════════════════════════════════════════════
               SMS PREVIEW
 ═══════════════════════════════════════════════════
@@ -212,7 +212,7 @@ Use **AskUserQuestion** with options:
 
 1. Simulate Zoho SMS API call:
 
-   ```
+   ```text
    POST https://www.zohoapis.com/crm/v2/functions/sendsms/actions/execute
    Headers:
      Authorization: Zoho-oauthtoken {token}
@@ -226,7 +226,7 @@ Use **AskUserQuestion** with options:
 
 2. Display success confirmation:
 
-   ```
+   ```text
    ✓ SMS Sent Successfully!
 
    To: +1 (234) 567-8900 ([Contact Name])
@@ -377,7 +377,7 @@ Before requesting approval, verify:
 
 **No Opt-In Consent**:
 
-```
+```text
 ❌ BLOCKED: No Opt-In Consent
 
 This number has not opted in to receive SMS.
@@ -391,7 +391,7 @@ Options:
 
 **Number on DNC List**:
 
-```
+```text
 ❌ BLOCKED: Do-Not-Contact List
 
 This number is on your DNC list.
@@ -425,7 +425,7 @@ Cannot send SMS to this number.
 
 ## Example Usage
 
-```
+```python
 /send-sms +12345678900 "Hi John, your order shipped! Track: bit.ly/abc123"
 # Quick SMS send
 

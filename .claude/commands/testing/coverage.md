@@ -192,7 +192,7 @@ function determineFilePriority(filePath) {
 
 **Generate comprehensive report**:
 
-```
+```text
 ═══════════════════════════════════════════════════
               COVERAGE ANALYSIS REPORT
 ═══════════════════════════════════════════════════
@@ -484,7 +484,7 @@ trend.forEach(({ timestamp, coverage }) => {
 
 ## Step 10: Generate Final Report
 
-```
+```text
 ═══════════════════════════════════════════════════
          COVERAGE IMPROVEMENT SUMMARY
 ═══════════════════════════════════════════════════

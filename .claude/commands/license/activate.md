@@ -35,7 +35,7 @@ Validate license keys, bind them to specific machines, and track seat allocation
 
 #### 1.1 Format Validation
 
-```
+```text
 Expected Format: XXXXX-XXXXX-XXXXX-XXXXX-XXXXX
 ├─ 25 alphanumeric characters
 ├─ 4 dashes as separators
@@ -95,7 +95,7 @@ WHERE license_id = '${license_id}'
 
 #### 3.1 Generate Machine ID
 
-```
+```text
 Machine Fingerprint Components:
 ├─ CPU ID (or MAC address)
 ├─ Disk serial number
@@ -171,7 +171,7 @@ For offline-capable installations, return a signed activation token:
 
 ### Success Response
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  LICENSE ACTIVATED SUCCESSFULLY                 ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -201,7 +201,7 @@ For offline-capable installations, return a signed activation token:
 
 **License Not Found**:
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    ❌ ACTIVATION FAILED                         ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -221,7 +221,7 @@ For offline-capable installations, return a signed activation token:
 
 **No Seats Available**:
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    ❌ ACTIVATION FAILED                         ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -244,7 +244,7 @@ For offline-capable installations, return a signed activation token:
 
 **License Expired**:
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    ❌ ACTIVATION FAILED                         ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -267,19 +267,19 @@ For air-gapped environments without internet:
 
 1. **Generate Activation Request** (on target machine):
 
-   ```
+   ```text
    /license/activate --offline-request > activation_request.json
    ```
 
 2. **Process Request** (on connected machine):
 
-   ```
+   ```text
    /license/activate --process-offline activation_request.json > activation_response.json
    ```
 
 3. **Apply Response** (on target machine):
 
-   ```
+   ```text
    /license/activate --apply-offline activation_response.json
    ```
 

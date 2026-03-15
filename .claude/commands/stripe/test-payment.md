@@ -237,7 +237,7 @@ echo "   tail -f ~/.stripe/webhook-listener.log"
 
 ## Example Output (Success)
 
-```
+```text
 💳 Creating test payment...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -274,7 +274,7 @@ Status: succeeded
 
 ## Example Output (Declined)
 
-```
+```text
 💳 Creating test payment...
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

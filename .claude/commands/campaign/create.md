@@ -148,7 +148,7 @@ When you run this command, it orchestrates multiple AI agents and processes:
 
 **Gather product intelligence**:
 
-```
+```text
 1. Analyze product name and type
 2. Search for competitive landscape
 3. Identify target audience characteristics
@@ -158,7 +158,7 @@ When you run this command, it orchestrates multiple AI agents and processes:
 
 **User Prompts**:
 
-```
+```text
 - "What are the top 3 benefits of [product]?"
 - "Who is the primary target customer?"
 - "What's the key differentiator vs. competitors?"
@@ -169,7 +169,7 @@ When you run this command, it orchestrates multiple AI agents and processes:
 
 **Invoke `campaign-strategy-agent`**:
 
-```
+```text
 1. Calculate platform-product fit scores (0-100)
 2. Allocate budget across platforms (anchor/growth/test)
 3. Generate 30-60-90 day timeline with milestones
@@ -179,7 +179,7 @@ When you run this command, it orchestrates multiple AI agents and processes:
 
 **Output Preview**:
 
-```
+```text
 ═══════════════════════════════════════════════
    CAMPAIGN STRATEGY: AI Email Assistant
 ═══════════════════════════════════════════════
@@ -207,7 +207,7 @@ Success Criteria:
 
 **Invoke `ad-creative-generator-agent`**:
 
-```
+```text
 1. Generate 3 creative angles (data-driven, problem-focused, contrarian)
 2. Create 18 ad variants (6 platforms × 3 angles)
 3. Write platform-specific copy (headlines, body, CTAs)
@@ -217,7 +217,7 @@ Success Criteria:
 
 **Output Preview**:
 
-```
+```text
 ═══════════════════════════════════════════════
    18 AD CREATIVE VARIANTS GENERATED
 ═══════════════════════════════════════════════
@@ -247,7 +247,7 @@ All variants ready for designer handoff →
 
 **Invoke landing page generator**:
 
-```
+```text
 1. Design conversion-optimized landing page
 2. Match messaging to ad creative
 3. Generate A/B test variant (alternative headline/CTA)
@@ -257,7 +257,7 @@ All variants ready for designer handoff →
 
 **Output**:
 
-```
+```text
 Landing Page Created:
   Main Variant: /campaigns/ai-email-assistant/landing-page-a.html
   A/B Variant: /campaigns/ai-email-assistant/landing-page-b.html
@@ -275,7 +275,7 @@ Key Elements:
 
 **Extend `/startup/gtm` command**:
 
-```
+```text
 1. Generate 90-day launch timeline
 2. Create daily action items
 3. Build social media calendar (30-60-90 days)
@@ -285,7 +285,7 @@ Key Elements:
 
 **Output Preview**:
 
-```
+```text
 ═══════════════════════════════════════════════
    90-DAY GTM PLAN
 ═══════════════════════════════════════════════
@@ -309,7 +309,7 @@ Social Media Calendar:
 
 **Generate tracking implementation guide**:
 
-```
+```text
 1. Facebook Pixel code + conversion events
 2. Google Ads conversion tracking
 3. LinkedIn Insight Tag
@@ -319,7 +319,7 @@ Social Media Calendar:
 
 **Output**:
 
-```
+```text
 Tracking Setup Instructions:
   1. Install Facebook Pixel → /campaigns/ai-email-assistant/tracking/fb-pixel.html
   2. Install Google Ads Tag → /campaigns/ai-email-assistant/tracking/google-tag.html
@@ -332,7 +332,7 @@ Tracking Setup Instructions:
 
 **Generate final campaign package**:
 
-```
+```sql
 Create comprehensive output in:
     /campaigns/ai-email-assistant/
 
@@ -513,7 +513,7 @@ Structure:
 
 **1. Prepare Product Information**:
 
-```
+```text
 Have ready:
 - Clear product description (1-2 sentences)
 - Top 3 benefits
@@ -525,7 +525,7 @@ Have ready:
 
 **2. Define Success Criteria**:
 
-```
+```text
 Know your targets:
 - What is acceptable CAC?
 - What is your LTV (lifetime value)?
@@ -535,7 +535,7 @@ Know your targets:
 
 **3. Set Up Ad Accounts** (optional but recommended):
 
-```
+```sql
 Create accounts in advance:
 - Facebook Business Manager
 - Google Ads account
@@ -547,7 +547,7 @@ Create accounts in advance:
 
 **1. Review Strategy First**:
 
-```
+```text
 Priority order:
 1. Read strategy/channel-strategy.md (10 min)
 2. Validate budget allocation makes sense for your business
@@ -557,7 +557,7 @@ Priority order:
 
 **2. Customize Creative if Needed**:
 
-```
+```text
 Creative is 80% ready, but you may want to:
 - Adjust tone/voice to match brand closer
 - Add specific customer testimonials
@@ -567,7 +567,7 @@ Creative is 80% ready, but you may want to:
 
 **3. Test Landing Pages**:
 
-```
+```text
 Before launching ads:
 - Deploy landing-page-a.html to your site
 - Test on mobile (50%+ traffic is mobile)
@@ -578,7 +578,7 @@ Before launching ads:
 
 **4. Phase Launch (Recommended)**:
 
-```
+```text
 Week 1: Launch anchor platform only (Facebook or Google)
 Week 2: Add 1-2 growth platforms (Instagram, LinkedIn)
 Week 3-4: Add test platforms (Twitter, TikTok)
@@ -590,7 +590,7 @@ Why? Easier to manage, learn faster, reduce risk
 
 **Issue: Budget seems too low for all platforms**
 
-```
+```text
 Solution:
 - Use --platforms flag to focus on 2-3 platforms
 - Example: --platforms "facebook,google"
@@ -600,7 +600,7 @@ Solution:
 
 **Issue: Creative doesn't match brand voice**
 
-```
+```text
 Solution:
 - Edit creative files in /creative/ directory
 - Keep structure/format, adjust tone/wording
@@ -610,7 +610,7 @@ Solution:
 
 **Issue: Need different product type**
 
-```
+```text
 Solution:
 - Use --product-type flag more specifically
 - Options: saas-b2b, saas-b2c, ecommerce-physical, ecommerce-digital, services-local, services-online
@@ -619,7 +619,7 @@ Solution:
 
 **Issue: Want to test multiple budget scenarios**
 
-```
+```text
 Solution:
 - Run command multiple times with different budgets
 - Compare strategy recommendations
@@ -1026,7 +1026,7 @@ Also create: `creative/product-photography-brief.md` using template from `/templ
 
 Invoke the frontend-architect agent to create 2 landing page HTML files in `/campaigns/[product-name]/landing-pages/`:
 
-```
+```text
 Task tool invocation:
   subagent_type: 'frontend-architect'
   description: 'Generate landing pages'
@@ -1325,7 +1325,7 @@ Verify all files created:
 
 **Output to user**: `⏳ Step 13/13: Finalizing campaign package...`
 
-```
+```text
 ════════════════════════════════════════════════════════════
    ✅ CAMPAIGN PACKAGE GENERATED: [Product Name]
 ════════════════════════════════════════════════════════════

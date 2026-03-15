@@ -145,7 +145,7 @@ When this skill activates, follow these steps:
 
 **v0.dev prompt structure:**
 
-```
+```sql
 Create a modern, conversion-optimized landing page for [product name].
 
 Product: [description]
@@ -463,7 +463,7 @@ return variant === 'A' ? (
 
 [Copy of v0 prompt]
 
-```
+```text
 
 **Design URL:** https://v0.dev/[design-id]
 
@@ -589,7 +589,7 @@ vercel domains add [yourdomain.com]
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-```
+```text
 
 ## Integration with Other Skills
 

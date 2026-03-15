@@ -52,7 +52,7 @@ const optimization = await mcp.motion.optimizeSchedule({
 
 ### Results
 
-```
+```text
 ✓ Weekly schedule optimized by Motion AI
 
 📊 This Week (Jan 22-26, 2025)

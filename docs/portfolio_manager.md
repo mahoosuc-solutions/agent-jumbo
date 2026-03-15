@@ -16,7 +16,7 @@ The Portfolio Manager is a comprehensive tool for organizing, analyzing, and com
 
 Point Agent Jumbo to your projects folder:
 
-```
+```text
 Scan my projects folder at ~/projects for portfolio
 ```
 
@@ -24,7 +24,7 @@ Scan my projects folder at ~/projects for portfolio
 
 Check which projects are ready to sell:
 
-```
+```text
 Show me my portfolio dashboard
 ```
 
@@ -32,7 +32,7 @@ Show me my portfolio dashboard
 
 Get recommendations for improving a project:
 
-```
+```text
 Analyze project at ~/projects/my-tool for sale readiness
 ```
 
@@ -40,7 +40,7 @@ Analyze project at ~/projects/my-tool for sale readiness
 
 Convert projects to products:
 
-```
+```sql
 Create a product from project ID 1
 ```
 
@@ -48,7 +48,7 @@ Create a product from project ID 1
 
 Add leads and track your sales pipeline:
 
-```
+```text
 Add Acme Corp as a lead for product 1 with deal value $499
 ```
 

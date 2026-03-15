@@ -120,7 +120,7 @@ ZOHO_CRM_ID=$(jq -r '.state.environment_vars.ZOHO_CRM_ID' $CONTEXT_FILE)
 
 ### 6. Initialize Context Dashboard
 
-```
+```text
 ╔════════════════════════════════════════════════╗
 ║  CONTEXT: Property Management                  ║
 ╠════════════════════════════════════════════════╣

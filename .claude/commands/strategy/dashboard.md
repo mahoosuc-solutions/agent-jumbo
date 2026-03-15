@@ -58,7 +58,7 @@ Comprehensive view of all goals across all domains.
 
 ### Complete Dashboard
 
-```
+```text
 GOAL-CENTRIC STRATEGY DASHBOARD
 ═════════════════════════════════════════════════════════════
 

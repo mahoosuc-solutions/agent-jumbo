@@ -37,7 +37,7 @@ Validate license status and entitlements with minimal latency. Support air-gappe
 
 **Use When**: Internet connectivity available, real-time accuracy needed
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    ONLINE VALIDATION FLOW                        │
 ├─────────────────────────────────────────────────────────────────┤
@@ -88,7 +88,7 @@ WHERE l.license_key_hash = '${key_hash}'
 
 **Use When**: No internet connectivity, air-gapped environment
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                   OFFLINE VALIDATION FLOW                        │
 ├─────────────────────────────────────────────────────────────────┤
@@ -168,7 +168,7 @@ def validate_offline(token, machine_id):
 
 **Use When**: Intermittent connectivity, best of both worlds
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                    HYBRID VALIDATION FLOW                        │
 ├─────────────────────────────────────────────────────────────────┤
@@ -220,7 +220,7 @@ def validate_offline(token, machine_id):
 
 ### Valid License
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    ✓ LICENSE VALID                              ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -245,7 +245,7 @@ def validate_offline(token, machine_id):
 
 ### Grace Period Warning
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║               ⚠️  LICENSE VALID (GRACE PERIOD)                  ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -267,7 +267,7 @@ def validate_offline(token, machine_id):
 
 ### Invalid License
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    ❌ LICENSE INVALID                           ║
 ╠════════════════════════════════════════════════════════════════╣

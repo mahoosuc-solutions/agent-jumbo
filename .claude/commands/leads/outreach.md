@@ -42,7 +42,7 @@ Before creating outreach, the system verifies:
 
 ## Example Output
 
-```
+```text
 📤 Creating outreach request...
 
 Lead: John Smith (@johnsmith on Reddit)

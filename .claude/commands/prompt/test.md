@@ -237,7 +237,7 @@ echo "✓ Output validation complete ($VARIANT_COUNT variants tested, comparison
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         PROMPT TESTING COMPLETE ✓
 ═══════════════════════════════════════════════════

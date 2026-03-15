@@ -332,7 +332,7 @@ If --analyze-only NOT set:
 
 ## Example Output
 
-```
+```text
 Landing Page Optimization Report
 ═══════════════════════════════════
 Page: https://myproduct.com

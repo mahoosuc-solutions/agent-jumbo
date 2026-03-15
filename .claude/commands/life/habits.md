@@ -160,7 +160,7 @@ Log habit completions and track streaks.
 
 Log each habit after completion:
 
-```
+```text
 /life:habits track
 
 Today's Habits:
@@ -219,7 +219,7 @@ For each habit, measure:
 
 ### Example Analysis
 
-```
+```text
 MORNING WORKOUT
 ├── Consistency: 92% (23/25 days)
 ├── Impact on Health Goal: 8/10
@@ -264,7 +264,7 @@ Track and celebrate habit streaks.
 
 Show current streaks with visual indicators:
 
-```
+```text
 STREAKS (as of today)
 🔥 Morning workout: 23 days
 🔥 Cold shower: 23 days
@@ -343,7 +343,7 @@ Habits are saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/habits.json
 ├── Habit definitions (name, trigger, goal links)
 ├── Daily logs (completions, notes)
@@ -354,7 +354,7 @@ Habits are saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 habits table
 ├── habit_id, name, goal_id
 ├── trigger, frequency, impact_score
@@ -428,7 +428,7 @@ habits table
 
 Each habit should ladder back to `/life:goals`:
 
-```
+```text
 GOAL: Financial Independence
 ├── Business Goal: Build $200K/year software product
 │   └── Habit: Weekly financial review (30 min)

@@ -97,7 +97,7 @@ correlations:
 
 ### 4. Generate Recommendations
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════════════════
                          AI RECOMMENDATIONS
                          2025-01-15
@@ -330,7 +330,7 @@ To view recommendation history:
 
 When `--domain` specified, provide deeper analysis:
 
-```
+```text
 Example: /autonomous:recommend --domain customer_success
 
 Shows only customer success recommendations with:
@@ -344,7 +344,7 @@ Shows only customer success recommendations with:
 
 When `--target` specified:
 
-```
+```text
 Example: /autonomous:recommend --target cust_abc123
 
 Shows recommendations for specific customer:

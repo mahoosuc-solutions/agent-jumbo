@@ -296,7 +296,7 @@
 
 ## Absolute File Paths (Complete List)
 
-```
+```text
 /home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/
 ├── __init__.py
 ├── pms_provider.py                                 (256 lines)

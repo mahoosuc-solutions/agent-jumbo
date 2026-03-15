@@ -6,7 +6,7 @@ Build, certify, and deploy production-ready AI agents with comprehensive quality
 
 ## Complete Lifecycle
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                         AGENT FOUNDRY LIFECYCLE                      │
 └─────────────────────────────────────────────────────────────────────┘

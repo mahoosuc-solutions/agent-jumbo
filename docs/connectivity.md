@@ -591,6 +591,6 @@ To connect another agent to your Agent Jumbo instance, use the following URL for
 
 **Note:** You can find your specific A2A connection URL under `Settings > External Services > A2A Connection`.
 
-```
+```text
 YOUR_AGENT_JUMBO_URL/a2a/t-YOUR_API_TOKEN
 ```

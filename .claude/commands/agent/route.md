@@ -247,7 +247,7 @@ Before routing:
 
 ## Example Usage
 
-```
+```python
 /route Create a new prompt for lead qualification
 # Routes to prompt-engineering-agent
 

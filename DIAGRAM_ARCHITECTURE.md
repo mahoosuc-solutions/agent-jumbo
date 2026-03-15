@@ -91,14 +91,14 @@ graph TB
 
 ### Inline Diagram Creation
 
-```
+```text
 User Request → Agent → response_tool with mermaid code block
 → WebUI receives markdown → Mermaid.js renders → Display
 ```
 
 ### File Export
 
-```
+```text
 User Request → Agent → diagram_tool → Generator script
 → mermaid-cli process → PNG file → Agent shows path → User downloads
 ```
@@ -115,7 +115,7 @@ User Request → Agent → diagram_tool → Generator script
 
 ## File Organization
 
-```
+```text
 agent-jumbo/
 ├── webui/
 │   ├── vendor/
@@ -207,7 +207,7 @@ graph LR
 
 ### Pattern 1: Quick Chat Diagrams (90% of use cases)
 
-```
+```text
 User asks → Agent generates mermaid → Inline render → Done
 ```
 
@@ -215,7 +215,7 @@ User asks → Agent generates mermaid → Inline render → Done
 
 ### Pattern 2: Saved Diagrams (10% of use cases)
 
-```
+```text
 User asks to save → Agent uses tool → Export file → User downloads
 ```
 

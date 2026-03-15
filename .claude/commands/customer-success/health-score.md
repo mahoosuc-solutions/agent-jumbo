@@ -193,7 +193,7 @@ GROUP BY l.id;
 
 ### Churn Risk Calculation Formula
 
-```
+```text
 Churn Risk % = 100 - Health Score + Billing_Risk_Modifier + Usage_Risk_Modifier
 
 Where:

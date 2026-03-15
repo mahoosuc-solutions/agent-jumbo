@@ -66,7 +66,7 @@ This command shows two approaches:
 
 ### Approach 1: With Skills (Preferred)
 
-```
+```text
 1. Check if stripe-data-fetcher skill exists
    → If yes: Invoke skill to fetch data
    → If no: Use inline Stripe CLI commands
@@ -90,7 +90,7 @@ If skills aren't available, command has inline fallback logic.
 
 ## Example Output
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 💰 STRIPE REVENUE ANALYSIS
 Period: Last 30 Days (Dec 25, 2024 - Jan 24, 2025)
@@ -306,7 +306,7 @@ INSIGHTS=$(invoke data-analyzer skill OR call Claude API with data)
 
 This command demonstrates graceful degradation:
 
-```
+```bash
 if skill_exists("stripe-data-fetcher"); then
     invoke skill
 else

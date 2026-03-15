@@ -230,7 +230,7 @@ curl -X GET http://localhost:3000/api/constitutions
 
 Display:
 
-```
+```text
 Available Constitutions:
 
 1. const-abc-123: SaaS Best Practices
@@ -282,7 +282,7 @@ curl -X POST http://localhost:3000/api/constitutions/{constitution_id}/designs/{
 
 Show comprehensive design creation summary:
 
-```
+```text
 ✅ Solution Design Created Successfully!
 
 Design ID: {design_id}
@@ -511,7 +511,7 @@ Override specific principles while maintaining others.
 
 **If constitution not found:**
 
-```
+```text
 ❌ Constitution not found: {constitution_id}
 
 Available constitutions:
@@ -525,7 +525,7 @@ Select one or create new:
 
 **If design creation fails:**
 
-```
+```text
 ❌ Design creation failed: {error_message}
 
 Common causes:
@@ -541,7 +541,7 @@ Try:
 
 **If constitution validation fails:**
 
-```
+```text
 ⚠️ Design violates constitution constraints
 
 Constitution: {constitution_name}
@@ -560,7 +560,7 @@ Would you like to:
 
 ### Example 1: Quick Prototype (Standard)
 
-```
+```yaml
 User: /design:solution "Chat feature for mobile app"
 Assistant: Creating standard DEVB design...
   Problem statement: {collected}
@@ -571,7 +571,7 @@ Assistant: ✅ Design created! design-abc-123
 
 ### Example 2: Production System (Constitution-First)
 
-```
+```yaml
 User: /design:solution "Payment Processing System" --constitution-first --domain fintech
 Assistant: Let's create a constitution first for governance...
   Core principles: {5 collected}
@@ -587,7 +587,7 @@ Assistant: ✅ Design created! design-ghi-789
 
 ### Example 3: Use Existing Governance
 
-```
+```yaml
 User: /design:solution "User Profile Service" --constitution const-abc-123
 Assistant: Using existing constitution: SaaS Best Practices
   Inheriting: 5 principles, 8 constraints
@@ -600,7 +600,7 @@ Assistant: ✅ Design created! design-xyz-101
 
 ### Example 4: Template-Based
 
-```
+```yaml
 User: /design:solution "Healthcare Portal" --constitution-template healthtech
 Assistant: Applying Healthcare HIPAA template...
   Principles: Patient Privacy, Data Security, Audit Trail, BAA, Encryption, Compliance
@@ -637,19 +637,19 @@ Assistant: ✅ Design created! design-health-789
 
 ### Standard DEVB Workflow
 
-```
+```text
 Solution → Emulate → Validate → Spec → Implement
 ```
 
 ### Constitution-First Workflow
 
-```
+```text
 Constitution → Solution → Specify → Validate → Plan → Tasks → Implement
 ```
 
 ### Hybrid Workflow
 
-```
+```text
 Solution → Constitution (retroactive) → Validate → Spec → Implement
 ```
 

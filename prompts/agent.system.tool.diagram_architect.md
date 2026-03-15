@@ -28,7 +28,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Perform full architecture analysis of a project**
 
-```
+```json
 {{diagram_architect(
   action="analyze_architecture",
   project_path="/path/to/project",
@@ -61,7 +61,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Get analysis details**
 
-```
+```json
 {{diagram_architect(
   action="get_analysis",
   analysis_id=1
@@ -80,7 +80,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **List all analyses**
 
-```
+```json
 {{diagram_architect(
   action="list_analyses",
   project_path="/path/to/project"
@@ -99,7 +99,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Get comprehensive analysis summary**
 
-```
+```json
 {{diagram_architect(
   action="get_analysis_summary",
   analysis_id=1
@@ -118,7 +118,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Generate system/component architecture diagram**
 
-```
+```json
 {{diagram_architect(
   action="generate_system_diagram",
   analysis_id=1,
@@ -145,7 +145,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Generate data flow diagram**
 
-```
+```json
 {{diagram_architect(
   action="generate_data_flow",
   analysis_id=1,
@@ -173,7 +173,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Generate external integrations diagram**
 
-```
+```json
 {{diagram_architect(
   action="generate_integration_map",
   analysis_id=1,
@@ -201,7 +201,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Generate deployment/infrastructure diagram**
 
-```
+```json
 {{diagram_architect(
   action="generate_deployment",
   analysis_id=1,
@@ -229,7 +229,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Generate diagram from app_spec.json**
 
-```
+```json
 {{diagram_architect(
   action="generate_from_app_spec",
   app_spec_path="/path/to/app_spec.json",
@@ -250,7 +250,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Generate and export all diagram types**
 
-```
+```json
 {{diagram_architect(
   action="export_all",
   analysis_id=1,
@@ -271,7 +271,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **Get a specific diagram**
 
-```
+```json
 {{diagram_architect(
   action="get_diagram",
   diagram_id=1
@@ -290,7 +290,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 **List generated diagrams**
 
-```
+```json
 {{diagram_architect(
   action="list_diagrams",
   analysis_id=1,
@@ -311,7 +311,7 @@ The **diagram_architect** tool auto-generates architecture diagrams from codebas
 
 ### Analyze and Document a Project
 
-```
+```markdown
 # 1. Analyze the codebase
 {{diagram_architect(
   action="analyze_architecture",
@@ -396,7 +396,7 @@ smtplib.SMTP()                           # Detected as 'smtp'
 
 Generate architecture docs for new projects:
 
-```
+```json
 {{project_scaffold(action="scaffold_project", template="api/fastapi", ...)}}
 {{diagram_architect(action="analyze_architecture", project_path="...")}}
 ```
@@ -405,7 +405,7 @@ Generate architecture docs for new projects:
 
 Document existing portfolio projects:
 
-```
+```json
 {{portfolio_manager_tool(action="list")}}
 # For each project:
 {{diagram_architect(action="analyze_architecture", project_path="...")}}
@@ -415,7 +415,7 @@ Document existing portfolio projects:
 
 Include architecture visuals in proposals:
 
-```
+```json
 {{diagram_architect(action="generate_system_diagram", analysis_id=1)}}
 {{sales_generator(action="generate_proposal", include_diagrams=true)}}
 ```

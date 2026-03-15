@@ -101,7 +101,7 @@ curl -s -X GET "http://localhost:3001/api/v1/swarm-knowledge/metrics/decisions?p
 
 Format and display comprehensive status:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                     SWARM STATUS
 ═══════════════════════════════════════════════════════════

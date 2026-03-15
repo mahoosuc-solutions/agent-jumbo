@@ -131,7 +131,7 @@ echo "✓ Created placeholder files"
 
 ### Step 5: Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════
         SPEC INITIALIZED
 ═══════════════════════════════════════════════════

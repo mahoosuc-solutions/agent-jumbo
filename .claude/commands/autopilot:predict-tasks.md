@@ -83,7 +83,7 @@ const predictions = await claude.predictTasks({
 
 ## Example Predictions
 
-```
+```text
 🤖 AI AUTOPILOT: Task Predictions for Next Week
 
 Found 8 predicted tasks (confidence >70%)
@@ -180,7 +180,7 @@ The AI learns from:
 
 ### Examples of Learned Patterns
 
-```
+```text
 Lease Renewals:
   Pattern: 90 days before lease expiry
   Confidence: 98%

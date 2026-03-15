@@ -109,7 +109,7 @@ Track Phase 1 success metrics to validate the Google Workspace integration ROI. 
 
 ## Dashboard Output
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════╗
 ║  PHASE 1 PRODUCTIVITY METRICS - Week of Jan 15-21, 2025    ║
 ╠══════════════════════════════════════════════════════════════╣

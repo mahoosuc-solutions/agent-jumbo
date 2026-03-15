@@ -225,7 +225,7 @@ Use `AskUserQuestion`:
 
 2. **Build Dependency Graph**
 
-   ```
+   ```text
    Graph structure (example):
 
    OAuth Auth (auth)
@@ -322,7 +322,7 @@ root: Real-time Salesforce Sync
    ├─ Notifications (2-3 days)
    └─ Monitoring Dashboard (2-3 days)
 
-```
+```text
 
 ### Dependencies
 ```
@@ -330,7 +330,7 @@ root: Real-time Salesforce Sync
 Layer 1 (Auth) → Layer 2 (API) → Layer 3 (Sync) → Layer 4 (Real-time)
 Can parallelize: Layer 2 auth work while Layer 3 is being designed
 
-```
+```text
 
 ### Risk Hotspots
 1. **Conflict Resolution** (High complexity, novel problem) - 3-4 days
@@ -443,7 +443,7 @@ Use `AskUserQuestion`:
 
 4. **Create Critical Path**
 
-   ```
+   ```text
    Must complete before:
    - OAuth setup → before API client work
    - API client → before sync engine

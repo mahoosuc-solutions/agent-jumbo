@@ -244,7 +244,7 @@ The `/knowledge` command suite transforms how you capture, organize, search, and
 
 ## File Structure
 
-```
+```text
 knowledge-base/
 ├── INDEX.md                    # Master index of all notes
 ├── 2025/
@@ -432,7 +432,7 @@ All commands use `claude-sonnet-4-5-20250929` for optimal semantic understanding
 
 ### Storage Location
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/
 ```
 

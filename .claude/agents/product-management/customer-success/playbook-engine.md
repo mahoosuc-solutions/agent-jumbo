@@ -84,7 +84,7 @@ Execute playbooks with **> 70% success rate** through:
 
 ### Playbook Execution States
 
-```
+```text
 PENDING → ACTIVE → IN_PROGRESS → COMPLETED/FAILED/PAUSED
 
 State Transitions:
@@ -291,7 +291,7 @@ graph TD
 
 ### Playbook Selection Scoring
 
-```
+```text
 Playbook Score =
   (Trigger Match × 0.30) +
   (Historical Success × 0.25) +
@@ -308,7 +308,7 @@ Selection Rules:
 
 ### Step Execution Logic
 
-```
+```text
 FOR each step in playbook:
   1. Check dependencies (all completed?)
   2. Check delay (time elapsed since last step?)
@@ -641,7 +641,7 @@ Before executing playbooks:
 
 ### Playbook Lifecycle
 
-```
+```text
 TRIGGER RECEIVED:
   1. Validate trigger data
   2. Check customer eligibility

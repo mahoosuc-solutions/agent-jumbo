@@ -80,7 +80,7 @@ Achieve **< 5% monthly churn** through:
 
 ### Health Score Thresholds
 
-```
+```text
 Score Range | Status | Action Required
 90-100      | Excellent | Expansion opportunity
 70-89       | Good | Standard engagement
@@ -171,7 +171,7 @@ graph TD
 
 ### Health Score Algorithm
 
-```
+```text
 Overall Health Score = Σ(Component Score × Weight)
 
 Component Calculations:
@@ -215,7 +215,7 @@ NPS Score (0-100):
 
 ### Churn Risk Prediction
 
-```
+```text
 Churn Risk =
   (Signal Severity × Signal Weight) +
   (Trend Direction × Trend Weight) +
@@ -513,7 +513,7 @@ Before publishing health assessments:
 
 ### Real-Time Monitoring
 
-```
+```text
 EVERY 5 MINUTES:
   1. Check for critical signal triggers
      - Payment failures

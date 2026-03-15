@@ -108,7 +108,7 @@ options_evaluation:
 
 Apply 10-factor weighted algorithm:
 
-```
+```text
 Risk Score Calculation:
 
 Factor                  Weight    Value    Contribution
@@ -133,7 +133,7 @@ Autonomy Level: FULLY_AUTONOMOUS
 
 Based on risk score:
 
-```
+```text
 Risk Score    Autonomy Level      Action
 ──────────────────────────────────────────────
 0-30          FULLY_AUTONOMOUS    Execute immediately
@@ -146,7 +146,7 @@ Risk Score    Autonomy Level      Action
 
 **If FULLY_AUTONOMOUS:**
 
-```
+```text
 Executing Decision...
 
 Decision: Trigger intervention for customer cust_abc123
@@ -164,7 +164,7 @@ Decision Executed Successfully ✓
 
 **If REVIEW_REQUIRED:**
 
-```
+```text
 Decision Executed (Pending Review)
 
 Decision: Progress rollout to 50%
@@ -181,7 +181,7 @@ To approve: /autonomous:history --approve dec_xyz789
 
 **If APPROVAL_REQUIRED:**
 
-```
+```text
 Decision Blocked (Approval Required)
 
 Decision: Deprecation announcement for Legacy API v1
@@ -275,7 +275,7 @@ decision_record:
 
 ### 8. Display Summary
 
-```
+```text
 ═══════════════════════════════════════════════════════════
                     DECISION SUMMARY
 ═══════════════════════════════════════════════════════════

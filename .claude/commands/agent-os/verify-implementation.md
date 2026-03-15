@@ -92,7 +92,7 @@ Check final-report.md for:
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         IMPLEMENTATION VERIFIED
 ═══════════════════════════════════════════════════

@@ -77,7 +77,7 @@ Let me gather basic information about this discovery session.
 
 **Question 3**: Primary contact information?
 
-```
+```yaml
 Name: [Full name of primary stakeholder]
 Title: [Role/position]
 Email: [Contact email]
@@ -89,7 +89,7 @@ Phone: [Optional]
 - List names and roles of anyone who should be involved in decisions
 - Examples: CEO, CTO, Head of Sales, Product Manager
 
-```
+```text
 1. [Name] - [Role] - [Department]
 2. [Name] - [Role] - [Department]
 3. [Name] - [Role] - [Department]
@@ -116,7 +116,7 @@ Phone: [Optional]
 
 ### PHASE 1 SUMMARY
 
-```
+```text
 ✓ Customer Information Captured
 
 Company: [Customer Name]
@@ -146,7 +146,7 @@ Please describe each problem in detail:
 
 **Problem #1**:
 
-```
+```text
 Problem Title: [Short name]
 Description: [What's happening? Why is it a problem?]
 Who's Affected: [Which team/role/department?]
@@ -160,7 +160,7 @@ Frequency: [How often does this occur?]
 
 **Problem #2**:
 
-```
+```text
 Problem Title: [Short name]
 Description: [What's happening? Why is it a problem?]
 Who's Affected: [Which team/role/department?]
@@ -169,7 +169,7 @@ Frequency: [How often does this occur?]
 
 **Problem #3**:
 
-```
+```text
 Problem Title: [Short name]
 Description: [What's happening? Why is it a problem?]
 Who's Affected: [Which team/role/department?]
@@ -186,7 +186,7 @@ For each problem identified, let's quantify the impact:
 
 **Question 2a**: How much time does this problem cost you?
 
-```
+```text
 Time per incident: [X hours/minutes]
 Frequency: [Y times per week/month]
 People affected: [Z team members]
@@ -200,7 +200,7 @@ Annual time cost: [Calculated]
 - Direct costs (lost revenue, wasted spend, etc.)
 - Indirect costs (opportunity cost, delayed decisions, etc.)
 
-```
+```text
 Direct monthly cost: $[Amount]
 Indirect monthly cost: $[Amount]
 Total annual cost: $[Amount]
@@ -219,7 +219,7 @@ Total annual cost: $[Amount]
 
 **Question 3a**: How much time does this problem cost you?
 
-```
+```text
 Time per incident: [X hours/minutes]
 Frequency: [Y times per week/month]
 People affected: [Z team members]
@@ -230,7 +230,7 @@ Annual time cost: [Calculated]
 
 **Question 3b**: How much money does this problem cost you?
 
-```
+```text
 Direct monthly cost: $[Amount]
 Indirect monthly cost: $[Amount]
 Total annual cost: $[Amount]
@@ -249,7 +249,7 @@ Total annual cost: $[Amount]
 
 **Question 4a**: How much time does this problem cost you?
 
-```
+```text
 Time per incident: [X hours/minutes]
 Frequency: [Y times per week/month]
 People affected: [Z team members]
@@ -260,7 +260,7 @@ Annual time cost: [Calculated]
 
 **Question 4b**: How much money does this problem cost you?
 
-```
+```text
 Direct monthly cost: $[Amount]
 Indirect monthly cost: $[Amount]
 Total annual cost: $[Amount]
@@ -281,7 +281,7 @@ Total annual cost: $[Amount]
 
 ### Problem #1: [Title]
 
-```
+```text
 Solutions Attempted:
 1. [What did you try?]
    - Result: [What happened?]
@@ -297,7 +297,7 @@ Current Workaround:
 
 ### Problem #2: [Title]
 
-```
+```text
 Solutions Attempted:
 1. [What did you try?]
    - Result: [What happened?]
@@ -309,7 +309,7 @@ Current Workaround:
 
 ### Problem #3: [Title]
 
-```
+```text
 Solutions Attempted:
 1. [What did you try?]
    - Result: [What happened?]
@@ -327,7 +327,7 @@ Current Workaround:
 
 ### Problem #1: [Title]
 
-```
+```text
 Ideal State:
 [Describe the perfect solution - what happens? How does it feel? What changes?]
 
@@ -344,7 +344,7 @@ Must-Have Features:
 
 ### Problem #2: [Title]
 
-```
+```text
 Ideal State:
 [Describe the perfect solution]
 
@@ -361,7 +361,7 @@ Must-Have Features:
 
 ### Problem #3: [Title]
 
-```
+```text
 Ideal State:
 [Describe the perfect solution]
 
@@ -389,7 +389,7 @@ Must-Have Features:
 
 ### PHASE 2 SUMMARY
 
-```
+```text
 ✓ Pain Points Captured
 
 Total Problems Identified: [Count]
@@ -430,7 +430,7 @@ Examples:
 - Support ticket resolution
 - Reporting and analytics
 
-```
+```text
 Workflow #1: [Name]
 Workflow #2: [Name]
 Workflow #3: [Name]
@@ -457,7 +457,7 @@ For each workflow, I'll ask about:
 
 **Question 2a**: How does this workflow work today? (Step-by-step)
 
-```
+```text
 Step 1: [Action] - Performed by: [Role] - Tools: [System/manual]
 Step 2: [Action] - Performed by: [Role] - Tools: [System/manual]
 Step 3: [Action] - Performed by: [Role] - Tools: [System/manual]
@@ -468,7 +468,7 @@ Step 5: [Action] - Performed by: [Role] - Tools: [System/manual]
 
 **Question 2b**: How many people are involved in this workflow?
 
-```
+```text
 Roles Involved:
 - [Role 1]: [% of time spent on this workflow]
 - [Role 2]: [% of time spent on this workflow]
@@ -477,7 +477,7 @@ Roles Involved:
 
 **Question 2c**: How long does this workflow take from start to finish?
 
-```
+```text
 Average Duration: [X hours/days]
 Minimum Duration: [X hours/days]
 Maximum Duration: [X hours/days]
@@ -486,7 +486,7 @@ Volume: [How many times per week/month?]
 
 **Question 2d**: What are the bottlenecks in this workflow?
 
-```
+```text
 Bottleneck #1:
 - Location: [Which step?]
 - Cause: [Why does it slow down here?]
@@ -504,7 +504,7 @@ Bottleneck #2:
 
 **Question 2e**: How should this workflow work in an ideal world?
 
-```
+```text
 Ideal Workflow:
 Step 1: [Action] - Automation level: [Manual/Semi-auto/Fully auto]
 Step 2: [Action] - Automation level: [Manual/Semi-auto/Fully auto]
@@ -519,7 +519,7 @@ Key Improvements:
 
 **Question 2f**: What could be eliminated, automated, or streamlined?
 
-```
+```text
 Eliminate:
 - [ ] [Step/task that adds no value]
 - [ ] [Step/task that adds no value]
@@ -541,7 +541,7 @@ Streamline:
 
 **Question 2g**: How much time could you save with the ideal workflow?
 
-```
+```text
 Current Time: [X hours/days per instance]
 Ideal Time: [Y hours/days per instance]
 Time Saved: [X - Y]
@@ -571,7 +571,7 @@ Cost of Time Saved: $[Annual hours * avg hourly rate]
 
 **Question 3a**: How does this workflow work today? (Step-by-step)
 
-```
+```text
 Step 1: [Action] - Performed by: [Role] - Tools: [System/manual]
 Step 2: [Action] - Performed by: [Role] - Tools: [System/manual]
 ...
@@ -579,7 +579,7 @@ Step 2: [Action] - Performed by: [Role] - Tools: [System/manual]
 
 **Question 3b**: How many people are involved?
 
-```
+```text
 Roles Involved:
 - [Role]: [% of time]
 ...
@@ -587,14 +587,14 @@ Roles Involved:
 
 **Question 3c**: Duration and volume?
 
-```
+```text
 Average Duration: [X]
 Volume: [Y per month]
 ```
 
 **Question 3d**: Bottlenecks?
 
-```
+```text
 Bottleneck #1: [Location] - [Cause] - [Impact]
 Bottleneck #2: [Location] - [Cause] - [Impact]
 ```
@@ -603,7 +603,7 @@ Bottleneck #2: [Location] - [Cause] - [Impact]
 
 **Question 3e**: Ideal workflow?
 
-```
+```text
 Ideal Workflow:
 Step 1: [Action] - [Automation level]
 Step 2: [Action] - [Automation level]
@@ -612,7 +612,7 @@ Step 2: [Action] - [Automation level]
 
 **Question 3f**: Improvements?
 
-```
+```yaml
 Eliminate: [List]
 Automate: [List]
 Streamline: [List]
@@ -622,7 +622,7 @@ Streamline: [List]
 
 **Question 3g**: Time savings?
 
-```
+```text
 Time Saved Per Instance: [X]
 Annual Time Savings: [Y hours]
 Cost Savings: $[Z]
@@ -642,25 +642,25 @@ Cost Savings: $[Z]
 
 **Question 4a**: How does this workflow work today?
 
-```
+```text
 [Step-by-step breakdown]
 ```
 
 **Question 4b**: People involved?
 
-```
+```text
 [Roles and time %]
 ```
 
 **Question 4c**: Duration/volume?
 
-```
+```text
 [Timing metrics]
 ```
 
 **Question 4d**: Bottlenecks?
 
-```
+```text
 [Identified bottlenecks]
 ```
 
@@ -668,13 +668,13 @@ Cost Savings: $[Z]
 
 **Question 4e**: Ideal workflow?
 
-```
+```text
 [Ideal process]
 ```
 
 **Question 4f**: Improvements?
 
-```
+```text
 [Eliminate/Automate/Streamline]
 ```
 
@@ -682,13 +682,13 @@ Cost Savings: $[Z]
 
 **Question 4g**: Time savings?
 
-```
+```text
 [Savings calculations]
 ```
 
 **Question 4h**: Other benefits?
 
-```
+```text
 [Additional benefits]
 ```
 
@@ -708,7 +708,7 @@ Cost Savings: $[Z]
 
 ### PHASE 3 SUMMARY
 
-```
+```text
 ✓ Workflows Mapped
 
 Total Workflows Analyzed: [Count]
@@ -772,7 +772,7 @@ For each pain point and workflow bottleneck, we'll create user stories:
 
 **User Story #1**:
 
-```
+```text
 As a: [Role - who will use this feature?]
 I want: [Action - what should the system do?]
 So that: [Benefit - why is this valuable?]
@@ -797,7 +797,7 @@ Related to:
 
 **Suggested User Story #1**:
 
-```
+```text
 As a: [Inferred role]
 I want: [Inferred need from pain points]
 So that: [Inferred benefit]
@@ -842,7 +842,7 @@ Which feature areas are most important for this project?
 
 **Question 3a**: What data needs to be visualized on the dashboard?
 
-```
+```text
 KPI Cards (key metrics displayed prominently):
 1. [Metric Name] - [Format: number/currency/percentage/trend]
    - Source: [Where does this data come from?]
@@ -875,7 +875,7 @@ Data Tables:
 
 **Question 3b**: Who needs access to the dashboard?
 
-```
+```yaml
 Role: [Sales Manager]
 - Can see: [Which KPIs/charts?]
 - Can do: [View only / Export / Configure widgets]
@@ -891,7 +891,7 @@ Role: [Executive]
 
 **Question 3c**: What reports need to be generated?
 
-```
+```text
 Report #1: [Report Name]
 - Format: [PDF/Excel/CSV]
 - Frequency: [On-demand/Daily/Weekly/Monthly]
@@ -911,7 +911,7 @@ Report #2: [Report Name]
 
 **Question 4a**: What data entities need to be managed?
 
-```
+```text
 Entity #1: [Name - e.g., "Leads", "Customers", "Orders"]
 - Fields: [List all fields needed]
   - [Field Name]: [Type: text/number/date/dropdown/etc.] - [Required/Optional]
@@ -937,7 +937,7 @@ Entity #3: [Name]
 
 **Question 4b**: What actions can users perform on this data?
 
-```
+```text
 For Entity: [Name]
 
 Create:
@@ -974,7 +974,7 @@ Bulk Actions:
 
 **Question 4c**: What import/export capabilities are needed?
 
-```
+```text
 Import:
 - File formats: [CSV/Excel/JSON/API]
 - Mapping: [Auto-map fields or manual mapping?]
@@ -995,7 +995,7 @@ Export:
 
 **Question 5a**: What workflows should be automated?
 
-```
+```text
 Automated Workflow #1: [Name]
 Trigger: [What starts this workflow?]
   - [ ] Record created
@@ -1032,7 +1032,7 @@ Error Handling: [How to handle failures?]
 
 **Question 5b**: What approval workflows are needed?
 
-```
+```text
 Approval Workflow #1: [Name]
 Triggered by: [What action requires approval?]
 
@@ -1062,7 +1062,7 @@ Notifications:
 
 **Question 6a**: What roles and permissions are needed?
 
-```
+```text
 Role #1: [Role Name - e.g., "Admin"]
 Permissions:
   Dashboard & Reporting:
@@ -1105,7 +1105,7 @@ Permissions:
 
 **Question 6b**: What authentication/security features are needed?
 
-```
+```text
 Authentication:
 - [ ] Email/password login
 - [ ] Single Sign-On (SSO) via [Google/Microsoft/Okta]
@@ -1139,7 +1139,7 @@ Security Features:
 
 **Question 7a**: What external systems need to integrate?
 
-```
+```text
 Integration #1: [System Name - e.g., "Zoho CRM"]
 Direction: [One-way or Two-way sync]
 Data Synced: [What data flows between systems?]
@@ -1157,7 +1157,7 @@ Conflict Resolution: [Resolution strategy]
 
 **Question 7b**: What API capabilities are needed?
 
-```
+```text
 API Type: [REST/GraphQL/SOAP]
 
 Endpoints Needed:
@@ -1186,7 +1186,7 @@ Webhooks: [Which events should trigger webhooks?]
 
 **Question 8a**: What communication features are needed?
 
-```
+```text
 Email:
 - Send from: [System email or user email?]
 - Templates: [List email templates needed]
@@ -1226,7 +1226,7 @@ These are the quality attributes and constraints the solution must meet.
 
 **Question 9**: Performance Requirements
 
-```
+```text
 Response Time:
 - Page load: [< 2 seconds / < 3 seconds / < 5 seconds]
 - API response: [< 500ms / < 1 second / < 2 seconds]
@@ -1251,7 +1251,7 @@ Uptime:
 
 **Question 10**: Security Requirements
 
-```
+```text
 Data Protection:
 - [ ] Encryption at rest (database, file storage)
 - [ ] Encryption in transit (HTTPS/TLS)
@@ -1291,7 +1291,7 @@ Data Retention:
 
 **Question 11**: Scalability Requirements
 
-```
+```text
 Growth Projection:
 - Users in Year 1: [X]
 - Users in Year 3: [Y]
@@ -1313,7 +1313,7 @@ Resource Limits:
 
 **Question 12**: Reliability Requirements
 
-```
+```text
 Backup & Recovery:
 - Backup frequency: [Hourly / Daily / Weekly]
 - Backup retention: [30 days / 90 days / 1 year]
@@ -1338,7 +1338,7 @@ Error Handling:
 
 **Question 13**: Usability Requirements
 
-```
+```text
 User Experience:
 - [ ] Responsive design (works on mobile, tablet, desktop)
 - [ ] Mobile-first design
@@ -1368,7 +1368,7 @@ Help & Support:
 
 **Question 14**: Maintainability Requirements
 
-```
+```text
 Code Quality:
 - [ ] Code documentation
 - [ ] Automated testing (unit, integration, E2E)
@@ -1401,7 +1401,7 @@ Monitoring:
 
 ### FUNCTIONAL REQUIREMENTS SUMMARY
 
-```
+```text
 ✓ Functional Requirements Captured
 
 User Stories Created: [Count]
@@ -1425,7 +1425,7 @@ Total Functional Requirements: [Count]
 
 ### NON-FUNCTIONAL REQUIREMENTS SUMMARY
 
-```
+```text
 ✓ Non-Functional Requirements Captured
 
 Performance:
@@ -1490,13 +1490,13 @@ For each pain point and workflow improvement, let's create SMART goals:
 
 **Question 1a**: What is the specific goal?
 
-```
+```text
 Specific Goal: [e.g., "Reduce lead qualification time by 50%"]
 ```
 
 **Question 1b**: How will we measure success?
 
-```
+```text
 Measurable Metrics:
 - Metric 1: [e.g., "Average time to qualify a lead"]
   - Current baseline: [X hours]
@@ -1516,7 +1516,7 @@ Measurable Metrics:
 
 **Question 1c**: Is this achievable?
 
-```
+```text
 Achievable because:
 - [Reason 1: e.g., "Automation will eliminate 3 manual steps"]
 - [Reason 2: e.g., "Similar companies have achieved this"]
@@ -1531,7 +1531,7 @@ Risks to achieving:
 
 **Question 1d**: Why is this relevant to the business?
 
-```
+```text
 Business Impact:
 - [ ] Increases revenue by $[X]
 - [ ] Reduces costs by $[X]
@@ -1547,7 +1547,7 @@ Strategic alignment:
 
 **Question 1e**: When will this be achieved?
 
-```
+```text
 Timeline:
 - Phase 1 (MVP): [Date] - [What's included?]
   - Success criteria: [Metric target for MVP]
@@ -1570,13 +1570,13 @@ Checkpoints:
 
 **Question 2a**: Specific goal?
 
-```
+```text
 [Goal statement]
 ```
 
 **Question 2b**: Measurable metrics?
 
-```
+```text
 Metric 1: [Name] - Current: [X], Target: [Y]
 Metric 2: [Name] - Current: [X], Target: [Y]
 Metric 3: [Name] - Current: [X], Target: [Y]
@@ -1584,21 +1584,21 @@ Metric 3: [Name] - Current: [X], Target: [Y]
 
 **Question 2c**: Achievable?
 
-```
+```text
 Achievable because: [Reasons]
 Risks: [List and mitigations]
 ```
 
 **Question 2d**: Relevance?
 
-```
+```text
 Business Impact: [How it helps]
 Strategic alignment: [Why it matters]
 ```
 
 **Question 2e**: Timeline?
 
-```
+```text
 Phase 1: [Date] - [Criteria]
 Phase 2: [Date] - [Criteria]
 Phase 3: [Date] - [Criteria]
@@ -1618,7 +1618,7 @@ Phase 3: [Date] - [Criteria]
 
 Leading indicators predict future success (early warning signals):
 
-```
+```text
 Leading Indicator #1: [e.g., "Daily active users"]
 - Why it matters: [Predicts long-term adoption]
 - Target: [X users per day]
@@ -1639,7 +1639,7 @@ Leading Indicator #3: [e.g., "User feedback score"]
 
 Lagging indicators show results after the fact (outcome metrics):
 
-```
+```text
 Lagging Indicator #1: [e.g., "Total time saved per month"]
 - Target: [X hours saved]
 - Review frequency: [Monthly]
@@ -1659,7 +1659,7 @@ Lagging Indicator #3: [e.g., "Customer satisfaction (NPS)"]
 
 **Question 5**: What must be true for the project to be considered successful?
 
-```
+```text
 Go-Live Acceptance Criteria:
 (Must be met before project can launch)
 
@@ -1708,7 +1708,7 @@ Satisfaction:
 
 **Question 6**: How will we track and report on these metrics?
 
-```
+```text
 Success Dashboard:
 - Location: [Where will stakeholders view this?]
 - Update frequency: [Real-time/Daily/Weekly]
@@ -1745,7 +1745,7 @@ Stakeholder Communication:
 
 ### PHASE 5 SUMMARY
 
-```
+```text
 ✓ Success Metrics Defined
 
 SMART Goals Created: [Count]
@@ -1792,7 +1792,7 @@ Let me compile everything we've captured into a comprehensive discovery summary.
 
 ### Project Overview
 
-```
+```yaml
 Customer: [Company Name]
 Project: [Project Name]
 Primary Contact: [Name] ([Title])
@@ -1812,7 +1812,7 @@ Budget: [Selected range]
 
 ### Executive Summary
 
-```
+```text
 PROBLEM STATEMENT:
 [Company Name] is facing [X] critical business challenges that are costing
 $[Y] annually and consuming [Z] hours of productivity. The primary pain points are:
@@ -1843,7 +1843,7 @@ ROI PROJECTION:
 
 ### Pain Points Summary
 
-```
+```text
 Total Pain Points Identified: [Count]
 
 #1: [Pain Point Title]
@@ -1878,7 +1878,7 @@ TOTAL ANNUAL TIME LOST: [Sum] hours
 
 ### Workflow Analysis
 
-```
+```text
 Workflows Mapped: [Count]
 
 Workflow #1: [Name]
@@ -1916,7 +1916,7 @@ TOTAL WORKFLOW IMPROVEMENTS:
 
 ### Requirements Summary
 
-```
+```text
 FUNCTIONAL REQUIREMENTS: [Total Count]
 
 Must Have (Critical): [Count]
@@ -1970,7 +1970,7 @@ Reliability:
 
 ### Success Metrics
 
-```
+```text
 SMART GOALS: [Count]
 
 Goal #1: [Description]
@@ -2008,7 +2008,7 @@ ROI PROJECTION:
 
 ## DISCOVERY COMPLETENESS CHECK
 
-```
+```text
 ✓ Phase 1: Customer Information - [100%] complete
   ✓ Company details
   ✓ Stakeholders identified
@@ -2046,7 +2046,7 @@ OVERALL COMPLETENESS: [100%]
 
 ## NEXT STEPS
 
-```
+```text
 1. Customer Review
    - Please review this discovery summary
    - Identify any corrections or additions needed
@@ -2096,7 +2096,7 @@ OVERALL COMPLETENESS: [100%]
 
 ## FINAL SIGN-OFF
 
-```
+```text
 DISCOVERY APPROVAL
 
 I, [Name], [Title] at [Company], hereby approve this discovery summary
@@ -2250,7 +2250,7 @@ Command: /design:prototype [discovery-id]
 
 ## SUCCESS MESSAGE
 
-```
+```text
 ✅ Discovery Complete and Saved!
 
 Discovery ID: [generated-id]

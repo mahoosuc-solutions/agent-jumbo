@@ -415,7 +415,7 @@ Perform comprehensive review and refinement to ensure script meets all engagemen
 
 **Input:**
 
-```
+```yaml
 Script: "How to Start a Podcast in 2025"
 Platform: YouTube
 Current Duration: 12 minutes
@@ -424,7 +424,7 @@ Goal: Increase retention from 45% to 65%
 
 **Output:**
 
-```
+```text
 OPTIMIZED SCRIPT:
 
 [0:00-0:08] HOOK:
@@ -470,7 +470,7 @@ RETENTION IMPROVEMENTS:
 
 **Input:**
 
-```
+```yaml
 Script: 30-second productivity tip
 Platform: TikTok
 Goal: Maximize watch time and shares
@@ -478,7 +478,7 @@ Goal: Maximize watch time and shares
 
 **Output:**
 
-```
+```text
 OPTIMIZED SCRIPT:
 
 [0:00-0:02] SCROLL-STOP HOOK:
@@ -518,7 +518,7 @@ ENGAGEMENT OPTIMIZATIONS:
 
 **Input:**
 
-```
+```yaml
 Script: Behind-the-scenes of product launch
 Platform: Instagram Reels
 Duration: 45 seconds
@@ -527,7 +527,7 @@ Goal: Drive profile visits and DM inquiries
 
 **Output:**
 
-```
+```text
 OPTIMIZED SCRIPT:
 
 [0:00-0:03] ASPIRATIONAL HOOK:
@@ -571,7 +571,7 @@ INSTAGRAM-SPECIFIC OPTIMIZATIONS:
 
 **Input:**
 
-```
+```yaml
 Script: Industry insights on remote work trends
 Platform: LinkedIn
 Duration: 2 minutes
@@ -580,7 +580,7 @@ Goal: Establish authority and drive connection requests
 
 **Output:**
 
-```
+```text
 OPTIMIZED SCRIPT:
 
 [0:00-0:10] AUTHORITY HOOK:
@@ -641,7 +641,7 @@ LINKEDIN-SPECIFIC OPTIMIZATIONS:
 
 **Input:**
 
-```
+```yaml
 Original: 15-minute tutorial on email marketing
 Task: Extract 3 short-form versions for YouTube Shorts
 Goal: Drive traffic to full video
@@ -649,7 +649,7 @@ Goal: Drive traffic to full video
 
 **Output:**
 
-```
+```text
 SHORT #1: "The Email Subject Line Mistake" (45 seconds)
 
 [0:00-0:02] HOOK:
@@ -734,7 +734,7 @@ CROSS-FORMAT STRATEGY:
 
 **Input:**
 
-```
+```yaml
 Format: Interview podcast
 Guest: SaaS founder
 Duration: 45 minutes
@@ -743,7 +743,7 @@ Goal: Create engaging conversation flow
 
 **Output:**
 
-```
+```text
 OPTIMIZED INTERVIEW SCRIPT:
 
 [0:00-2:00] COLD OPEN TEASER:

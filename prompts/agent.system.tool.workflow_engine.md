@@ -8,7 +8,7 @@ Orchestrate structured workflows with defined stages, gates, and training paths.
 
 *"As a project manager, I want to guide a product from concept to production with clear milestones and deliverables."*
 
-```
+```python
 # Create the workflow
 {{workflow_engine(
   action="create_from_template",
@@ -34,7 +34,7 @@ Orchestrate structured workflows with defined stages, gates, and training paths.
 
 *"As a technical lead, I want to ensure each phase meets quality criteria before advancing."*
 
-```
+```python
 # Check current status
 {{workflow_engine(action="get_status", execution_id=1)}}
 
@@ -72,7 +72,7 @@ Orchestrate structured workflows with defined stages, gates, and training paths.
 
 *"As a developer, I want to know what tasks are assigned to me and track my progress."*
 
-```
+```python
 # Get next available task
 {{workflow_engine(action="get_next_task", execution_id=1)}}
 
@@ -107,7 +107,7 @@ Orchestrate structured workflows with defined stages, gates, and training paths.
 
 *"As a QA engineer, I want to handle test failures and retry mechanisms."*
 
-```
+```python
 # Mark task as failed with retry
 {{workflow_engine(
   action="fail_task",
@@ -135,7 +135,7 @@ Orchestrate structured workflows with defined stages, gates, and training paths.
 
 *"As a solutions architect, I want to deliver custom solutions to clients with proper handoffs."*
 
-```
+```python
 # Use service delivery template
 {{workflow_engine(
   action="create_from_template",
@@ -168,7 +168,7 @@ Orchestrate structured workflows with defined stages, gates, and training paths.
 
 *"As a product owner, I want to track the support → upgrade cycle for ongoing improvements."*
 
-```
+```python
 # Check workflow with all stages including support/upgrade
 {{workflow_engine(action="visualize_workflow", name="Mobile App v1.0")}}
 
@@ -322,7 +322,7 @@ Tasks can target specific roles:
 
 Create a new workflow with defined stages.
 
-```
+```json
 {{workflow_engine(
   action="create_workflow",
   name="Product Development",
@@ -364,7 +364,7 @@ Create a new workflow with defined stages.
 
 Start executing a workflow with optional context.
 
-```
+```json
 {{workflow_engine(
   action="start_workflow",
   workflow_name="Product Development",
@@ -382,13 +382,13 @@ Start executing a workflow with optional context.
 
 Get comprehensive execution status.
 
-```
+```json
 {{workflow_engine(action="get_status", execution_id=1)}}
 ```
 
 **Output Example:**
 
-```
+```markdown
 ## Execution Status
 
 **Workflow:** Product Development
@@ -413,7 +413,7 @@ Stages: 2/5
 
 Generate a Mermaid flowchart.
 
-```
+```json
 {{workflow_engine(
   action="visualize_workflow",
   name="Product Development",
@@ -449,7 +449,7 @@ flowchart TD
 
 Generate a planning Gantt chart.
 
-```
+```json
 {{workflow_engine(
   action="visualize_gantt",
   name="Product Development",
@@ -477,13 +477,13 @@ gantt
 
 Get comprehensive dashboard.
 
-```
+```text
 {{workflow_engine(action="dashboard")}}
 ```
 
 **Output:**
 
-```
+```python
 ╔══════════════════════════════════════════════════════════════╗
 ║            WORKFLOW ENGINE DASHBOARD                         ║
 ╠══════════════════════════════════════════════════════════════╣
@@ -583,7 +583,7 @@ The workflow engine integrates with Agent Jumbo's tool ecosystem:
 
 **Example Integration:**
 
-```
+```python
 # In a workflow task definition
 {
   "id": "generate_architecture",
@@ -603,7 +603,7 @@ When the task executes, it can automatically invoke the `diagram_architect` tool
 
 Use built-in templates and customize rather than building from scratch:
 
-```
+```json
 {{workflow_engine(
   action="create_from_template",
   template_path="templates/product_development.json",
@@ -616,7 +616,7 @@ Use built-in templates and customize rather than building from scratch:
 
 Include project-specific context when starting workflows:
 
-```
+```json
 {{workflow_engine(
   action="start_workflow",
   workflow_name="My Project",
@@ -628,7 +628,7 @@ Include project-specific context when starting workflows:
 
 Always mark deliverables with artifact paths for traceability:
 
-```
+```json
 {{workflow_engine(
   action="complete_deliverable",
   execution_id=1,
@@ -642,7 +642,7 @@ Always mark deliverables with artifact paths for traceability:
 
 Generate visual artifacts for status meetings:
 
-```
+```json
 {{workflow_engine(action="visualize_progress", execution_id=1)}}
 {{workflow_engine(action="visualize_gantt", name="My Project")}}
 ```
@@ -651,7 +651,7 @@ Generate visual artifacts for status meetings:
 
 Use retry for recoverable failures:
 
-```
+```json
 {{workflow_engine(
   action="fail_task",
   execution_id=1,

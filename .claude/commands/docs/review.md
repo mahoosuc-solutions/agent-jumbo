@@ -223,7 +223,7 @@ Present the draft roadmap and ask:
 
 Ensure the `/docs` folder is well-organized:
 
-```
+```text
 docs/
 ├── README.md                 # Documentation index
 ├── ROADMAP.md               # This roadmap

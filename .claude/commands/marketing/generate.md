@@ -96,7 +96,7 @@ Bash: ls -d [projectPath]
 
 If the path doesn't exist, display error and exit:
 
-```
+```text
 ❌ PROJECT PATH NOT FOUND
 
 Path: [projectPath]
@@ -117,7 +117,7 @@ EXAMPLES:
 
 Show the user what will be generated:
 
-```
+```text
 ═══════════════════════════════════════════════════
     MARKETING SHOWCASE CONTENT GENERATION
 ═══════════════════════════════════════════════════
@@ -271,7 +271,7 @@ const cost = costMatch ? costMatch[1] : '0.00';
 
 Display success message:
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ✅ MARKETING CONTENT GENERATION COMPLETE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -330,7 +330,7 @@ Display success message:
 
 Parse error message and provide troubleshooting:
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ❌ MARKETING CONTENT GENERATION FAILED
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -390,7 +390,7 @@ COMMON ISSUES:
 
 **Output**:
 
-```
+```text
 ❌ PROJECT PATH NOT FOUND
 
 Path: /nonexistent/path
@@ -410,7 +410,7 @@ TROUBLESHOOTING:
 
 **Output**:
 
-```
+```text
 ❌ Invalid audience: enterprise
    Valid options: b2c, b2b, investor, internal, all
 ```
@@ -423,7 +423,7 @@ TROUBLESHOOTING:
 
 **Output**:
 
-```
+```text
 ❌ Invalid model: gpt4
    Valid options: haiku, sonnet, opus
 ```

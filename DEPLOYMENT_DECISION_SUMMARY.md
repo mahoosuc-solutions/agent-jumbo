@@ -155,7 +155,7 @@ Phase 4 Advanced Autonomy has been successfully developed, tested, and validated
 
 ### Week 1: Phase 4 Canary Launch
 
-```
+```yaml
 Mon: Pre-flight checks (all tests pass, monitoring setup)
 Tue: Deploy to canary (10% traffic)
 Wed-Thu: Monitor metrics (no issues)
@@ -171,7 +171,7 @@ Fri: Team review + decision to proceed to 50%
 
 ### Week 2-3: Phase 4 Ramp (Parallel Phase 5 Setup)
 
-```
+```yaml
 Monday: Ramp to 50% traffic (Phase 4)
         Start Phase 5 setup (separate branch)
 Wed-Thu: Monitor Phase 4 (50%)
@@ -185,7 +185,7 @@ Friday: Decision to go 100% (Phase 4)
 
 ### Week 4: Full Production (Phase 5 In Progress)
 
-```
+```text
 Phase 4: 100% traffic, production stable
 Phase 5: GREEN phase implementation (week 2-3 of Phase 5)
 ```
@@ -195,7 +195,7 @@ Phase 5: GREEN phase implementation (week 2-3 of Phase 5)
 
 ### Q3 2026: Phase 5 Deployment
 
-```
+```text
 Continue Phase 5 development (REFACTOR/VALIDATE/MERGE)
 Use Phase 4 production data to validate Phase 5 design
 Deploy Phase 5 with Phase 4 running
@@ -207,7 +207,7 @@ Deploy Phase 5 with Phase 4 running
 
 ### ⚡ If Choosing Option 1 (Deploy Now)
 
-```
+```text
 [ ] Day 1: Deploy to staging, full test run
 [ ] Day 1: Set up production monitoring
 [ ] Day 1: Configure agent roles/specializations
@@ -217,7 +217,7 @@ Deploy Phase 5 with Phase 4 running
 
 ### 📅 If Choosing Option 2 (Phase 5 First)
 
-```
+```text
 [ ] Create Phase 5 feature branch
 [ ] Set up Phase 5 development environment
 [ ] Begin Phase 5 RED phase (350 tests)
@@ -227,7 +227,7 @@ Deploy Phase 5 with Phase 4 running
 
 ### ⭐ If Choosing Option 3 (Hybrid - RECOMMENDED)
 
-```
+```text
 PHASE 4 OPERATIONS:
 [ ] Hour 1: Pre-flight checks
 [ ] Hour 2: Deploy to canary

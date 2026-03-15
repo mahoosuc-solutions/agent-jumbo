@@ -67,7 +67,7 @@ Define target format capabilities:
 
 Map source features to target format:
 
-```
+```text
 Source: PDF → Target: DOCX
   ✓ Text content → Paragraphs
   ✓ Bold/italic → Character formatting
@@ -351,7 +351,7 @@ Configure batch conversion:
 
 Process files in batch:
 
-```
+```text
 Input:
   documents/
     report1.pdf

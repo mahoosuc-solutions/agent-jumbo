@@ -348,7 +348,7 @@ Organize by:
 
 ### Example 1: Full Stack Developer Portfolio
 
-```
+```yaml
 User: Create developer portfolio showcasing web applications
 Template: Minimal/Clean with dark mode
 Featured Projects:
@@ -365,7 +365,7 @@ Results: 12 recruiter contacts first month, 2 interview offers, consulting clien
 
 ### Example 2: UX Designer Portfolio
 
-```
+```yaml
 User: Design portfolio for senior UX role applications
 Template: Creative with custom animations
 Featured Projects:
@@ -382,7 +382,7 @@ Results: Featured in design publication, 5 interviews at target companies
 
 ### Example 3: Marketing Professional Portfolio
 
-```
+```yaml
 User: Digital marketing portfolio for consulting business
 Template: Corporate/Professional with data visualization
 Featured Projects:
@@ -399,7 +399,7 @@ Results: 8 consultation requests first quarter, 3 retained clients
 
 ### Example 4: Data Scientist Portfolio
 
-```
+```yaml
 User: Data science portfolio showcasing ML projects
 Template: Minimal with Jupyter notebook embedding
 Featured Projects:
@@ -416,7 +416,7 @@ Results: Speaking invitation at conference, job offer from FAANG company
 
 ### Example 5: Freelance Writer/Content Creator
 
-```
+```yaml
 User: Portfolio for freelance writing and content services
 Template: Creative with typography focus
 Featured Work:
@@ -433,7 +433,7 @@ Results: 40% rate increase, waitlist for services, recurring retainer clients
 
 ### Example 6: Product Manager Portfolio
 
-```
+```yaml
 User: PM portfolio for transitioning to product leadership
 Template: Corporate with product-focused layouts
 Featured Products:

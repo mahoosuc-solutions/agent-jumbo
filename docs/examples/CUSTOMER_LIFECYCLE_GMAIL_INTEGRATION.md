@@ -9,6 +9,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ### Use Case: Department-Specific Email Accounts
 
 **Scenario:** Use different email accounts for different customer lifecycle stages:
+
 - `sales@company.com` - Initial contact and proposals
 - `support@company.com` - Onboarding and ongoing support
 - `success@company.com` - Customer success and renewals
@@ -119,6 +120,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ```
 
 **Benefits:**
+
 - 6,000 emails/day capacity (3 accounts × 2,000)
 - Department-specific organization
 - Email context preserved per stage
@@ -263,6 +265,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ```
 
 **Benefits:**
+
 - Visual pipeline organization in Gmail
 - Nested labels (pipeline/, industry/, priority/)
 - Batch label operations for efficiency
@@ -370,6 +373,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ```
 
 **Benefits:**
+
 - Quality control before sending
 - Manager review in familiar Gmail UI
 - Audit trail of draft creation and sending
@@ -473,6 +477,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ```
 
 **Benefits:**
+
 - <2 second response time (vs 5-15 min polling)
 - Automatic ticket creation
 - Customer context for personalized response
@@ -584,6 +589,7 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ```
 
 **Benefits:**
+
 - Automated multi-touch sequences
 - Thread continuity in Gmail
 - Response tracking with labels
@@ -595,7 +601,8 @@ This document shows how to integrate Gmail API (Phase 2/3) features with the Cus
 ## Best Practices
 
 ### 1. Label Naming Convention
-```
+
+```text
 pipeline/lead
 pipeline/qualified
 pipeline/proposal-sent
@@ -615,24 +622,28 @@ status/completed
 ```
 
 ### 2. Account Assignment
+
 - **sales@** - Leads, proposals, initial contact
 - **support@** - Onboarding, tickets, ongoing support
 - **success@** - Renewals, upsells, health monitoring
 - **dev@** - Technical discussions, API support
 
 ### 3. Draft Workflow
+
 1. Sales rep creates draft with "needs-review" label
 2. Manager reviews in Gmail UI
 3. Manager edits if needed or sends via API
 4. Apply "sent" label and remove "needs-review"
 
 ### 4. Push Notification Strategy
+
 - Enable push for support@ (instant ticket creation)
 - Enable push for sales@ if monitoring high-value accounts
 - Set up callbacks for automated workflows
 - Use history tracking for missed events during downtime
 
 ### 5. Search Optimization
+
 ```python
 # Find all unanswered high-value proposals
 {
@@ -680,6 +691,7 @@ status/completed
 By integrating Gmail API (Phase 2/3) with Customer Lifecycle:
 
 **Achieved:**
+
 - ✅ Multi-department email organization (6,000 emails/day capacity)
 - ✅ Visual pipeline tracking with labels
 - ✅ Manager approval workflow with drafts
@@ -688,6 +700,7 @@ By integrating Gmail API (Phase 2/3) with Customer Lifecycle:
 - ✅ Customer context for personalized communication
 
 **Next Steps:**
+
 1. Follow examples to set up multi-account authentication
 2. Create label structure for your pipeline
 3. Enable push notifications for support
@@ -695,6 +708,7 @@ By integrating Gmail API (Phase 2/3) with Customer Lifecycle:
 5. Implement follow-up automation
 
 **Documentation:**
+
 - Main guide: `docs/GMAIL_API_PHASE2_PHASE3.md`
 - Quick start: `docs/EMAIL_QUICK_START.md`
 - Phase 1 basics: `docs/EMAIL_INTEGRATION_PHASE1.md`

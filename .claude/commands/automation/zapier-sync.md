@@ -24,7 +24,7 @@ Zapier Integration Setup:
 
 **Supported Zapier Integrations** (95%+ of Zapier apps):
 
-```
+```text
 ✓ CRM: Zoho CRM, Salesforce, HubSpot, Pipedrive
 ✓ Email: Gmail, Outlook, SendGrid, Mailgun
 ✓ Chat: Slack, Teams, Discord, Telegram
@@ -42,7 +42,7 @@ Zapier Integration Setup:
 
 Discover what workflows you have:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
               YOUR ZAPIER WORKFLOWS
 ═══════════════════════════════════════════════════════════
@@ -128,7 +128,7 @@ ACTIVE ZAPS: 12
 
 Choose which Zaps to migrate:
 
-```
+```sql
 SELECT ZAPS TO IMPORT:
 
 ☑ Property Lead to CRM
@@ -153,7 +153,7 @@ Estimated Setup Time: 15 minutes
 
 See what each Zap will become:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
         CONVERSION PREVIEW: Property Lead to CRM
 ═══════════════════════════════════════════════════════════
@@ -330,7 +330,7 @@ Comparison with Original Zap:
 
 Import all selected Zaps at once:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
               IMPORTING ZAPS TO AUTOMATION HUB
 ═══════════════════════════════════════════════════════════
@@ -365,7 +365,7 @@ Details:
 
 If using webhooks, update your forms/systems:
 
-```
+```text
 OLD WEBHOOK (Zapier):
 https://hooks.zapier.com/hooks/catch/123456789/abcdefg
 
@@ -393,7 +393,7 @@ Testing:
 
 See why migration saves money and improves performance:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
             ZAPIER → NATIVE AUTOMATION COMPARISON
 ═══════════════════════════════════════════════════════════
@@ -497,7 +497,7 @@ Rollback Plan (if issues):
 
 Track migration success:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
           MIGRATION MONITORING DASHBOARD
 ═══════════════════════════════════════════════════════════

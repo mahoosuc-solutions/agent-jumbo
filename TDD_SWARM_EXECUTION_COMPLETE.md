@@ -46,7 +46,7 @@
 
 ## 📊 Current Metrics
 
-```
+```text
 PMS Hub TDD Swarm Project Status
 ═════════════════════════════════════════════════════════
 
@@ -139,7 +139,7 @@ pytest tests/test_pms_communication_workflows.py::TestCommunicationWorkflowIniti
 
 ### ★ TDD Pattern Demonstrated
 
-```
+```text
 RED Phase:     Test fails (specification)
 GREEN Phase:   Minimal code to pass test
 REFACTOR:      Clean up while keeping tests green
@@ -190,7 +190,7 @@ async def test_specific_case(self, sample_fixture):
 
 ### Expected Completion
 
-```
+```text
 Session 1 (TODAY):     13/63 tests (20.6%)  ✅ COMPLETE
 Session 2 (TOMORROW):  38/63 tests (60%)    ⏳ IN PROGRESS
 Session 3 (DAY 3):     48/63 tests (76%)    ⏳ NEXT
@@ -318,7 +318,7 @@ Day 5: Both teams merge to main
 
 ## 📊 File Structure Summary
 
-```
+```text
 /home/webemo-aaron/projects/agent-jumbo
 
 Implementation Files:
@@ -381,7 +381,7 @@ Git Branches:
 
 ## ✨ Final Status
 
-```
+```text
 ═════════════════════════════════════════════════════════
   PMS HUB TDD SWARM - READY FOR EXECUTION ✅
 ═════════════════════════════════════════════════════════

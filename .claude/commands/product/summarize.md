@@ -213,7 +213,7 @@ const summary = await client.summarize(session.id);
 
 **API Documentation**: <https://docs.meetingai.com>
 
-```
+```text
 
 ## Commands
 

@@ -182,7 +182,7 @@ Based on `--format` parameter:
 
 **SUMMARY Format** (default):
 
-```
+```text
 🔍 Knowledge Search Results: "[query]"
 
 Found [X] notes matching your query (showing top [limit])
@@ -215,7 +215,7 @@ Found [X] notes matching your query (showing top [limit])
 
 **DETAILED Format**:
 
-```
+```text
 🔍 Detailed Knowledge Search: "[query]"
 
 ═══════════════════════════════════════════════════════════════
@@ -257,7 +257,7 @@ Found [X] notes matching your query (showing top [limit])
 
 **RAW Format** (for piping to other commands):
 
-```
+```text
 [absolute-path-1]
 [absolute-path-2]
 [absolute-path-3]
@@ -267,7 +267,7 @@ Found [X] notes matching your query (showing top [limit])
 
 At the end of results, suggest:
 
-```
+```text
 🎯 Next Actions:
 - Read full note: cat "[top-result-path]"
 - Find connections: /knowledge:connect "[top-result-id]"
@@ -298,7 +298,7 @@ At the end of results, suggest:
 
 **Expected Results**:
 
-```
+```text
 🔍 Knowledge Search Results: "reliable HVAC contractor"
 
 Found 3 notes matching your query
@@ -344,7 +344,7 @@ Found 3 notes matching your query
 
 **Expected Results**:
 
-```
+```text
 🔍 Detailed Knowledge Search: "tenant complaint resolution"
 
 ═══════════════════════════════════════════════════════════════
@@ -392,7 +392,7 @@ to "quiet hours" 10pm-8am. Issue resolved amicably without...
 
 **Expected Results**:
 
-```
+```text
 🔍 Knowledge Search Results: "property tax increase"
 
 Found 4 notes matching your query (filtered to 2025)
@@ -438,7 +438,7 @@ Found 4 notes matching your query (filtered to 2025)
 
 **Output** (for piping to other commands):
 
-```
+```text
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/2025/11/20251125-property-tax-increase-notice.md
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/2025/11/20251120-urgent-repair-request.md
 /home/webemo-aaron/projects/prompt-blueprint/knowledge-base/2025/11/20251118-lease-expiration-reminder.md
@@ -541,7 +541,7 @@ System automatically handles:
 
 ### No Results Found
 
-```
+```text
 🔍 No results found for: "[query]"
 
 Suggestions:
@@ -559,7 +559,7 @@ Suggestions:
 
 ### Knowledge Base Not Initialized
 
-```
+```text
 ⚠️  Knowledge base not found
 
 Initialize your knowledge base:
@@ -572,7 +572,7 @@ The knowledge base will be created at:
 
 ### Invalid Date Range
 
-```
+```text
 ❌ Invalid date range: [provided-range]
 
 Format: YYYY-MM-DD:YYYY-MM-DD

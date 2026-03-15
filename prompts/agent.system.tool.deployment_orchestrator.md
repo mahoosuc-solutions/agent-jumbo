@@ -20,7 +20,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Register a project for deployment management**
 
-```
+```json
 {{deployment_orchestrator(
   action="register_project",
   name="My API",
@@ -44,7 +44,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 #### 2. get_project / list_projects
 
-```
+```json
 {{deployment_orchestrator(action="get_project", project_id=1)}}
 {{deployment_orchestrator(action="list_projects")}}
 ```
@@ -57,7 +57,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Generate CI/CD pipeline configuration**
 
-```
+```json
 {{deployment_orchestrator(
   action="generate_cicd",
   project_id=1,
@@ -90,7 +90,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 #### 4. get_pipeline / list_pipelines
 
-```
+```json
 {{deployment_orchestrator(action="get_pipeline", pipeline_id=1)}}
 {{deployment_orchestrator(action="list_pipelines", project_id=1)}}
 ```
@@ -103,7 +103,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Generate Docker configuration**
 
-```
+```json
 {{deployment_orchestrator(
   action="generate_docker",
   project_id=1,
@@ -132,7 +132,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 #### 6. get_docker_config
 
-```
+```json
 {{deployment_orchestrator(action="get_docker_config", project_id=1)}}
 ```
 
@@ -144,7 +144,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Generate Kubernetes manifests**
 
-```
+```json
 {{deployment_orchestrator(
   action="generate_k8s",
   project_id=1,
@@ -177,7 +177,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 #### 8. get_k8s_manifests
 
-```
+```json
 {{deployment_orchestrator(
   action="get_k8s_manifests",
   project_id=1,
@@ -198,7 +198,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Set up a deployment environment**
 
-```
+```json
 {{deployment_orchestrator(
   action="setup_environment",
   project_id=1,
@@ -224,7 +224,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 #### 10. get_environment / list_environments
 
-```
+```json
 {{deployment_orchestrator(action="get_environment", environment_id=1)}}
 {{deployment_orchestrator(action="list_environments", project_id=1)}}
 ```
@@ -237,7 +237,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Get comprehensive deployment dashboard**
 
-```
+```json
 {{deployment_orchestrator(
   action="get_deployment_dashboard",
   project_id=1
@@ -256,7 +256,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **Check health status of deployments**
 
-```
+```json
 {{deployment_orchestrator(
   action="health_check",
   project_id=1,
@@ -277,7 +277,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 **List recent deployments**
 
-```
+```json
 {{deployment_orchestrator(
   action="list_deployments",
   project_id=1,
@@ -291,7 +291,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 ### Complete Deployment Setup
 
-```
+```markdown
 # 1. Register the project
 {{deployment_orchestrator(
   action="register_project",
@@ -345,7 +345,7 @@ The **deployment_orchestrator** tool provides end-to-end CI/CD pipeline generati
 
 ### Quick Container Setup
 
-```
+```python
 # Register and generate Docker in one flow
 {{deployment_orchestrator(action="register_project", name="App", project_path="/app")}}
 {{deployment_orchestrator(action="generate_docker", project_id=1)}}
@@ -441,7 +441,7 @@ spec:
 
 Deploy scaffolded projects:
 
-```
+```json
 {{project_scaffold(action="scaffold_project", template="api/fastapi", ...)}}
 {{deployment_orchestrator(action="register_project", name="New API", project_path="...")}}
 {{deployment_orchestrator(action="generate_cicd", project_id=1)}}
@@ -451,7 +451,7 @@ Deploy scaffolded projects:
 
 Track deployed products:
 
-```
+```json
 {{portfolio_manager_tool(action="add", project_path="/projects/api")}}
 {{deployment_orchestrator(action="register_project", ...)}}
 ```
@@ -460,7 +460,7 @@ Track deployed products:
 
 Include deployment in architecture docs:
 
-```
+```json
 {{diagram_architect(action="analyze_architecture", project_path="...")}}
 {{deployment_orchestrator(action="generate_k8s", ...)}}
 ```

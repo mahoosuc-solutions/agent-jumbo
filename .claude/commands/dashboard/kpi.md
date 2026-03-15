@@ -48,7 +48,7 @@ Managing multiple businesses without KPI tracking means you're operating blind. 
 
 ## Dashboard Structure
 
-```
+```text
 ╔═════════════════════════════════════════════════════════════════════════════╗
 ║                      KEY PERFORMANCE INDICATORS (KPI) DASHBOARD             ║
 ║                                                                             ║

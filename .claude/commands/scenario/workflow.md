@@ -126,7 +126,7 @@ Results include:
 
 **Real-world Example**
 
-```
+```text
 /scenario:workflow hire-vs-outsource
 
 ========================================
@@ -311,7 +311,7 @@ NEXT STEPS
 
 ## Workflow Execution Flow
 
-```
+```yaml
 START: User invokes /scenario:workflow hire-vs-outsource
   ↓
 LOAD: Workflow template from YAML

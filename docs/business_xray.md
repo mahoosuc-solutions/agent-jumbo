@@ -59,7 +59,7 @@ Focus on one area:
 
 **Example:**
 
-```
+```text
 Business Health Score: 72/100
 
 Key Metrics:
@@ -100,7 +100,7 @@ Recommendations:
 
 **Example:**
 
-```
+```text
 Time Efficiency Score: 35%
 
 Weekly Distribution (50 hours):
@@ -142,7 +142,7 @@ Recommendations:
 
 **Example:**
 
-```
+```text
 Total Potential Savings: $127,000/year
 
 Top 5 Opportunities:
@@ -199,7 +199,7 @@ Top 5 Opportunities:
 
 **Example:**
 
-```
+```text
 Current Annual Revenue: $600,000
 Total Opportunity: +$155,000/year
 
@@ -250,7 +250,7 @@ Top Opportunities:
 
 **Example:**
 
-```
+```text
 Life Balance Score: 58/100
 
 Current State:
@@ -281,7 +281,7 @@ Recommendations:
 
 Generate a comprehensive report to review with your team:
 
-```
+```text
 Agent: Run comprehensive business x-ray for "Acme Corp"
 
 Output:
@@ -295,7 +295,7 @@ Output:
 
 Identify opportunities for the next quarter:
 
-```
+```text
 Agent: Scan revenue opportunities and automation possibilities
 
 Output:
@@ -309,7 +309,7 @@ Output:
 
 Monitor work-life balance:
 
-```
+```text
 Agent: Check my work-life balance this week
 
 Output:
@@ -323,7 +323,7 @@ Output:
 
 Generate metrics for investors:
 
-```
+```text
 Agent: Analyze business health for investor update
 
 Output:
@@ -337,7 +337,7 @@ Output:
 
 Understand how the team spends time:
 
-```
+```text
 Agent: Audit team time usage and find automation opportunities
 
 Output:
@@ -383,7 +383,7 @@ Output:
 
 **Step 1: Identify**
 
-```
+```yaml
 Agent: Find automation opportunities for my business
 
 Result: 10 opportunities identified, totaling $150k/year savings
@@ -391,7 +391,7 @@ Result: 10 opportunities identified, totaling $150k/year savings
 
 **Step 2: Prioritize**
 
-```
+```text
 Top 3 by ROI:
 1. Invoice automation - $30k/year
 2. Email responses - $18k/year
@@ -400,7 +400,7 @@ Top 3 by ROI:
 
 **Step 3: Implement**
 
-```
+```text
 Week 1: Set up invoice automation
 Week 2: Create email response templates
 Week 3: Build automated reporting
@@ -408,7 +408,7 @@ Week 3: Build automated reporting
 
 **Step 4: Measure**
 
-```
+```yaml
 Agent: Re-run time audit
 
 Result: Deep work increased from 20h to 28h/week
@@ -420,7 +420,7 @@ Annual value: $41,600 recovered
 
 **Week 1: Discovery**
 
-```
+```text
 Agent: Scan for revenue opportunities
 
 Identified:
@@ -431,7 +431,7 @@ Identified:
 
 **Week 2-4: Quick Win (Price Increase)**
 
-```
+```text
 Actions:
 - Analyze competitor pricing
 - Survey customer willingness to pay
@@ -443,7 +443,7 @@ Result: +$5k MRR (+$60k ARR)
 
 **Months 2-4: Medium Win (Premium Tier)**
 
-```
+```text
 Actions:
 - Define premium features
 - Create tiered pricing
@@ -459,7 +459,7 @@ Business X-Ray generates Mermaid diagrams for all visualizations. You can enhanc
 
 ### Export to Images
 
-```
+```text
 Agent: Export business health diagram to PNG
 
 Command:
@@ -473,7 +473,7 @@ diagram_tool(
 
 ### Create Presentations
 
-```
+```text
 Agent: Create a pitch deck with our business metrics
 
 Workflow:
@@ -485,7 +485,7 @@ Workflow:
 
 ### Custom Dashboards
 
-```
+```text
 Agent: Create a real-time dashboard showing our KPIs
 
 Approach:
@@ -499,7 +499,7 @@ Approach:
 
 All analyses save to the specified output directory:
 
-```
+```text
 /tmp/business_xray/
 ├── business_xray_20240115_143022.json    # Complete data export
 ├── executive_summary.md                   # High-level overview
@@ -573,7 +573,7 @@ All analyses save to the specified output directory:
 
 Run comprehensive analysis first to establish benchmarks:
 
-```
+```text
 Month 1: Run full x-ray, note all scores
 Month 2: Focus on top 3 improvements
 Month 3: Re-run to measure progress
@@ -583,7 +583,7 @@ Month 3: Re-run to measure progress
 
 Convert insights into specific targets:
 
-```
+```text
 ❌ "Improve business health"
 ✅ "Increase health score from 65 to 75 in 90 days"
 
@@ -598,7 +598,7 @@ Convert insights into specific targets:
 
 Save reports with timestamps:
 
-```
+```text
 /reports/
 ├── 2024-01/
 ├── 2024-02/
@@ -612,7 +612,7 @@ Create trend charts showing progress over time.
 
 Don't just analyze - implement:
 
-```
+```text
 After each x-ray:
 1. Pick top 3 action items
 2. Assign ownership
@@ -625,7 +625,7 @@ After each x-ray:
 
 Export diagrams to communicate with stakeholders:
 
-```
+```text
 For team: Time audit showing bottlenecks
 For investors: Health metrics showing growth
 For family: Balance chart showing improvements
@@ -635,7 +635,7 @@ For family: Balance chart showing improvements
 
 Set up recurring analyses:
 
-```
+```yaml
 Weekly: Work-life balance check
 Monthly: Comprehensive x-ray
 Quarterly: Strategic planning session
@@ -661,7 +661,7 @@ custom_metrics = {
 
 Compare against benchmarks:
 
-```
+```text
 Your business: Health 68/100
 Industry average: 55/100
 Top quartile: 82/100
@@ -673,7 +673,7 @@ Gap analysis: +13 vs average, -14 vs top quartile
 
 Project future state based on current trends:
 
-```
+```text
 Current growth: 8%/month
 At this rate in 12 months:
 - Revenue: $82,000/month

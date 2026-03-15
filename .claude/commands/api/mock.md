@@ -1070,7 +1070,7 @@ echo "  Run with: node test-mock-server.js"
 
 ## Step 9: Display Summary
 
-```
+```text
 ════════════════════════════════════════════════════════
          API MOCK SERVER READY
 ════════════════════════════════════════════════════════

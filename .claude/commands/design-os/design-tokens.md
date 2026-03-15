@@ -423,7 +423,7 @@ echo "✓ Output validation complete ($COLOR_COUNT color palettes defined)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         DESIGN TOKENS COMPLETE ✓
 ═══════════════════════════════════════════════════

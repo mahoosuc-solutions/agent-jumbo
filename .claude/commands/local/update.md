@@ -85,7 +85,7 @@ ORDER BY l.license_tier DESC, o.name;
 
 ### Phase 3: Update Preview
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    UPDATE ROLLOUT PREVIEW                       ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -125,7 +125,7 @@ ORDER BY l.license_tier DESC, o.name;
 
 Use `AskUserQuestion`:
 
-```
+```text
 Confirm Update Rollout:
 
 Version: 3.5.3
@@ -184,7 +184,7 @@ WHERE rn <= ${stage_size};
 
 #### 5.3 Notify Customers (If Enabled)
 
-```
+```text
 Subject: Software Update Available - Version 3.5.3
 
 Dear [Customer Name],
@@ -296,7 +296,7 @@ WHERE campaign_id = '${campaign_id}'
 
 ### Phase 8: Campaign Summary
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                     UPDATE CAMPAIGN COMPLETE
 ═══════════════════════════════════════════════════════════════════

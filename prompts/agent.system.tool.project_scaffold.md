@@ -37,7 +37,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Generate a new project from a template**
 
-```
+```json
 {{project_scaffold(
   action="scaffold_project",
   template="api/fastapi",
@@ -70,7 +70,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Preview files that would be generated**
 
-```
+```json
 {{project_scaffold(
   action="preview_scaffold",
   template="web_app/react",
@@ -94,7 +94,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **List available templates**
 
-```
+```json
 {{project_scaffold(
   action="list_templates",
   type="api",
@@ -116,7 +116,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Get detailed template information**
 
-```
+```json
 {{project_scaffold(
   action="get_template",
   name="api/fastapi"
@@ -135,7 +135,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Create a template from an existing project**
 
-```
+```json
 {{project_scaffold(
   action="create_template",
   project_path="/path/to/existing/project",
@@ -158,7 +158,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Generate app_spec.json for an existing project**
 
-```
+```json
 {{project_scaffold(
   action="generate_app_spec",
   project_path="/path/to/project",
@@ -179,7 +179,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Add a component to an existing project**
 
-```
+```json
 {{project_scaffold(
   action="add_component",
   project_path="/path/to/project",
@@ -202,7 +202,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **List generated projects**
 
-```
+```json
 {{project_scaffold(
   action="list_projects",
   customer_id=5
@@ -222,7 +222,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 **Get project details**
 
-```
+```json
 {{project_scaffold(
   action="get_project",
   project_id=1
@@ -272,7 +272,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 ### Create Project for Customer
 
-```
+```markdown
 # 1. Get customer requirements from customer_lifecycle
 {{customer_lifecycle(action="get_customer_view", customer_id=5)}}
 
@@ -291,7 +291,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 ### Create Full-Stack Application
 
-```
+```markdown
 # 1. Create backend API
 {{project_scaffold(
   action="scaffold_project",
@@ -323,7 +323,7 @@ The **project_scaffold** tool generates complete project structures from templat
 
 Link projects to customers for tracking:
 
-```
+```json
 {{project_scaffold(action="scaffold_project", customer_id=5, ...)}}
 ```
 
@@ -331,7 +331,7 @@ Link projects to customers for tracking:
 
 Generated projects can be added to portfolio:
 
-```
+```json
 {{portfolio_manager_tool(action="scan", folder="/projects")}}
 ```
 
@@ -339,7 +339,7 @@ Generated projects can be added to portfolio:
 
 Generate CI/CD for scaffolded projects:
 
-```
+```json
 {{deployment_orchestrator(action="generate_cicd", project_path="/projects/myapp")}}
 ```
 

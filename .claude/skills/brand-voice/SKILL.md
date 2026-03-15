@@ -150,7 +150,7 @@ This skill automatically activates for:
 **Length:** Lead with the number/result in first sentence
 **Structure:**
 
-```
+```yaml
 Hook: Surprising data or result
 
 Context: What you tried (1-2 sentences)
@@ -164,7 +164,7 @@ Soft CTA: "Happy to share more if useful"
 
 **Example (Reddit):**
 
-```
+```text
 I tracked AI productivity tools for 3 months. Here's the real ROI.
 
 Spent $2,400 on tools (Motion, ChatGPT, Claude, etc.)
@@ -187,7 +187,7 @@ Happy to answer questions.
 **Length:** 3-5 pages with executive summary
 **Structure:**
 
-```
+```text
 Executive Summary:
 - Problem (their specific pain point)
 - Solution (your specific approach)
@@ -216,7 +216,7 @@ Investment:
 
 **Example opening:**
 
-```
+```text
 Executive Summary:
 
 Problem: Your team spends 12 hours/week on manual Stripe data analysis.
@@ -240,7 +240,7 @@ Conservative estimate (50% success rate): $37,650 first year
 **Length:** 1500-3000 words with data/screenshots
 **Structure:**
 
-```
+```text
 Hook: Problem + surprising data
 
 The Challenge:
@@ -275,7 +275,7 @@ Conclusion:
 **Length:** 150-300 words max
 **Structure:**
 
-```
+```text
 Subject: [Specific benefit or data point]
 
 Hi [Name],
@@ -294,7 +294,7 @@ P.S. [Optional: Additional value or data point]
 
 **Example:**
 
-```
+```text
 Subject: Reduced our email time from 2 hrs/day to 20 min
 
 Hi Sarah,

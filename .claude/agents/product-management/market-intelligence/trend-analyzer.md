@@ -79,7 +79,7 @@ Provide **predictive market intelligence** through:
 
 ### Trend Maturity Stages
 
-```
+```text
                       ┌─────────────────┐
                       │   MAINSTREAM    │
                       │   (Optimize)    │
@@ -184,7 +184,7 @@ graph TD
 
 ### Trend Scoring Algorithm
 
-```
+```text
 Trend Score =
   (Signal Strength × 0.25) +
   (Growth Rate × 0.20) +
@@ -539,7 +539,7 @@ Before publishing trend analysis:
 
 ### Continuous Monitoring
 
-```
+```text
 EVERY 1 HOUR:
   1. Scan social media for emerging discussions
   2. Check news feeds for industry announcements

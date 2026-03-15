@@ -115,7 +115,7 @@ Verify the contract includes:
 
 After contract is created, the workflow continues:
 
-```
+```text
 design-contract → create-tasks → implement-tasks
                       ↓
          Tasks now reference contract types
@@ -124,7 +124,7 @@ design-contract → create-tasks → implement-tasks
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         API CONTRACT DESIGNED
 ═══════════════════════════════════════════════════

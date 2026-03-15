@@ -23,7 +23,7 @@ pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client g
    - Name: `Agent Jumbo Gmail Integration`
    - Authorized redirect URIs:
 
-     ```
+     ```text
      http://localhost:5000/gmail_oauth_callback
      http://127.0.0.1:5000/gmail_oauth_callback
      ```
@@ -203,7 +203,7 @@ curl -X POST http://localhost:5000/gmail_accounts_list \
 
 1. Send message to Agent Jumbo:
 
-   ```
+   ```text
    Send an email using Gmail to test@example.com with subject "Test" and body "Hello"
    ```
 
@@ -311,7 +311,7 @@ curl -X POST http://localhost:5000/gmail_account_remove \
 1. Start OAuth2 flow (get state token)
 2. Manually call callback with different state:
 
-   ```
+   ```text
    /gmail_oauth_callback?code=test&state=wrong_token
    ```
 

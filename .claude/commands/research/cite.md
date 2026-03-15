@@ -330,7 +330,7 @@ Export citations to multiple formats for use in other tools:
 
 **RIS Export** (RefMan, EndNote, Zotero):
 
-```
+```text
 TY  - JOUR
 AU  - Smith, John A.
 AU  - Jones, Mary B.
@@ -465,13 +465,13 @@ Error detection:
 
 **Input**: DOI identifier
 
-```
+```text
 10.1038/s41586-024-07146-0
 ```
 
 **Output**: Complete APA citation
 
-```
+```text
 In-text citation:
 (Anderson et al., 2024)
 
@@ -490,7 +490,7 @@ Anderson, J. R., Smith, M. K., Chen, L., & Patel, S. (2024).
 
 **Input**: APA-formatted bibliography
 
-```
+```text
 Smith, J. A. (2024). *Understanding neural networks*. MIT Press.
 
 Jones, M. B., & Davis, R. K. (2023). Deep learning fundamentals.
@@ -499,7 +499,7 @@ Jones, M. B., & Davis, R. K. (2023). Deep learning fundamentals.
 
 **Output**: MLA-formatted bibliography
 
-```
+```text
 Smith, John A. *Understanding Neural Networks*. MIT Press, 2024.
 
 Jones, Mary B., and Robert K. Davis. "Deep Learning Fundamentals."
@@ -514,7 +514,7 @@ Jones, Mary B., and Robert K. Davis. "Deep Learning Fundamentals."
 
 **Input**: File with multiple DOIs
 
-```
+```text
 10.1109/CVPR.2024.12345
 10.1145/3548606.3560635
 10.1038/nature12345
@@ -522,7 +522,7 @@ Jones, Mary B., and Robert K. Davis. "Deep Learning Fundamentals."
 
 **Output**: IEEE-formatted reference list
 
-```
+```text
 [1] J. Smith, M. Johnson, and R. Davis, "Attention mechanisms in
     transformer models," in Proc. IEEE Conf. Computer Vision and
     Pattern Recognition (CVPR), 2024, pp. 1234-1242.
@@ -542,13 +542,13 @@ Jones, Mary B., and Robert K. Davis. "Deep Learning Fundamentals."
 
 **Input**: In-text citation request
 
-```
+```text
 Quote from Smith's book on page 67
 ```
 
 **Output**: Formatted footnote
 
-```
+```text
 Footnote text:
 ¹ John A. Smith, *Understanding Neural Networks*
   (Cambridge, MA: MIT Press, 2024), 67.
@@ -567,13 +567,13 @@ Subsequent references:
 
 **Input**: URL to article
 
-```
+```text
 https://www.scientificamerican.com/article/quantum-computing-breakthrough/
 ```
 
 **Output**: APA citation with auto-extracted metadata
 
-```
+```text
 In-text citation:
 (Johnson, 2024)
 
@@ -633,7 +633,7 @@ According to Chen (2024), the results indicate...
 
 **Output**: Complete MLA Works Cited
 
-```
+```text
 Works Cited
 
 Chen, Maria. "Deep Learning Applications." *Tech Review*,

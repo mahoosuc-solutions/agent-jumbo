@@ -624,7 +624,7 @@ This directory contains the integration layer connecting frontend to backend.
 │  └── Shared types, error codes                  │
 └─────────────────────────────────────────────────┘
 
-```
+```text
 
 ## Patterns Used
 
@@ -643,7 +643,7 @@ Skeleton screens match the final layout for smooth transitions.
 
 ### Step 8: Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════
         INTEGRATION ARCHITECTURE DESIGNED
 ═══════════════════════════════════════════════════

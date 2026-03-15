@@ -37,7 +37,7 @@ Agent Jumbo now supports comprehensive diagram generation using three powerful t
 
 Simply ask the agent to create a diagram:
 
-```
+```text
 "Create a flowchart showing the login process"
 ```
 

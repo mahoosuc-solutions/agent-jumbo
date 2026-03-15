@@ -256,7 +256,7 @@ echo "✓ All validations passed"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         SPECIFICATION COMPLETE ✓
 ═══════════════════════════════════════════════════

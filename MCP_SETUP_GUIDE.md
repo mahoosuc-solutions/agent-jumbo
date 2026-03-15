@@ -205,7 +205,7 @@ After configuration and restart:
 
 2. **Test in Chat**: Ask Agent Jumbo to use an MCP tool
 
-   ```
+   ```text
    "Can you list files in the current directory using the filesystem server?"
    ```
 

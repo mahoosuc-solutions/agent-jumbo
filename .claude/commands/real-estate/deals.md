@@ -59,7 +59,7 @@ Comprehensive analysis of a potential property investment.
 
 ### Deal Analysis Template
 
-```
+```text
 DEAL ANALYSIS: 456 Elm Avenue, Austin TX
 ═════════════════════════════════════════════════════════════
 
@@ -175,7 +175,7 @@ Compare potential properties side-by-side.
 
 ### Deal Comparison
 
-```
+```text
 DEAL COMPARISON (3 properties)
 ═════════════════════════════════════════════════════════════
 
@@ -224,7 +224,7 @@ Monitor properties in your deal pipeline.
 
 ### Pipeline Dashboard
 
-```
+```text
 DEAL PIPELINE (6 opportunities)
 ═════════════════════════════════════════════════════════════
 
@@ -277,7 +277,7 @@ Quick calculations for deal evaluation.
 
 **Cash-on-Cash Return**:
 
-```
+```text
 = Annual cash flow / Initial cash investment
 = $9,180 / $62,000
 = 14.8%
@@ -287,7 +287,7 @@ Target: 8%+
 
 **Cap Rate**:
 
-```
+```text
 = Net Operating Income / Property Value
 = $7,500 / $310,000
 = 2.4%
@@ -297,14 +297,14 @@ Note: Lower in appreciating markets, higher in cash-heavy markets
 
 **Internal Rate of Return (IRR)**:
 
-```
+```text
 Combines cash flow + appreciation + equity paydown
 Typical target: 10%+ annually
 ```
 
 **Cash Flow Formula**:
 
-```
+```text
 Monthly = Gross Rent - (Mortgage + Taxes + Insurance + Maintenance + Mgmt)
 Annual = Monthly × 12
 ```
@@ -348,7 +348,7 @@ Deal data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/deals.json
 ├── Deal analyses (all properties evaluated)
 ├── Scoring results (decision data)
@@ -363,7 +363,7 @@ Deal data is saved in:
 
 Each deal must support financial independence:
 
-```
+```text
 LIFE GOAL: Financial Independence
 ├── Real estate generates passive income: YES
 │   ├── Target: $60K/year passive income

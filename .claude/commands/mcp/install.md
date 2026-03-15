@@ -117,7 +117,7 @@ After installation, the system will:
 
 **Interactive Flow**:
 
-```
+```text
 Installing GitHub MCP Server...
 
 Checking dependencies... ✓ Node.js 18.0.0 found
@@ -161,7 +161,7 @@ Next Steps:
 
 **Interactive Flow**:
 
-```
+```python
 Installing PostgreSQL MCP Server...
 
 Checking dependencies... ✓ Python 3.9.0 found
@@ -213,7 +213,7 @@ Next Steps:
 
 **Interactive Flow**:
 
-```
+```text
 Installing n8n MCP Server...
 
 Checking dependencies... ✓ Node.js 18.0.0 found
@@ -263,7 +263,7 @@ Next Steps:
 
 **Interactive Flow**:
 
-```
+```text
 Installing Custom MCP Server...
 
 Cloning repository... ✓

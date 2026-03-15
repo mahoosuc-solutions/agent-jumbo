@@ -78,7 +78,7 @@ WHERE (be.stripe_invoice_id = '${invoice_id}' OR be.customer_id = '${customer_id
 
 ### Phase 2: Determine Current Stage
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  COLLECTION STATUS                              ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -117,7 +117,7 @@ WHERE (be.stripe_invoice_id = '${invoice_id}' OR be.customer_id = '${customer_id
 **Trigger**: 3 days past due
 **Approval**: Automatic
 
-```
+```text
 Subject: Reminder: Invoice Payment Due - Acme Corporation
 
 Hi John,
@@ -156,7 +156,7 @@ WHERE stripe_invoice_id = '${invoice_id}';
 **Trigger**: 7 days past due
 **Approval**: Automatic
 
-```
+```text
 Subject: ⚠️ Action Required: Overdue Invoice - Acme Corporation
 
 Hi John,
@@ -196,7 +196,7 @@ stripe invoices pay ${INVOICE_ID} --forgive=false
 **Trigger**: 14 days past due
 **Approval**: Automatic (email) + Manual (call scheduling)
 
-```
+```text
 Subject: 🚨 FINAL NOTICE: Service Suspension Warning - Acme Corporation
 
 Hi John,
@@ -247,7 +247,7 @@ INSERT INTO support_tasks (
 **Trigger**: 21 days past due
 **Approval**: MANUAL REQUIRED
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║           ⚠️  MANUAL APPROVAL REQUIRED - SUSPENSION             ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -296,7 +296,7 @@ INSERT INTO subscription_events (
 );
 ```
 
-```
+```text
 Subject: 🔴 Service Suspended - Immediate Action Required
 
 Hi John,
@@ -326,7 +326,7 @@ Billing Team
 **Trigger**: 30 days past due
 **Approval**: ELEVATED APPROVAL REQUIRED
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║         🚨 ELEVATED APPROVAL - SUBSCRIPTION CANCELLATION        ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -407,7 +407,7 @@ WHERE stripe_invoice_id = '${invoice_id}';
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                   COLLECTION ACTION COMPLETED
 ═══════════════════════════════════════════════════════════════════

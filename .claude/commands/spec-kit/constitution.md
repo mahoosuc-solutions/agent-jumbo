@@ -157,7 +157,7 @@ Then parse the spec-kit output and create constitution via API.
 
 After creation, display a comprehensive summary:
 
-```
+```text
 ✅ Constitution Created Successfully!
 
 Constitution ID: const-abc-123
@@ -266,7 +266,7 @@ Show validation errors and ask user to correct.
 
 ### Example 1: SaaS Application
 
-```
+```yaml
 User: /spec-kit:constitution "MyApp"
 Assistant: How would you like to create the constitution?
 User: From Template
@@ -277,7 +277,7 @@ Assistant: ✅ Constitution created! const-abc-123
 
 ### Example 2: Custom Healthcare App
 
-```
+```yaml
 User: /spec-kit:constitution "HealthPortal" --template healthtech
 Assistant: Customizing Healthcare HIPAA template...
   Additional principles? GDPR compliance, User privacy
@@ -287,7 +287,7 @@ Assistant: ✅ Constitution created! const-def-456
 
 ### Example 3: From Existing Design
 
-```
+```yaml
 User: /spec-kit:constitution --from-design design-xyz-789
 Assistant: Extracting governance from design...
 Assistant: ✅ Constitution created! const-ghi-789

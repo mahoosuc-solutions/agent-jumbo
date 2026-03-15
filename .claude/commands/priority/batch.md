@@ -25,7 +25,7 @@ Analyze tasks and group them into efficient batches that minimize context switch
 
 **Example**:
 
-```
+```text
 Fragmented Approach (8 hours):
   9:00 - Email
   9:30 - Proposal writing
@@ -135,7 +135,7 @@ Group by energy requirement:
 
 **Example Daily Flow**:
 
-```
+```text
 9-12 AM: Creative batch (peak energy)
   - Write 2 client proposals
   - Develop marketing strategy

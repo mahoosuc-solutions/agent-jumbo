@@ -420,7 +420,7 @@ Looking forward to our kickoff!
 [CSM Name]
 [CSM Email] | [CSM Phone]
 
-```
+```text
 
 **Day 7: Configuration Check-In**
 ```
@@ -442,7 +442,7 @@ Can we schedule 15 minutes this week to knock these out together? [Calendar link
 
 [CSM Name]
 
-```
+```text
 
 **Day 14: Launch Prep**
 ```
@@ -472,7 +472,7 @@ Let's do this!
 
 [CSM Name]
 
-```
+```text
 
 **Day 25: First Value Milestone**
 ```
@@ -485,14 +485,13 @@ Huge milestone - you just [specific achievement]! 🎉
 
 This is exactly the outcome we were aiming for in your first 30 days. Here's what you've accomplished:
 
-
 **What's Next**: Now that core workflows are live, let's expand into [secondary use case] to unlock even more value. Can we schedule 20 minutes next week to explore? [Calendar link]
 
 Keep up the great work!
 
 [CSM Name]
 
-```
+```text
 
 **Day 30: Business Review**
 ```
@@ -516,7 +515,7 @@ I'll send a summary after our call to keep leadership informed.
 
 [CSM Name]
 
-```
+```text
 
 **Day 60: Mid-Onboarding Health Check**
 ```
@@ -544,7 +543,7 @@ Can we schedule 20 minutes next week to review? [Calendar link]
 
 [CSM Name]
 
-```
+```text
 
 **Day 90: Graduation**
 ```
@@ -577,7 +576,7 @@ Thank you for being a fantastic partner. Looking forward to continued success to
 
 [CSM Name]
 
-```
+```text
 
 ---
 
@@ -744,7 +743,7 @@ Email Sequences to Activate:
 2. Day 7 check-in (recipient: [Champion email])
 ...
 
-```
+```text
 
 **Approval Required**: Yes/No
 [If yes, request confirmation to proceed]

@@ -201,7 +201,7 @@ echo "✓ Output validation complete (review is $FILE_SIZE bytes)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         PROMPT REVIEW COMPLETE ✓
 ═══════════════════════════════════════════════════

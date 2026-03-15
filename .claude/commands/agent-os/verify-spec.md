@@ -85,7 +85,7 @@ Check the verification report for:
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         SPECIFICATION VERIFIED
 ═══════════════════════════════════════════════════

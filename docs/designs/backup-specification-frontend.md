@@ -31,7 +31,7 @@ async handleFieldButton(field) {
 
 #### Directory Structure
 
-```
+```text
 webui/components/settings/backup/
 ├── backup.html           # Backup creation modal
 ├── restore.html          # Restore modal

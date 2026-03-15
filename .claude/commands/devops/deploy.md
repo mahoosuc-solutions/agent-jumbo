@@ -277,7 +277,7 @@ echo "  Health checks: $HEALTH_CHECKS"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         DEPLOYMENT COMPLETE ✓
 ═══════════════════════════════════════════════════

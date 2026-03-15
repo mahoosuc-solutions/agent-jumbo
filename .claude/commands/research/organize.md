@@ -81,7 +81,7 @@ Design the optimal structure for research materials:
 
 **Topic-Based Organization**:
 
-```
+```text
 Research Database/
 ├── Machine Learning/
 │   ├── Supervised Learning/
@@ -104,7 +104,7 @@ Research Database/
 
 **Chronological Organization**:
 
-```
+```text
 Research Timeline/
 ├── Historical (pre-2000)/
 ├── Foundational (2000-2010)/
@@ -115,7 +115,7 @@ Research Timeline/
 
 **Methodology Organization**:
 
-```
+```text
 Research Methods/
 ├── Experimental Studies/
 ├── Observational Studies/
@@ -127,7 +127,7 @@ Research Methods/
 
 **Source-Type Organization**:
 
-```
+```text
 By Source/
 ├── Journal Articles/
 ├── Conference Papers/
@@ -278,7 +278,7 @@ Contextual links:
 
 Create knowledge graph structure:
 
-```
+```text
 Source A (Node)
 ├── cites: Source B, Source C
 ├── cited-by: Source D, Source E
@@ -733,7 +733,7 @@ Automated quality checks:
 
 **Input**: Collection of 300 research papers on machine learning
 
-```
+```text
 Scattered PDFs in Downloads folder
 Various bookmarks and web pages
 Notes in different apps
@@ -742,7 +742,7 @@ Unorganized citations
 
 **Output**: Structured Obsidian vault
 
-```
+```text
 ML Research/
 ├── Supervised Learning/
 │   ├── Neural Networks/
@@ -770,7 +770,7 @@ Search Index: Full-text across all sources
 
 **Input**: 150 papers for systematic review on climate change
 
-```
+```text
 Papers from 1980s to present
 Various authors and venues
 Mixed methodologies
@@ -778,7 +778,7 @@ Mixed methodologies
 
 **Output**: Timeline-based organization
 
-```
+```text
 Climate Change Research Timeline/
 ├── Foundational Era (1980-2000)/
 │   ├── Early Models/
@@ -806,7 +806,7 @@ Gap Analysis: Identified missing coverage in 2005-2008 period
 
 **Input**: 200 studies for meta-analysis
 
-```
+```text
 Mixed study designs
 Various sample sizes
 Different analysis methods
@@ -814,7 +814,7 @@ Different analysis methods
 
 **Output**: Method-categorized database
 
-```
+```text
 Meta-Analysis Database/
 ├── Randomized Controlled Trials/
 │   ├── Large Scale (n>1000): 45 studies
@@ -842,7 +842,7 @@ Metadata extracted:
 
 **Input**: Research notes and papers on neuroscience
 
-```
+```text
 Reading notes from 50 papers
 Personal insights and connections
 Questions and hypotheses
@@ -850,7 +850,7 @@ Questions and hypotheses
 
 **Output**: Atomic note network
 
-```
+```text
 Zettelkasten/
 ├── Permanent Notes/
 │   ├── 202501151430 - Synaptic plasticity mechanisms.md
@@ -882,7 +882,7 @@ Network Stats:
 
 **Input**: Shared research for 5-person lab
 
-```
+```text
 Individual reading lists
 Shared project papers
 Meeting notes
@@ -891,7 +891,7 @@ Lab protocols
 
 **Output**: Collaborative knowledge base
 
-```
+```text
 Lab Research Library/
 ├── Projects/
 │   ├── Project Alpha/
@@ -923,7 +923,7 @@ Features:
 
 **Input**: Organized research from Obsidian
 
-```
+```text
 150 papers with notes
 Hierarchical folder structure
 Tags and bidirectional links
@@ -931,7 +931,7 @@ Tags and bidirectional links
 
 **Output**: Notion database
 
-```
+```text
 Notion Database Properties:
 ├── Title (text)
 ├── Authors (multi-select)
@@ -959,7 +959,7 @@ Views:
 
 **Input**: 500 unorganized PDFs
 
-```
+```text
 Raw PDFs with no metadata
 Filenames like "download (1).pdf"
 No organization or tags
@@ -967,7 +967,7 @@ No organization or tags
 
 **Output**: Fully tagged and linked collection
 
-```
+```text
 Processing Results:
 ✓ Extracted metadata from 487 PDFs (97% success)
 ✓ Generated 2,341 tags across 8 categories

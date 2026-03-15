@@ -3,6 +3,7 @@
 Calendar Hub for mock-friendly calendar integration. Supports event CRUD and account linking.
 
 Actions:
+
 - `connect_account(provider, mock=true)`
 - `list_accounts()`
 - `get_auth_url(provider)`
@@ -17,7 +18,8 @@ Actions:
 - `delete_event(event_id)`
 
 Examples:
-```
+
+```json
 {{calendar_hub(action="connect_account", provider="google", mock=true)}}
 {{calendar_hub(action="list_calendars", account_id=1)}}
 {{calendar_hub(action="create_event", calendar_id=1, title="Kickoff", start="2025-01-01T10:00:00Z", end="2025-01-01T10:30:00Z")}}

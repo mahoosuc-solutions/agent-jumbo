@@ -44,7 +44,7 @@ Verify current phase:
 
 If plan doesn't exist:
 
-```
+```text
 ❌ No implementation plan found for design {design_id}
 
 Current workflow phase: {current_phase}
@@ -108,7 +108,7 @@ The API will:
 
 Show comprehensive task list:
 
-```
+```text
 ✅ Task Breakdown Generated!
 
 Design ID: {design_id}
@@ -487,7 +487,7 @@ Generates new task breakdown with updated preferences.
 
 **If plan not found:**
 
-```
+```text
 ❌ Cannot generate tasks: No plan found
 
 Workflow Phase: {current_phase}
@@ -499,7 +499,7 @@ Generate plan first:
 
 **If task generation fails:**
 
-```
+```text
 ❌ Task generation failed: {error_message}
 
 Try:
@@ -512,7 +512,7 @@ Try:
 
 ### Example 1: Generate and Export to JIRA
 
-```
+```yaml
 User: /spec-kit:tasks design-abc-123 --format jira --export ./jira-import.csv
 Assistant: Generating task breakdown...
   Total tasks: 62
@@ -525,7 +525,7 @@ Assistant: ✅ Tasks generated!
 
 ### Example 2: View Critical Path
 
-```
+```yaml
 User: /spec-kit:tasks design-def-456 --critical-path
 Assistant: Critical Path (18 tasks, 120 hours):
   1. TASK-001: Initialize backend (4h)
@@ -537,7 +537,7 @@ Assistant: Critical Path (18 tasks, 120 hours):
 
 ### Example 3: Detailed Breakdown
 
-```
+```yaml
 User: /spec-kit:tasks design-ghi-789
 Assistant: What level of detail? (high-level/medium/detailed)
 User: detailed

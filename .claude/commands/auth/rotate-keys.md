@@ -427,7 +427,7 @@ function isRotationDue(keyType) {
 
 ## Zero-Downtime Rotation
 
-```
+```text
 Timeline for Graceful JWT Key Rotation:
 
 Day 0:

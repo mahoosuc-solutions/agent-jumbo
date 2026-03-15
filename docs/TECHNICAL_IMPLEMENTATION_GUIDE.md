@@ -27,7 +27,7 @@
 
 Agent Jumbo follows a **multi-layered architecture** designed for scalability, modularity, and clear separation of concerns:
 
-```
+```text
 ┌─────────────────────────────────────────────────────┐
 │           Web UI / Client Layer (Alpine.js)         │
 ├─────────────────────────────────────────────────────┤
@@ -94,7 +94,7 @@ class Agent:
 
 **Flow**:
 
-```
+```text
 1. Load context (system prompt, recent memory, tools)
 2. Call LLM with conversation history
 3. Parse LLM response (text vs. tool calls)
@@ -154,7 +154,7 @@ class Tool:
 
 **Memory Tiers**:
 
-```
+```text
 ┌──────────────────────┐
 │   Working Memory     │  Current conversation (vectors)
 │   (FAISS index)      │  ~100KB per session
@@ -380,7 +380,7 @@ except APIError:
 
 **Workflow**:
 
-```
+```text
 1. RED: Write comprehensive test suite (all tests fail)
 2. GREEN: Implement features to make tests pass
 3. REFACTOR: Optimize implementation, improve design
@@ -392,7 +392,7 @@ except APIError:
 
 **Branch Strategy**:
 
-```
+```text
 main (production-ready, all tests passing)
 ├── feature/phase-4a-specialists (Team I)
 ├── feature/phase-4b-reasoning (Team J)
@@ -441,7 +441,7 @@ git merge --ff-only .worktrees/team-i
 
 ### Test Pyramid
 
-```
+```text
          △
         /|\  Unit Tests (60%) - Fast, isolated
        / | \
@@ -538,7 +538,7 @@ docker-compose up --build
 
 **High Availability Setup**:
 
-```
+```text
 ┌─────────────┐
 │ Load Balancer│ (HAProxy/NGINX)
 └──────┬──────┘
@@ -602,7 +602,7 @@ ENTRYPOINT ["supervisord", "-c", "/etc/supervisord.conf"]
 
 **Three-level caching**:
 
-```
+```text
 1. In-memory cache (agent process)
    - LRU with 1000 item limit
    - TTL: 5 minutes
@@ -647,7 +647,7 @@ ON reservations(property_id, created_at DESC);
 
 **LLM Cost Control**:
 
-```
+```text
 Budget: $100/day per agent
 ├─ 80% allocated to reasoning (~$80)
 ├─ 15% allocated to research (~$15)
@@ -680,7 +680,7 @@ async def verify_token(request, call_next):
 
 **RBAC (Role-Based Access Control)**:
 
-```
+```text
 Roles:
 ├─ admin: Full system access
 ├─ operator: Manage agents, view logs

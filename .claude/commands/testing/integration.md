@@ -575,7 +575,7 @@ npm run test:integration -- --verbose
 
 ## Step 9: Generate Test Report
 
-```
+```text
 ═══════════════════════════════════════════════════
          INTEGRATION TEST GENERATION REPORT
 ═══════════════════════════════════════════════════

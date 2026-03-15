@@ -47,7 +47,7 @@ Fetching approved discoveries...
 
 ## Available Approved Discoveries
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ APPROVED DISCOVERIES                                                         │
 ├──────┬──────────────────────┬────────────────────────────┬───────────────────┤
@@ -70,7 +70,7 @@ Enter discovery ID (e.g., "001") or type "details [ID]" to view discovery summar
 
 **Calling API**: GET /api/discovery/[discovery-id]
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ DISCOVERY SUMMARY                                                            ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -115,7 +115,7 @@ Based on your discovery requirements, I recommend these screens:
 
 ## Available Screen Types
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SCREEN CATALOG                                                               │
 ├─────┬────────────────────────────┬──────────────────────────────────────────┤
@@ -187,7 +187,7 @@ Based on your discovery requirements, I recommend these screens:
 
 Based on your discovery requirements, I recommend starting with:
 
-```
+```text
 ✓ RECOMMENDED SCREENS (Auto-selected based on requirements)
 
 ☑ Dashboard Home
@@ -225,7 +225,7 @@ Options:
 
 **Question 2**: Select screens to generate (check boxes):
 
-```
+```text
 Enter screen numbers separated by commas (e.g., "1,2,3,5")
 Or type screen names (e.g., "dashboard,detail,settings")
 
@@ -239,7 +239,7 @@ Estimated generation time: [Y] minutes
 
 ### Screen Dependencies
 
-```
+```text
 ⚠️  DEPENDENCY CHECK
 
 Screen: [Detail View]
@@ -265,7 +265,7 @@ For each selected screen, let's configure the details.
 
 **Question 1**: Demo data configuration
 
-```
+```text
 Demo Data Volume:
 - [ ] Small (50 records) - Fast generation, good for review
 - [ ] Medium (100 records) - Realistic volume, balanced
@@ -285,7 +285,7 @@ Selected: [Quality type]
 
 **Question 2**: Color scheme and branding
 
-```
+```text
 Color Scheme:
 - [ ] Brand Colors (specify primary, secondary, accent)
   Primary: [#HEX] or [Name]
@@ -316,7 +316,7 @@ Typography:
 
 **Question 3**: Feature toggles
 
-```
+```text
 Global Features:
 ☐ Search functionality
 ☐ Advanced filtering
@@ -340,7 +340,7 @@ Selected: [List]
 
 **Question 4a**: Which KPIs should be displayed?
 
-```
+```text
 Based on your success metrics, I recommend:
 
 KPI Card 1:
@@ -378,7 +378,7 @@ Add more KPIs? (Up to 6 total)
 
 **Question 4b**: Which charts should be included?
 
-```
+```text
 Chart 1:
 - Type: [Line/Bar/Pie/Area/Scatter/Donut]
 - Data: [What to visualize? From requirements]
@@ -407,7 +407,7 @@ Add more charts? (Up to 4 total recommended)
 
 **Question 4c**: Data table configuration
 
-```
+```text
 Data Table:
 - Entity: [What data? From data model]
 - Columns to display: [Select from entity fields]
@@ -429,7 +429,7 @@ Data Table:
 
 **Question 5a**: Entity and fields
 
-```
+```text
 Entity: [From data model]
 
 Fields to display:
@@ -451,7 +451,7 @@ Selected: [Layout]
 
 **Question 5b**: Actions and interactions
 
-```
+```text
 Available Actions:
 ☐ Create new [entity]
 ☐ Edit [entity]
@@ -483,7 +483,7 @@ Selected: [Placement]
 
 ## Customization Summary
 
-```
+```text
 ✓ Customization Complete
 
 Global Settings:
@@ -569,7 +569,7 @@ Total Demo Records: [N]
 
 ## Generation Progress
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ PROTOTYPE GENERATION IN PROGRESS                                            ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -600,7 +600,7 @@ Status: ✅ READY FOR PREVIEW
 
 ## Prototype Overview
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ PROTOTYPE PREVIEW                                                            ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -623,7 +623,7 @@ Status: ✅ READY FOR PREVIEW
 
 ### Screen 1: Dashboard Home
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ [LOGO]                                    Search... 🔍  [User ▼]  [Help ⓘ]  │
 ├──────────────────────────────────────────────────────────────────────────────┤
@@ -663,7 +663,7 @@ Status: ✅ READY FOR PREVIEW
 
 **Demo Data Preview** (First 5 rows):
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ DEMO DATA: [Entity Name] (Showing 5 of 100 records)                         │
 ├────┬──────────────────┬──────────┬──────────┬────────────┬─────────────────┤
@@ -683,7 +683,7 @@ View full dataset: /downloads/demo-data-[entity]-[prototype-id].csv
 
 ### Screen 2: [Screen Type Name]
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ [LOGO]                                    Search... 🔍  [User ▼]  [Help ⓘ]  │
 ├──────────────────────────────────────────────────────────────────────────────┤
@@ -719,7 +719,7 @@ View full dataset: /downloads/demo-data-[entity]-[prototype-id].csv
 
 ## Navigation Flow
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ NAVIGATION FLOW                                                              │
 ├──────────────────────────────────────────────────────────────────────────────┤
@@ -752,7 +752,7 @@ View full dataset: /downloads/demo-data-[entity]-[prototype-id].csv
 
 ## Component Inventory
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ COMPONENT SUMMARY                                                            ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -791,7 +791,7 @@ View full dataset: /downloads/demo-data-[entity]-[prototype-id].csv
 
 ## Demo Data Statistics
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ DEMO DATA SUMMARY                                                            ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -831,7 +831,7 @@ View full dataset: /downloads/demo-data-[entity]-[prototype-id].csv
 
 ## Technical Specifications
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ TECHNICAL DETAILS                                                            ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -861,7 +861,7 @@ View full dataset: /downloads/demo-data-[entity]-[prototype-id].csv
 
 Now that your prototype is ready, choose what to do next:
 
-```
+```text
 ┌──────────────────────────────────────────────────────────────────────────────┐
 │ AVAILABLE ACTIONS                                                            │
 ├──────────────────────────────────────────────────────────────────────────────┤
@@ -914,7 +914,7 @@ Type the number or name (e.g., "1", "deploy", "export to pdf")
 
 **Calling API**: POST /api/prototype/[prototype-id]/deploy
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ DEPLOYING TO VERCEL                                                          ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -966,7 +966,7 @@ Total deployment time: 95 seconds
 
 Email template generated and ready to send:
 
-```
+```text
 Subject: [Project Name] Prototype Ready for Review
 
 Hi [Customer Name],
@@ -1001,7 +1001,7 @@ Best regards,
 
 **Question**: Which screen would you like to regenerate?
 
-```
+```text
 Available screens:
 1. Dashboard Home
 2. [Screen 2 Name]
@@ -1012,7 +1012,7 @@ Type screen number or name.
 
 **Question**: What changes would you like to make?
 
-```
+```text
 Current configuration for [Screen Name]:
 [Show current config]
 
@@ -1030,7 +1030,7 @@ Describe changes:
 
 **Calling API**: POST /api/prototype/[prototype-id]/regenerate-screen
 
-```
+```text
 Regenerating [Screen Name]...
 
 [████████████████████████████████████████] 100% Complete
@@ -1054,7 +1054,7 @@ Is this correct?
 
 **Calling API**: POST /api/prototype/[prototype-id]/export-figma
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ EXPORTING TO FIGMA                                                           ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -1106,7 +1106,7 @@ Is this correct?
 
 **Calling API**: POST /api/prototype/[prototype-id]/export-pdf
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ GENERATING PDF DOCUMENTATION                                                 ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -1147,7 +1147,7 @@ Is this correct?
 
 **Calling API**: POST /api/prototype/[prototype-id]/export-presentation
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ GENERATING STAKEHOLDER PRESENTATION                                          ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -1193,7 +1193,7 @@ Is this correct?
 
 **Question**: Is this prototype approved by the customer?
 
-```
+```text
 Before proceeding to technical design, please confirm:
 
 ✓ Customer has reviewed the prototype
@@ -1209,7 +1209,7 @@ Type "no" to cancel
 
 **APPROVAL CONFIRMATION**
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ PROTOTYPE APPROVAL                                                           ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -1228,7 +1228,7 @@ Type "no" to cancel
 
 **Calling API**: POST /api/technical-design/generate
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ GENERATING TECHNICAL DESIGN SPECIFICATION                                    ║
 ╚══════════════════════════════════════════════════════════════════════════════╝
@@ -1315,7 +1315,7 @@ Type "no" to cancel
 
 **Calling API**: POST /api/prototype/[prototype-id]/request-feedback
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ FEEDBACK REQUEST SENT                                                        ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -1341,7 +1341,7 @@ Type "no" to cancel
 
 ## COMPLETION SUMMARY
 
-```
+```text
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║ ✅ PROTOTYPE GENERATION COMPLETE                                             ║
 ╟──────────────────────────────────────────────────────────────────────────────╢
@@ -1380,7 +1380,7 @@ Type "no" to cancel
 
 **Project Progression**:
 
-```
+```text
 [✓] Discovery        → COMPLETE
 [✓] Prototype        → COMPLETE
 [ ] Technical Design → /design:technical-spec [prototype-id]

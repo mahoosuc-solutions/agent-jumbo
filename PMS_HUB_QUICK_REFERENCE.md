@@ -1,7 +1,8 @@
 # PMS Hub: Quick Reference Guide
 
 ## File Structure
-```
+
+```text
 instruments/custom/pms_hub/
 ├── pms_provider.py                 # Abstract PMSProvider base class
 ├── provider_registry.py            # Config management (~/.pms_hub/providers.json)
@@ -35,13 +36,15 @@ python/helpers/
 | **iCal** | HTTP GET | None | N/A | N/A (polling) | None (calendar only) |
 
 ## Credential Storage
+
 - **Location:** `~/.pms_hub/providers.json` (plaintext JSON)
 - **Security:** ⚠️ NOT ENCRYPTED - plaintext credentials on disk
 - **Access Control:** User-readable only
 - **Recommendations:** Use environment variables or encryption
 
 ## Webhook Flow
-```
+
+```text
 1. External Webhook POST /api/pms/webhook/{provider}/{provider_id}
 2. pms_webhook_receive.py verifies signature (if required)
 3. event_bus.emit("pms.webhook.{provider}.{event}")
@@ -53,22 +56,25 @@ python/helpers/
 ## API Endpoints
 
 ### POST /api/pms/webhook/{provider}/{provider_id}
-```
+
+```yaml
 Headers: X-Signature (optional)
 Body: { provider, provider_id, event, payload, timestamp }
 Response: { status, event_id } or { status: error, code }
 ```
 
 ### GET /api/pms/settings
-```
+
+```yaml
 Query: provider_id (optional)
-Response: 
+Response:
 - All: { providers: [{id, type, name, enabled, has_credentials}], total, enabled_count }
 - Single: { provider: {id, type, name, enabled, has_credentials} }
 ```
 
 ### POST /api/pms/settings
-```
+
+```text
 Body:
 - add: { action, provider_id, provider_type, name, credentials }
 - update: { action, provider_id, credentials, options }
@@ -101,11 +107,13 @@ pms_hub.execute(action="sync_status")
 ## Key Code References
 
 ### Hostaway Authentication (Line 57-75)
+
 ```python
 GET /v1/user with Authorization: Bearer {access_token}
 ```
 
 ### Lodgify Webhook Verification (Line 513-539)
+
 ```python
 payload_str = json.dumps(payload, separators=(",", ":"), sort_keys=True)
 hmac.new(api_secret.encode(), payload_str.encode(), hashlib.sha256).hexdigest()
@@ -113,11 +121,13 @@ hmac.compare_digest(signature, expected_signature)
 ```
 
 ### Registry Config File (Line 63)
+
 ```python
 self.config_path = Path.home() / ".pms_hub" / "providers.json"
 ```
 
 ### Sync Service (Line 41-94)
+
 ```python
 sync_reservation_to_property_manager(reservation)
 ├─ _sync_property() → add_property()
@@ -130,18 +140,21 @@ sync_reservation_to_property_manager(reservation)
 ## Critical Issues & Gaps
 
 ### 🔴 CRITICAL
+
 1. **Webhook Event Handlers Missing** - Events emitted but no subscribers
 2. **Hostaway Webhook Verification** - No signature verification (always True)
 3. **Hostify Webhook Verification** - No signature verification (always True)
 4. **Plaintext Credentials** - JSON file not encrypted
 
 ### 🟠 HIGH
+
 1. **No Token Refresh** - OAuth2 tokens expire
 2. **No Reverse Sync** - PropertyManager → PMS not implemented
 3. **Minimal Error Handling** - No retry/backoff logic
 4. **No Rate Limiting** - No handling for HTTP 429
 
 ### 🟡 MEDIUM
+
 1. **iCal Authentication** - No support for authenticated feeds
 2. **Pagination Edge Cases** - Limited validation
 3. **Configuration Dependencies** - Silent failures
@@ -167,6 +180,7 @@ event_bus.emit("pms.webhook.hostaway.reservation.new", {
 ## Configuration Example
 
 **~/.pms_hub/providers.json**
+
 ```json
 {
   "providers": {
@@ -198,7 +212,7 @@ event_bus.emit("pms.webhook.hostaway.reservation.new", {
 
 ## Integration Points
 
-```
+```text
 Agent-Zero
     ↓
 pms_hub_tool.execute()
@@ -217,11 +231,13 @@ PropertyManager Sync (if enabled)
 ## Testing
 
 **Existing Tests:**
+
 - ✅ test_pms_providers.py - Unit tests
 - ✅ test_pms_registry.py - Registry tests
 - ✅ test_pms_sync_service.py - Sync tests
 
 **Missing Tests:**
+
 - ❌ Webhook signature verification (end-to-end)
 - ❌ Webhook event handling
 - ❌ Error conditions

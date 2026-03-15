@@ -228,7 +228,7 @@ The Resume Optimizer is a comprehensive ATS (Applicant Tracking System) optimiza
 
 ### Example 1: Tech Industry ATS Optimization
 
-```
+```yaml
 User: Optimize my resume for a Senior Software Engineer position at Google
 Input: resume.pdf + job_posting_url
 Output:
@@ -241,7 +241,7 @@ Output:
 
 ### Example 2: Career Transition Optimization
 
-```
+```yaml
 User: Optimize resume for transition from teaching to corporate training role
 Input: current_resume.docx + training_manager_job.txt
 Output:
@@ -253,7 +253,7 @@ Output:
 
 ### Example 3: Executive-Level Optimization
 
-```
+```yaml
 User: Optimize C-suite resume for CFO position
 Input: executive_resume.pdf + cfo_posting.pdf
 Output:
@@ -265,7 +265,7 @@ Output:
 
 ### Example 4: Entry-Level Graduate Optimization
 
-```
+```yaml
 User: Optimize new graduate resume for marketing coordinator role
 Input: grad_resume.docx + marketing_job_url
 Output:
@@ -278,7 +278,7 @@ Output:
 
 ### Example 5: Industry-Specific Compliance (Healthcare)
 
-```
+```yaml
 User: Optimize resume for Registered Nurse position
 Input: nurse_resume.pdf + hospital_job_posting.txt
 Output:
@@ -291,7 +291,7 @@ Output:
 
 ### Example 6: Multi-Job Application Batch Optimization
 
-```
+```yaml
 User: Optimize resume for 3 different product manager positions
 Input: resume.pdf + [job1.txt, job2.txt, job3.txt]
 Output:

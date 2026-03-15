@@ -27,7 +27,7 @@ Most entrepreneurs make hundreds of important decisions but rarely:
 
 A decision log fixes this by creating a feedback loop:
 
-```
+```text
 DECISION → OUTCOME → LEARNING → BETTER FUTURE DECISIONS
 ```
 
@@ -35,7 +35,7 @@ DECISION → OUTCOME → LEARNING → BETTER FUTURE DECISIONS
 
 Each decision log entry contains:
 
-```
+```text
 ═══════════════════════════════════════════════════════════
 DECISION LOG ENTRY
 ═══════════════════════════════════════════════════════════
@@ -459,7 +459,7 @@ FILES & LINKS:
 
 ### Create New Decision Log
 
-```
+```text
 /decision:log new
 → Interactive Q&A to create new decision log entry
 → Saves to ~/.decision-log/DEC-YYYY-NNN.md
@@ -467,7 +467,7 @@ FILES & LINKS:
 
 ### Update Existing Decision Log
 
-```
+```text
 /decision:log DEC-2025-001
 → Update decision status, add review notes
 → Updates existing log file
@@ -475,7 +475,7 @@ FILES & LINKS:
 
 ### Review Decision
 
-```
+```text
 /decision:log DEC-2025-001 --review
 → Conduct scheduled review (30/90/180 day)
 → Compare actual vs. expected outcomes
@@ -484,7 +484,7 @@ FILES & LINKS:
 
 ### List All Decisions
 
-```
+```text
 /decision:log list
 → Show all logged decisions with status
 → Filter by: category, status, date range
@@ -492,7 +492,7 @@ FILES & LINKS:
 
 ### Export Decision Logs
 
-```
+```text
 /decision:log --export markdown
 → Export all decisions to markdown report
 
@@ -507,7 +507,7 @@ FILES & LINKS:
 
 Generate insights across all decisions:
 
-```
+```text
 DECISION LOG ANALYTICS
 ======================
 Period: Last 12 months
@@ -567,7 +567,7 @@ TOP LESSONS LEARNED:
 
 Decision logs are stored in:
 
-```
+```text
 ~/.decision-log/
 ├── index.md (Master index of all decisions)
 ├── 2024/

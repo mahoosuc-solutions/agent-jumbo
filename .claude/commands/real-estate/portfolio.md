@@ -90,7 +90,7 @@ Add a new property to your portfolio.
 
 ### Property Template
 
-```
+```text
 PROPERTY: Single Family Home - 123 Oak Street
 ═════════════════════════════════════════════════════════════
 
@@ -214,7 +214,7 @@ See all properties with key metrics.
 
 ### Portfolio Dashboard
 
-```
+```text
 REAL ESTATE PORTFOLIO OVERVIEW
 ═════════════════════════════════════════════════════════════
 
@@ -309,7 +309,7 @@ Analyze portfolio performance and identify optimization opportunities.
 
 ### Portfolio Performance Analysis
 
-```
+```text
 PORTFOLIO PERFORMANCE ANALYSIS (2025 YTD)
 ═════════════════════════════════════════════════════════════
 
@@ -442,7 +442,7 @@ View key metrics and financial independence progress.
 
 ### Portfolio Dashboard
 
-```
+```text
 REAL ESTATE PORTFOLIO DASHBOARD
 ═════════════════════════════════════════════════════════════
 
@@ -548,7 +548,7 @@ Portfolio data is saved in:
 
 **JSON File** (CLI):
 
-```
+```text
 .claude/data/portfolio.json
 ├── Property listings (address, type, value)
 ├── Financial data (purchase price, loan details, cash flow)
@@ -559,7 +559,7 @@ Portfolio data is saved in:
 
 **PostgreSQL** (Analytics):
 
-```
+```text
 properties table
 ├── property_id, address, city, state, type
 ├── purchase_price, current_value, purchase_date
@@ -585,7 +585,7 @@ property_cashflow table
 
 Real estate directly supports financial independence:
 
-```
+```text
 LIFE GOAL: Financial Independence (10-year plan)
 ├── Real estate target: Generate $60K/year passive income
 │   ├── Current: $16K/year ($1,341/month)

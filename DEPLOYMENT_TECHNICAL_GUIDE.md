@@ -224,7 +224,7 @@ git log --oneline -1  # Should show ee1a67c
 
 All Phase 4 code is in `instruments/custom/`:
 
-```
+```text
 instruments/custom/
 ├── specialist_agent_framework/
 │   ├── __init__.py

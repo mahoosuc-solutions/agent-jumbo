@@ -164,7 +164,7 @@ Create `agent-os/specs/[spec-name]/verification/final-report.md`:
 
 ### Step 6: Final Confirmation
 
-```
+```text
 ═══════════════════════════════════════════════════
         IMPLEMENTATION VERIFIED
 ═══════════════════════════════════════════════════

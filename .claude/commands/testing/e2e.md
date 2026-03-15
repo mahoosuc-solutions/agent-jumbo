@@ -106,7 +106,7 @@ const dashboard = await Read({ file_path: 'src/pages/Dashboard.tsx' })
 
 **Create flow diagram**:
 
-```
+```text
 USER REGISTRATION FLOW:
 ┌──────────────────────────────────────────────────────┐
 │ 1. Landing Page                                      │
@@ -557,7 +557,7 @@ npx playwright test --debug
 
 ## Step 9: Generate Test Report
 
-```
+```text
 ═══════════════════════════════════════════════════
            E2E TEST GENERATION REPORT
 ═══════════════════════════════════════════════════

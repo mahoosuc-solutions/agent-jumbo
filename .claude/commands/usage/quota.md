@@ -61,7 +61,7 @@ WHERE uq.customer_id = '${customer_id}'
 ORDER BY uq.metric_type;
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    QUOTA STATUS                                 ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -105,7 +105,7 @@ ORDER BY uq.metric_type;
 
 Use `AskUserQuestion` to gather configuration:
 
-```
+```text
 Configure Quota for: Acme Corporation
 
 Metric: api_calls
@@ -161,7 +161,7 @@ Typically done automatically at period start, but can be manual:
 
 Use `AskUserQuestion`:
 
-```
+```text
 RESET QUOTA USAGE
 
 Customer: Acme Corporation
@@ -208,7 +208,7 @@ For special circumstances (customer issue, promotion, etc.):
 
 Use `AskUserQuestion`:
 
-```
+```text
 TEMPORARY QUOTA OVERRIDE
 
 Customer: Acme Corporation
@@ -237,7 +237,7 @@ WHERE customer_id = '${customer_id}'
   AND metric_type = '${metric_type}';
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                  QUOTA OVERRIDE APPLIED                         ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -336,7 +336,7 @@ WHERE override_until <= NOW();
 
 ### Quota Set
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                     QUOTA CONFIGURED
 ═══════════════════════════════════════════════════════════════════

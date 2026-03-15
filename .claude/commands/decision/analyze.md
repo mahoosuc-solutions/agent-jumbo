@@ -37,7 +37,7 @@ Extract from user input:
 
 **Output Format:**
 
-```
+```text
 DECISION MATRIX ANALYSIS
 =======================
 
@@ -73,7 +73,7 @@ RECOMMENDATION: Option C (270/450) - Highest weighted score
 
 **Output Format:**
 
-```
+```text
 SIX THINKING HATS ANALYSIS
 ==========================
 
@@ -131,7 +131,7 @@ RECOMMENDATION: [Synthesized recommendation based on all hats]
 
 **Output Format:**
 
-```
+```text
 SWOT ANALYSIS
 =============
 
@@ -189,7 +189,7 @@ Based on --framework argument:
 
 Combine insights from all frameworks:
 
-```
+```text
 SYNTHESIS & RECOMMENDATION
 ===========================
 
@@ -233,7 +233,7 @@ Reconsider if:
 
 Provide clear next steps:
 
-```
+```text
 IMMEDIATE NEXT STEPS (This Week)
 1. [Specific action with owner and deadline]
 2. [Specific action with owner and deadline]
@@ -260,7 +260,7 @@ REVIEW CHECKPOINTS
 
 ### Example 1: Should we expand to a new market?
 
-```
+```yaml
 DECISION: Expand to European market vs. double-down on US market
 
 FRAMEWORK: All (Decision Matrix + Six Hats + SWOT)
@@ -290,7 +290,7 @@ NEXT STEPS:
 
 ### Example 2: Should we hire a VP of Sales?
 
-```
+```yaml
 DECISION: Hire VP Sales now vs. founder-led sales for 6 more months
 
 DECISION MATRIX:
@@ -307,7 +307,7 @@ CONFIDENCE: 8/10 (High)
 
 ### Example 3: Should we pivot our product?
 
-```
+```text
 DECISION: Pivot to new product category vs. iterate current product
 
 SIX THINKING HATS ANALYSIS:
@@ -328,7 +328,7 @@ CONFIDENCE: 6/10 (Medium)
 
 After analysis, automatically create decision log entry:
 
-```
+```text
 DECISION LOG ENTRY
 ==================
 ID: DEC-2025-001

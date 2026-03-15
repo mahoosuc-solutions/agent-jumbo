@@ -201,7 +201,7 @@ echo "✓ Output validation complete ($SCREENSHOT_COUNT screenshots captured)"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         SCREENSHOT DESIGN COMPLETE ✓
 ═══════════════════════════════════════════════════

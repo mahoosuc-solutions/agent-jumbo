@@ -75,7 +75,7 @@ Continue? (y/n)
 
 For each conflict, ask user:
 
-```
+```yaml
 Conflict: ${contact.name} <${contact.email}>
 
 Source: ${source.lastModified} - ${source.changes}

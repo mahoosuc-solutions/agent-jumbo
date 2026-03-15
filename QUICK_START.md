@@ -97,7 +97,7 @@ MODEL_VERSION=20260113-184641 ./scripts/build.sh
 
 ## 📁 Project Structure
 
-```
+```text
 agent-jumbo/
 ├── ollama_models/          # Ollama models (4.4GB, not in Git)
 │   ├── models/             # Model manifests

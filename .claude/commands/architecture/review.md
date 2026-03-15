@@ -516,7 +516,7 @@ Cost (4) ←----+----→ Security (6)
 
          Performance (7)
 
-```
+```text
 
 ## Priority Matrix
 
@@ -527,13 +527,13 @@ High Impact
     |  [Secrets Mgmt]     [Multi-Region DR]
     |  [WAF]              [Observability]
     |
-    |  [Cost Optimization][Test Coverage]
+    |  \[Cost Optimization\]\[Test Coverage\]
     |  [API Docs]         [Chaos Eng]
     |
     └───────────────────────────────→
          Low Effort          High Effort
 
-```
+```text
 
 ## Benchmarking
 

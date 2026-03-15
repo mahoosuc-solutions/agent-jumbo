@@ -120,7 +120,7 @@ Enhance the email with:
 
 Display comprehensive preview:
 
-```
+```text
 ═══════════════════════════════════════════════════
               EMAIL PREVIEW
 ═══════════════════════════════════════════════════
@@ -190,7 +190,7 @@ If "Schedule Send" selected:
 
 1. Simulate Zoho Mail API call:
 
-   ```
+   ```text
    POST https://mail.zoho.com/api/accounts/{accountId}/messages
    Headers:
      Authorization: Zoho-oauthtoken {token}
@@ -208,7 +208,7 @@ If "Schedule Send" selected:
 
 2. Display success confirmation:
 
-   ```
+   ```text
    ✓ Email Sent Successfully!
 
    To: [Recipient Name] <recipient@email.com>
@@ -378,7 +378,7 @@ Common errors and solutions:
 
 ## Example Usage
 
-```
+```python
 /send-email john@acme.com welcome
 # Send welcome email using template
 

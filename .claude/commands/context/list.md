@@ -56,7 +56,7 @@ Managing 3-5 businesses simultaneously requires visibility into what's happening
 
 ### Table Format (Default)
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════════════════════════╗
 ║                           AVAILABLE BUSINESS CONTEXTS                              ║
 ╠════════════╦══════════════════════╦════════════════════╦══════════════════════════╣
@@ -88,7 +88,7 @@ Showing 5 contexts. Active: 3 | Paused: 1 | Archived: 1
 
 ### Brief Format
 
-```
+```text
 CONTEXTS SUMMARY
 ================
 
@@ -198,7 +198,7 @@ ls -la ~/.claude/contexts/
 
 ### 6. Display Summary Statistics
 
-```
+```text
 Total contexts: 5
 Active: 3
 Paused: 1

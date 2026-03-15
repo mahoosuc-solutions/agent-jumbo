@@ -68,7 +68,7 @@ WHERE (be.stripe_invoice_id = '${invoice_id}' OR be.stripe_charge_id = '${charge
 
 ### Phase 2: Refund Eligibility
 
-```
+```text
 REFUND ELIGIBILITY RULES:
 ├─ Time limit: 90 days from payment date
 ├─ Remaining amount: Payment amount minus previous refunds
@@ -98,7 +98,7 @@ WHERE be.stripe_charge_id = '${charge_id}';
 
 ### Phase 3: Refund Preview
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                     REFUND REQUEST                              ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -146,7 +146,7 @@ WHERE be.stripe_charge_id = '${charge_id}';
 
 Use `AskUserQuestion`:
 
-```
+```text
 REFUND APPROVAL REQUIRED
 
 Customer: Acme Corporation
@@ -235,7 +235,7 @@ INSERT INTO credit_memos (
 
 ### Phase 7: Customer Notification
 
-```
+```text
 Subject: Refund Processed - $150.00
 
 Hi John,
@@ -288,7 +288,7 @@ Customer Success Team
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                     REFUND PROCESSED SUCCESSFULLY
 ═══════════════════════════════════════════════════════════════════
@@ -342,7 +342,7 @@ INTERNAL NOTES:
 
 ### Standard Refund Policy
 
-```
+```text
 REFUND ELIGIBILITY:
 ├─ Within 30 days: Full refund available
 ├─ 30-90 days: Pro-rated refund

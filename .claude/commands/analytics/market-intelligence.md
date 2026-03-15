@@ -416,7 +416,7 @@ const competitorAnalysis = await claude.analyzeCompetitors({
 
 ## Generated Insights Report
 
-```
+```text
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 📊 MARKET INTELLIGENCE REPORT
 Period: Last 30 days

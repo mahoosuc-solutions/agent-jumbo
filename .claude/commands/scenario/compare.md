@@ -74,7 +74,7 @@ Identifies advantages and disadvantages for each:
 
 ### Example: Hire vs Outsource Developer
 
-```
+```text
 SCENARIO COMPARISON (2 scenarios)
 ═════════════════════════════════════════════════════════════
 

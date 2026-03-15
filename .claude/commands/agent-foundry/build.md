@@ -243,7 +243,7 @@ deployment_checklist:
 
 ### Step 9: Build Summary
 
-```
+```text
 ✓ Agent Build Complete: {agent-name}
 
 📦 Generated Components:

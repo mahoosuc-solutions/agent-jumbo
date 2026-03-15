@@ -49,7 +49,7 @@ pytest tests/test_pms_calendar_sync.py::TestCalendarSyncServiceInitialization::t
 **Phase 3: Implement Features**
 Create these files:
 
-```
+```python
 instruments/custom/pms_hub/calendar_sync.py
     - CalendarSyncService class
     - sync_reservation_to_calendar() method
@@ -154,7 +154,7 @@ pytest tests/test_pms_communication_workflows.py::TestCommunicationWorkflowIniti
 **Phase 3: Implement Features**
 Create these files:
 
-```
+```python
 instruments/custom/pms_hub/communication_workflows.py
     - CommunicationWorkflow class
     - trigger_pre_arrival_workflow() method

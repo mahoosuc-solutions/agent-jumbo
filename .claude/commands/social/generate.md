@@ -2111,7 +2111,7 @@ Thank You Message: "Thanks! Check email for demo link."
 
 **Bidding Strategy**:
 
-```
+```text
 Learning Phase (First 30 days):
 - Start: Manual CPC bidding
 - Bid: $2-5 per click (adjust based on industry)
@@ -2147,7 +2147,7 @@ Scaling Phase (60+ days):
 
 **Asset Requirements** (Responsive Display Ads):
 
-```
+```text
 Images (required):
 - Landscape (1.91:1): 1200×628px
 - Square (1:1): 1200×1200px
@@ -2242,7 +2242,7 @@ D5: "AI-powered email triage used by 15K+ companies. Special comeback offer: 20%
 
 **Budget & Bidding**:
 
-```
+```text
 Awareness Campaigns:
 - Bidding: Target CPM (cost per 1000 impressions)
 - Budget: $10-20 CPM typical
@@ -2293,7 +2293,7 @@ Retargeting Campaigns:
 
 **Script Structure** (30-second ad):
 
-```
+```text
 0:00-0:05 (Hook - Must capture before skip):
 - Pose compelling question
 - Show transformation result
@@ -2358,7 +2358,7 @@ Voiceover: "Try it free for fourteen days."
 
 **Targeting**:
 
-```
+```text
 Audience:
 - Custom Intent: People searching for "email management", "productivity tools"
 - Affinity: Business professionals, entrepreneurs
@@ -2475,7 +2475,7 @@ Product Data:
 
 **Product Groups** (Campaign Structure):
 
-```
+```text
 All Products
 ├── Category: Electronics
 │   ├── Brand: YourBrand (High bid)
@@ -2514,7 +2514,7 @@ All Products
 
 **Required Assets**:
 
-```
+```text
 Images (required):
 - Landscape (1.91:1): 1200×628px (at least 1)
 - Square (1:1): 1200×1200px (at least 1)
@@ -2548,7 +2548,7 @@ Optional (but recommended):
 
 **Best Practices**:
 
-```
+```text
 - Provide maximum asset variety (15+ headlines, 5+ images, videos)
 - Use high-quality images (no blurry/pixelated)
 - Include conversion tracking (essential for optimization)
@@ -2633,7 +2633,7 @@ The following section covers **LinkedIn Ads** for B2B marketing, professional ta
 
 ##### Single Image Ads
 
-```
+```text
 Image Specs:
 - Aspect Ratio: 1.91:1 (landscape) or 1:1 (square)
 - Dimensions: 1200×627px (landscape) or 1080×1080px (square)
@@ -2731,7 +2731,7 @@ Professional data visualization showing:
 
 **Targeting Example**:
 
-```
+```text
 Job Titles:
 - CEO
 - VP of Engineering
@@ -2767,7 +2767,7 @@ Job Seniority:
 
 **Budget & Bidding**:
 
-```
+```text
 Minimum Budget: $10/day ($300/month)
 Recommended: $50+/day for B2B campaigns
 
@@ -2797,7 +2797,7 @@ Bidding Strategies:
 
 ##### Video Ads
 
-```
+```text
 Video Specs:
 - Aspect Ratio: 1:1 (square), 16:9 (horizontal), 9:16 (vertical), or 4:5 (portrait)
 - Dimensions: 1080×1080px (square) recommended
@@ -2810,7 +2810,7 @@ Video Specs:
 
 **Video Best Practices**:
 
-```
+```text
 0:00-0:03 (Hook):
 - Must grab attention immediately
 - Use text overlay (85% watch without sound)
@@ -2834,7 +2834,7 @@ Video Specs:
 
 ##### Carousel Ads
 
-```
+```text
 Carousel Specs:
 - Cards: 2-10 swipeable cards
 - Image Size: 1080×1080px per card
@@ -2869,7 +2869,7 @@ Intro Text: "Stripe's engineering team was drowning in email. Here's how they sa
 
 ##### Document Ads
 
-```
+```text
 Document Specs:
 - Format: PDF only
 - File Size: Max 100MB
@@ -2927,7 +2927,7 @@ No fluff. Just data and actionable strategies.
 
 ##### Message Ads
 
-```
+```text
 Message Specs:
 - Subject Line: 60 characters
 - Message Body: 1,500 characters (500 recommended)
@@ -2998,7 +2998,7 @@ Questions? Reply to this message (I read every response).
 
 ##### Conversation Ads
 
-```
+```text
 Conversation Specs:
 - Similar to Message Ads but interactive
 - Multiple CTA buttons (choose-your-own-path)
@@ -3008,7 +3008,7 @@ Conversation Specs:
 
 **Example Conversation Ad Flow**:
 
-```
+```text
 Message 1:
 "Hi [FirstName], are you interested in reducing email time?"
 → [Yes, tell me more] → Message 2A
@@ -3030,7 +3030,7 @@ Message 3A (Volume path):
 
 #### Text Ads (Sidebar/Top Banner)
 
-```
+```text
 Text Ad Specs:
 - Headline: 50 characters
 - Description: 70 characters
@@ -3062,7 +3062,7 @@ Text Ad with Image Specs:
 
 **LinkedIn Native Lead Forms**:
 
-```
+```text
 Form Fields:
 - Pre-filled by LinkedIn: Name, Email, Phone, Company, Job Title
 - Custom Questions: Up to 3 additional questions
@@ -3187,7 +3187,7 @@ const companyTargeting = {
 
 **Demographic Targeting**:
 
-```
+```yaml
 Location: Country, state, city, or DMA (Designated Market Area)
 Age: 18-24, 25-34, 35-54, 55+
 Gender: All, Male, Female
@@ -3195,7 +3195,7 @@ Gender: All, Male, Female
 
 **Audience Expansion**:
 
-```
+```text
 LinkedIn Audience Network:
 - Extends reach to LinkedIn partner sites/apps
 - ~20% cheaper CPCs
@@ -3255,7 +3255,7 @@ lintrk('track', {
 
 **Matched Audiences** (Retargeting):
 
-```
+```text
 Website Retargeting:
 - Site visitors (30/60/90 days)
 - Specific page visitors (product pages, pricing)
@@ -3395,7 +3395,7 @@ Targeting:
 
 **Expected Performance**:
 
-```
+```yaml
 CTR: 1.0-2.5% (higher for trending topics)
 CPC: $0.50-3.00 (lower than LinkedIn, higher than Facebook)
 Engagement Rate: 0.5-2.0% (likes, retweets, replies)
@@ -3487,7 +3487,7 @@ CTA: Website Card format (separate CTA per card)
 
 **Best Use Cases**:
 
-```
+```text
 ✅ Product showcases (multiple products in one ad)
 ✅ Feature highlights (show 5 features across 5 cards)
 ✅ Before/after storytelling
@@ -3528,7 +3528,7 @@ CTA: "Start Free Trial"
 
 **When to Use**:
 
-```
+```text
 ✅ Building brand audience for future organic reach
 ✅ New account launch (need critical mass)
 ✅ Event promotion (build pre-event hype)
@@ -3582,7 +3582,7 @@ Impressions: 10M-30M+ (depends on region)
 
 **Realistic Alternative - Trend Targeting**:
 
-```
+```text
 Instead of buying a Promoted Trend ($200K), target existing trends:
 - Create ads mentioning trending hashtags (relevant ones)
 - Target users engaging with specific trends
@@ -3615,7 +3615,7 @@ Best for: High-budget campaigns ($50K+ monthly)
 
 **Video Requirements**:
 
-```
+```yaml
 Duration: 6 seconds or 15 seconds ONLY (strict)
 Aspect Ratio: 16:9 or 1:1
 File Size: Max 1GB
@@ -3648,7 +3648,7 @@ Best for: Mega-brand campaigns (movies, smartphones, Fortune 500)
 
 **Realistic Alternative - Reach Campaigns**:
 
-```
+```text
 For most businesses, standard Promoted Tweets with "Reach" objective:
 - Maximize impressions at lowest CPM
 - Target: Broad audiences
@@ -3716,7 +3716,7 @@ const followerTargeting = {
 
 **Conversation Targeting**:
 
-```
+```text
 Target users engaging with specific topics/conversations:
 - "Email productivity" conversation
 - "SaaS tools" conversation
@@ -3727,7 +3727,7 @@ Twitter groups related tweets into thematic conversations
 
 **Behavioral Targeting**:
 
-```
+```text
 - Device usage: iOS vs. Android
 - Mobile carrier
 - New device (just bought new phone)
@@ -3737,7 +3737,7 @@ Twitter groups related tweets into thematic conversations
 
 **Demographic Targeting**:
 
-```
+```text
 - Age: 13-17, 18-24, 25-34, 35-49, 50+
 - Gender: All, Male, Female
 - Location: Country, region, metro area, postal code
@@ -4069,7 +4069,7 @@ const industryBenchmarks = {
 
 **When to Use Twitter/X**:
 
-```
+```text
 ✅ Real-time marketing (live events, breaking news, trending topics)
 ✅ Brand voice/personality development
 ✅ Customer service and community engagement
@@ -4082,7 +4082,7 @@ const industryBenchmarks = {
 
 **When NOT to Use Twitter/X**:
 
-```
+```text
 ❌ Older demographics (55+ not active on platform)
 ❌ Visual-heavy products (Instagram/Pinterest better)
 ❌ E-commerce impulse purchases (Facebook/Instagram better)
@@ -4228,7 +4228,7 @@ Landing Page: https://yourproduct.com/trial?utm_source=tiktok&utm_campaign=email
 
 **Expected Performance**:
 
-```
+```yaml
 Impressions: 50K-200K per $100 spent
 CTR: 1.5-3.0% (higher than most platforms)
 CPC: $0.30-1.50 (low due to high engagement)
@@ -4245,7 +4245,7 @@ CPA: $5-30 (depends on offer, funnel)
 
 **Advantages**:
 
-```
+```text
 ✅ Retains original post engagement (likes, comments, shares count)
 ✅ Builds organic credibility (doesn't look like an ad)
 ✅ Can boost creator content (with permission)
@@ -4270,7 +4270,7 @@ Creator Collaboration:
 
 **Best Use Cases**:
 
-```
+```text
 ✅ UGC testimonials (real customers praising product)
 ✅ Product unboxing/review videos
 ✅ Influencer partnerships (amplify their content)
@@ -4305,7 +4305,7 @@ Placement: Opens TikTok app → TopView plays immediately → Transitions to In-
 
 **Pricing & Reach**:
 
-```
+```yaml
 Cost: $50,000-100,000+ per day (premium)
 Impressions: 5M-10M+ impressions in 24 hours
 CPM: ~$5-10 (volume discount)
@@ -4345,7 +4345,7 @@ User Participation:
 
 **Pricing**:
 
-```
+```text
 Standard Challenge: $150,000+ for 6 days
 Premium Challenge (with TopView): $200,000+ for 6 days
 Hashtag Banner Placement: Promoted in Discover tab
@@ -4353,7 +4353,7 @@ Hashtag Banner Placement: Promoted in Discover tab
 
 **Performance**:
 
-```
+```text
 Video Views: 5B-30B+ views (across all UGC)
 Participation Rate: 10K-100K+ user-created videos
 Brand Awareness: Massive (cultural moment potential)
@@ -4361,7 +4361,7 @@ Brand Awareness: Massive (cultural moment potential)
 
 **Best For**:
 
-```
+```text
 ✅ Major brands with $150K+ budget
 ✅ Product launches requiring mass awareness
 ✅ Brand campaigns focused on cultural relevance
@@ -4370,7 +4370,7 @@ Brand Awareness: Massive (cultural moment potential)
 
 **Example**: #EyesLipsFace (e.l.f. Cosmetics)
 
-```
+```text
 - 6-day campaign
 - 5 billion views
 - 3 million user-generated videos
@@ -4400,7 +4400,7 @@ Examples:
 
 **Pricing**:
 
-```
+```text
 Standard Effect: $80,000-100,000 for 10 days
 Premium Effect (with TopView): $150,000+ for 10 days
 Development: Included in cost
@@ -4408,7 +4408,7 @@ Development: Included in cost
 
 **Performance**:
 
-```
+```text
 Effect Views: 1B-10B+ views
 User Engagement: 500K-5M+ uses
 Dwell Time: 15-30 seconds (high engagement)
@@ -4416,7 +4416,7 @@ Dwell Time: 15-30 seconds (high engagement)
 
 **Best For**:
 
-```
+```text
 ✅ Beauty brands (virtual makeup try-on)
 ✅ Fashion brands (virtual clothing try-on)
 ✅ CPG brands (product visualization)
@@ -4909,7 +4909,7 @@ const industryBenchmarks = {
 
 **When to Use TikTok**:
 
-```
+```text
 ✅ Target audience: 18-34 years old (Gen Z, Millennials)
 ✅ E-commerce products (fashion, beauty, gadgets, food)
 ✅ Entertainment-focused content
@@ -4922,7 +4922,7 @@ const industryBenchmarks = {
 
 **When NOT to Use TikTok**:
 
-```
+```text
 ❌ B2B enterprise products (LinkedIn better)
 ❌ Older demographics (45+ not on platform)
 ❌ High-ticket B2B sales ($10K+ ACV)
@@ -5394,7 +5394,7 @@ Verify all files created:
 
 **Output to user**: `⏳ Step 7/7: Finalizing social content package...`
 
-```
+```text
 ════════════════════════════════════════════════════════════
    ✅ SOCIAL CONTENT GENERATED: [Topic]
 ════════════════════════════════════════════════════════════

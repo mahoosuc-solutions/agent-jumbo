@@ -14,7 +14,7 @@
 
 ### 1. Create a Workflow
 
-```
+```json
 {{workflow_engine(
   action="create_workflow",
   name="My Project",
@@ -29,7 +29,7 @@
 
 ### 2. Start Execution
 
-```
+```json
 {{workflow_engine(
   action="start_workflow",
   workflow_name="My Project",
@@ -40,7 +40,7 @@
 
 ### 3. Track Progress
 
-```
+```json
 {{workflow_engine(action="get_status", execution_id=1)}}
 ```
 
@@ -173,7 +173,7 @@
 
 ### Product Development
 
-```
+```json
 {{workflow_engine(
   action="create_workflow",
   name="Product Development",
@@ -190,7 +190,7 @@
 
 ### Client Project
 
-```
+```json
 {{workflow_engine(
   action="create_workflow",
   name="Client Integration",
@@ -211,7 +211,7 @@
 
 ### Create Path with Modules
 
-```
+```json
 {{workflow_engine(
   action="create_path",
   path_id="python_dev",

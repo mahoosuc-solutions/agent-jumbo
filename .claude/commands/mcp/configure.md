@@ -24,7 +24,7 @@ Manage advanced configuration for installed Model Context Protocol servers. Conf
 
 **Available Options**:
 
-```
+```text
 Authentication & Access
   --set-auth-type <oauth|personal-token>
   --set-username <username>
@@ -102,7 +102,7 @@ Logging & Monitoring
 
 **Available Options**:
 
-```
+```text
 Connection Settings
   --set-host <hostname>               # Database host
   --set-port <port>                   # Database port (default: 5432)
@@ -202,7 +202,7 @@ Logging & Monitoring
 
 **Available Options**:
 
-```
+```text
 Workspace & Authentication
   --set-workspace <name>              # Set default workspace
   --set-bot-token <token>             # Update bot token
@@ -275,7 +275,7 @@ Logging & Monitoring
 
 **Available Options**:
 
-```
+```text
 Server & Authentication
   --set-server-url <url>              # n8n instance URL
   --set-api-key <key>                 # Update API key
@@ -373,7 +373,7 @@ For interactive setup wizard:
 
 This launches an interactive questionnaire:
 
-```
+```text
 GitHub MCP Configuration Wizard
 ════════════════════════════════════════
 
@@ -472,7 +472,7 @@ Process:
 3. Update local configuration
 4. Verify old token revocation
 
-```
+```text
 Rotating GitHub credentials...
 
 ✓ Generating new personal access token
@@ -503,7 +503,7 @@ New token expires: 2025-12-25T16:30:00Z
 
 Detailed output:
 
-```
+```text
 Testing PostgreSQL connection...
 
 Attempting connection to postgres.example.com:5432...
@@ -525,7 +525,7 @@ Connection is healthy and ready for operations.
 
 Output:
 
-```
+```text
 Validating n8n configuration...
 
 ℹ Server URL: https://n8n.example.com

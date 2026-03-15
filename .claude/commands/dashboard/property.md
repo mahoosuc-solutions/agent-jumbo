@@ -46,7 +46,7 @@ Managing individual properties requires understanding their individual profitabi
 
 ## Dashboard Structure
 
-```
+```text
 ╔═════════════════════════════════════════════════════════════════════════════╗
 ║                        PROPERTY PERFORMANCE DASHBOARD                       ║
 ║                                                                             ║

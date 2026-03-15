@@ -58,7 +58,7 @@ WHERE uq.customer_id = '${customer_id}'
 ORDER BY uq.metric_type, ua.threshold_percentage;
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║                    USAGE ALERTS                                 ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -90,7 +90,7 @@ ORDER BY uq.metric_type, ua.threshold_percentage;
 
 Use `AskUserQuestion`:
 
-```
+```text
 CONFIGURE USAGE ALERT
 
 Customer: Acme Corporation
@@ -112,7 +112,7 @@ Options:
 
 **If Add New Alert**:
 
-```
+```text
 NEW ALERT CONFIGURATION
 
 Metric: api_calls
@@ -202,7 +202,7 @@ minimal:
 
 ### Email
 
-```
+```text
 Subject: ⚠️ Usage Alert: API calls at 80% of limit
 
 Hi Acme Team,
@@ -253,7 +253,7 @@ https://app.example.com/settings/alerts
 
 ### SMS
 
-```
+```text
 ⚠️ USAGE ALERT
 Acme Corp: API calls at 80%
 20,000/25,000 used
@@ -305,7 +305,7 @@ INSERT INTO usage_alerts (
 );
 ```
 
-```
+```text
 ╔════════════════════════════════════════════════════════════════╗
 ║              INTERNAL ALERT: Expansion Opportunity              ║
 ╠════════════════════════════════════════════════════════════════╣
@@ -324,7 +324,7 @@ INSERT INTO usage_alerts (
 
 ## SUCCESS OUTPUT
 
-```
+```text
 ═══════════════════════════════════════════════════════════════════
                   ALERT CONFIGURATION SAVED
 ═══════════════════════════════════════════════════════════════════

@@ -476,7 +476,7 @@ Both sides must:
 2. Run type checking on both frontend and backend
 3. Fix any type errors before merging
 
-```
+```text
 
 ### Step 9: Confirmation
 
@@ -507,7 +507,7 @@ NEXT STEPS:
 
 ═══════════════════════════════════════════════════
 
-```
+```text
 
 ## Guidelines
 

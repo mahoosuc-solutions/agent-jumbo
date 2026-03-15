@@ -262,7 +262,7 @@ await searchIndex.add({
 
 ### 6. Confirmation
 
-```
+```text
 ✓ Content captured and saved
 
 📝 "Tenant prefers email for maintenance requests"
@@ -386,7 +386,7 @@ Search integration:
 
 ## n8n Workflow Architecture
 
-```
+```text
 ┌─────────────────────────────────────────────┐
 │  INPUT: Content from /capture command      │
 └─────────────┬───────────────────────────────┘

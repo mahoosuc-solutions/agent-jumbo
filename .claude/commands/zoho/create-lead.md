@@ -53,7 +53,7 @@ Based on the provided information:
 
 Show a formatted preview of the lead to be created:
 
-```
+```text
 ═══════════════════════════════════════════════════
            ZOHO CRM LEAD PREVIEW
 ═══════════════════════════════════════════════════
@@ -101,7 +101,7 @@ Use **AskUserQuestion** tool to request approval:
 
 1. Simulate Zoho CRM API call (since actual integration not yet built):
 
-   ```
+   ```text
    POST https://www.zohoapis.com/crm/v2/Leads
    Headers:
      Authorization: Zoho-oauthtoken {token}
@@ -110,7 +110,7 @@ Use **AskUserQuestion** tool to request approval:
 
 2. Display success confirmation:
 
-   ```
+   ```text
    ✓ Lead Created Successfully!
 
    Lead ID: LEAD-12345
@@ -182,7 +182,7 @@ If any issues occur:
 
 ## Example Usage
 
-```
+```python
 /create-lead
 # Interactive mode - will ask for all details
 

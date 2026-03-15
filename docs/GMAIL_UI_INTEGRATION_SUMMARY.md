@@ -110,7 +110,7 @@ Comprehensive guide covering:
 
 ### OAuth2 Web Flow
 
-```
+```text
 1. User clicks "Manage Accounts" → Settings UI
 2. User enters account_name + credentials.json
 3. Frontend → POST /gmail_oauth_start
@@ -125,7 +125,7 @@ Comprehensive guide covering:
 
 ### Data Flow
 
-```
+```text
 Settings UI (webui/js/settings.js)
     ↓ POST /gmail_oauth_start
 API Handler (python/api/gmail_oauth_start.py)
@@ -226,7 +226,7 @@ Settings (python/helpers/settings.py)
 
 ### 1. Add Account via UI
 
-```
+```text
 1. Settings → External tab → Gmail Accounts
 2. Click "Manage Accounts"
 3. Enter account name: "sales"

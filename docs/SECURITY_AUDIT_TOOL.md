@@ -122,7 +122,7 @@ Integrate with:
 
 ## Example Output
 
-```
+```python
 # Security Audit Report
 
 **Scope**: FULL

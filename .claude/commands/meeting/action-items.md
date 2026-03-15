@@ -145,7 +145,7 @@ System assigns owners using multiple strategies:
 
 **Example Extraction:**
 
-```
+```text
 From Discussion:
 "Michael brought up the churn concern. Sarah, can you pull together an analysis by cohort and present it at the next board meeting? We need to understand if this is a product issue, customer success issue, or sales qualification issue."
 
@@ -254,7 +254,7 @@ Prioritize action items using multi-factor scoring:
 
 **Example Priority Assessment:**
 
-```
+```text
 Action Item: Analyze churn by cohort (Sarah)
 
 Stakeholder Importance: Board request (+50) = 50 points
@@ -300,7 +300,7 @@ Identify relationships between action items:
 
 **Example Dependency Graph:**
 
-```
+```text
 Action Items from Sprint Planning Meeting:
 
 1. [Chris] Complete onboarding wizard designs
@@ -344,7 +344,7 @@ Export action items to your preferred system:
 
 **Export Format Example (Asana):**
 
-```
+```yaml
 Project: Board of Directors
 Section: Q1 2024 - March Meeting
 
@@ -387,7 +387,7 @@ Monitor progress and send timely reminders:
 
 **3 Days Before Deadline:**
 
-```
+```yaml
 Subject: Action Item Due Soon: Analyze customer churn
 
 Hi Sarah,
@@ -413,7 +413,7 @@ View task in Asana: [Link]
 
 **Day of Deadline:**
 
-```
+```yaml
 Subject: Action Item Due Today: Analyze customer churn
 
 Hi Sarah,
@@ -435,7 +435,7 @@ View task in Asana: [Link]
 
 **1 Day Past Due (If Not Completed):**
 
-```
+```yaml
 Subject: Overdue Action Item: Analyze customer churn
 
 Hi Sarah,
@@ -463,7 +463,7 @@ View task in Asana: [Link]
 
 **Weekly Digest (All Action Items):**
 
-```
+```text
 Subject: Your Action Items - Week of April 15, 2024
 
 Hi Sarah,
@@ -504,7 +504,7 @@ Track completion and update source documents:
 
 **Automatic Updates:**
 
-```
+```text
 Action Item Completed: Analyze customer churn by cohort
 
 Task: Analyze customer churn by cohort
@@ -529,7 +529,7 @@ Completion Rate for Sarah: 95% (19 of 20 recent action items completed on time)
 
 **Stuck/Blocked Item Escalation:**
 
-```
+```text
 Action Item Blocked: Hire customer success team
 
 Task: Hire 2 customer success team members
@@ -559,7 +559,7 @@ Track patterns and improve meeting effectiveness:
 
 **Individual Performance Metrics:**
 
-```
+```text
 Sarah Johnson - Action Item Analytics (Last 90 Days)
 
 Total Action Items: 23
@@ -594,7 +594,7 @@ Areas for Improvement:
 
 **Meeting Effectiveness Metrics:**
 
-```
+```text
 Board Meetings - Action Item Analytics (Last 12 Months)
 
 Total Meetings: 4 (quarterly)
@@ -646,7 +646,7 @@ Recommendations:
 
 **Output:**
 
-```
+```text
 ACTION ITEMS EXTRACTED: Board Meeting Q1 2024
 Date: March 10, 2024
 Participants: John (CEO), Sarah (CFO), Michael Lee (Board Member), Emily Chen (Board Observer)
@@ -844,7 +844,7 @@ Week 4-9 (April 1-May 12):
 Q2 Strategy:
   Customer Success Implementation
 
-```
+```text
 
 Critical Path:
 Q2 Plan Update → Board Review → Q2 Execution

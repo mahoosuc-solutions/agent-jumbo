@@ -24,7 +24,7 @@ View comprehensive statistics about discovered leads, qualification rates, and o
 
 ## Example Output
 
-```
+```text
 📊 Lead Generation Statistics
 Organization: Mahoosuc Solutions
 Period: Last 30 days

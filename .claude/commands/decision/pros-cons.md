@@ -36,7 +36,7 @@ Extract from user input:
 
 ### For Each Option, Generate
 
-```
+```text
 OPTION [X]: [Description]
 ========================
 
@@ -178,7 +178,7 @@ COMPELLING FACTORS (Pros with Impact ≥ 9/10):
 
 ### Stakeholder Analysis Format
 
-```
+```text
 STAKEHOLDER PERSPECTIVE ANALYSIS
 =================================
 
@@ -232,7 +232,7 @@ STAKEHOLDER ALIGNMENT SCORE: 3/20 (Low Alignment)
 
 When comparing 2+ options:
 
-```
+```text
 COMPARATIVE PROS/CONS ANALYSIS
 ==============================
 
@@ -274,7 +274,7 @@ SURPRISING INSIGHTS:
 
 Always analyze second-order consequences:
 
-```
+```text
 SECOND-ORDER EFFECTS
 ====================
 
@@ -317,7 +317,7 @@ Option B: 8/10 (High flexibility - easy to change course)
 
 ### Example 1: Should we raise VC funding or bootstrap?
 
-```
+```text
 OPTION A: Raise $2M Series A
 ============================
 

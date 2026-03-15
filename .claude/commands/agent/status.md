@@ -35,7 +35,7 @@ Quickly check the health and status of your AI agent fleet:
 
 ## Status Output Format
 
-```
+```text
 🤖 AGENT STATUS REPORT
 ════════════════════════════════════════════════════════════════════
 

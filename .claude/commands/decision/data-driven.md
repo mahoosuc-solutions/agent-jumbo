@@ -71,7 +71,7 @@ This command helps entrepreneurs:
 
 ### Step 1: Define Decision & Data Needs
 
-```
+```text
 DECISION: [What needs to be decided]
 
 OPTIONS:
@@ -112,7 +112,7 @@ DATA WE WON'T GATHER (Not worth the effort):
 
 For each data source, attempt to gather data:
 
-```
+```text
 DATA GATHERING RESULTS
 ═══════════════════════
 
@@ -278,7 +278,7 @@ EXPERT DATA (Industry Knowledge)
 
 ### Step 3: Analyze Data for Insights
 
-```
+```text
 DATA ANALYSIS & INSIGHTS
 ═════════════════════════
 
@@ -369,7 +369,7 @@ ESTIMATED VALUE: $5K/month MRR increase within 6 months
 
 ### Step 4: Identify Data Gaps & Criticality
 
-```
+```text
 DATA GAPS ANALYSIS
 ══════════════════
 
@@ -435,7 +435,7 @@ LOW-PRIORITY GAPS (Don't need for this decision):
 
 ### Step 5: Synthesize into Data-Driven Recommendation
 
-```
+```text
 DATA-DRIVEN RECOMMENDATION
 ═══════════════════════════
 
@@ -538,7 +538,7 @@ ABORT CRITERIA (When to abandon this decision):
 
 ## Real-World Example: Should we hire a VP of Sales?
 
-```
+```text
 DECISION: Hire VP of Sales now vs. founder does sales 6 more months
 
 DATA GATHERING:
@@ -611,7 +611,7 @@ Month 6: If MRR > $80K, hire VP; if < $70K, reconsider strategy
 
 For each data point, assign confidence score:
 
-```
+```text
 CONFIDENCE SCALE:
 ━━━━━━━━━━━━━━━━
 

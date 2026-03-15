@@ -133,7 +133,7 @@ graph TD
 
 ### Adoption Health Score
 
-```
+```text
 Adoption Health =
   (Activation Rate × 0.3) +
   (Engagement Rate × 0.3) +

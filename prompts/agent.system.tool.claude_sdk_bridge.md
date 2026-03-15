@@ -29,7 +29,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Check SDK availability and session status**
 
-```
+```text
 {{claude_sdk_bridge(action="get_status")}}
 ```
 
@@ -41,7 +41,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Install Claude Agent SDK**
 
-```
+```text
 {{claude_sdk_bridge(action="install_sdk")}}
 ```
 
@@ -55,7 +55,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Initialize a Claude SDK session**
 
-```
+```json
 {{claude_sdk_bridge(
   action="init_sdk",
   system_prompt="You are a code reviewer focusing on security",
@@ -80,7 +80,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Close active SDK session**
 
-```
+```text
 {{claude_sdk_bridge(action="close_sdk")}}
 ```
 
@@ -92,7 +92,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Send a stateless query (creates temporary session)**
 
-```
+```json
 {{claude_sdk_bridge(
   action="query",
   prompt="Analyze this code for security vulnerabilities",
@@ -113,7 +113,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Send query through active session (maintains conversation state)**
 
-```
+```json
 {{claude_sdk_bridge(
   action="session_query",
   prompt="Now check the authentication module"
@@ -132,7 +132,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Run query directly through Claude Code CLI**
 
-```
+```json
 {{claude_sdk_bridge(
   action="cli_query",
   prompt="What files are in this directory?",
@@ -157,7 +157,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **List available SDK tools**
 
-```
+```text
 {{claude_sdk_bridge(action="list_tools")}}
 ```
 
@@ -169,7 +169,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Export an Agent Jumbo tool for use in Claude Code**
 
-```
+```json
 {{claude_sdk_bridge(
   action="export_tool",
   tool_name="business_xray_tool"
@@ -190,7 +190,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Generate MCP server configuration**
 
-```
+```json
 {{claude_sdk_bridge(
   action="get_mcp_config",
   server_name="filesystem",
@@ -215,7 +215,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Bridge an external MCP server to Agent Jumbo**
 
-```
+```json
 {{claude_sdk_bridge(
   action="bridge_mcp",
   server_name="postgres",
@@ -250,7 +250,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 ### Code Review Session
 
-```
+```markdown
 # 1. Initialize session for code review
 {{claude_sdk_bridge(
   action="init_sdk",
@@ -276,7 +276,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 ### Quick CLI Query
 
-```
+```python
 # One-off query without session setup
 {{claude_sdk_bridge(
   action="cli_query",
@@ -287,7 +287,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 ### Export Agent Jumbo Tools
 
-```
+```python
 # Export business analysis tool for Claude Code use
 {{claude_sdk_bridge(
   action="export_tool",
@@ -303,7 +303,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 ### Bridge MCP Servers
 
-```
+```markdown
 # 1. Generate config for filesystem MCP
 {{claude_sdk_bridge(
   action="get_mcp_config",
@@ -332,7 +332,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 SDK tools can be converted to Agent Jumbo tools:
 
-```
+```python
 # Import a Claude Code skill, then use SDK to enhance it
 {{skill_importer(action="import_skill", path="~/.claude/plugins/my-plugin/skills/review.md")}}
 {{claude_sdk_bridge(action="init_sdk", allowed_tools=["imported_review_skill"])}}
@@ -340,7 +340,7 @@ SDK tools can be converted to Agent Jumbo tools:
 
 ### With plugin_marketplace
 
-```
+```python
 # Install plugin, then bridge its MCP servers
 {{plugin_marketplace(action="install_plugin", identifier="@example/mcp-tools")}}
 {{claude_sdk_bridge(action="bridge_mcp", server_name="example-mcp", ...)}}

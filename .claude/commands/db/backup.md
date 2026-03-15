@@ -246,7 +246,7 @@ echo "  Verified: $BACKUP_VERIFIED"
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         DATABASE BACKUP COMPLETE ✓
 ═══════════════════════════════════════════════════

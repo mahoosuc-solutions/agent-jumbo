@@ -4,7 +4,7 @@ Send a message to a Telegram chat via bot API.
 
 ## Usage
 
-```
+```json
 {{telegram_send(
   text="Digest content...",
   chat_id="123456789",

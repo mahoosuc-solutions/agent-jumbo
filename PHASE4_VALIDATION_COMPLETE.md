@@ -8,7 +8,7 @@
 
 ## TDD Swarm Execution Summary
 
-```
+```text
 ┌─────────────────────────────────────────────────────────────────────┐
 │                   PHASE 4 TDD SWARM COMPLETE                        │
 ├─────────────────────────────────────────────────────────────────────┤
@@ -49,7 +49,7 @@
 
 ## Test Results
 
-```
+```text
 PHASE 4 TEAMS
 ═════════════════════════════════════════════════════════════
 
@@ -90,7 +90,7 @@ GRAND TOTAL: 172/172 TESTS PASSING ✅
 
 ## Three-Layer Architecture
 
-```
+```text
 LAYER 3: Learning & Improvement System (Team K)
 ├─ Experience consolidation from 1000+ interactions
 ├─ Pattern recognition with 95%+ confidence

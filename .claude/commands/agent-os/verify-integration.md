@@ -112,7 +112,7 @@ Check the verification report for:
 
 ## Completion
 
-```
+```text
 ═══════════════════════════════════════════════════
         FULL-STACK INTEGRATION VERIFIED
 ═══════════════════════════════════════════════════
