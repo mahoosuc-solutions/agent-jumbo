@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { SkillSchema, ScanResultSchema, OkResponseSchema } from '../schemas'
 
 export type TrustLevel = 'builtin' | 'verified' | 'community' | 'local'
 export type SkillTier = 'markdown' | 'python'
@@ -31,30 +33,34 @@ export interface ScanIssue {
   line: number
 }
 
+const SkillsListResponseSchema = z.object({ skills: z.array(SkillSchema) }).passthrough()
+
 export function fetchSkills(): Promise<{ skills: Skill[] }> {
-  return api('skills_list', { method: 'GET' })
+  return validatedApi('skills_list', SkillsListResponseSchema, { method: 'GET' })
 }
 
 export function fetchSkill(name: string): Promise<Skill> {
-  return api('skills_get', { method: 'GET', params: { name } })
+  return validatedApi('skills_get', SkillSchema, { method: 'GET', params: { name } })
 }
 
 export function installSkill(nameOrPath: string): Promise<{ ok: boolean }> {
-  return api('skills_install', { body: { name_or_path: nameOrPath } })
+  return validatedApi('skills_install', OkResponseSchema, { body: { name_or_path: nameOrPath } })
 }
 
 export function uninstallSkill(name: string): Promise<{ ok: boolean }> {
-  return api('skills_uninstall', { body: { name } })
+  return validatedApi('skills_uninstall', OkResponseSchema, { body: { name } })
 }
 
 export function toggleSkill(name: string, enabled: boolean): Promise<{ ok: boolean }> {
-  return api('skills_toggle', { body: { name, enabled } })
+  return validatedApi('skills_toggle', OkResponseSchema, { body: { name, enabled } })
 }
 
 export function scanSkill(nameOrPath: string): Promise<ScanResult> {
-  return api('skills_scan', { body: { name_or_path: nameOrPath } })
+  return validatedApi('skills_scan', ScanResultSchema, { body: { name_or_path: nameOrPath } })
 }
 
+const SkillsSearchResponseSchema = z.object({ results: z.array(SkillSchema) }).passthrough()
+
 export function searchSkills(query: string): Promise<{ results: Skill[] }> {
-  return api('skills_search', { method: 'GET', params: { query } })
+  return validatedApi('skills_search', SkillsSearchResponseSchema, { method: 'GET', params: { query } })
 }

@@ -1,3 +1,5 @@
+import { type ZodSchema } from 'zod'
+
 const BASE = '/api/backend'
 
 let csrfToken: string | null = null
@@ -68,6 +70,23 @@ export async function api<T = unknown>(
   }
 
   return res.text() as unknown as T
+}
+
+export function validatedApi<T>(
+  path: string,
+  schema: ZodSchema<T>,
+  options: { method?: string; body?: unknown; params?: Record<string, string> } = {},
+): Promise<T> {
+  return api<unknown>(path, options).then((data) => {
+    if (process.env.NODE_ENV === 'production') {
+      const result = schema.safeParse(data)
+      if (!result.success) {
+        console.warn(`[API] Response validation failed for ${path}:`, result.error.issues)
+      }
+      return data as T
+    }
+    return schema.parse(data) as T
+  })
 }
 
 export function resetCsrf() {

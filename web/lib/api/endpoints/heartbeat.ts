@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { HeartbeatConfigDataSchema, HeartbeatRunSchema, HeartbeatTriggerSchema, OkResponseSchema } from '../schemas'
 
 export interface HeartbeatConfigData {
   enabled: boolean
@@ -27,21 +29,25 @@ export interface HeartbeatRun {
 }
 
 export function getHeartbeatConfig(): Promise<HeartbeatConfigData> {
-  return api('heartbeat_config', { method: 'GET' })
+  return validatedApi('heartbeat_config', HeartbeatConfigDataSchema, { method: 'GET' })
 }
 
 export function updateHeartbeatConfig(
   updates: Partial<Pick<HeartbeatConfigData, 'enabled' | 'interval_seconds' | 'heartbeat_path'>>
 ): Promise<HeartbeatConfigData> {
-  return api('heartbeat_config', { body: updates })
+  return validatedApi('heartbeat_config', HeartbeatConfigDataSchema, { body: updates })
 }
+
+const TriggerResponseSchema = z.object({ status: z.string(), run: HeartbeatRunSchema }).passthrough()
 
 export function triggerHeartbeat(): Promise<{ status: string; run: HeartbeatRun }> {
-  return api('heartbeat_config', { body: { action: 'trigger' } })
+  return validatedApi('heartbeat_config', TriggerResponseSchema, { body: { action: 'trigger' } })
 }
 
+const HeartbeatLogResponseSchema = z.object({ log: z.array(HeartbeatRunSchema), count: z.number() }).passthrough()
+
 export function getHeartbeatLog(limit = 50): Promise<{ log: HeartbeatRun[]; count: number }> {
-  return api(`heartbeat_log?limit=${limit}`, { method: 'GET' })
+  return validatedApi(`heartbeat_log?limit=${limit}`, HeartbeatLogResponseSchema, { method: 'GET' })
 }
 
 // --- Heartbeat Triggers ---
@@ -101,22 +107,26 @@ export interface UpdateTriggerInput extends Partial<CreateTriggerInput> {
   id: string
 }
 
+const TriggersListResponseSchema = z.object({ triggers: z.array(HeartbeatTriggerSchema) }).passthrough()
+
 export function listHeartbeatTriggers(): Promise<{ triggers: HeartbeatTrigger[] }> {
-  return api('heartbeat_triggers_list', { method: 'GET' })
+  return validatedApi('heartbeat_triggers_list', TriggersListResponseSchema, { method: 'GET' }) as unknown as Promise<{ triggers: HeartbeatTrigger[] }>
 }
 
+const TriggerCreateResponseSchema = z.object({ ok: z.boolean(), trigger: HeartbeatTriggerSchema }).passthrough()
+
 export function createHeartbeatTrigger(input: CreateTriggerInput): Promise<{ ok: boolean; trigger: HeartbeatTrigger }> {
-  return api('heartbeat_trigger_create', { body: input })
+  return validatedApi('heartbeat_trigger_create', TriggerCreateResponseSchema, { body: input }) as unknown as Promise<{ ok: boolean; trigger: HeartbeatTrigger }>
 }
 
 export function updateHeartbeatTrigger(input: UpdateTriggerInput): Promise<{ ok: boolean; trigger: HeartbeatTrigger }> {
-  return api('heartbeat_trigger_update', { body: input })
+  return validatedApi('heartbeat_trigger_update', TriggerCreateResponseSchema, { body: input }) as unknown as Promise<{ ok: boolean; trigger: HeartbeatTrigger }>
 }
 
 export function deleteHeartbeatTrigger(id: string): Promise<{ ok: boolean }> {
-  return api('heartbeat_trigger_delete', { body: { id } })
+  return validatedApi('heartbeat_trigger_delete', OkResponseSchema, { body: { id } })
 }
 
 export function emitHeartbeatEvent(eventType: string, payload: Record<string, unknown>): Promise<{ ok: boolean }> {
-  return api('heartbeat_event_emit', { body: { event_type: eventType, payload } })
+  return validatedApi('heartbeat_event_emit', OkResponseSchema, { body: { event_type: eventType, payload } })
 }

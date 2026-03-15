@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { NotificationSchema, OkResponseSchema } from '../schemas'
 
 export interface Notification {
   id: string
@@ -8,10 +10,12 @@ export interface Notification {
   timestamp: string
 }
 
+const NotificationsResponseSchema = z.object({ notifications: z.array(NotificationSchema) }).passthrough()
+
 export function getNotifications(): Promise<{ notifications: Notification[] }> {
-  return api('notifications_get')
+  return validatedApi('notifications_get', NotificationsResponseSchema)
 }
 
 export function markNotificationRead(id: string): Promise<{ ok: boolean }> {
-  return api('notification_read', { body: { id } })
+  return validatedApi('notification_read', OkResponseSchema, { body: { id } })
 }

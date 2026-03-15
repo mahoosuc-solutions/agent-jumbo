@@ -34,7 +34,8 @@
     "rss": "^1.2.0",
     "tailwind-merge": "^3.5.0",
     "tailwindcss": "^3.4.0",
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@mdx-js/loader": "^3.0.0",

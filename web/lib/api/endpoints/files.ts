@@ -1,4 +1,5 @@
-import { api } from '../client'
+import { validatedApi } from '../client'
+import { FileBrowserResultSchema, OkResponseSchema } from '../schemas'
 
 export interface FileEntry {
   name: string
@@ -17,12 +18,12 @@ export interface FileBrowserResult {
 }
 
 export function getWorkDirFiles(path = ''): Promise<FileBrowserResult> {
-  return api('get_work_dir_files', {
+  return validatedApi('get_work_dir_files', FileBrowserResultSchema, {
     method: 'GET',
     params: { path },
   })
 }
 
 export function deleteWorkDirFile(path: string): Promise<{ ok: boolean }> {
-  return api('delete_work_dir_file', { body: { path } })
+  return validatedApi('delete_work_dir_file', OkResponseSchema, { body: { path } })
 }

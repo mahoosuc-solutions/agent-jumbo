@@ -16,49 +16,58 @@ export interface ChatLog {
   kvps?: Record<string, unknown>
 }
 
-const typeConfig: Record<string, { icon: ReactNode; align: string; style: string }> = {
+const typeConfig: Record<string, { icon: ReactNode; ariaLabel: string; align: string; style: string }> = {
   user: {
-    icon: <User className="h-4 w-4" />,
+    icon: <User className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'User message',
     align: 'justify-end',
     style: 'bg-brand-600 text-white',
   },
   response: {
-    icon: <Bot className="h-4 w-4" />,
+    icon: <Bot className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Assistant response',
     align: 'justify-start',
     style: 'bg-[var(--surface-secondary)] text-[var(--text-primary)] border border-[var(--border-default)]',
   },
   agent: {
-    icon: <Bot className="h-4 w-4" />,
+    icon: <Bot className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Agent message',
     align: 'justify-start',
     style: 'bg-[var(--surface-tertiary)] text-[var(--text-primary)] border border-[var(--border-default)]',
   },
   tool: {
-    icon: <Terminal className="h-4 w-4" />,
+    icon: <Terminal className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Tool output',
     align: 'justify-start',
     style: 'bg-slate-800 text-slate-100 dark:bg-slate-900',
   },
   code_exe: {
-    icon: <Terminal className="h-4 w-4" />,
+    icon: <Terminal className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Code execution',
     align: 'justify-start',
     style: 'bg-slate-800 text-slate-100 dark:bg-slate-900',
   },
   browser: {
-    icon: <Globe className="h-4 w-4" />,
+    icon: <Globe className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Browser action',
     align: 'justify-start',
     style: 'bg-[var(--surface-tertiary)] text-[var(--text-primary)] border border-[var(--border-default)]',
   },
   warning: {
-    icon: <AlertTriangle className="h-4 w-4" />,
+    icon: <AlertTriangle className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Warning',
     align: 'justify-center',
     style: 'bg-warning-light text-warning-dark dark:bg-warning/10 dark:text-warning',
   },
   error: {
-    icon: <AlertCircle className="h-4 w-4" />,
+    icon: <AlertCircle className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Error',
     align: 'justify-center',
     style: 'bg-danger-light text-danger-dark dark:bg-danger/10 dark:text-danger',
   },
   info: {
-    icon: <Info className="h-4 w-4" />,
+    icon: <Info className="h-4 w-4" aria-hidden="true" />,
+    ariaLabel: 'Information',
     align: 'justify-center',
     style: 'bg-info-light text-info-dark dark:bg-info/10 dark:text-info',
   },
@@ -128,6 +137,7 @@ export function ChatMessage({ log }: { log: ChatLog }) {
         {log.heading && (
           <div className="flex items-center gap-1.5 mb-1">
             {config.icon}
+            <span className="sr-only">{config.ariaLabel}</span>
             <span className="font-semibold text-xs opacity-80">{log.heading}</span>
           </div>
         )}

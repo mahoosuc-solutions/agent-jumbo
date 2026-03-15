@@ -1,4 +1,5 @@
-import { api } from '../client'
+import { validatedApi } from '../client'
+import { HealthResponseSchema } from '../schemas'
 
 export interface HealthResponse {
   ok: boolean
@@ -8,5 +9,5 @@ export interface HealthResponse {
 }
 
 export function healthCheck(): Promise<HealthResponse> {
-  return api<HealthResponse>('health_check')
+  return validatedApi('health_check', HealthResponseSchema)
 }

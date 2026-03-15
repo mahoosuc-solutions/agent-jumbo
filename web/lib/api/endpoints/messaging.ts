@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { ChannelStatusSchema, ChannelConfigSchema, OkResponseSchema } from '../schemas'
 
 export interface ChannelStatus {
   channel: string
@@ -14,22 +16,24 @@ export interface ChannelConfig {
   config: Record<string, string>
 }
 
+const GatewayStatusResponseSchema = z.object({ channels: z.array(ChannelStatusSchema) }).passthrough()
+
 export function getGatewayStatus(): Promise<{ channels: ChannelStatus[] }> {
-  return api('gateway_status')
+  return validatedApi('gateway_status', GatewayStatusResponseSchema)
 }
 
 export function connectChannel(channel: string): Promise<{ ok: boolean }> {
-  return api('gateway_connect', { body: { channel } })
+  return validatedApi('gateway_connect', OkResponseSchema, { body: { channel } })
 }
 
 export function disconnectChannel(channel: string): Promise<{ ok: boolean }> {
-  return api('gateway_disconnect', { body: { channel } })
+  return validatedApi('gateway_disconnect', OkResponseSchema, { body: { channel } })
 }
 
 export function getChannelConfig(channel: string): Promise<ChannelConfig> {
-  return api('gateway_channel_config', { method: 'GET', params: { channel } })
+  return validatedApi('gateway_channel_config', ChannelConfigSchema, { method: 'GET', params: { channel } }) as Promise<ChannelConfig>
 }
 
 export function updateChannelConfig(channel: string, config: Record<string, string>): Promise<{ ok: boolean }> {
-  return api('gateway_channel_config', { body: { channel, config } })
+  return validatedApi('gateway_channel_config', OkResponseSchema, { body: { channel, config } })
 }

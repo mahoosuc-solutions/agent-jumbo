@@ -54,12 +54,13 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={{ toast }}>
       {children}
-      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2">
+      <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2" role="status" aria-live="polite">
         {toasts.map((t) => {
           const Icon = icons[t.variant]
           return (
             <div
               key={t.id}
+              role={t.variant === 'danger' || t.variant === 'warning' ? 'alert' : 'status'}
               className={cn(
                 'flex items-center gap-2 rounded-lg border px-4 py-3 shadow-lg',
                 'animate-in slide-in-from-right fade-in text-sm',
@@ -68,7 +69,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             >
               <Icon className="h-4 w-4 shrink-0" />
               <span className="flex-1">{t.message}</span>
-              <button onClick={() => dismiss(t.id)} className="shrink-0 opacity-60 hover:opacity-100">
+              <button onClick={() => dismiss(t.id)} className="shrink-0 opacity-60 hover:opacity-100" aria-label="Dismiss notification">
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>

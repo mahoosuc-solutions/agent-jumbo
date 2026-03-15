@@ -12,7 +12,7 @@ export function ChatProgress({ message, active }: ChatProgressProps) {
   if (!message && !active) return null
 
   return (
-    <div className="flex items-center gap-2 px-4 py-2 text-xs text-[var(--text-secondary)]">
+    <div className="flex items-center gap-2 px-4 py-2 text-xs text-[var(--text-secondary)]" role="status" aria-live="polite">
       <Loader2 className={cn('h-3 w-3', active && 'animate-spin')} />
       <span>{message || 'Processing...'}</span>
     </div>

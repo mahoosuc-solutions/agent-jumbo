@@ -1,5 +1,6 @@
-import { api } from '../client'
+import { validatedApi } from '../client'
+import { MemoryDashboardResponseSchema } from '../schemas'
 
 export function getMemoryDashboard(): Promise<{ memories: Array<Record<string, unknown>> }> {
-  return api('memory_dashboard')
+  return validatedApi('memory_dashboard', MemoryDashboardResponseSchema)
 }

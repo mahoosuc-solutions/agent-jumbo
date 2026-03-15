@@ -48,6 +48,13 @@ repos:
         args: ["--fix", "--"]
         exclude: "^(logs/|docs/res/)"
 
+  # Dependency vulnerability audit
+  - repo: https://github.com/pypa/pip-audit
+    rev: v2.7.3
+    hooks:
+      - id: pip-audit
+        args: ["-r", "requirements.txt", "--skip-editable", "--progress-spinner=off"]
+
   # Check for secrets
   - repo: https://github.com/Yelp/detect-secrets
     rev: v1.4.0
@@ -60,4 +67,4 @@ repos:
 ci:
   autofix_commit_msg: "style: auto-fix by pre-commit hooks"
   autoupdate_commit_msg: "chore: update pre-commit hooks"
-  skip: [bandit]  # Skip slow hooks in CI
+  skip: [bandit, pip-audit]  # Skip slow hooks in CI

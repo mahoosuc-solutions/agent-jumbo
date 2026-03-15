@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { TunnelStatusResponseSchema } from '../schemas'
 
 export interface TunnelSettings {
   provider: string
@@ -19,9 +21,11 @@ export interface TunnelStatusResponse {
 }
 
 export function getTunnelSettings(): Promise<TunnelStatusResponse> {
-  return api('tunnel_settings_get')
+  return validatedApi('tunnel_settings_get', TunnelStatusResponseSchema)
 }
 
+const SaveTunnelResponseSchema = z.object({ success: z.boolean() }).passthrough()
+
 export function saveTunnelSettings(settings: Partial<TunnelSettings>): Promise<{ success: boolean }> {
-  return api('tunnel_settings_set', { body: { settings } })
+  return validatedApi('tunnel_settings_set', SaveTunnelResponseSchema, { body: { settings } })
 }

@@ -138,3 +138,6 @@ docker/run/
 data/llm_router.db
 docker/run-bak-*
 docker/run-old-*
+
+# E2E test screenshots (generated on failure)
+tests/e2e/screenshots/

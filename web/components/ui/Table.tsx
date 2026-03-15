@@ -30,9 +30,10 @@ export function TableRow({ className, ...props }: HTMLAttributes<HTMLTableRowEle
   )
 }
 
-export function TableHead({ className, ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
+export function TableHead({ className, scope = 'col', ...props }: ThHTMLAttributes<HTMLTableCellElement>) {
   return (
     <th
+      scope={scope}
       className={cn(
         'h-10 px-3 text-left align-middle font-medium text-[var(--text-secondary)] text-xs uppercase tracking-wide',
         className,

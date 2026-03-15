@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { TelemetryEventSchema } from '../schemas'
 
 export interface TelemetryEvent {
   timestamp: string
@@ -6,6 +8,8 @@ export interface TelemetryEvent {
   data: Record<string, unknown>
 }
 
+const TelemetryResponseSchema = z.object({ events: z.array(TelemetryEventSchema) }).passthrough()
+
 export function getTelemetry(): Promise<{ events: TelemetryEvent[] }> {
-  return api('telemetry_get')
+  return validatedApi('telemetry_get', TelemetryResponseSchema)
 }

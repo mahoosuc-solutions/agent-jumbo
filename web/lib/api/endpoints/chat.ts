@@ -1,4 +1,5 @@
-import { api } from '../client'
+import { validatedApi } from '../client'
+import { PollResponseSchema, OkResponseSchema, CreateChatResponseSchema } from '../schemas'
 
 export interface ChatLog {
   id: string | number
@@ -36,7 +37,7 @@ export function pollChat(
   logFrom = 0,
   notificationsFrom = 0,
 ): Promise<PollResponse> {
-  return api<PollResponse>('poll', {
+  return validatedApi('poll', PollResponseSchema, {
     body: {
       context: contextId,
       log_from: logFrom,
@@ -51,17 +52,17 @@ export function sendMessage(
   contextId: string,
   attachments: string[] = [],
 ): Promise<{ ok: boolean }> {
-  return api('message_async', { body: { text, context: contextId, attachments } })
+  return validatedApi('message_async', OkResponseSchema, { body: { text, context: contextId, attachments } })
 }
 
 export function createChat(): Promise<{ context: string }> {
-  return api('chat_create')
+  return validatedApi('chat_create', CreateChatResponseSchema)
 }
 
 export function resetChat(contextId: string): Promise<{ ok: boolean }> {
-  return api('chat_reset', { body: { context: contextId } })
+  return validatedApi('chat_reset', OkResponseSchema, { body: { context: contextId } })
 }
 
 export function deleteChat(contextId: string): Promise<{ ok: boolean }> {
-  return api('chat_delete', { body: { context: contextId } })
+  return validatedApi('chat_delete', OkResponseSchema, { body: { context: contextId } })
 }

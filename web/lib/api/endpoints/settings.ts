@@ -1,4 +1,6 @@
-import { api } from '../client'
+import { z } from 'zod'
+import { validatedApi } from '../client'
+import { SettingsOutputSchema, SettingsSectionSchema } from '../schemas'
 
 export interface FieldOption {
   value: string
@@ -32,9 +34,11 @@ export interface SettingsOutput {
 }
 
 export function getSettings(): Promise<SettingsOutput> {
-  return api('settings_get', { method: 'GET' })
+  return validatedApi('settings_get', SettingsOutputSchema, { method: 'GET' })
 }
 
+const SaveSettingsResponseSchema = z.object({ settings: z.object({ sections: z.array(SettingsSectionSchema) }).passthrough() }).passthrough()
+
 export function saveSettings(values: Record<string, unknown>): Promise<{ settings: { sections: SettingsSection[] } }> {
-  return api('settings_set', { body: values })
+  return validatedApi('settings_set', SaveSettingsResponseSchema, { body: values })
 }

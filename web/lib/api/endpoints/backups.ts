@@ -1,4 +1,5 @@
-import { api } from '../client'
+import { validatedApi } from '../client'
+import { BackupListResponseSchema, CreateBackupResponseSchema, OkResponseSchema } from '../schemas'
 
 export interface Backup {
   id: string
@@ -8,13 +9,13 @@ export interface Backup {
 }
 
 export function listBackups(): Promise<{ backups: Backup[] }> {
-  return api('backup_list')
+  return validatedApi('backup_list', BackupListResponseSchema)
 }
 
 export function createBackup(): Promise<{ ok: boolean; id: string }> {
-  return api('backup_create')
+  return validatedApi('backup_create', CreateBackupResponseSchema)
 }
 
 export function restoreBackup(id: string): Promise<{ ok: boolean }> {
-  return api('backup_restore', { body: { id } })
+  return validatedApi('backup_restore', OkResponseSchema, { body: { id } })
 }
