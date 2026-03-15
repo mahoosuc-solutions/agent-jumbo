@@ -37,14 +37,17 @@ class TestPerformanceSecurity(unittest.TestCase):
         test_id = f"test_{int(time.time())}"
         SecurityManager.log_event("persistence_check", "success", user_id=test_id)
 
-        # Wait a brief moment for the background thread to flush
-        time.sleep(0.5)
-
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-        cursor.execute("SELECT event_type FROM security_audit_log WHERE user_id = ?", (test_id,))
-        row = cursor.fetchone()
-        conn.close()
+        # Poll for the background thread to flush (up to 5s)
+        row = None
+        for _ in range(10):
+            time.sleep(0.5)
+            conn = sqlite3.connect(self.db_path)
+            cursor = conn.cursor()
+            cursor.execute("SELECT event_type FROM security_audit_log WHERE user_id = ?", (test_id,))
+            row = cursor.fetchone()
+            conn.close()
+            if row:
+                break
 
         self.assertIsNotNone(row, "Log event was not persisted to the database")
         self.assertEqual(row[0], "persistence_check")
