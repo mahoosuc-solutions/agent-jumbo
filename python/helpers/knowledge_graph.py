@@ -8,7 +8,6 @@ import sqlite3
 import threading
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Optional
 
 
 def _utcnow() -> datetime:
@@ -138,7 +137,7 @@ class KnowledgeGraph:
             )
             self._conn.commit()
 
-    def get_node(self, node_id: str) -> Optional[KnowledgeNode]:
+    def get_node(self, node_id: str) -> KnowledgeNode | None:
         with self._lock:
             row = self._conn.execute("SELECT * FROM nodes WHERE id = ?", (node_id,)).fetchone()
         if row is None:
@@ -184,7 +183,7 @@ class KnowledgeGraph:
             )
             self._conn.commit()
 
-    def get_related(self, node_id: str, relation: Optional[str] = None) -> list[KnowledgeNode]:
+    def get_related(self, node_id: str, relation: str | None = None) -> list[KnowledgeNode]:
         with self._lock:
             if relation is not None:
                 rows = self._conn.execute(

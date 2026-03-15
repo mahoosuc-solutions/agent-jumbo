@@ -3,7 +3,6 @@ from python.helpers.secrets import get_secrets_manager
 
 
 class MaskHistoryContent(Extension):
-
     async def execute(self, **kwargs):
         # Get content data from kwargs
         content_data = kwargs.get("content_data")

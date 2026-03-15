@@ -2,6 +2,7 @@
 Gmail Account Remove API Handler
 Removes a Gmail account and its credentials
 """
+
 import os
 
 from python.helpers import settings
@@ -48,7 +49,7 @@ class GmailAccountRemove(ApiHandler):
             return {
                 "success": True,
                 "account_name": account_name,
-                "message": f"Account '{account_name}' removed successfully"
+                "message": f"Account '{account_name}' removed successfully",
             }
 
         except Exception as e:

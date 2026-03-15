@@ -34,7 +34,7 @@ class WorkflowSampleDataGenerator:
             "learning_paths": self.create_sample_learning_paths(),
             "workflows": self.create_sample_workflows(),
             "executions": self.create_sample_executions(),
-            "skill_progress": self.create_sample_skill_progress()
+            "skill_progress": self.create_sample_skill_progress(),
         }
 
         # Get summary stats
@@ -44,7 +44,7 @@ class WorkflowSampleDataGenerator:
             "total_executions": stats.get("total_executions", 0),
             "total_skills": stats.get("total_skills", 0),
             "total_learning_paths": stats.get("total_learning_paths", 0),
-            "db_path": self.db_path
+            "db_path": self.db_path,
         }
 
         return results
@@ -53,52 +53,29 @@ class WorkflowSampleDataGenerator:
         """Create sample skills across various categories"""
         skills = [
             # Technical skills
-            ("python_fundamentals", "Python Fundamentals", "technical",
-             "Core Python programming concepts and syntax"),
-            ("python_async", "Async Python", "technical",
-             "Asynchronous programming with asyncio"),
-            ("python_testing", "Python Testing", "technical",
-             "Unit testing, pytest, and test-driven development"),
-            ("api_design", "RESTful API Design", "technical",
-             "Designing clean, maintainable APIs"),
-            ("database_design", "Database Design", "technical",
-             "Schema design, normalization, and query optimization"),
-            ("frontend_basics", "Frontend Basics", "technical",
-             "HTML, CSS, JavaScript fundamentals"),
-
+            ("python_fundamentals", "Python Fundamentals", "technical", "Core Python programming concepts and syntax"),
+            ("python_async", "Async Python", "technical", "Asynchronous programming with asyncio"),
+            ("python_testing", "Python Testing", "technical", "Unit testing, pytest, and test-driven development"),
+            ("api_design", "RESTful API Design", "technical", "Designing clean, maintainable APIs"),
+            ("database_design", "Database Design", "technical", "Schema design, normalization, and query optimization"),
+            ("frontend_basics", "Frontend Basics", "technical", "HTML, CSS, JavaScript fundamentals"),
             # Tool skills
-            ("git_workflow", "Git Workflow", "tool",
-             "Version control best practices"),
-            ("docker", "Docker Containers", "tool",
-             "Containerization and Docker Compose"),
-            ("kubernetes", "Kubernetes", "tool",
-             "Container orchestration and K8s deployment"),
-            ("ci_cd", "CI/CD Pipelines", "tool",
-             "Continuous integration and deployment"),
-
+            ("git_workflow", "Git Workflow", "tool", "Version control best practices"),
+            ("docker", "Docker Containers", "tool", "Containerization and Docker Compose"),
+            ("kubernetes", "Kubernetes", "tool", "Container orchestration and K8s deployment"),
+            ("ci_cd", "CI/CD Pipelines", "tool", "Continuous integration and deployment"),
             # Process skills
-            ("agile", "Agile Methodology", "process",
-             "Scrum, sprint planning, and agile practices"),
-            ("code_review", "Code Review", "process",
-             "Effective code review techniques"),
-            ("documentation", "Technical Documentation", "process",
-             "Writing clear technical docs"),
-
+            ("agile", "Agile Methodology", "process", "Scrum, sprint planning, and agile practices"),
+            ("code_review", "Code Review", "process", "Effective code review techniques"),
+            ("documentation", "Technical Documentation", "process", "Writing clear technical docs"),
             # Domain skills
-            ("security_basics", "Security Basics", "domain",
-             "Application security fundamentals"),
-            ("cloud_architecture", "Cloud Architecture", "domain",
-             "Cloud-native application design"),
-            ("data_analysis", "Data Analysis", "domain",
-             "Data processing and analysis techniques"),
-
+            ("security_basics", "Security Basics", "domain", "Application security fundamentals"),
+            ("cloud_architecture", "Cloud Architecture", "domain", "Cloud-native application design"),
+            ("data_analysis", "Data Analysis", "domain", "Data processing and analysis techniques"),
             # Soft skills
-            ("communication", "Technical Communication", "soft_skill",
-             "Clear technical communication"),
-            ("problem_solving", "Problem Solving", "soft_skill",
-             "Systematic approach to problem solving"),
-            ("mentoring", "Mentoring", "soft_skill",
-             "Teaching and guiding others")
+            ("communication", "Technical Communication", "soft_skill", "Clear technical communication"),
+            ("problem_solving", "Problem Solving", "soft_skill", "Systematic approach to problem solving"),
+            ("mentoring", "Mentoring", "soft_skill", "Teaching and guiding others"),
         ]
 
         created = []
@@ -108,7 +85,7 @@ class WorkflowSampleDataGenerator:
                 name=name,
                 category=category,
                 description=description,
-                related_tools=self._get_related_tools(category)
+                related_tools=self._get_related_tools(category),
             )
             created.append(result)
 
@@ -121,7 +98,7 @@ class WorkflowSampleDataGenerator:
             "tool": ["terminal", "docker_tool"],
             "process": ["project_management", "documentation_tool"],
             "domain": ["analysis_tool", "monitoring_tool"],
-            "soft_skill": ["communication_tool", "collaboration_tool"]
+            "soft_skill": ["communication_tool", "collaboration_tool"],
         }
         return tool_mappings.get(category, [])
 
@@ -136,16 +113,39 @@ class WorkflowSampleDataGenerator:
                 "estimated_hours": 60.0,
                 "modules": [
                     {"module_id": "py_basics", "name": "Python Basics", "required": True},
-                    {"module_id": "py_oop", "name": "Object-Oriented Python", "required": True, "prerequisites": ["py_basics"]},
-                    {"module_id": "py_async", "name": "Async Programming", "required": True, "prerequisites": ["py_oop"]},
-                    {"module_id": "py_testing", "name": "Testing & TDD", "required": True, "prerequisites": ["py_basics"]},
-                    {"module_id": "py_advanced", "name": "Advanced Topics", "required": False, "prerequisites": ["py_async", "py_testing"]}
+                    {
+                        "module_id": "py_oop",
+                        "name": "Object-Oriented Python",
+                        "required": True,
+                        "prerequisites": ["py_basics"],
+                    },
+                    {
+                        "module_id": "py_async",
+                        "name": "Async Programming",
+                        "required": True,
+                        "prerequisites": ["py_oop"],
+                    },
+                    {
+                        "module_id": "py_testing",
+                        "name": "Testing & TDD",
+                        "required": True,
+                        "prerequisites": ["py_basics"],
+                    },
+                    {
+                        "module_id": "py_advanced",
+                        "name": "Advanced Topics",
+                        "required": False,
+                        "prerequisites": ["py_async", "py_testing"],
+                    },
                 ],
                 "certification": {
                     "name": "Certified Python Developer",
                     "badge": "python_dev",
-                    "requirements": {"min_score": 80, "modules_required": ["py_basics", "py_oop", "py_async", "py_testing"]}
-                }
+                    "requirements": {
+                        "min_score": 80,
+                        "modules_required": ["py_basics", "py_oop", "py_async", "py_testing"],
+                    },
+                },
             },
             {
                 "path_id": "devops_engineer",
@@ -155,15 +155,27 @@ class WorkflowSampleDataGenerator:
                 "estimated_hours": 80.0,
                 "modules": [
                     {"module_id": "devops_intro", "name": "DevOps Introduction", "required": True},
-                    {"module_id": "docker_mastery", "name": "Docker Mastery", "required": True, "prerequisites": ["devops_intro"]},
-                    {"module_id": "k8s_basics", "name": "Kubernetes Basics", "required": True, "prerequisites": ["docker_mastery"]},
-                    {"module_id": "ci_cd_pipelines", "name": "CI/CD Pipelines", "required": True, "prerequisites": ["docker_mastery"]},
-                    {"module_id": "monitoring", "name": "Monitoring & Observability", "required": False}
+                    {
+                        "module_id": "docker_mastery",
+                        "name": "Docker Mastery",
+                        "required": True,
+                        "prerequisites": ["devops_intro"],
+                    },
+                    {
+                        "module_id": "k8s_basics",
+                        "name": "Kubernetes Basics",
+                        "required": True,
+                        "prerequisites": ["docker_mastery"],
+                    },
+                    {
+                        "module_id": "ci_cd_pipelines",
+                        "name": "CI/CD Pipelines",
+                        "required": True,
+                        "prerequisites": ["docker_mastery"],
+                    },
+                    {"module_id": "monitoring", "name": "Monitoring & Observability", "required": False},
                 ],
-                "certification": {
-                    "name": "DevOps Professional",
-                    "badge": "devops_pro"
-                }
+                "certification": {"name": "DevOps Professional", "badge": "devops_pro"},
             },
             {
                 "path_id": "team_lead",
@@ -176,13 +188,10 @@ class WorkflowSampleDataGenerator:
                     {"module_id": "code_review_mastery", "name": "Code Review Mastery", "required": True},
                     {"module_id": "agile_leadership", "name": "Agile Leadership", "required": True},
                     {"module_id": "mentoring_skills", "name": "Mentoring Skills", "required": True},
-                    {"module_id": "architecture_decisions", "name": "Architecture Decisions", "required": False}
+                    {"module_id": "architecture_decisions", "name": "Architecture Decisions", "required": False},
                 ],
-                "certification": {
-                    "name": "Technical Team Lead",
-                    "badge": "tech_lead"
-                }
-            }
+                "certification": {"name": "Technical Team Lead", "badge": "tech_lead"},
+            },
         ]
 
         created = []
@@ -194,7 +203,7 @@ class WorkflowSampleDataGenerator:
                 description=path["description"],
                 modules=path["modules"],
                 estimated_hours=path["estimated_hours"],
-                certification=path.get("certification")
+                certification=path.get("certification"),
             )
             created.append(result)
 
@@ -216,13 +225,18 @@ class WorkflowSampleDataGenerator:
                     "duration_days": 14,
                     "exit_criteria": [
                         {"id": "requirements", "name": "Requirements documented"},
-                        {"id": "stakeholder_approval", "name": "Stakeholder sign-off"}
+                        {"id": "stakeholder_approval", "name": "Stakeholder sign-off"},
                     ],
                     "tasks": [
                         {"id": "research", "name": "Market Research", "role": "analyst", "dependencies": []},
                         {"id": "user_interviews", "name": "User Interviews", "role": "ux", "dependencies": []},
-                        {"id": "requirements_doc", "name": "Requirements Document", "role": "pm", "dependencies": ["research", "user_interviews"]}
-                    ]
+                        {
+                            "id": "requirements_doc",
+                            "name": "Requirements Document",
+                            "role": "pm",
+                            "dependencies": ["research", "user_interviews"],
+                        },
+                    ],
                 },
                 {
                     "id": "design",
@@ -231,23 +245,26 @@ class WorkflowSampleDataGenerator:
                     "duration_days": 21,
                     "exit_criteria": [
                         {"id": "wireframes", "name": "Wireframes approved"},
-                        {"id": "tech_spec", "name": "Technical spec approved"}
+                        {"id": "tech_spec", "name": "Technical spec approved"},
                     ],
                     "tasks": [
                         {"id": "wireframing", "name": "Create Wireframes", "role": "designer", "dependencies": []},
                         {"id": "tech_design", "name": "Technical Design", "role": "architect", "dependencies": []},
-                        {"id": "review", "name": "Design Review", "role": "team", "dependencies": ["wireframing", "tech_design"]}
+                        {
+                            "id": "review",
+                            "name": "Design Review",
+                            "role": "team",
+                            "dependencies": ["wireframing", "tech_design"],
+                        },
                     ],
-                    "approval_required": True
+                    "approval_required": True,
                 },
                 {
                     "id": "poc",
                     "name": "Proof of Concept",
                     "type": "poc",
                     "duration_days": 14,
-                    "exit_criteria": [
-                        {"id": "demo", "name": "Working demo available"}
-                    ]
+                    "exit_criteria": [{"id": "demo", "name": "Working demo available"}],
                 },
                 {
                     "id": "mvp",
@@ -256,29 +273,29 @@ class WorkflowSampleDataGenerator:
                     "duration_days": 42,
                     "exit_criteria": [
                         {"id": "features", "name": "Core features complete"},
-                        {"id": "tests", "name": "Test coverage > 80%"}
+                        {"id": "tests", "name": "Test coverage > 80%"},
                     ],
                     "tasks": [
                         {"id": "backend", "name": "Backend Development", "role": "backend_dev", "dependencies": []},
                         {"id": "frontend", "name": "Frontend Development", "role": "frontend_dev", "dependencies": []},
-                        {"id": "integration", "name": "Integration", "role": "fullstack_dev", "dependencies": ["backend", "frontend"]},
-                        {"id": "testing", "name": "Testing", "role": "qa", "dependencies": ["integration"]}
-                    ]
+                        {
+                            "id": "integration",
+                            "name": "Integration",
+                            "role": "fullstack_dev",
+                            "dependencies": ["backend", "frontend"],
+                        },
+                        {"id": "testing", "name": "Testing", "role": "qa", "dependencies": ["integration"]},
+                    ],
                 },
                 {
                     "id": "production",
                     "name": "Production Release",
                     "type": "production",
                     "duration_days": 7,
-                    "approval_required": True
+                    "approval_required": True,
                 },
-                {
-                    "id": "support",
-                    "name": "Support & Iteration",
-                    "type": "support",
-                    "duration_days": 90
-                }
-            ]
+                {"id": "support", "name": "Support & Iteration", "type": "support", "duration_days": 90},
+            ],
         )
         workflows.append(pd_result)
 
@@ -294,41 +311,21 @@ class WorkflowSampleDataGenerator:
                     "duration_days": 7,
                     "exit_criteria": [
                         {"id": "contract", "name": "Contract signed"},
-                        {"id": "team", "name": "Team assigned"}
-                    ]
+                        {"id": "team", "name": "Team assigned"},
+                    ],
                 },
-                {
-                    "id": "analysis",
-                    "name": "Requirements Analysis",
-                    "type": "design",
-                    "duration_days": 14
-                },
-                {
-                    "id": "development",
-                    "name": "Development",
-                    "type": "custom",
-                    "duration_days": 28
-                },
+                {"id": "analysis", "name": "Requirements Analysis", "type": "design", "duration_days": 14},
+                {"id": "development", "name": "Development", "type": "custom", "duration_days": 28},
                 {
                     "id": "uat",
                     "name": "User Acceptance Testing",
                     "type": "custom",
                     "duration_days": 14,
-                    "approval_required": True
+                    "approval_required": True,
                 },
-                {
-                    "id": "go_live",
-                    "name": "Go Live",
-                    "type": "production",
-                    "duration_days": 7
-                },
-                {
-                    "id": "hypercare",
-                    "name": "Hypercare Support",
-                    "type": "support",
-                    "duration_days": 30
-                }
-            ]
+                {"id": "go_live", "name": "Go Live", "type": "production", "duration_days": 7},
+                {"id": "hypercare", "name": "Hypercare Support", "type": "support", "duration_days": 30},
+            ],
         )
         workflows.append(ci_result)
 
@@ -337,12 +334,7 @@ class WorkflowSampleDataGenerator:
             name="Two-Week Sprint",
             description="Agile sprint workflow",
             stages=[
-                {
-                    "id": "planning",
-                    "name": "Sprint Planning",
-                    "type": "custom",
-                    "duration_days": 1
-                },
+                {"id": "planning", "name": "Sprint Planning", "type": "custom", "duration_days": 1},
                 {
                     "id": "development",
                     "name": "Development",
@@ -351,22 +343,12 @@ class WorkflowSampleDataGenerator:
                     "tasks": [
                         {"id": "stories", "name": "Complete User Stories", "dependencies": []},
                         {"id": "code_review", "name": "Code Reviews", "dependencies": ["stories"]},
-                        {"id": "testing", "name": "Testing", "dependencies": ["stories"]}
-                    ]
+                        {"id": "testing", "name": "Testing", "dependencies": ["stories"]},
+                    ],
                 },
-                {
-                    "id": "review",
-                    "name": "Sprint Review",
-                    "type": "custom",
-                    "duration_days": 1
-                },
-                {
-                    "id": "retro",
-                    "name": "Retrospective",
-                    "type": "custom",
-                    "duration_days": 1
-                }
-            ]
+                {"id": "review", "name": "Sprint Review", "type": "custom", "duration_days": 1},
+                {"id": "retro", "name": "Retrospective", "type": "custom", "duration_days": 1},
+            ],
         )
         workflows.append(sprint_result)
 
@@ -383,21 +365,21 @@ class WorkflowSampleDataGenerator:
             # Start and progress first workflow
             wf = workflows[0]
             exec1 = self.manager.start_workflow(
-                workflow_id=wf['workflow_id'],
+                workflow_id=wf["workflow_id"],
                 execution_name=f"{wf['name']} - Q1 2024",
-                context={"quarter": "Q1", "year": "2024", "priority": "high"}
+                context={"quarter": "Q1", "year": "2024", "priority": "high"},
             )
             executions.append(exec1)
 
             # Advance some stages
-            if 'execution_id' in exec1:
-                self.manager.advance_stage(exec1['execution_id'], force=True)
+            if "execution_id" in exec1:
+                self.manager.advance_stage(exec1["execution_id"], force=True)
 
             # Create another execution
             exec2 = self.manager.start_workflow(
-                workflow_id=wf['workflow_id'],
+                workflow_id=wf["workflow_id"],
                 execution_name=f"{wf['name']} - Q2 2024",
-                context={"quarter": "Q2", "year": "2024", "priority": "medium"}
+                context={"quarter": "Q2", "year": "2024", "priority": "medium"},
             )
             executions.append(exec2)
 
@@ -405,41 +387,38 @@ class WorkflowSampleDataGenerator:
             # Start second workflow
             wf2 = workflows[1]
             exec3 = self.manager.start_workflow(
-                workflow_id=wf2['workflow_id'],
+                workflow_id=wf2["workflow_id"],
                 execution_name="ACME Corp Integration",
-                context={"client": "ACME Corp", "contract_value": 75000}
+                context={"client": "ACME Corp", "contract_value": 75000},
             )
             executions.append(exec3)
 
             # Advance and complete some stages
-            if 'execution_id' in exec3:
-                self.manager.advance_stage(exec3['execution_id'], force=True)
-                self.manager.advance_stage(exec3['execution_id'], force=True)
+            if "execution_id" in exec3:
+                self.manager.advance_stage(exec3["execution_id"], force=True)
+                self.manager.advance_stage(exec3["execution_id"], force=True)
 
         if len(workflows) >= 3:
             # Start multiple sprints
             wf3 = workflows[2]
             for sprint_num in range(1, 4):
                 exec = self.manager.start_workflow(
-                    workflow_id=wf3['workflow_id'],
+                    workflow_id=wf3["workflow_id"],
                     execution_name=f"Sprint {sprint_num}",
-                    context={"sprint_number": sprint_num}
+                    context={"sprint_number": sprint_num},
                 )
                 executions.append(exec)
 
                 # Complete older sprints
-                if sprint_num < 3 and 'execution_id' in exec:
+                if sprint_num < 3 and "execution_id" in exec:
                     for _ in range(4):
-                        self.manager.advance_stage(exec['execution_id'], force=True)
+                        self.manager.advance_stage(exec["execution_id"], force=True)
 
         return executions
 
     def create_sample_skill_progress(self) -> dict:
         """Create sample skill progress for agents"""
-        progress = {
-            "agent_0": [],
-            "agent_1": []
-        }
+        progress = {"agent_0": [], "agent_1": []}
 
         # Skill practice counts for realistic progression
         agent_0_skills = {
@@ -450,7 +429,7 @@ class WorkflowSampleDataGenerator:
             "docker": 20,
             "agile": 35,
             "code_review": 40,
-            "communication": 25
+            "communication": 25,
         }
 
         agent_1_skills = {
@@ -459,27 +438,19 @@ class WorkflowSampleDataGenerator:
             "docker": 30,
             "kubernetes": 25,
             "ci_cd": 35,
-            "security_basics": 10
+            "security_basics": 10,
         }
 
         # Track usage for agent_0
         for skill_id, count in agent_0_skills.items():
             for _ in range(count):
-                self.manager.track_skill_usage(
-                    agent_id="agent_0",
-                    skill_id=skill_id,
-                    success=True
-                )
+                self.manager.track_skill_usage(agent_id="agent_0", skill_id=skill_id, success=True)
             progress["agent_0"].append({"skill_id": skill_id, "completions": count})
 
         # Track usage for agent_1
         for skill_id, count in agent_1_skills.items():
             for _ in range(count):
-                self.manager.track_skill_usage(
-                    agent_id="agent_1",
-                    skill_id=skill_id,
-                    success=True
-                )
+                self.manager.track_skill_usage(agent_id="agent_1", skill_id=skill_id, success=True)
             progress["agent_1"].append({"skill_id": skill_id, "completions": count})
 
         return progress
@@ -490,12 +461,7 @@ class WorkflowSampleDataGenerator:
         recent = self.manager.get_recent_executions(limit=10)
         top_skills = self.manager.get_top_skills(limit=10)
 
-        return {
-            "stats": stats,
-            "recent_executions": recent,
-            "top_skills": top_skills,
-            "db_path": self.db_path
-        }
+        return {"stats": stats, "recent_executions": recent, "top_skills": top_skills, "db_path": self.db_path}
 
 
 def main():

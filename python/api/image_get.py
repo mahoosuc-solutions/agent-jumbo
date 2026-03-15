@@ -8,7 +8,6 @@ from python.helpers.api import ApiHandler, Request, Response, send_file
 
 
 class ImageGet(ApiHandler):
-
     @classmethod
     def get_methods(cls) -> list[str]:
         return ["GET"]
@@ -16,10 +15,7 @@ class ImageGet(ApiHandler):
     async def process(self, input: dict, request: Request) -> dict | Response:
         # input data
         path = input.get("path", request.args.get("path", ""))
-        (
-            input.get("metadata", request.args.get("metadata", "false")).lower()
-            == "true"
-        )
+        (input.get("metadata", request.args.get("metadata", "false")).lower() == "true")
 
         if not path:
             raise ValueError("No path provided")
@@ -44,15 +40,12 @@ class ImageGet(ApiHandler):
         #     return _get_file_metadata(path, filename, file_ext, image_extensions)
 
         if file_ext in image_extensions:
-
             # in development environment, try to serve the image from local file system if exists, otherwise from docker
             if runtime.is_development():
                 if files.exists(path):
                     response = send_file(path)
                 elif await runtime.call_development_function(files.exists, path):
-                    b64_content = await runtime.call_development_function(
-                        files.read_file_base64, path
-                    )
+                    b64_content = await runtime.call_development_function(files.read_file_base64, path)
                     file_content = base64.b64decode(b64_content)
                     mime_type, _ = guess_type(filename)
                     if not mime_type:
@@ -129,9 +122,7 @@ def _send_file_type_icon(file_ext, filename=None):
 
     # Add headers for device sync
     if hasattr(response, "headers"):
-        response.headers["Cache-Control"] = (
-            "public, max-age=86400"  # Cache icons for 24 hours
-        )
+        response.headers["Cache-Control"] = "public, max-age=86400"  # Cache icons for 24 hours
         response.headers["X-File-Type"] = "icon"
         response.headers["X-Icon-Type"] = icon_name
         if filename:

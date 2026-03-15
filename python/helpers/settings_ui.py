@@ -50,7 +50,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "chat_model_provider",
             "title": "Chat model provider",
-            "description": "Select provider for main chat model used by Agent Zero",
+            "description": "Select provider for main chat model used by Agent Jumbo",
             "type": "select",
             "value": settings["chat_model_provider"],
             "options": cast("list[FieldOption]", get_providers("chat")),
@@ -152,7 +152,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     chat_model_section: SettingsSection = {
         "id": "chat_model",
         "title": "Chat Model",
-        "description": "Selection and settings for main chat model used by Agent Zero",
+        "description": "Selection and settings for main chat model used by Agent Jumbo",
         "fields": chat_model_fields,
         "tab": "agent",
     }
@@ -302,7 +302,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     embed_model_section: SettingsSection = {
         "id": "embed_model",
         "title": "Embedding Model",
-        "description": f"Settings for the embedding model used by Agent Zero.<br><h4>Warning: No need to change</h4>The default HuggingFace model {default_settings['embed_model_name']} is preloaded and runs locally within the docker container and there's no need to change it unless you have a specific requirements for embedding.",
+        "description": f"Settings for the embedding model used by Agent Jumbo.<br><h4>Warning: No need to change</h4>The default HuggingFace model {default_settings['embed_model_name']} is preloaded and runs locally within the docker container and there's no need to change it unless you have a specific requirements for embedding.",
         "fields": embed_model_fields,
         "tab": "agent",
     }
@@ -402,7 +402,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     browser_model_section: SettingsSection = {
         "id": "browser_model",
         "title": "Web Browser Model",
-        "description": "Settings for the web browser model. Agent Zero uses <a href='https://github.com/browser-use/browser-use' target='_blank'>browser-use</a> agentic framework to handle web interactions.",
+        "description": "Settings for the web browser model. Agent Jumbo uses <a href='https://github.com/browser-use/browser-use' target='_blank'>browser-use</a> agentic framework to handle web interactions.",
         "fields": browser_model_fields,
         "tab": "agent",
     }
@@ -444,7 +444,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     auth_section: SettingsSection = {
         "id": "auth",
         "title": "Authentication",
-        "description": "Settings for authentication to use Agent Zero Web UI.",
+        "description": "Settings for authentication to use Agent Jumbo Web UI.",
         "fields": auth_fields,
         "tab": "external",
     }
@@ -485,7 +485,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     api_keys_section: SettingsSection = {
         "id": "api_keys",
         "title": "API Keys",
-        "description": "API keys for model providers and services used by Agent Zero. You can set multiple API keys separated by a comma (,). They will be used in round-robin fashion.<br>For more information abou Agent Zero Venice provider, see <a href='http://agent-zero.ai/?community/api-dashboard/about' target='_blank'>Agent Zero Venice</a>.",
+        "description": "API keys for model providers and services used by Agent Jumbo. You can set multiple API keys separated by a comma (,). They will be used in round-robin fashion.<br>For more information abou Agent Jumbo Venice provider, see <a href='http://agent-zero.ai/?community/api-dashboard/about' target='_blank'>Agent Jumbo Venice</a>.",
         "fields": api_keys_fields,
         "tab": "external",
     }
@@ -541,6 +541,193 @@ def convert_out(settings: Settings) -> SettingsOutput:
                 {"value": subdir, "label": subdir}
                 for subdir in files.get_subdirectories("knowledge", exclude="default")
             ],
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_execution_backend",
+            "title": "Chat execution backend",
+            "description": "Choose where chat requests execute: native Agent Jumbo runtime, Claude Code (Max), or Codex CLI.",
+            "type": "select",
+            "value": settings.get("chat_execution_backend", "native"),
+            "options": [
+                {"value": "native", "label": "Native Agent Jumbo"},
+                {"value": "claude_code", "label": "Claude Code (CLI)"},
+                {"value": "codex", "label": "Codex CLI"},
+            ],
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_execution_timeout_seconds",
+            "title": "External chat timeout (seconds)",
+            "description": "Timeout for Claude Code/Codex execution before fallback to native runtime.",
+            "type": "number",
+            "value": settings.get("chat_execution_timeout_seconds", 120),
+        }
+    )
+    agent_fields.append(
+        {
+            "id": "startup_auto_select_enabled",
+            "title": "Startup auto-select runtime profile",
+            "description": "On startup, automatically choose backend/model/profile using health checks and context priority.",
+            "type": "switch",
+            "value": settings.get("startup_auto_select_enabled", True),
+        }
+    )
+    agent_fields.append(
+        {
+            "id": "startup_selection_goal",
+            "title": "Startup selection goal",
+            "description": "Primary objective for startup profile selection.",
+            "type": "select",
+            "value": settings.get("startup_selection_goal", "reliability"),
+            "options": [
+                {"value": "reliability", "label": "Reliability First"},
+                {"value": "quality", "label": "Best Quality"},
+                {"value": "cost", "label": "Lowest Cost"},
+            ],
+        }
+    )
+    agent_fields.append(
+        {
+            "id": "startup_context_priority",
+            "title": "Startup context priority",
+            "description": "Priority order for startup decisions.",
+            "type": "select",
+            "value": settings.get("startup_context_priority", "project"),
+            "options": [
+                {"value": "project", "label": "Active Project Context"},
+                {"value": "user", "label": "User Defaults"},
+                {"value": "system", "label": "System Defaults"},
+            ],
+        }
+    )
+    agent_fields.append(
+        {
+            "id": "startup_fallback_policy",
+            "title": "Startup fallback policy",
+            "description": "How startup reacts when preferred runtime profile is not ready.",
+            "type": "select",
+            "value": settings.get("startup_fallback_policy", "chain"),
+            "options": [
+                {"value": "chain", "label": "Deterministic Fallback Chain"},
+                {"value": "hard_fail", "label": "Hard Fail"},
+                {"value": "retry", "label": "Retry Preferred"},
+            ],
+        }
+    )
+    agent_fields.append(
+        {
+            "id": "startup_active_project",
+            "title": "Startup active project",
+            "description": "Optional project key used for project-first startup selection (empty = none).",
+            "type": "text",
+            "value": settings.get("startup_active_project", ""),
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_new_message_policy",
+            "title": "New message handling",
+            "description": "Queue strictly preserves conversation continuity. Interrupt immediate matches legacy behavior.",
+            "type": "select",
+            "value": settings.get("chat_new_message_policy", "queue_strict"),
+            "options": [
+                {"value": "queue_strict", "label": "Queue Strictly (Recommended)"},
+                {"value": "interrupt", "label": "Interrupt Immediately"},
+            ],
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_pause_behavior",
+            "title": "Pause behavior",
+            "description": "Buffer context keeps new messages queued while paused.",
+            "type": "select",
+            "value": settings.get("chat_pause_behavior", "buffer_context"),
+            "options": [
+                {"value": "buffer_context", "label": "Buffer in Context (Recommended)"},
+                {"value": "interrupt", "label": "Interrupt While Paused"},
+            ],
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_queue_max_depth",
+            "title": "Queue max depth",
+            "description": "Maximum queued messages per chat before drop policy applies (0 = unlimited).",
+            "type": "number",
+            "value": settings.get("chat_queue_max_depth", 10),
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_queue_drop_policy",
+            "title": "Queue overflow policy",
+            "description": "Choose how to handle queue overflow.",
+            "type": "select",
+            "value": settings.get("chat_queue_drop_policy", "reject_new"),
+            "options": [
+                {"value": "reject_new", "label": "Reject New Message (Recommended)"},
+                {"value": "drop_oldest", "label": "Drop Oldest Queued"},
+            ],
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_queue_wait_warn_seconds",
+            "title": "Queue wait warning (seconds)",
+            "description": "Warn if oldest queued message exceeds this age.",
+            "type": "number",
+            "value": settings.get("chat_queue_wait_warn_seconds", 60),
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_response_wait_timeout_seconds",
+            "title": "Synchronous response timeout (seconds)",
+            "description": "Timeout for API calls waiting on a direct model response.",
+            "type": "number",
+            "value": settings.get("chat_response_wait_timeout_seconds", 90),
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_background_timeout_seconds",
+            "title": "Background task timeout (seconds)",
+            "description": "Safety timeout for long-running background chat tasks.",
+            "type": "number",
+            "value": settings.get("chat_background_timeout_seconds", 300),
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "chat_stale_intervention_seconds",
+            "title": "Stale intervention threshold (seconds)",
+            "description": "When interruption policy is enabled, this resets stale active tasks before accepting new message.",
+            "type": "number",
+            "value": settings.get("chat_stale_intervention_seconds", 45),
+        }
+    )
+
+    agent_fields.append(
+        {
+            "id": "prompt_build_extension_timeout_seconds",
+            "title": "Prompt build extension timeout (seconds)",
+            "description": "Maximum wait per prompt-build extension before fail-open.",
+            "type": "number",
+            "value": settings.get("prompt_build_extension_timeout_seconds", 20),
         }
     )
 
@@ -633,7 +820,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "memory_recall_enabled",
             "title": "Memory auto-recall enabled",
-            "description": "Agent Zero will automatically recall memories based on convesation context.",
+            "description": "Agent Jumbo will automatically recall memories based on convesation context.",
             "type": "switch",
             "value": settings["memory_recall_enabled"],
         }
@@ -803,6 +990,24 @@ def convert_out(settings: Settings) -> SettingsOutput:
             "description": "Maximum characters from the user message sent for enhancement. 0 disables trimming.",
             "type": "number",
             "value": settings["prompt_enhance_max_chars"],
+        }
+    )
+    prompt_enhance_fields.append(
+        {
+            "id": "prompt_enhance_timeout_seconds",
+            "title": "Prompt enhancement timeout (seconds)",
+            "description": "Maximum time to wait for enhancement before continuing with original prompt.",
+            "type": "number",
+            "value": settings.get("prompt_enhance_timeout_seconds", 8),
+        }
+    )
+    prompt_enhance_fields.append(
+        {
+            "id": "prompt_enhance_fail_open",
+            "title": "Prompt enhancement fail-open",
+            "description": "If enhancement fails or times out, continue execution using the original prompt.",
+            "type": "switch",
+            "value": settings.get("prompt_enhance_fail_open", True),
         }
     )
     prompt_enhance_fields.append(
@@ -1141,7 +1346,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     mcp_client_section: SettingsSection = {
         "id": "mcp_client",
         "title": "External MCP Servers",
-        "description": "Agent Zero can use external MCP servers, local or remote as tools.",
+        "description": "Agent Jumbo can use external MCP servers, local or remote as tools.",
         "fields": mcp_client_fields,
         "tab": "mcp",
     }
@@ -1170,7 +1375,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "secrets",
             "title": "Secrets Store",
-            "description": 'Store secrets and credentials in .env format e.g. EMAIL_PASSWORD="s3cret-p4$$w0rd", one item per line. You can use comments starting with # to add descriptions for the agent. See <a href="javascript:openModal(\'settings/secrets/example-secrets.html\')">example</a>.<br>These variables are not visile to LLMs and in chat history, they are being masked. ⚠️ only values with length >= 4 are being masked to prevent false positives. ',
+            "description": 'Store secrets and credentials in .env format e.g. EMAIL_PASSWORD="s3cret-p4$$w0rd", one item per line. This is where PATs and API tokens belong. Do not paste live secrets into code, chat messages, or commit text. You can use comments starting with # to add descriptions for the agent. See <a href="javascript:openModal(\'settings/secrets/example-secrets.html\')">example</a>.<br>These variables are not visible to LLMs and in chat history, they are masked. ⚠️ only values with length >= 4 are masked to prevent false positives.',
             "type": "textarea",
             "value": secrets,
             "style": "height: 20em",
@@ -1191,7 +1396,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "mcp_server_enabled",
             "title": "Enable A0 MCP Server",
-            "description": "Expose Agent Zero as an SSE/HTTP MCP server. This will make this A0 instance available to MCP clients.",
+            "description": "Expose Agent Jumbo as an SSE/HTTP MCP server. This will make this A0 instance available to MCP clients.",
             "type": "switch",
             "value": settings["mcp_server_enabled"],
         }
@@ -1211,7 +1416,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     mcp_server_section: SettingsSection = {
         "id": "mcp_server",
         "title": "A0 MCP Server",
-        "description": "Agent Zero can be exposed as an SSE MCP server. See <a href=\"javascript:openModal('settings/mcp/server/example.html')\">connection example</a>.",
+        "description": "Agent Jumbo can be exposed as an SSE MCP server. See <a href=\"javascript:openModal('settings/mcp/server/example.html')\">connection example</a>.",
         "fields": mcp_server_fields,
         "tab": "mcp",
     }
@@ -1223,7 +1428,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "a2a_server_enabled",
             "title": "Enable A2A server",
-            "description": "Expose Agent Zero as A2A server. This allows other agents to connect to A0 via A2A protocol.",
+            "description": "Expose Agent Jumbo as A2A server. This allows other agents to connect to A0 via A2A protocol.",
             "type": "switch",
             "value": settings["a2a_server_enabled"],
         }
@@ -1232,7 +1437,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     a2a_section: SettingsSection = {
         "id": "a2a_server",
         "title": "A0 A2A Server",
-        "description": "Agent Zero can be exposed as an A2A server. See <a href=\"javascript:openModal('settings/a2a/a2a-connection.html')\">connection example</a>.",
+        "description": "Agent Jumbo can be exposed as an A2A server. See <a href=\"javascript:openModal('settings/a2a/a2a-connection.html')\">connection example</a>.",
         "fields": a2a_fields,
         "tab": "mcp",
     }
@@ -1412,6 +1617,67 @@ def convert_out(settings: Settings) -> SettingsOutput:
         "tab": "external",
     }
 
+    # MOS Integration section (Linear / Motion / Notion)
+    mos_fields: list[SettingsField] = [
+        {
+            "id": "mos_setup_guide",
+            "title": "MOS Setup Guide",
+            "description": "Configure API keys for cross-system sync between Linear, Motion, and Notion.",
+            "type": "button",
+            "value": "<x-component path='/settings/external/mos-integration-settings.html' />",
+        },
+        {
+            "id": "linear_api_key",
+            "title": "Linear API Key",
+            "description": "Personal API key from Linear Settings > API.",
+            "type": "password",
+            "value": (PASSWORD_PLACEHOLDER if settings.get("linear_api_key") else ""),
+        },
+        {
+            "id": "linear_default_team_id",
+            "title": "Linear Default Team ID",
+            "description": "Team identifier for new issues (e.g. AJB).",
+            "type": "text",
+            "value": settings.get("linear_default_team_id", ""),
+        },
+        {
+            "id": "motion_api_key",
+            "title": "Motion API Key",
+            "description": "API key from Motion Settings > Integrations.",
+            "type": "password",
+            "value": (PASSWORD_PLACEHOLDER if settings.get("motion_api_key") else ""),
+        },
+        {
+            "id": "motion_workspace_id",
+            "title": "Motion Workspace ID",
+            "description": "Default workspace for task sync. Find in Motion URL or API.",
+            "type": "text",
+            "value": settings.get("motion_workspace_id", ""),
+        },
+        {
+            "id": "notion_api_key",
+            "title": "Notion API Key",
+            "description": "Internal integration token from notion.so/my-integrations.",
+            "type": "password",
+            "value": (PASSWORD_PLACEHOLDER if settings.get("notion_api_key") else ""),
+        },
+        {
+            "id": "notion_default_database_id",
+            "title": "Notion Default Database ID",
+            "description": "32-char hex ID of the Notion database to sync with.",
+            "type": "text",
+            "value": settings.get("notion_default_database_id", ""),
+        },
+    ]
+
+    mos_section: SettingsSection = {
+        "id": "mos_integration",
+        "title": "MOS Integration",
+        "description": "Cross-system sync between Linear (issues), Motion (scheduling), and Notion (knowledge).",
+        "fields": mos_fields,
+        "tab": "external",
+    }
+
     # External API section
     external_api_fields: list[SettingsField] = []
 
@@ -1419,7 +1685,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "external_api_examples",
             "title": "API Examples",
-            "description": "View examples for using Agent Zero's external API endpoints with API key authentication.",
+            "description": "View examples for using Agent Jumbo's external API endpoints with API key authentication.",
             "type": "button",
             "value": "Show API Examples",
         }
@@ -1428,7 +1694,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     external_api_section: SettingsSection = {
         "id": "external_api",
         "title": "External API",
-        "description": "Agent Zero provides external API endpoints for integration with other applications. "
+        "description": "Agent Jumbo provides external API endpoints for integration with other applications. "
         "These endpoints use API key authentication and support text messages and file attachments.",
         "fields": external_api_fields,
         "tab": "external",
@@ -1441,7 +1707,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
         {
             "id": "update_check_enabled",
             "title": "Enable Update Checker",
-            "description": "Enable update checker to notify about newer versions of Agent Zero.",
+            "description": "Enable update checker to notify about newer versions of Agent Jumbo.",
             "type": "switch",
             "value": settings["update_check_enabled"],
         }
@@ -1450,7 +1716,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     update_checker_section: SettingsSection = {
         "id": "update_checker",
         "title": "Update Checker",
-        "description": "Update checker periodically checks for new releases of Agent Zero and will notify when an update is recommended.<br>No personal data is sent to the update server, only randomized+anonymized unique ID and current version number, which help us evaluate the importance of the update in case of critical bug fixes etc.",
+        "description": "Update checker periodically checks for new releases of Agent Jumbo and will notify when an update is recommended.<br>No personal data is sent to the update server, only randomized+anonymized unique ID and current version number, which help us evaluate the importance of the update in case of critical bug fixes etc.",
         "fields": update_checker_fields,
         "tab": "external",
     }
@@ -1481,7 +1747,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     backup_section: SettingsSection = {
         "id": "backup_restore",
         "title": "Backup & Restore",
-        "description": "Backup and restore Agent Zero data and configurations using glob pattern-based file selection.",
+        "description": "Backup and restore Agent Jumbo data and configurations using glob pattern-based file selection.",
         "fields": backup_fields,
         "tab": "backup",
     }
@@ -1701,6 +1967,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
             gmail_accounts_section,
             google_voice_section,
             twilio_section,
+            mos_section,
             external_api_section,
             update_checker_section,
             backup_section,

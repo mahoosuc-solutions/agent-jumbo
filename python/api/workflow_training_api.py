@@ -25,9 +25,7 @@ class WorkflowTrainingApi(ApiHandler):
             )
 
             # Get database path
-            db_path = files.get_abs_path(
-                "./instruments/custom/workflow_engine/data/workflow.db"
-            )
+            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
 
             # Ensure data directory exists
             data_dir = os.path.dirname(db_path)
@@ -52,7 +50,10 @@ class WorkflowTrainingApi(ApiHandler):
                 skill = manager.get_skill(skill_id)
                 if skill and "error" not in skill:
                     return {"success": True, "skill": skill}
-                return {"success": False, "error": skill.get("error", "Skill not found") if skill else "Skill not found"}
+                return {
+                    "success": False,
+                    "error": skill.get("error", "Skill not found") if skill else "Skill not found",
+                }
 
             elif action == "get_proficiency":
                 agent_id = input.get("agent_id", "agent_0")
@@ -72,7 +73,10 @@ class WorkflowTrainingApi(ApiHandler):
                 path = manager.get_learning_path(path_id)
                 if path and "error" not in path:
                     return {"success": True, "path": path}
-                return {"success": False, "error": path.get("error", "Learning path not found") if path else "Learning path not found"}
+                return {
+                    "success": False,
+                    "error": path.get("error", "Learning path not found") if path else "Learning path not found",
+                }
 
             elif action == "get_progress":
                 path_id = input.get("path_id")

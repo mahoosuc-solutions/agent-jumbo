@@ -14,7 +14,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "instruments" / "cu
 
 
 class PortfolioManager(Tool):
-
     async def execute(self, **kwargs):
         """
         Execute portfolio management operations
@@ -80,36 +79,24 @@ class PortfolioManager(Tool):
             else:
                 return Response(
                     message=f"Unknown action: {action}. Valid actions: scan, list, get, add, update, analyze, export, search, pipeline, dashboard, create_product, pricing",
-                    break_loop=False
+                    break_loop=False,
                 )
 
         except Exception as e:
-            return Response(
-                message=f"Portfolio Manager error: {e!s}",
-                break_loop=False
-            )
+            return Response(message=f"Portfolio Manager error: {e!s}", break_loop=False)
 
     async def _scan_folder(self, pm, folder_path: str) -> Response:
         """Scan a folder for projects"""
         if not folder_path:
-            return Response(
-                message="Error: folder_path is required for scan action",
-                break_loop=False
-            )
+            return Response(message="Error: folder_path is required for scan action", break_loop=False)
 
         if not os.path.exists(folder_path):
-            return Response(
-                message=f"Error: Folder not found: {folder_path}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Folder not found: {folder_path}", break_loop=False)
 
         projects = pm.scan_folder(folder_path)
 
         if not projects:
-            return Response(
-                message=f"No projects found in {folder_path}",
-                break_loop=False
-            )
+            return Response(message=f"No projects found in {folder_path}", break_loop=False)
 
         # Format results
         result_lines = [f"**Scanned {len(projects)} projects from {folder_path}**\n"]
@@ -119,33 +106,27 @@ class PortfolioManager(Tool):
             status_emoji = "🟢" if sale_ready >= 70 else "🟡" if sale_ready >= 40 else "🔴"
 
             result_lines.append(f"""
-### {status_emoji} {proj['name']}
-- **Language**: {proj.get('language', 'Unknown')}
-- **Path**: `{proj['path']}`
+### {status_emoji} {proj["name"]}
+- **Language**: {proj.get("language", "Unknown")}
+- **Path**: `{proj["path"]}`
 - **Sale Readiness**: {sale_ready}%
-- **Has README**: {'✅' if proj.get('has_readme') else '❌'}
-- **Has Tests**: {'✅' if proj.get('has_tests') else '❌'}
-- **Has License**: {'✅' if proj.get('has_license') else '❌'}
+- **Has README**: {"✅" if proj.get("has_readme") else "❌"}
+- **Has Tests**: {"✅" if proj.get("has_tests") else "❌"}
+- **Has License**: {"✅" if proj.get("has_license") else "❌"}
 """)
 
-        return Response(
-            message="\n".join(result_lines),
-            break_loop=False
-        )
+        return Response(message="\n".join(result_lines), break_loop=False)
 
     async def _list_projects(self, db, filters: dict) -> Response:
         """List all projects with optional filters"""
         projects = db.get_projects(
             language=filters.get("language"),
             status=filters.get("status"),
-            min_sale_readiness=filters.get("min_sale_readiness")
+            min_sale_readiness=filters.get("min_sale_readiness"),
         )
 
         if not projects:
-            return Response(
-                message="No projects found matching criteria",
-                break_loop=False
-            )
+            return Response(message="No projects found matching criteria", break_loop=False)
 
         # Group by status
         by_status = {}
@@ -160,8 +141,12 @@ class PortfolioManager(Tool):
         for status, projs in sorted(by_status.items()):
             lines.append(f"\n### {status.title()} ({len(projs)})")
             for p in projs:
-                sale_emoji = "🟢" if p.get("sale_readiness", 0) >= 70 else "🟡" if p.get("sale_readiness", 0) >= 40 else "🔴"
-                lines.append(f"- {sale_emoji} **{p['name']}** ({p.get('language', 'N/A')}) - {p.get('sale_readiness', 0)}% ready")
+                sale_emoji = (
+                    "🟢" if p.get("sale_readiness", 0) >= 70 else "🟡" if p.get("sale_readiness", 0) >= 40 else "🔴"
+                )
+                lines.append(
+                    f"- {sale_emoji} **{p['name']}** ({p.get('language', 'N/A')}) - {p.get('sale_readiness', 0)}% ready"
+                )
 
         return Response(message="\n".join(lines), break_loop=False)
 
@@ -178,25 +163,25 @@ class PortfolioManager(Tool):
         products = pm.db.get_products(project_id=project_id)
 
         detail = f"""
-## {project['name']}
+## {project["name"]}
 
 **Basic Info:**
-- **ID**: {project['id']}
-- **Path**: `{project['path']}`
-- **Language**: {project.get('language', 'Unknown')}
-- **Status**: {project.get('status', 'draft')}
-- **Sale Readiness**: {project.get('sale_readiness', 0)}%
+- **ID**: {project["id"]}
+- **Path**: `{project["path"]}`
+- **Language**: {project.get("language", "Unknown")}
+- **Status**: {project.get("status", "draft")}
+- **Sale Readiness**: {project.get("sale_readiness", 0)}%
 
 **Quality Metrics:**
-- README Quality: {project.get('readme_quality', 0)}%
-- Test Coverage: {project.get('test_coverage', 0)}%
-- Has License: {'✅' if project.get('has_license') else '❌'}
-- Has CI/CD: {'✅' if project.get('has_ci_cd') else '❌'}
+- README Quality: {project.get("readme_quality", 0)}%
+- Test Coverage: {project.get("test_coverage", 0)}%
+- Has License: {"✅" if project.get("has_license") else "❌"}
+- Has CI/CD: {"✅" if project.get("has_ci_cd") else "❌"}
 
 **Description:**
-{project.get('description', 'No description')}
+{project.get("description", "No description")}
 
-**Tags:** {project.get('tags', 'None')}
+**Tags:** {project.get("tags", "None")}
 """
 
         if products:
@@ -211,16 +196,10 @@ class PortfolioManager(Tool):
         required = ["name", "path"]
         missing = [f for f in required if f not in data]
         if missing:
-            return Response(
-                message=f"Error: Missing required fields: {', '.join(missing)}",
-                break_loop=False
-            )
+            return Response(message=f"Error: Missing required fields: {', '.join(missing)}", break_loop=False)
 
         project_id = db.add_project(**data)
-        return Response(
-            message=f"✅ Project added with ID: {project_id}",
-            break_loop=False
-        )
+        return Response(message=f"✅ Project added with ID: {project_id}", break_loop=False)
 
     async def _update_project(self, db, project_id: int, data: dict) -> Response:
         """Update project information"""
@@ -248,23 +227,23 @@ class PortfolioManager(Tool):
         analysis = pm.analyze_project(folder_path)
 
         result = f"""
-## Project Analysis: {analysis.get('name', 'Unknown')}
+## Project Analysis: {analysis.get("name", "Unknown")}
 
-**Sale Readiness Score: {analysis.get('sale_readiness', 0)}%**
+**Sale Readiness Score: {analysis.get("sale_readiness", 0)}%**
 
 ### Breakdown:
 | Category | Score | Details |
 |----------|-------|---------|
-| README | {analysis.get('readme_quality', 0)}% | {analysis.get('readme_notes', 'N/A')} |
-| Tests | {analysis.get('test_coverage', 0)}% | {analysis.get('test_notes', 'N/A')} |
-| License | {'100' if analysis.get('has_license') else '0'}% | {'Present' if analysis.get('has_license') else 'Missing'} |
-| Documentation | {analysis.get('docs_quality', 0)}% | {analysis.get('docs_notes', 'N/A')} |
-| CI/CD | {'100' if analysis.get('has_ci_cd') else '0'}% | {'Configured' if analysis.get('has_ci_cd') else 'Not found'} |
+| README | {analysis.get("readme_quality", 0)}% | {analysis.get("readme_notes", "N/A")} |
+| Tests | {analysis.get("test_coverage", 0)}% | {analysis.get("test_notes", "N/A")} |
+| License | {"100" if analysis.get("has_license") else "0"}% | {"Present" if analysis.get("has_license") else "Missing"} |
+| Documentation | {analysis.get("docs_quality", 0)}% | {analysis.get("docs_notes", "N/A")} |
+| CI/CD | {"100" if analysis.get("has_ci_cd") else "0"}% | {"Configured" if analysis.get("has_ci_cd") else "Not found"} |
 
 ### Recommendations:
 """
 
-        for rec in analysis.get('recommendations', ['No recommendations']):
+        for rec in analysis.get("recommendations", ["No recommendations"]):
             result += f"- {rec}\n"
 
         return Response(message=result, break_loop=False)
@@ -275,10 +254,7 @@ class PortfolioManager(Tool):
 
         export_path = pm.export_catalog(output_dir, format)
 
-        return Response(
-            message=f"✅ Catalog exported to: {export_path}",
-            break_loop=False
-        )
+        return Response(message=f"✅ Catalog exported to: {export_path}", break_loop=False)
 
     async def _search_projects(self, db, query: str) -> Response:
         """Search projects"""
@@ -348,29 +324,29 @@ class PortfolioManager(Tool):
 ## 📊 Portfolio Dashboard
 
 ### Overview
-- **Total Projects**: {stats.get('total_projects', 0)}
-- **Products Listed**: {stats.get('total_products', 0)}
-- **Average Sale Readiness**: {stats.get('avg_sale_readiness', 0):.1f}%
+- **Total Projects**: {stats.get("total_projects", 0)}
+- **Products Listed**: {stats.get("total_products", 0)}
+- **Average Sale Readiness**: {stats.get("avg_sale_readiness", 0):.1f}%
 
 ### By Status
 | Status | Count |
 |--------|-------|
 """
 
-        for status, count in stats.get('by_status', {}).items():
+        for status, count in stats.get("by_status", {}).items():
             dashboard += f"| {status.title()} | {count} |\n"
 
         dashboard += "\n### By Language\n| Language | Count |\n|----------|-------|\n"
 
-        for lang, count in stats.get('by_language', {}).items():
+        for lang, count in stats.get("by_language", {}).items():
             dashboard += f"| {lang} | {count} |\n"
 
-        if stats.get('pipeline_value'):
+        if stats.get("pipeline_value"):
             dashboard += f"\n### Sales Pipeline\n- **Total Value**: ${stats.get('pipeline_value', 0):,.2f}\n"
 
         # Top projects ready for sale
         dashboard += "\n### 🟢 Top Sale-Ready Projects\n"
-        for proj in stats.get('top_ready', [])[:5]:
+        for proj in stats.get("top_ready", [])[:5]:
             dashboard += f"- **{proj['name']}** - {proj['sale_readiness']}% ready\n"
 
         return Response(message=dashboard, break_loop=False)
@@ -387,7 +363,7 @@ class PortfolioManager(Tool):
 
         return Response(
             message=f"✅ Product created: **{product['name']}** (ID: {product['id']})\nBase Price: ${product.get('base_price', 0):.2f}",
-            break_loop=False
+            break_loop=False,
         )
 
     async def _manage_pricing(self, db, product_id: int, data: dict) -> Response:
@@ -419,7 +395,7 @@ class PortfolioManager(Tool):
                 name=data["name"],
                 price=data["price"],
                 description=data.get("description", ""),
-                features=data.get("features")
+                features=data.get("features"),
             )
             return Response(message=f"✅ Pricing tier added: {data['name']} at ${data['price']:.2f}", break_loop=False)
 

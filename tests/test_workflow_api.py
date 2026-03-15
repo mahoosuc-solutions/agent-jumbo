@@ -53,7 +53,7 @@ def temp_db_path(tmp_path):
 @pytest.fixture
 def mock_files_get_abs_path(temp_db_path):
     """Mock files.get_abs_path to use temp database"""
-    with patch('python.helpers.files.get_abs_path') as mock:
+    with patch("python.helpers.files.get_abs_path") as mock:
         mock.return_value = temp_db_path
         yield mock
 
@@ -69,16 +69,16 @@ class TestWorkflowDashboardApi:
         handler = WorkflowDashboard(mock_flask_app, mock_thread_lock)
         result = await handler.process({}, MockRequest())
 
-        assert result['success'] is True
-        assert 'stats' in result
-        assert result['stats']['total_workflows'] == 0
-        assert result['stats']['total_executions'] == 0
-        assert result['stats']['total_skills'] == 0
-        assert result['stats']['total_learning_paths'] == 0
-        assert result['recent_executions'] == []
-        assert result['top_skills'] == []
-        assert result['workflows'] == []
-        assert result['learning_paths'] == []
+        assert result["success"] is True
+        assert "stats" in result
+        assert result["stats"]["total_workflows"] == 0
+        assert result["stats"]["total_executions"] == 0
+        assert result["stats"]["total_skills"] == 0
+        assert result["stats"]["total_learning_paths"] == 0
+        assert result["recent_executions"] == []
+        assert result["top_skills"] == []
+        assert result["workflows"] == []
+        assert result["learning_paths"] == []
 
     @pytest.mark.asyncio
     async def test_dashboard_with_data(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -88,46 +88,42 @@ class TestWorkflowDashboardApi:
 
         # Pre-populate data
         manager = WorkflowEngineManager(temp_db_path)
-        manager.create_workflow(
-            name="Test Workflow",
-            stages=[{"id": "s1", "name": "Stage 1"}]
-        )
+        manager.create_workflow(name="Test Workflow", stages=[{"id": "s1", "name": "Stage 1"}])
         manager.register_skill("test_skill", "Test Skill", "technical")
         manager.create_learning_path("test_path", "Test Path", "developer")
 
         handler = WorkflowDashboard(mock_flask_app, mock_thread_lock)
         result = await handler.process({}, MockRequest())
 
-        assert result['success'] is True
-        assert result['stats']['total_workflows'] == 1
-        assert result['stats']['total_skills'] == 1
-        assert result['stats']['total_learning_paths'] == 1
-        assert len(result['workflows']) == 1
-        assert len(result['learning_paths']) == 1
+        assert result["success"] is True
+        assert result["stats"]["total_workflows"] == 1
+        assert result["stats"]["total_skills"] == 1
+        assert result["stats"]["total_learning_paths"] == 1
+        assert len(result["workflows"]) == 1
+        assert len(result["learning_paths"]) == 1
 
     @pytest.mark.asyncio
-    async def test_dashboard_with_executions(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+    async def test_dashboard_with_executions(
+        self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock
+    ):
         """Test dashboard shows recent executions"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
         from python.api.workflow_dashboard import WorkflowDashboard
 
         manager = WorkflowEngineManager(temp_db_path)
-        wf = manager.create_workflow(
-            name="Execution Test",
-            stages=[{"id": "s1", "name": "Stage 1"}]
-        )
+        wf = manager.create_workflow(name="Execution Test", stages=[{"id": "s1", "name": "Stage 1"}])
 
         # Create executions
         for _i in range(7):
-            manager.start_workflow(workflow_id=wf['workflow_id'])
+            manager.start_workflow(workflow_id=wf["workflow_id"])
 
         handler = WorkflowDashboard(mock_flask_app, mock_thread_lock)
         result = await handler.process({}, MockRequest())
 
-        assert result['success'] is True
-        assert result['stats']['total_executions'] == 7
+        assert result["success"] is True
+        assert result["stats"]["total_executions"] == 7
         # Should only return 5 recent
-        assert len(result['recent_executions']) == 5
+        assert len(result["recent_executions"]) == 5
 
 
 class TestWorkflowEngineApi:
@@ -141,11 +137,13 @@ class TestWorkflowEngineApi:
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
         result = await handler.process({"action": "list_workflows"}, MockRequest())
 
-        assert result['success'] is True
-        assert result['workflows'] == []
+        assert result["success"] is True
+        assert result["workflows"] == []
 
     @pytest.mark.asyncio
-    async def test_list_workflows_with_data(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+    async def test_list_workflows_with_data(
+        self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock
+    ):
         """Test listing workflows with data"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
         from python.api.workflow_engine_api import WorkflowEngineApi
@@ -157,8 +155,8 @@ class TestWorkflowEngineApi:
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
         result = await handler.process({"action": "list_workflows"}, MockRequest())
 
-        assert result['success'] is True
-        assert len(result['workflows']) == 2
+        assert result["success"] is True
+        assert len(result["workflows"]) == 2
 
     @pytest.mark.asyncio
     async def test_get_workflow_by_id(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -168,20 +166,15 @@ class TestWorkflowEngineApi:
 
         manager = WorkflowEngineManager(temp_db_path)
         wf = manager.create_workflow(
-            name="Get By ID",
-            stages=[{"id": "design", "name": "Design"}],
-            description="Test workflow"
+            name="Get By ID", stages=[{"id": "design", "name": "Design"}], description="Test workflow"
         )
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_workflow",
-            "workflow_id": wf['workflow_id']
-        }, MockRequest())
+        result = await handler.process({"action": "get_workflow", "workflow_id": wf["workflow_id"]}, MockRequest())
 
-        assert result['success'] is True
-        assert result['workflow']['name'] == "Get By ID"
-        assert result['workflow']['description'] == "Test workflow"
+        assert result["success"] is True
+        assert result["workflow"]["name"] == "Get By ID"
+        assert result["workflow"]["description"] == "Test workflow"
 
     @pytest.mark.asyncio
     async def test_get_workflow_by_name(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -193,13 +186,10 @@ class TestWorkflowEngineApi:
         manager.create_workflow(name="Named Workflow", stages=[{"id": "s1", "name": "S1"}])
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_workflow",
-            "name": "Named Workflow"
-        }, MockRequest())
+        result = await handler.process({"action": "get_workflow", "name": "Named Workflow"}, MockRequest())
 
-        assert result['success'] is True
-        assert result['workflow']['name'] == "Named Workflow"
+        assert result["success"] is True
+        assert result["workflow"]["name"] == "Named Workflow"
 
     @pytest.mark.asyncio
     async def test_get_workflow_not_found(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -207,13 +197,10 @@ class TestWorkflowEngineApi:
         from python.api.workflow_engine_api import WorkflowEngineApi
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_workflow",
-            "workflow_id": 999
-        }, MockRequest())
+        result = await handler.process({"action": "get_workflow", "workflow_id": 999}, MockRequest())
 
-        assert result['success'] is False
-        assert "not found" in result['error'].lower()
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_visualize_workflow(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -223,51 +210,47 @@ class TestWorkflowEngineApi:
 
         manager = WorkflowEngineManager(temp_db_path)
         wf = manager.create_workflow(
-            name="Visual Workflow",
-            stages=[
-                {"id": "design", "name": "Design"},
-                {"id": "build", "name": "Build"}
-            ]
+            name="Visual Workflow", stages=[{"id": "design", "name": "Design"}, {"id": "build", "name": "Build"}]
         )
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "visualize_workflow",
-            "workflow_id": wf['workflow_id']
-        }, MockRequest())
+        result = await handler.process(
+            {"action": "visualize_workflow", "workflow_id": wf["workflow_id"]}, MockRequest()
+        )
 
-        assert result['success'] is True
-        assert 'diagram' in result
-        assert "```mermaid" in result['diagram']
-        assert "flowchart" in result['diagram']
-        assert "Design" in result['diagram']
-        assert "Build" in result['diagram']
+        assert result["success"] is True
+        assert "diagram" in result
+        assert "```mermaid" in result["diagram"]
+        assert "flowchart" in result["diagram"]
+        assert "Design" in result["diagram"]
+        assert "Build" in result["diagram"]
 
     @pytest.mark.asyncio
-    async def test_visualize_workflow_with_execution(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+    async def test_visualize_workflow_with_execution(
+        self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock
+    ):
         """Test workflow visualization with execution status"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
         from python.api.workflow_engine_api import WorkflowEngineApi
 
         manager = WorkflowEngineManager(temp_db_path)
         wf = manager.create_workflow(
-            name="Exec Visual",
-            stages=[
-                {"id": "s1", "name": "Stage 1"},
-                {"id": "s2", "name": "Stage 2"}
-            ]
+            name="Exec Visual", stages=[{"id": "s1", "name": "Stage 1"}, {"id": "s2", "name": "Stage 2"}]
         )
-        exec_result = manager.start_workflow(workflow_id=wf['workflow_id'])
+        exec_result = manager.start_workflow(workflow_id=wf["workflow_id"])
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "visualize_workflow",
-            "workflow_id": wf['workflow_id'],
-            "execution_id": exec_result['execution_id']
-        }, MockRequest())
+        result = await handler.process(
+            {
+                "action": "visualize_workflow",
+                "workflow_id": wf["workflow_id"],
+                "execution_id": exec_result["execution_id"],
+            },
+            MockRequest(),
+        )
 
-        assert result['success'] is True
-        assert 'diagram' in result
+        assert result["success"] is True
+        assert "diagram" in result
 
     @pytest.mark.asyncio
     async def test_visualize_workflow_not_found(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -275,13 +258,10 @@ class TestWorkflowEngineApi:
         from python.api.workflow_engine_api import WorkflowEngineApi
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "visualize_workflow",
-            "workflow_id": 999
-        }, MockRequest())
+        result = await handler.process({"action": "visualize_workflow", "workflow_id": 999}, MockRequest())
 
-        assert result['success'] is False
-        assert "not found" in result['error'].lower()
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_list_executions(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -291,17 +271,14 @@ class TestWorkflowEngineApi:
 
         manager = WorkflowEngineManager(temp_db_path)
         wf = manager.create_workflow(name="Exec List", stages=[{"id": "s1", "name": "S1"}])
-        manager.start_workflow(workflow_id=wf['workflow_id'])
-        manager.start_workflow(workflow_id=wf['workflow_id'])
+        manager.start_workflow(workflow_id=wf["workflow_id"])
+        manager.start_workflow(workflow_id=wf["workflow_id"])
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "list_executions",
-            "workflow_id": wf['workflow_id']
-        }, MockRequest())
+        result = await handler.process({"action": "list_executions", "workflow_id": wf["workflow_id"]}, MockRequest())
 
-        assert result['success'] is True
-        assert len(result['executions']) == 2
+        assert result["success"] is True
+        assert len(result["executions"]) == 2
 
     @pytest.mark.asyncio
     async def test_get_status(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -311,22 +288,20 @@ class TestWorkflowEngineApi:
 
         manager = WorkflowEngineManager(temp_db_path)
         wf = manager.create_workflow(
-            name="Status Test",
-            stages=[{"id": "s1", "name": "S1"}, {"id": "s2", "name": "S2"}]
+            name="Status Test", stages=[{"id": "s1", "name": "S1"}, {"id": "s2", "name": "S2"}]
         )
-        exec_result = manager.start_workflow(workflow_id=wf['workflow_id'])
+        exec_result = manager.start_workflow(workflow_id=wf["workflow_id"])
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_status",
-            "execution_id": exec_result['execution_id']
-        }, MockRequest())
+        result = await handler.process(
+            {"action": "get_status", "execution_id": exec_result["execution_id"]}, MockRequest()
+        )
 
-        assert result['success'] is True
-        assert 'execution' in result
-        assert 'status' in result
-        assert result['status']['current_stage'] == "s1"
-        assert result['status']['progress']['stages_total'] == 2
+        assert result["success"] is True
+        assert "execution" in result
+        assert "status" in result
+        assert result["status"]["current_stage"] == "s1"
+        assert result["status"]["progress"]["stages_total"] == 2
 
     @pytest.mark.asyncio
     async def test_get_status_missing_id(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -334,12 +309,10 @@ class TestWorkflowEngineApi:
         from python.api.workflow_engine_api import WorkflowEngineApi
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_status"
-        }, MockRequest())
+        result = await handler.process({"action": "get_status"}, MockRequest())
 
-        assert result['success'] is False
-        assert "required" in result['error'].lower()
+        assert result["success"] is False
+        assert "required" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_visualize_gantt(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -352,20 +325,17 @@ class TestWorkflowEngineApi:
             name="Gantt Test",
             stages=[
                 {"id": "phase1", "name": "Phase 1", "duration_days": 7},
-                {"id": "phase2", "name": "Phase 2", "duration_days": 14}
-            ]
+                {"id": "phase2", "name": "Phase 2", "duration_days": 14},
+            ],
         )
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "visualize_gantt",
-            "workflow_id": wf['workflow_id']
-        }, MockRequest())
+        result = await handler.process({"action": "visualize_gantt", "workflow_id": wf["workflow_id"]}, MockRequest())
 
-        assert result['success'] is True
-        assert 'diagram' in result
-        assert "gantt" in result['diagram']
-        assert "Phase 1" in result['diagram']
+        assert result["success"] is True
+        assert "diagram" in result
+        assert "gantt" in result["diagram"]
+        assert "Phase 1" in result["diagram"]
 
     @pytest.mark.asyncio
     async def test_visualize_tasks(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -376,49 +346,46 @@ class TestWorkflowEngineApi:
         manager = WorkflowEngineManager(temp_db_path)
         wf = manager.create_workflow(
             name="Task Visual",
-            stages=[{
-                "id": "dev",
-                "name": "Development",
-                "tasks": [
-                    {"id": "code", "name": "Write Code", "dependencies": []},
-                    {"id": "test", "name": "Write Tests", "dependencies": ["code"]}
-                ]
-            }]
+            stages=[
+                {
+                    "id": "dev",
+                    "name": "Development",
+                    "tasks": [
+                        {"id": "code", "name": "Write Code", "dependencies": []},
+                        {"id": "test", "name": "Write Tests", "dependencies": ["code"]},
+                    ],
+                }
+            ],
         )
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "visualize_tasks",
-            "workflow_id": wf['workflow_id'],
-            "stage_id": "dev"
-        }, MockRequest())
+        result = await handler.process(
+            {"action": "visualize_tasks", "workflow_id": wf["workflow_id"], "stage_id": "dev"}, MockRequest()
+        )
 
-        assert result['success'] is True
-        assert 'diagram' in result
-        assert "Write Code" in result['diagram']
-        assert "Write Tests" in result['diagram']
+        assert result["success"] is True
+        assert "diagram" in result
+        assert "Write Code" in result["diagram"]
+        assert "Write Tests" in result["diagram"]
 
     @pytest.mark.asyncio
-    async def test_visualize_tasks_stage_not_found(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+    async def test_visualize_tasks_stage_not_found(
+        self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock
+    ):
         """Test task visualization with non-existent stage"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
         from python.api.workflow_engine_api import WorkflowEngineApi
 
         manager = WorkflowEngineManager(temp_db_path)
-        wf = manager.create_workflow(
-            name="Stage Not Found",
-            stages=[{"id": "s1", "name": "S1"}]
-        )
+        wf = manager.create_workflow(name="Stage Not Found", stages=[{"id": "s1", "name": "S1"}])
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "visualize_tasks",
-            "workflow_id": wf['workflow_id'],
-            "stage_id": "nonexistent"
-        }, MockRequest())
+        result = await handler.process(
+            {"action": "visualize_tasks", "workflow_id": wf["workflow_id"], "stage_id": "nonexistent"}, MockRequest()
+        )
 
-        assert result['success'] is False
-        assert "not found" in result['error'].lower()
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_dashboard(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -430,13 +397,11 @@ class TestWorkflowEngineApi:
         manager.create_workflow(name="Dashboard WF", stages=[{"id": "s1", "name": "S1"}])
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_dashboard"
-        }, MockRequest())
+        result = await handler.process({"action": "get_dashboard"}, MockRequest())
 
-        assert result['success'] is True
-        assert 'dashboard' in result
-        assert "WORKFLOW ENGINE DASHBOARD" in result['dashboard']
+        assert result["success"] is True
+        assert "dashboard" in result
+        assert "WORKFLOW ENGINE DASHBOARD" in result["dashboard"]
 
     @pytest.mark.asyncio
     async def test_unknown_action(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -444,12 +409,10 @@ class TestWorkflowEngineApi:
         from python.api.workflow_engine_api import WorkflowEngineApi
 
         handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "nonexistent_action"
-        }, MockRequest())
+        result = await handler.process({"action": "nonexistent_action"}, MockRequest())
 
-        assert result['success'] is False
-        assert "Unknown action" in result['error']
+        assert result["success"] is False
+        assert "Unknown action" in result["error"]
 
 
 class TestWorkflowTrainingApi:
@@ -461,12 +424,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "list_skills"
-        }, MockRequest())
+        result = await handler.process({"action": "list_skills"}, MockRequest())
 
-        assert result['success'] is True
-        assert result['skills'] == []
+        assert result["success"] is True
+        assert result["skills"] == []
 
     @pytest.mark.asyncio
     async def test_list_skills_with_data(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -479,15 +440,15 @@ class TestWorkflowTrainingApi:
         manager.register_skill("docker", "Docker", "tool")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "list_skills"
-        }, MockRequest())
+        result = await handler.process({"action": "list_skills"}, MockRequest())
 
-        assert result['success'] is True
-        assert len(result['skills']) == 2
+        assert result["success"] is True
+        assert len(result["skills"]) == 2
 
     @pytest.mark.asyncio
-    async def test_list_skills_by_category(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+    async def test_list_skills_by_category(
+        self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock
+    ):
         """Test listing skills filtered by category"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
         from python.api.workflow_training_api import WorkflowTrainingApi
@@ -498,13 +459,10 @@ class TestWorkflowTrainingApi:
         manager.register_skill("s3", "Skill 3", "process")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "list_skills",
-            "category": "technical"
-        }, MockRequest())
+        result = await handler.process({"action": "list_skills", "category": "technical"}, MockRequest())
 
-        assert result['success'] is True
-        assert len(result['skills']) == 2
+        assert result["success"] is True
+        assert len(result["skills"]) == 2
 
     @pytest.mark.asyncio
     async def test_get_skill(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -513,22 +471,14 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         manager = WorkflowEngineManager(temp_db_path)
-        manager.register_skill(
-            "python_async",
-            "Async Python",
-            "technical",
-            description="Async programming"
-        )
+        manager.register_skill("python_async", "Async Python", "technical", description="Async programming")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_skill",
-            "skill_id": "python_async"
-        }, MockRequest())
+        result = await handler.process({"action": "get_skill", "skill_id": "python_async"}, MockRequest())
 
-        assert result['success'] is True
-        assert result['skill']['name'] == "Async Python"
-        assert result['skill']['category'] == "technical"
+        assert result["success"] is True
+        assert result["skill"]["name"] == "Async Python"
+        assert result["skill"]["category"] == "technical"
 
     @pytest.mark.asyncio
     async def test_get_skill_missing_id(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -536,12 +486,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_skill"
-        }, MockRequest())
+        result = await handler.process({"action": "get_skill"}, MockRequest())
 
-        assert result['success'] is False
-        assert "required" in result['error'].lower()
+        assert result["success"] is False
+        assert "required" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_skill_not_found(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -549,13 +497,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_skill",
-            "skill_id": "nonexistent"
-        }, MockRequest())
+        result = await handler.process({"action": "get_skill", "skill_id": "nonexistent"}, MockRequest())
 
-        assert result['success'] is False
-        assert "not found" in result['error'].lower()
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_proficiency(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -568,15 +513,15 @@ class TestWorkflowTrainingApi:
         manager.track_skill_usage("agent_0", "s1", success=True)
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_proficiency"
-        }, MockRequest())
+        result = await handler.process({"action": "get_proficiency"}, MockRequest())
 
-        assert result['success'] is True
-        assert 'proficiency' in result
+        assert result["success"] is True
+        assert "proficiency" in result
 
     @pytest.mark.asyncio
-    async def test_get_proficiency_custom_agent(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+    async def test_get_proficiency_custom_agent(
+        self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock
+    ):
         """Test getting proficiency for specific agent"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
         from python.api.workflow_training_api import WorkflowTrainingApi
@@ -586,13 +531,10 @@ class TestWorkflowTrainingApi:
         manager.track_skill_usage("agent_custom", "s1", success=True)
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_proficiency",
-            "agent_id": "agent_custom"
-        }, MockRequest())
+        result = await handler.process({"action": "get_proficiency", "agent_id": "agent_custom"}, MockRequest())
 
-        assert result['success'] is True
-        assert 'proficiency' in result
+        assert result["success"] is True
+        assert "proficiency" in result
 
     @pytest.mark.asyncio
     async def test_list_paths(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -605,12 +547,10 @@ class TestWorkflowTrainingApi:
         manager.create_learning_path("p2", "Path 2", "operator")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "list_paths"
-        }, MockRequest())
+        result = await handler.process({"action": "list_paths"}, MockRequest())
 
-        assert result['success'] is True
-        assert len(result['paths']) == 2
+        assert result["success"] is True
+        assert len(result["paths"]) == 2
 
     @pytest.mark.asyncio
     async def test_list_paths_by_role(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -624,13 +564,10 @@ class TestWorkflowTrainingApi:
         manager.create_learning_path("p3", "Path 3", "operator")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "list_paths",
-            "target_role": "developer"
-        }, MockRequest())
+        result = await handler.process({"action": "list_paths", "target_role": "developer"}, MockRequest())
 
-        assert result['success'] is True
-        assert len(result['paths']) == 2
+        assert result["success"] is True
+        assert len(result["paths"]) == 2
 
     @pytest.mark.asyncio
     async def test_get_path(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -644,18 +581,15 @@ class TestWorkflowTrainingApi:
             "Python Developer",
             "developer",
             description="Learn Python development",
-            modules=[{"module_id": "m1", "name": "Basics"}]
+            modules=[{"module_id": "m1", "name": "Basics"}],
         )
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_path",
-            "path_id": "py_dev"
-        }, MockRequest())
+        result = await handler.process({"action": "get_path", "path_id": "py_dev"}, MockRequest())
 
-        assert result['success'] is True
-        assert result['path']['name'] == "Python Developer"
-        assert len(result['path']['modules']) == 1
+        assert result["success"] is True
+        assert result["path"]["name"] == "Python Developer"
+        assert len(result["path"]["modules"]) == 1
 
     @pytest.mark.asyncio
     async def test_get_path_missing_id(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -663,12 +597,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_path"
-        }, MockRequest())
+        result = await handler.process({"action": "get_path"}, MockRequest())
 
-        assert result['success'] is False
-        assert "required" in result['error'].lower()
+        assert result["success"] is False
+        assert "required" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_path_not_found(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -676,13 +608,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_path",
-            "path_id": "nonexistent"
-        }, MockRequest())
+        result = await handler.process({"action": "get_path", "path_id": "nonexistent"}, MockRequest())
 
-        assert result['success'] is False
-        assert "not found" in result['error'].lower()
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_progress(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -694,13 +623,10 @@ class TestWorkflowTrainingApi:
         manager.create_learning_path("test_path", "Test Path", "tester")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_progress",
-            "path_id": "test_path"
-        }, MockRequest())
+        result = await handler.process({"action": "get_progress", "path_id": "test_path"}, MockRequest())
 
-        assert result['success'] is True
-        assert 'progress' in result
+        assert result["success"] is True
+        assert "progress" in result
 
     @pytest.mark.asyncio
     async def test_get_progress_missing_path_id(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -708,12 +634,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_progress"
-        }, MockRequest())
+        result = await handler.process({"action": "get_progress"}, MockRequest())
 
-        assert result['success'] is False
-        assert "required" in result['error'].lower()
+        assert result["success"] is False
+        assert "required" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_module(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -721,13 +645,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_module",
-            "module_id": "nonexistent"
-        }, MockRequest())
+        result = await handler.process({"action": "get_module", "module_id": "nonexistent"}, MockRequest())
 
-        assert result['success'] is False
-        assert "not found" in result['error'].lower()
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_get_module_missing_id(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -735,12 +656,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "get_module"
-        }, MockRequest())
+        result = await handler.process({"action": "get_module"}, MockRequest())
 
-        assert result['success'] is False
-        assert "required" in result['error'].lower()
+        assert result["success"] is False
+        assert "required" in result["error"].lower()
 
     @pytest.mark.asyncio
     async def test_skill_report(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -753,14 +672,12 @@ class TestWorkflowTrainingApi:
         manager.track_skill_usage("agent_0", "s1", success=True)
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "skill_report"
-        }, MockRequest())
+        result = await handler.process({"action": "skill_report"}, MockRequest())
 
-        assert result['success'] is True
-        assert 'skills' in result
-        assert 'chart' in result
-        assert "Skill Proficiency" in result['chart']
+        assert result["success"] is True
+        assert "skills" in result
+        assert "chart" in result
+        assert "Skill Proficiency" in result["chart"]
 
     @pytest.mark.asyncio
     async def test_training_dashboard(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
@@ -773,13 +690,11 @@ class TestWorkflowTrainingApi:
         manager.create_learning_path("p1", "Path 1", "developer")
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "training_dashboard"
-        }, MockRequest())
+        result = await handler.process({"action": "training_dashboard"}, MockRequest())
 
-        assert result['success'] is True
-        assert 'dashboard' in result
-        assert "WORKFLOW ENGINE DASHBOARD" in result['dashboard']
+        assert result["success"] is True
+        assert "dashboard" in result
+        assert "WORKFLOW ENGINE DASHBOARD" in result["dashboard"]
 
     @pytest.mark.asyncio
     async def test_unknown_action(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -787,12 +702,10 @@ class TestWorkflowTrainingApi:
         from python.api.workflow_training_api import WorkflowTrainingApi
 
         handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({
-            "action": "nonexistent_action"
-        }, MockRequest())
+        result = await handler.process({"action": "nonexistent_action"}, MockRequest())
 
-        assert result['success'] is False
-        assert "Unknown action" in result['error']
+        assert result["success"] is False
+        assert "Unknown action" in result["error"]
 
 
 class TestApiErrorHandling:
@@ -804,44 +717,44 @@ class TestApiErrorHandling:
         from python.api.workflow_dashboard import WorkflowDashboard
 
         # Mock to raise exception
-        with patch('python.helpers.files.get_abs_path') as mock:
+        with patch("python.helpers.files.get_abs_path") as mock:
             mock.side_effect = Exception("Database error")
 
             handler = WorkflowDashboard(mock_flask_app, mock_thread_lock)
             result = await handler.process({}, MockRequest())
 
             # Should return error structure, not raise
-            assert result['success'] is False
-            assert 'error' in result
-            assert result['stats']['total_workflows'] == 0
+            assert result["success"] is False
+            assert "error" in result
+            assert result["stats"]["total_workflows"] == 0
 
     @pytest.mark.asyncio
     async def test_engine_api_exception_handling(self, mock_flask_app, mock_thread_lock):
         """Test engine API handles exceptions gracefully"""
         from python.api.workflow_engine_api import WorkflowEngineApi
 
-        with patch('python.helpers.files.get_abs_path') as mock:
+        with patch("python.helpers.files.get_abs_path") as mock:
             mock.side_effect = Exception("Database connection failed")
 
             handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
             result = await handler.process({"action": "list_workflows"}, MockRequest())
 
-            assert result['success'] is False
-            assert 'error' in result
+            assert result["success"] is False
+            assert "error" in result
 
     @pytest.mark.asyncio
     async def test_training_api_exception_handling(self, mock_flask_app, mock_thread_lock):
         """Test training API handles exceptions gracefully"""
         from python.api.workflow_training_api import WorkflowTrainingApi
 
-        with patch('python.helpers.files.get_abs_path') as mock:
+        with patch("python.helpers.files.get_abs_path") as mock:
             mock.side_effect = Exception("Connection refused")
 
             handler = WorkflowTrainingApi(mock_flask_app, mock_thread_lock)
             result = await handler.process({"action": "list_skills"}, MockRequest())
 
-            assert result['success'] is False
-            assert 'error' in result
+            assert result["success"] is False
+            assert "error" in result
 
 
 if __name__ == "__main__":

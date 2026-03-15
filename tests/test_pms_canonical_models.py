@@ -3,22 +3,22 @@ Unit tests for PMS Hub Canonical Data Models
 Tests data model validation, serialization, and transformations
 """
 
-import pytest
-from datetime import datetime, date
+from datetime import date, datetime
 from decimal import Decimal
 
+import pytest
+
 from instruments.custom.pms_hub.canonical_models import (
-    Property,
-    Unit,
-    Guest,
-    Reservation,
-    Message,
-    Review,
     Calendar,
-    PricingRule,
-    ReservationStatus,
-    PaymentStatus,
+    Message,
     MessageType,
+    PaymentStatus,
+    PricingRule,
+    Property,
+    Reservation,
+    ReservationStatus,
+    Review,
+    Unit,
 )
 
 
@@ -420,6 +420,7 @@ class TestGuestModel:
 # Integration Tests for Model Relationships
 # ============================================================================
 
+
 class TestModelRelationships:
     """Tests for relationships between models"""
 
@@ -446,6 +447,7 @@ class TestModelRelationships:
 # Serialization Tests
 # ============================================================================
 
+
 class TestModelSerialization:
     """Tests for model serialization and deserialization"""
 
@@ -454,6 +456,7 @@ class TestModelSerialization:
         """Test property can be converted to dict"""
         # Properties are dataclasses, should have __dict__
         import dataclasses
+
         prop_dict = dataclasses.asdict(sample_property)
 
         assert prop_dict["provider_id"] == "prop_123"
@@ -470,5 +473,6 @@ class TestModelSerialization:
     def test_date_fields_are_dates(self, sample_reservation):
         """Test date fields are proper date objects"""
         from datetime import date
+
         assert isinstance(sample_reservation.check_in_date, date)
         assert isinstance(sample_reservation.check_out_date, date)

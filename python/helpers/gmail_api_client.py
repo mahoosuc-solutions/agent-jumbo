@@ -55,7 +55,7 @@ class GmailAPIClient:
         html: bool = False,
         from_name: str | None = None,
         labels: list[str] | None = None,
-        thread_id: str | None = None
+        thread_id: str | None = None,
     ) -> dict:
         """
         Send email via Gmail API
@@ -87,42 +87,36 @@ class GmailAPIClient:
                 bcc=bcc,
                 attachments=attachments,
                 html=html,
-                from_name=from_name
+                from_name=from_name,
             )
 
             # Add metadata
-            send_data = {'raw': message}
+            send_data = {"raw": message}
             if thread_id:
-                send_data['threadId'] = thread_id
+                send_data["threadId"] = thread_id
             if labels:
-                send_data['labelIds'] = labels
+                send_data["labelIds"] = labels
 
             # Send message
-            sent_message = self.service.users().messages().send(
-                userId='me',
-                body=send_data
-            ).execute()
+            sent_message = self.service.users().messages().send(userId="me", body=send_data).execute()
 
             return {
                 "success": True,
-                "message_id": sent_message['id'],
-                "thread_id": sent_message.get('threadId'),
+                "message_id": sent_message["id"],
+                "thread_id": sent_message.get("threadId"),
                 "to": to,
                 "subject": subject,
-                "labels": labels
+                "labels": labels,
             }
 
         except HttpError as error:
             return {
                 "success": False,
                 "error": f"Gmail API error: {error}",
-                "error_code": error.resp.status if hasattr(error, 'resp') else None
+                "error_code": error.resp.status if hasattr(error, "resp") else None,
             }
         except Exception as e:
-            return {
-                "success": False,
-                "error": str(e)
-            }
+            return {"success": False, "error": str(e)}
 
     def _create_message(
         self,
@@ -133,7 +127,7 @@ class GmailAPIClient:
         bcc: list[str] | None = None,
         attachments: list[str] | None = None,
         html: bool = False,
-        from_name: str | None = None
+        from_name: str | None = None,
     ) -> str:
         """Create base64 encoded email message"""
 
@@ -141,30 +135,30 @@ class GmailAPIClient:
         if attachments:
             message = MIMEMultipart()
         else:
-            message = MIMEText(body, 'html' if html else 'plain')
-            message['subject'] = subject
-            message['to'] = ', '.join(to)
+            message = MIMEText(body, "html" if html else "plain")
+            message["subject"] = subject
+            message["to"] = ", ".join(to)
             if cc:
-                message['cc'] = ', '.join(cc)
+                message["cc"] = ", ".join(cc)
             if from_name:
-                message['from'] = from_name
+                message["from"] = from_name
             return base64.urlsafe_b64encode(message.as_bytes()).decode()
 
         # Add headers
-        message['subject'] = subject
-        message['to'] = ', '.join(to)
+        message["subject"] = subject
+        message["to"] = ", ".join(to)
         if cc:
-            message['cc'] = ', '.join(cc)
+            message["cc"] = ", ".join(cc)
         if bcc:
-            message['bcc'] = ', '.join(bcc)
+            message["bcc"] = ", ".join(bcc)
         if from_name:
-            message['from'] = from_name
+            message["from"] = from_name
 
         # Add body
-        message.attach(MIMEText(body, 'html' if html else 'plain'))
+        message.attach(MIMEText(body, "html" if html else "plain"))
 
         # Add attachments
-        for file_path in (attachments or []):
+        for file_path in attachments or []:
             self._add_attachment(message, file_path)
 
         return base64.urlsafe_b64encode(message.as_bytes()).decode()
@@ -179,16 +173,16 @@ class GmailAPIClient:
         content_type, _ = mimetypes.guess_type(file_path)
 
         if content_type is None:
-            content_type = 'application/octet-stream'
+            content_type = "application/octet-stream"
 
-        main_type, sub_type = content_type.split('/', 1)
+        main_type, sub_type = content_type.split("/", 1)
 
-        with open(file_path, 'rb') as f:
+        with open(file_path, "rb") as f:
             attachment = MIMEBase(main_type, sub_type)
             attachment.set_payload(f.read())
 
         encoders.encode_base64(attachment)
-        attachment.add_header('Content-Disposition', 'attachment', filename=path.name)
+        attachment.add_header("Content-Disposition", "attachment", filename=path.name)
         message.attach(attachment)
 
     # Advanced Email Reading
@@ -198,7 +192,7 @@ class GmailAPIClient:
         query: str | None = None,
         max_results: int = 10,
         label_ids: list[str] | None = None,
-        include_spam_trash: bool = False
+        include_spam_trash: bool = False,
     ) -> list[dict]:
         """
         Read emails with advanced filtering
@@ -216,28 +210,25 @@ class GmailAPIClient:
             self._ensure_service()
 
             # Build query parameters
-            params = {
-                'userId': 'me',
-                'maxResults': max_results
-            }
+            params = {"userId": "me", "maxResults": max_results}
 
             if query:
-                params['q'] = query
+                params["q"] = query
 
             if label_ids:
-                params['labelIds'] = label_ids
+                params["labelIds"] = label_ids
 
             if include_spam_trash:
-                params['includeSpamTrash'] = True
+                params["includeSpamTrash"] = True
 
             # Get message list
             results = self.service.users().messages().list(**params).execute()
-            messages = results.get('messages', [])
+            messages = results.get("messages", [])
 
             # Fetch full message details
             emails = []
             for msg in messages:
-                email_data = self._get_message_details(msg['id'])
+                email_data = self._get_message_details(msg["id"])
                 if email_data:
                     emails.append(email_data)
 
@@ -253,32 +244,28 @@ class GmailAPIClient:
     def _get_message_details(self, message_id: str) -> dict | None:
         """Get full message details"""
         try:
-            message = self.service.users().messages().get(
-                userId='me',
-                id=message_id,
-                format='full'
-            ).execute()
+            message = self.service.users().messages().get(userId="me", id=message_id, format="full").execute()
 
             # Extract headers
-            headers = {h['name']: h['value'] for h in message['payload'].get('headers', [])}
+            headers = {h["name"]: h["value"] for h in message["payload"].get("headers", [])}
 
             # Extract body
-            body = self._extract_body(message['payload'])
+            body = self._extract_body(message["payload"])
 
             # Extract labels
-            labels = message.get('labelIds', [])
+            labels = message.get("labelIds", [])
 
             return {
                 "message_id": message_id,
-                "thread_id": message.get('threadId'),
-                "from": headers.get('From'),
-                "to": headers.get('To'),
-                "subject": headers.get('Subject'),
-                "date": headers.get('Date'),
+                "thread_id": message.get("threadId"),
+                "from": headers.get("From"),
+                "to": headers.get("To"),
+                "subject": headers.get("Subject"),
+                "date": headers.get("Date"),
                 "body": body,
                 "labels": labels,
-                "snippet": message.get('snippet'),
-                "is_unread": 'UNREAD' in labels
+                "snippet": message.get("snippet"),
+                "is_unread": "UNREAD" in labels,
             }
 
         except Exception as e:
@@ -287,24 +274,25 @@ class GmailAPIClient:
 
     def _extract_body(self, payload: dict) -> str:
         """Extract email body from payload"""
-        if 'parts' in payload:
-            for part in payload['parts']:
-                if part['mimeType'] == 'text/plain':
-                    data = part['body'].get('data')
+        if "parts" in payload:
+            for part in payload["parts"]:
+                if part["mimeType"] == "text/plain":
+                    data = part["body"].get("data")
                     if data:
-                        return base64.urlsafe_b64decode(data).decode('utf-8')
-                elif part['mimeType'] == 'multipart/alternative':
+                        return base64.urlsafe_b64decode(data).decode("utf-8")
+                elif part["mimeType"] == "multipart/alternative":
                     return self._extract_body(part)
 
-        if 'body' in payload and 'data' in payload['body']:
-            return base64.urlsafe_b64decode(payload['body']['data']).decode('utf-8')
+        if "body" in payload and "data" in payload["body"]:
+            return base64.urlsafe_b64decode(payload["body"]["data"]).decode("utf-8")
 
         return ""
 
     # Label Management
 
-    def create_label(self, name: str, label_list_visibility: str = "labelShow",
-                    message_list_visibility: str = "show") -> dict:
+    def create_label(
+        self, name: str, label_list_visibility: str = "labelShow", message_list_visibility: str = "show"
+    ) -> dict:
         """
         Create a new Gmail label
 
@@ -320,42 +308,28 @@ class GmailAPIClient:
             self._ensure_service()
 
             label_object = {
-                'name': name,
-                'labelListVisibility': label_list_visibility,
-                'messageListVisibility': message_list_visibility
+                "name": name,
+                "labelListVisibility": label_list_visibility,
+                "messageListVisibility": message_list_visibility,
             }
 
-            label = self.service.users().labels().create(
-                userId='me',
-                body=label_object
-            ).execute()
+            label = self.service.users().labels().create(userId="me", body=label_object).execute()
 
-            return {
-                "success": True,
-                "label_id": label['id'],
-                "label_name": label['name']
-            }
+            return {"success": True, "label_id": label["id"], "label_name": label["name"]}
 
         except HttpError as error:
-            return {
-                "success": False,
-                "error": f"Failed to create label: {error}"
-            }
+            return {"success": False, "error": f"Failed to create label: {error}"}
 
     def list_labels(self) -> list[dict]:
         """List all Gmail labels"""
         try:
             self._ensure_service()
 
-            results = self.service.users().labels().list(userId='me').execute()
-            labels = results.get('labels', [])
+            results = self.service.users().labels().list(userId="me").execute()
+            labels = results.get("labels", [])
 
             return [
-                {
-                    "label_id": label['id'],
-                    "label_name": label['name'],
-                    "type": label.get('type', 'user')
-                }
+                {"label_id": label["id"], "label_name": label["name"], "type": label.get("type", "user")}
                 for label in labels
             ]
 
@@ -369,24 +343,13 @@ class GmailAPIClient:
             self._ensure_service()
 
             self.service.users().messages().batchModify(
-                userId='me',
-                body={
-                    'ids': message_ids,
-                    'addLabelIds': label_ids
-                }
+                userId="me", body={"ids": message_ids, "addLabelIds": label_ids}
             ).execute()
 
-            return {
-                "success": True,
-                "messages_modified": len(message_ids),
-                "labels_applied": label_ids
-            }
+            return {"success": True, "messages_modified": len(message_ids), "labels_applied": label_ids}
 
         except HttpError as error:
-            return {
-                "success": False,
-                "error": f"Failed to apply labels: {error}"
-            }
+            return {"success": False, "error": f"Failed to apply labels: {error}"}
 
     def remove_labels(self, message_ids: list[str], label_ids: list[str]) -> dict:
         """Remove labels from messages"""
@@ -394,24 +357,13 @@ class GmailAPIClient:
             self._ensure_service()
 
             self.service.users().messages().batchModify(
-                userId='me',
-                body={
-                    'ids': message_ids,
-                    'removeLabelIds': label_ids
-                }
+                userId="me", body={"ids": message_ids, "removeLabelIds": label_ids}
             ).execute()
 
-            return {
-                "success": True,
-                "messages_modified": len(message_ids),
-                "labels_removed": label_ids
-            }
+            return {"success": True, "messages_modified": len(message_ids), "labels_removed": label_ids}
 
         except HttpError as error:
-            return {
-                "success": False,
-                "error": f"Failed to remove labels: {error}"
-            }
+            return {"success": False, "error": f"Failed to remove labels: {error}"}
 
     # Draft Management
 
@@ -423,58 +375,33 @@ class GmailAPIClient:
         cc: list[str] | None = None,
         bcc: list[str] | None = None,
         attachments: list[str] | None = None,
-        html: bool = False
+        html: bool = False,
     ) -> dict:
         """Create email draft"""
         try:
             self._ensure_service()
 
             message = self._create_message(
-                to=to,
-                subject=subject,
-                body=body,
-                cc=cc,
-                bcc=bcc,
-                attachments=attachments,
-                html=html
+                to=to, subject=subject, body=body, cc=cc, bcc=bcc, attachments=attachments, html=html
             )
 
-            draft = self.service.users().drafts().create(
-                userId='me',
-                body={'message': {'raw': message}}
-            ).execute()
+            draft = self.service.users().drafts().create(userId="me", body={"message": {"raw": message}}).execute()
 
-            return {
-                "success": True,
-                "draft_id": draft['id'],
-                "message_id": draft['message']['id']
-            }
+            return {"success": True, "draft_id": draft["id"], "message_id": draft["message"]["id"]}
 
         except HttpError as error:
-            return {
-                "success": False,
-                "error": f"Failed to create draft: {error}"
-            }
+            return {"success": False, "error": f"Failed to create draft: {error}"}
 
     def list_drafts(self, max_results: int = 10) -> list[dict]:
         """List email drafts"""
         try:
             self._ensure_service()
 
-            results = self.service.users().drafts().list(
-                userId='me',
-                maxResults=max_results
-            ).execute()
+            results = self.service.users().drafts().list(userId="me", maxResults=max_results).execute()
 
-            drafts = results.get('drafts', [])
+            drafts = results.get("drafts", [])
 
-            return [
-                {
-                    "draft_id": draft['id'],
-                    "message_id": draft['message']['id']
-                }
-                for draft in drafts
-            ]
+            return [{"draft_id": draft["id"], "message_id": draft["message"]["id"]} for draft in drafts]
 
         except HttpError as error:
             print(f"Error listing drafts: {error}")
@@ -485,43 +412,24 @@ class GmailAPIClient:
         try:
             self._ensure_service()
 
-            sent = self.service.users().drafts().send(
-                userId='me',
-                body={'id': draft_id}
-            ).execute()
+            sent = self.service.users().drafts().send(userId="me", body={"id": draft_id}).execute()
 
-            return {
-                "success": True,
-                "message_id": sent['id'],
-                "thread_id": sent.get('threadId')
-            }
+            return {"success": True, "message_id": sent["id"], "thread_id": sent.get("threadId")}
 
         except HttpError as error:
-            return {
-                "success": False,
-                "error": f"Failed to send draft: {error}"
-            }
+            return {"success": False, "error": f"Failed to send draft: {error}"}
 
     def delete_draft(self, draft_id: str) -> dict:
         """Delete draft"""
         try:
             self._ensure_service()
 
-            self.service.users().drafts().delete(
-                userId='me',
-                id=draft_id
-            ).execute()
+            self.service.users().drafts().delete(userId="me", id=draft_id).execute()
 
-            return {
-                "success": True,
-                "draft_id": draft_id
-            }
+            return {"success": True, "draft_id": draft_id}
 
         except HttpError as error:
-            return {
-                "success": False,
-                "error": f"Failed to delete draft: {error}"
-            }
+            return {"success": False, "error": f"Failed to delete draft: {error}"}
 
     # Advanced Search
 
@@ -535,7 +443,7 @@ class GmailAPIClient:
         is_unread: bool | None = None,
         after_date: str | None = None,
         before_date: str | None = None,
-        max_results: int = 10
+        max_results: int = 10,
     ) -> list[dict]:
         """
         Advanced email search with multiple criteria
@@ -574,6 +482,6 @@ class GmailAPIClient:
         if before_date:
             query_parts.append(f"before:{before_date}")
 
-        query = ' '.join(query_parts) if query_parts else None
+        query = " ".join(query_parts) if query_parts else None
 
         return self.read_emails(query=query, max_results=max_results)

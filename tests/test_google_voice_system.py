@@ -10,22 +10,17 @@ Test Categories:
   • Performance Tests: Response time and throughput
 """
 
-import pytest
-import asyncio
+import tempfile
 from datetime import date, datetime
 from pathlib import Path
-from typing import Dict, Any
-import tempfile
-import json
 
+import pytest
+
+from instruments.custom.google_voice.google_voice_manager import GoogleVoiceManager
 from instruments.custom.pms_hub.canonical_models import (
     Reservation,
     ReservationStatus,
-    MessageType,
 )
-from instruments.custom.google_voice.google_voice_manager import GoogleVoiceManager
-from python.helpers import files
-
 
 # ============================================================================
 # FIXTURES
@@ -307,7 +302,7 @@ class TestMessageLifecycle:
             messages[res.provider_id] = msg["id"]
 
         # Update one message to sent
-        first_id = list(messages.values())[0]
+        first_id = next(iter(messages.values()))
         google_voice_manager.db.update_outbound_status(first_id, "sent")
 
         # Verify others remain draft
@@ -456,7 +451,7 @@ class TestPerformance:
 
         start = time.time()
         for i in range(100):
-            google_voice_manager.draft_outbound(f"+14155551{i%9999:04d}", f"Message {i}")
+            google_voice_manager.draft_outbound(f"+14155551{i % 9999:04d}", f"Message {i}")
         elapsed = time.time() - start
 
         assert elapsed < 1.0  # <1 second for 100 messages

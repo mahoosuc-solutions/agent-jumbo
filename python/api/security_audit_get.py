@@ -19,12 +19,15 @@ class security_audit_get(ApiHandler):
 
             # Get latest 100 logs
             limit = input.get("limit", 100)
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT id, timestamp, event_type, status, user_id, ip_address, device_info, details
                 FROM security_audit_log
                 ORDER BY timestamp DESC
                 LIMIT ?
-            """, (limit,))
+            """,
+                (limit,),
+            )
 
             rows = cursor.fetchall()
             logs = []
@@ -37,9 +40,6 @@ class security_audit_get(ApiHandler):
 
             conn.close()
 
-            return {
-                "success": True,
-                "logs": logs
-            }
+            return {"success": True, "logs": logs}
         except Exception as e:
             return {"success": False, "error": str(e)}

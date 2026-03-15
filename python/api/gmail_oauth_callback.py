@@ -2,6 +2,7 @@
 Gmail OAuth2 Callback API Handler
 Handles OAuth2 callback and exchanges code for tokens
 """
+
 from datetime import datetime
 
 from flask import session
@@ -29,9 +30,9 @@ class GmailOauthCallback(ApiHandler):
         """
         try:
             # Get parameters from query string
-            code = request.args.get('code')
-            state = request.args.get('state')
-            error = request.args.get('error')
+            code = request.args.get("code")
+            state = request.args.get("state")
+            error = request.args.get("error")
 
             if error:
                 return Response(f"OAuth2 error: {error}", 400)
@@ -40,13 +41,13 @@ class GmailOauthCallback(ApiHandler):
                 return Response("Missing code or state parameter", 400)
 
             # Verify CSRF token
-            saved_state = session.get('gmail_oauth_state')
+            saved_state = session.get("gmail_oauth_state")
             if not saved_state or saved_state != state:
                 return Response("Invalid state token (CSRF protection)", 403)
 
             # Get saved session data
-            account_name = session.get('gmail_oauth_account')
-            credentials_json = session.get('gmail_oauth_credentials')
+            account_name = session.get("gmail_oauth_account")
+            credentials_json = session.get("gmail_oauth_credentials")
 
             if not account_name or not credentials_json:
                 return Response("Session expired or invalid", 400)
@@ -56,10 +57,7 @@ class GmailOauthCallback(ApiHandler):
 
             # Exchange code for credentials
             email = handler.complete_authorization(
-                account_name=account_name,
-                credentials_json=credentials_json,
-                authorization_code=code,
-                state=state
+                account_name=account_name, credentials_json=credentials_json, authorization_code=code, state=state
             )
 
             # Update settings with new account
@@ -71,23 +69,23 @@ class GmailOauthCallback(ApiHandler):
                 "email": email,
                 "authenticated": True,
                 "scopes": handler.SCOPES,
-                "added_date": datetime.utcnow().isoformat() + "Z"
+                "added_date": datetime.utcnow().isoformat() + "Z",
             }
 
             current_settings["gmail_accounts"] = gmail_accounts
             settings.set_settings(current_settings)
 
             # Clear session data
-            session.pop('gmail_oauth_state', None)
-            session.pop('gmail_oauth_account', None)
-            session.pop('gmail_oauth_credentials', None)
+            session.pop("gmail_oauth_state", None)
+            session.pop("gmail_oauth_account", None)
+            session.pop("gmail_oauth_credentials", None)
 
             # Return success page or redirect
             return {
                 "success": True,
                 "account_name": account_name,
                 "email": email,
-                "message": "Gmail account authenticated successfully! You can close this window."
+                "message": "Gmail account authenticated successfully! You can close this window.",
             }
 
         except Exception as e:

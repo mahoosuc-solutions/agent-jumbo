@@ -36,7 +36,7 @@ def _wait_for_server(url: str, timeout: float = 90.0) -> None:
 
 
 def _start_ui_server(port: int) -> subprocess.Popen:
-    """Start the Agent Zero UI server for testing"""
+    """Start the Agent Jumbo UI server for testing"""
     env = os.environ.copy()
     env["WEB_UI_HOST"] = "127.0.0.1"
     env["WEB_UI_PORT"] = str(port)
@@ -219,9 +219,9 @@ def test_workflow_dashboard_stats_display():
             assert page.locator("[data-testid='stat-workflows']").count() == 1, "Workflows stat card should exist"
             assert page.locator("[data-testid='stat-executions']").count() == 1, "Executions stat card should exist"
             assert page.locator("[data-testid='stat-skills']").count() == 1, "Skills stat card should exist"
-            assert (
-                page.locator("[data-testid='stat-learning-paths']").count() == 1
-            ), "Learning paths stat card should exist"
+            assert page.locator("[data-testid='stat-learning-paths']").count() == 1, (
+                "Learning paths stat card should exist"
+            )
 
             # Verify stat values exist (may be 0 on fresh install)
             assert page.locator("[data-testid='stat-workflows-value']").count() == 1
@@ -329,9 +329,9 @@ def test_workflow_empty_state():
             # Either workflows list or empty message should be visible
             workflow_list = page.locator("[data-testid='workflow-list']")
             workflow_empty = page.locator("[data-testid='workflow-list-empty']")
-            assert (
-                workflow_list.count() == 1 or workflow_empty.count() == 1
-            ), "Either workflow list or empty message should exist"
+            assert workflow_list.count() == 1 or workflow_empty.count() == 1, (
+                "Either workflow list or empty message should exist"
+            )
 
             # Switch to Skills tab and check empty state
             page.locator("[data-testid='tab-skills']").click()
@@ -340,9 +340,9 @@ def test_workflow_empty_state():
             # Either skills grid or empty message should be visible
             skills_grid = page.locator("[data-testid='skills-grid']")
             skills_empty = page.locator("[data-testid='skills-empty']")
-            assert (
-                skills_grid.count() == 1 or skills_empty.count() == 1
-            ), "Either skills grid or empty message should exist"
+            assert skills_grid.count() == 1 or skills_empty.count() == 1, (
+                "Either skills grid or empty message should exist"
+            )
 
             browser.close()
     finally:

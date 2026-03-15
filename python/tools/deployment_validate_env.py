@@ -15,8 +15,7 @@ class DeploymentValidateEnv(Tool):
         if not normalized:
             return Response(
                 message=(
-                    f"Invalid environment: '{environment}'. "
-                    "Valid: production|staging|development (prod|stage|dev)"
+                    f"Invalid environment: '{environment}'. Valid: production|staging|development (prod|stage|dev)"
                 ),
                 break_loop=False,
                 additional={"valid": False, "environment": environment},

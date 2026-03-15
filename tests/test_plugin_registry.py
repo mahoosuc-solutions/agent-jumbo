@@ -1,7 +1,8 @@
 import json
-import os
+from unittest.mock import patch
 
 from python.helpers.plugin_registry import PluginRegistry
+from python.helpers.skill_registry import SkillRegistry
 
 
 def test_plugin_registry_loads_valid_manifests(tmp_path):
@@ -35,7 +36,11 @@ def test_plugin_registry_skips_invalid_manifest(tmp_path):
     invalid_path = plugin_dir / "invalid.json"
     invalid_path.write_text(json.dumps({"version": "0.1.0"}), encoding="utf-8")
 
-    registry = PluginRegistry(str(plugin_dir))
-    registry.load()
+    with patch(
+        "python.helpers.plugin_registry.get_registry",
+        return_value=SkillRegistry(),
+    ):
+        registry = PluginRegistry(str(plugin_dir))
+        registry.load()
 
-    assert registry.list_plugins() == []
+        assert registry.list_plugins() == []

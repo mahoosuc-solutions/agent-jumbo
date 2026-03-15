@@ -1,7 +1,7 @@
 from typing import Any
 
-from python.helpers import files
 from instruments.custom.life_os.life_db import LifeOSDatabase
+from python.helpers import files
 
 
 def emit_event(event_type: str, payload: dict[str, Any], db_path: str | None = None) -> dict[str, Any]:

@@ -92,16 +92,12 @@ class CoworkApprovals(Extension):
 
         denied = cowork.find_approval_by_status(approvals, fingerprint, self.agent.number, "denied")
         if denied:
-            await self._intervene(
-                f"Cowork approval denied for {tool_name}. Update approvals to proceed."
-            )
+            await self._intervene(f"Cowork approval denied for {tool_name}. Update approvals to proceed.")
             return
 
         pending = cowork.find_approval_by_status(approvals, fingerprint, self.agent.number, "pending")
         if pending:
-            await self._intervene(
-                f"Cowork approval pending for {tool_name}. Approve in settings to proceed."
-            )
+            await self._intervene(f"Cowork approval pending for {tool_name}. Approve in settings to proceed.")
             return
 
         summary_args = cowork.summarize_args(tool_args)
@@ -124,9 +120,7 @@ class CoworkApprovals(Extension):
         }
         cowork.add_approval(self.agent.context, approval)
 
-        await self._intervene(
-            f"Cowork approval required for {tool_name}. Open Settings → Cowork to approve."
-        )
+        await self._intervene(f"Cowork approval required for {tool_name}. Open Settings → Cowork to approve.")
 
     async def _intervene(self, message: str):
         self.agent.intervention = UserMessage(message=message, attachments=[], system_message=[])

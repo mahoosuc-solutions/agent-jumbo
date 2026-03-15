@@ -18,11 +18,13 @@ class ProfileSync(ApiHandler):
 
         try:
             from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+
             db = WorkflowEngineDatabase()
 
             if action == "update_profile":
                 valid, err = SecurityManager.validate_input(input, ["profile"])
-                if not valid: return {"success": False, "error": err}
+                if not valid:
+                    return {"success": False, "error": err}
 
                 profile_data = input.get("profile", {})
                 result = self._update_profile(db, user_id, profile_data)
@@ -38,6 +40,7 @@ class ProfileSync(ApiHandler):
 
             elif action == "get_push_key":
                 from python.helpers.proactive import ProactiveManager
+
                 return {"success": True, "publicKey": ProactiveManager.get_public_key()}
 
             return {"success": False, "error": f"Unknown action: {action}"}
@@ -49,8 +52,9 @@ class ProfileSync(ApiHandler):
         conn = db._get_conn()
         cursor = conn.cursor()
 
-        cursor.execute("UPDATE user_profiles SET push_subscription = ? WHERE user_id = ?",
-                       (json.dumps(subscription), user_id))
+        cursor.execute(
+            "UPDATE user_profiles SET push_subscription = ? WHERE user_id = ?", (json.dumps(subscription), user_id)
+        )
 
         conn.commit()
         conn.close()
@@ -67,27 +71,45 @@ class ProfileSync(ApiHandler):
         now = datetime.now().isoformat()
 
         if exists:
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE user_profiles SET
                     full_name = ?, email = ?, phone_number = ?,
                     avatar_url = ?, device_info = ?, timezone = ?,
                     locale = ?, last_synced = ?
                 WHERE user_id = ?
-            """, (
-                data.get("fullName"), data.get("email"), data.get("phone"),
-                data.get("avatarUrl"), json.dumps(data.get("deviceInfo", {})),
-                data.get("timezone"), data.get("locale"), now, user_id
-            ))
+            """,
+                (
+                    data.get("fullName"),
+                    data.get("email"),
+                    data.get("phone"),
+                    data.get("avatarUrl"),
+                    json.dumps(data.get("deviceInfo", {})),
+                    data.get("timezone"),
+                    data.get("locale"),
+                    now,
+                    user_id,
+                ),
+            )
         else:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO user_profiles
                 (user_id, full_name, email, phone_number, avatar_url, device_info, timezone, locale, last_synced)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (
-                user_id, data.get("fullName"), data.get("email"), data.get("phone"),
-                data.get("avatarUrl"), json.dumps(data.get("deviceInfo", {})),
-                data.get("timezone"), data.get("locale"), now
-            ))
+            """,
+                (
+                    user_id,
+                    data.get("fullName"),
+                    data.get("email"),
+                    data.get("phone"),
+                    data.get("avatarUrl"),
+                    json.dumps(data.get("deviceInfo", {})),
+                    data.get("timezone"),
+                    data.get("locale"),
+                    now,
+                ),
+            )
 
         conn.commit()
         conn.close()

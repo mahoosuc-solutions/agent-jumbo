@@ -18,23 +18,25 @@ class LlmRouterDashboard(ApiHandler):
         for model in models:
             if model.provider not in by_provider:
                 by_provider[model.provider] = []
-            by_provider[model.provider].append({
-                "name": model.name,
-                "display_name": model.display_name,
-                "size_gb": model.size_gb,
-                "context_length": model.context_length,
-                "capabilities": model.capabilities,
-                "is_local": model.is_local,
-                "cost_per_1k_input": model.cost_per_1k_input,
-                "cost_per_1k_output": model.cost_per_1k_output
-            })
+            by_provider[model.provider].append(
+                {
+                    "name": model.name,
+                    "displayName": model.display_name,
+                    "sizeGb": model.size_gb,
+                    "contextLength": model.context_length,
+                    "capabilities": model.capabilities,
+                    "isLocal": model.is_local,
+                    "costPer1kInput": model.cost_per_1k_input,
+                    "costPer1kOutput": model.cost_per_1k_output,
+                }
+            )
 
         # Get defaults
         defaults = {}
         for role in ["chat", "utility", "browser", "embedding", "fallback"]:
             result = router.get_default_model(role)
             if result:
-                defaults[role] = {"provider": result[0], "model_name": result[1]}
+                defaults[role] = {"provider": result[0], "modelName": result[1]}
 
         # Get usage stats
         usage_24h = router.get_usage_stats(hours=24)
@@ -43,21 +45,18 @@ class LlmRouterDashboard(ApiHandler):
         return {
             "success": True,
             "models": {
-                "by_provider": by_provider,
-                "total_count": len(models),
-                "local_count": len([m for m in models if m.is_local]),
-                "cloud_count": len([m for m in models if not m.is_local])
+                "byProvider": by_provider,
+                "totalCount": len(models),
+                "localCount": len([m for m in models if m.is_local]),
+                "cloudCount": len([m for m in models if not m.is_local]),
             },
             "defaults": defaults,
             "usage": {
-                "last_hour": {
-                    "calls": usage_1h["total_calls"],
-                    "cost_usd": round(usage_1h["total_cost"], 4)
+                "lastHour": {"calls": usage_1h["totalCalls"], "costUsd": round(usage_1h["totalCost"], 4)},
+                "last24h": {
+                    "calls": usage_24h["totalCalls"],
+                    "costUsd": round(usage_24h["totalCost"], 4),
+                    "byModel": usage_24h["byModel"],
                 },
-                "last_24h": {
-                    "calls": usage_24h["total_calls"],
-                    "cost_usd": round(usage_24h["total_cost"], 4),
-                    "by_model": usage_24h["by_model"]
-                }
-            }
+            },
         }

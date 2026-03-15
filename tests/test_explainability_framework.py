@@ -11,15 +11,14 @@ Tests are organized by sub-team:
 Total: 115 tests for Phase 5 Team L
 """
 
-import pytest
 from datetime import datetime
-from dataclasses import dataclass
-from typing import Dict, List, Any, Tuple
 
+import pytest
 
 # ─────────────────────────────────────────────────────────────────────────────
 # L1: DECISION EXPLAINABILITY (40 tests)
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TestDecisionExplanationBasic:
     """L1.1: Basic decision explanation functionality"""
@@ -414,6 +413,7 @@ class TestTemporalExplanation:
 # L2: REASONING TRANSPARENCY (40 tests)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestReasoningChainTrace:
     """L2.1: Trace reasoning chains"""
 
@@ -630,6 +630,7 @@ class TestReasoningComplexityMeasurement:
 # L3: PATTERN EXPLANATION (35 tests)
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class TestPatternIdentification:
     """L3.1: Identify learned patterns"""
 
@@ -754,7 +755,7 @@ class TestLearningProgressTracking:
             {"week": 4, "accuracy": 0.81},
         ]
         accuracies = [t["accuracy"] for t in trajectory]
-        assert all(accuracies[i] <= accuracies[i+1] for i in range(len(accuracies)-1))
+        assert all(accuracies[i] <= accuracies[i + 1] for i in range(len(accuracies) - 1))
 
 
 class TestModelImprovementVisibility:
@@ -769,8 +770,7 @@ class TestModelImprovementVisibility:
             "current": 0.92,
             "improvement_percent": 5.7,
         }
-        expected_improvement = ((improvements["current"] - improvements["previous"])
-                                / improvements["previous"] * 100)
+        expected_improvement = (improvements["current"] - improvements["previous"]) / improvements["previous"] * 100
         assert improvements["improvement_percent"] == pytest.approx(expected_improvement, rel=0.1)
 
     @pytest.mark.validation

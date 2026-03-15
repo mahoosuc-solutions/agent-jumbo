@@ -327,8 +327,8 @@ File Structure:
 ═══════════════════════════════════════════════════
 
 Organization Structure: {structure.upper()}
-Tagging System: {'Enabled' if enable_tags else 'Disabled'}
-Export Format: {export_format.upper() if export_format else 'None'}
+Tagging System: {"Enabled" if enable_tags else "Disabled"}
+Export Format: {export_format.upper() if export_format else "None"}
 
 ORGANIZATION WORKFLOW (POC):
 
@@ -344,7 +344,7 @@ ORGANIZATION WORKFLOW (POC):
   - Defined taxonomy standards
 
 ORGANIZATION STRUCTURE:
-{structure_examples.get(structure, '')}
+{structure_examples.get(structure, "")}
 
 ✓ Step 3: Metadata Extraction
   - Extracted titles, authors, years
@@ -395,7 +395,7 @@ Research Inventory:
 
 Organization Metrics:
 - Folders Created: 28 (3-4 level hierarchy)
-- Tags Generated: {'1,234 tags across 8 categories' if enable_tags else 'N/A (tagging disabled)'}
+- Tags Generated: {"1,234 tags across 8 categories" if enable_tags else "N/A (tagging disabled)"}
 - Bidirectional Links: 1,234 connections
 - Metadata Coverage: 97% (complete for 451/465 sources)
 - Average Links per Source: 4.2

@@ -7,7 +7,7 @@ class TunnelWatchdog:
     _lock = threading.Lock()
 
     def __init__(self):
-        self._thread: Optional[threading.Thread] = None
+        self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
         self._interval = 60
         self._provider = "cloudflared"

@@ -1,0 +1,169 @@
+<html>
+<head>
+    <title>MOS Integration Settings</title>
+</head>
+<body class="modal-medium">
+    <div style="padding: 1em;">
+        <h2>MOS Integration (Linear / Motion / Notion)</h2>
+        <p>Configure API keys for MOS cross-system integration. These keys enable syncing issues, tasks, and notes across Linear, Motion, and Notion.</p>
+
+        <!-- Linear -->
+        <div style="margin-top: 1.5em;">
+            <h3 style="color: var(--c-primary);">Linear</h3>
+            <p style="font-size: 0.85em; opacity: 0.7;">
+                Get your API key from <strong>Linear Settings > API > Personal API Keys</strong>.
+            </p>
+            <div style="margin-top: 0.5em;">
+                <label style="font-size: 0.85em; font-weight: 500;">API Key</label>
+                <div style="display: flex; gap: 8px; align-items: flex-start; margin-top: 4px;">
+                    <div style="flex: 1;">
+                        <input type="password" style="width: 100%; padding: 8px 12px; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.9em;"
+                               placeholder="lin_api_xxxxx"
+                               x-model="$store.settingsStore?.currentSettings?.linear_api_key"
+                               @change="$store.settingsStore?.markDirty()">
+                        <div style="font-size: 0.75em; opacity: 0.5; margin-top: 3px;">Format: starts with <code>lin_api_</code></div>
+                    </div>
+                    <button style="padding: 8px 14px; background: transparent; border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.82em; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;"
+                            @click="$store.mosDashboard?.testConnection('linear')">
+                        <template x-if="$store.mosDashboard?.connectionTests?.linear?.status === 'testing'">
+                            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                <span class="mos-settings-spinner"></span> Testing...
+                            </span>
+                        </template>
+                        <template x-if="$store.mosDashboard?.connectionTests?.linear?.status === 'ok'">
+                            <span style="color: #48bb78;">&#10003; Connected</span>
+                        </template>
+                        <template x-if="$store.mosDashboard?.connectionTests?.linear?.status === 'error'">
+                            <span style="color: #e53e3e;">&#10007; Failed</span>
+                        </template>
+                        <template x-if="!$store.mosDashboard?.connectionTests?.linear?.status || $store.mosDashboard?.connectionTests?.linear?.status === ''">
+                            <span>Test Connection</span>
+                        </template>
+                    </button>
+                </div>
+                <div style="font-size: 0.8em; margin-top: 4px; color: #e53e3e;"
+                     x-show="$store.mosDashboard?.connectionTests?.linear?.status === 'error'"
+                     x-text="$store.mosDashboard?.connectionTests?.linear?.message"></div>
+            </div>
+            <div style="margin-top: 0.75em;">
+                <label style="font-size: 0.85em; font-weight: 500;">Default Team ID</label>
+                <input type="text" style="width: 100%; padding: 8px 12px; margin-top: 4px; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.9em;"
+                       placeholder="e.g. AJB"
+                       x-model="$store.settingsStore?.currentSettings?.linear_default_team_id"
+                       @change="$store.settingsStore?.markDirty()">
+            </div>
+        </div>
+
+        <!-- Motion -->
+        <div style="margin-top: 1.5em;">
+            <h3 style="color: var(--c-primary);">Motion</h3>
+            <p style="font-size: 0.85em; opacity: 0.7;">
+                Get your API key from <strong>Motion Settings > Integrations > API</strong>.
+            </p>
+            <div style="margin-top: 0.5em;">
+                <label style="font-size: 0.85em; font-weight: 500;">API Key</label>
+                <div style="display: flex; gap: 8px; align-items: flex-start; margin-top: 4px;">
+                    <div style="flex: 1;">
+                        <input type="password" style="width: 100%; padding: 8px 12px; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.9em;"
+                               placeholder="Motion API key"
+                               x-model="$store.settingsStore?.currentSettings?.motion_api_key"
+                               @change="$store.settingsStore?.markDirty()">
+                        <div style="font-size: 0.75em; opacity: 0.5; margin-top: 3px;">UUID or token from Motion developer settings</div>
+                    </div>
+                    <button style="padding: 8px 14px; background: transparent; border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.82em; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;"
+                            @click="$store.mosDashboard?.testConnection('motion')">
+                        <template x-if="$store.mosDashboard?.connectionTests?.motion?.status === 'testing'">
+                            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                <span class="mos-settings-spinner"></span> Testing...
+                            </span>
+                        </template>
+                        <template x-if="$store.mosDashboard?.connectionTests?.motion?.status === 'ok'">
+                            <span style="color: #48bb78;">&#10003; Connected</span>
+                        </template>
+                        <template x-if="$store.mosDashboard?.connectionTests?.motion?.status === 'error'">
+                            <span style="color: #e53e3e;">&#10007; Failed</span>
+                        </template>
+                        <template x-if="!$store.mosDashboard?.connectionTests?.motion?.status || $store.mosDashboard?.connectionTests?.motion?.status === ''">
+                            <span>Test Connection</span>
+                        </template>
+                    </button>
+                </div>
+                <div style="font-size: 0.8em; margin-top: 4px; color: #e53e3e;"
+                     x-show="$store.mosDashboard?.connectionTests?.motion?.status === 'error'"
+                     x-text="$store.mosDashboard?.connectionTests?.motion?.message"></div>
+            </div>
+            <div style="margin-top: 0.75em;">
+                <label style="font-size: 0.85em; font-weight: 500;">Workspace ID</label>
+                <input type="text" style="width: 100%; padding: 8px 12px; margin-top: 4px; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.9em;"
+                       placeholder="Motion workspace ID"
+                       x-model="$store.settingsStore?.currentSettings?.motion_workspace_id"
+                       @change="$store.settingsStore?.markDirty()">
+                <div style="font-size: 0.75em; opacity: 0.5; margin-top: 3px;">Found in Motion URL: app.usemotion.com/workspaces/<strong>{id}</strong></div>
+            </div>
+        </div>
+
+        <!-- Notion -->
+        <div style="margin-top: 1.5em;">
+            <h3 style="color: var(--c-primary);">Notion</h3>
+            <p style="font-size: 0.85em; opacity: 0.7;">
+                Create an internal integration at <strong>notion.so/my-integrations</strong> and share your database with it.
+            </p>
+            <div style="margin-top: 0.5em;">
+                <label style="font-size: 0.85em; font-weight: 500;">API Key</label>
+                <div style="display: flex; gap: 8px; align-items: flex-start; margin-top: 4px;">
+                    <div style="flex: 1;">
+                        <input type="password" style="width: 100%; padding: 8px 12px; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.9em;"
+                               placeholder="secret_xxxxx"
+                               x-model="$store.settingsStore?.currentSettings?.notion_api_key"
+                               @change="$store.settingsStore?.markDirty()">
+                        <div style="font-size: 0.75em; opacity: 0.5; margin-top: 3px;">Format: starts with <code>secret_</code></div>
+                    </div>
+                    <button style="padding: 8px 14px; background: transparent; border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.82em; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px;"
+                            @click="$store.mosDashboard?.testConnection('notion')">
+                        <template x-if="$store.mosDashboard?.connectionTests?.notion?.status === 'testing'">
+                            <span style="display: inline-flex; align-items: center; gap: 4px;">
+                                <span class="mos-settings-spinner"></span> Testing...
+                            </span>
+                        </template>
+                        <template x-if="$store.mosDashboard?.connectionTests?.notion?.status === 'ok'">
+                            <span style="color: #48bb78;">&#10003; Connected</span>
+                        </template>
+                        <template x-if="$store.mosDashboard?.connectionTests?.notion?.status === 'error'">
+                            <span style="color: #e53e3e;">&#10007; Failed</span>
+                        </template>
+                        <template x-if="!$store.mosDashboard?.connectionTests?.notion?.status || $store.mosDashboard?.connectionTests?.notion?.status === ''">
+                            <span>Test Connection</span>
+                        </template>
+                    </button>
+                </div>
+                <div style="font-size: 0.8em; margin-top: 4px; color: #e53e3e;"
+                     x-show="$store.mosDashboard?.connectionTests?.notion?.status === 'error'"
+                     x-text="$store.mosDashboard?.connectionTests?.notion?.message"></div>
+            </div>
+            <div style="margin-top: 0.75em;">
+                <label style="font-size: 0.85em; font-weight: 500;">Default Database ID</label>
+                <input type="text" style="width: 100%; padding: 8px 12px; margin-top: 4px; background: var(--c-input); border: 1px solid var(--c-border); border-radius: 6px; color: var(--c-text); font-size: 0.9em;"
+                       placeholder="32-char hex ID from Notion URL"
+                       x-model="$store.settingsStore?.currentSettings?.notion_default_database_id"
+                       @change="$store.settingsStore?.markDirty()">
+                <div style="font-size: 0.75em; opacity: 0.5; margin-top: 3px;">32-character hex string from your Notion database URL</div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .mos-settings-spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--c-border, #ccc);
+            border-top-color: var(--c-primary, #4a9eff);
+            border-radius: 50%;
+            animation: mos-settings-spin 0.6s linear infinite;
+        }
+        @keyframes mos-settings-spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</body>
+</html>

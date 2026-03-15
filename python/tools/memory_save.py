@@ -3,9 +3,7 @@ from python.helpers.tool import Response, Tool
 
 
 class MemorySave(Tool):
-
     async def execute(self, text="", area="", **kwargs):
-
         if not area:
             area = Memory.Area.MAIN.value
 

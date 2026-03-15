@@ -18,6 +18,7 @@ class RemoveChat(ApiHandler):
         # Lazy import to avoid blocking startup with crontab dependency
         try:
             from python.helpers.task_scheduler import TaskScheduler
+
             scheduler = TaskScheduler.get()
             await scheduler.reload()
 

@@ -7,7 +7,9 @@ from python.helpers.tool import Response, Tool
 class DeploymentRunChecks(Tool):
     """Run pre-deployment checks as a standalone primitive."""
 
-    async def execute(self, environment: str = "", skip_tests: bool = False, skip_backup: bool = False, **kwargs) -> Response:
+    async def execute(
+        self, environment: str = "", skip_tests: bool = False, skip_backup: bool = False, **kwargs
+    ) -> Response:
         if self.args:
             environment = environment or str(self.args.get("environment", ""))
             skip_tests = self._to_bool(self.args.get("skip_tests", skip_tests))

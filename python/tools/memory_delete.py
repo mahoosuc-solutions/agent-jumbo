@@ -3,7 +3,6 @@ from python.helpers.tool import Response, Tool
 
 
 class MemoryDelete(Tool):
-
     async def execute(self, ids="", **kwargs):
         db = await Memory.get(self.agent)
         ids = [id.strip() for id in ids.split(",") if id.strip()]

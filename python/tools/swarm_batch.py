@@ -11,7 +11,7 @@ class SwarmBatch(Tool):
     Useful for architectural discovery, multi-file analysis, or complex problem decomposition.
     """
 
-    parallel_safe = False # Spawning sub-agents involves heavy I/O and state management
+    parallel_safe = False  # Spawning sub-agents involves heavy I/O and state management
 
     async def execute(self, tasks: list[str] | None = None, profile: str | None = None, **kwargs):
         if tasks is None:
@@ -35,9 +35,9 @@ class SwarmBatch(Tool):
 
                 sub.hist_add_user_message(UserMessage(message=task_text, attachments=[]))
                 result = await sub.monologue()
-                return f"### [Agent {index+1}] Result for: '{task_text[:50]}...'\n\n{result}"
+                return f"### [Agent {index + 1}] Result for: '{task_text[:50]}...'\n\n{result}"
             except Exception as e:
-                return f"### [Agent {index+1}] Failed: {e!s}"
+                return f"### [Agent {index + 1}] Failed: {e!s}"
 
         # Run all delegates in parallel
         self.agent.context.log.log(type="info", content=f"🚀 Swarm launched with {num_tasks} sub-agents.")

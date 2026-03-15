@@ -1,7 +1,7 @@
 """
 Brand Voice Tool
 
-Converted from Mahoosuc OS /brand:voice command to native Agent Zero tool.
+Converted from Mahoosuc OS /brand:voice command to native Agent Jumbo tool.
 Define, maintain, and enforce brand voice consistency across all content.
 
 Source: .claude/commands/brand/voice.md
@@ -58,7 +58,7 @@ class BrandVoice(Tool):
 
         if mode not in valid_modes:
             return Response(
-                message=f"Error: Invalid mode '{mode}'. " f"Valid modes: {', '.join(valid_modes)}",
+                message=f"Error: Invalid mode '{mode}'. Valid modes: {', '.join(valid_modes)}",
                 break_loop=False,
             )
 
@@ -238,16 +238,16 @@ Use this tool to:
 
 **Clarity Score: {clarity_score:.0f}/100**
 - Sentence length: {avg_sentence_length:.1f} words
-- Assessment: {'✓ Good' if 15 <= avg_sentence_length <= 20 else '⚠ Review recommended'}
+- Assessment: {"✓ Good" if 15 <= avg_sentence_length <= 20 else "⚠ Review recommended"}
 
 **Engagement Score: {engagement_score:.0f}/100**
 - Direct address count: {direct_address_count}
-- Assessment: {'✓ Good' if direct_address_count >= 3 else '⚠ Consider adding more "you" statements'}
+- Assessment: {"✓ Good" if direct_address_count >= 3 else '⚠ Consider adding more "you" statements'}
 
 **Tone Score: {tone_score:.0f}/100**
 - Jargon detected: {len(jargon_found)}
 {f"- Found: {', '.join(jargon_found)}" if jargon_found else "- No common jargon detected"}
-- Assessment: {'✓ Good' if not jargon_found else '⚠ Consider simplifying language'}
+- Assessment: {"✓ Good" if not jargon_found else "⚠ Consider simplifying language"}
 
 ## Recommendations
 

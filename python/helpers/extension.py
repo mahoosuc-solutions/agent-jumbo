@@ -6,10 +6,10 @@ from python.helpers import extract_tools, files
 if TYPE_CHECKING:
     from agent import Agent
 
-class Extension:
 
+class Extension:
     def __init__(self, agent: "Agent|None", **kwargs):
-        self.agent: Agent = agent # type: ignore < here we ignore the type check as there are currently no extensions without an agent
+        self.agent: Agent = agent  # type: ignore < here we ignore the type check as there are currently no extensions without an agent
         self.kwargs = kwargs
 
     @abstractmethod
@@ -18,7 +18,6 @@ class Extension:
 
 
 async def call_extensions(extension_point: str, agent: "Agent|None" = None, **kwargs) -> Any:
-
     # get default extensions
     defaults = await _get_extensions("python/extensions/" + extension_point)
     classes = defaults
@@ -43,8 +42,11 @@ async def call_extensions(extension_point: str, agent: "Agent|None" = None, **kw
 def _get_file_from_module(module_name: str) -> str:
     return module_name.split(".")[-1]
 
+
 _cache: dict[str, list[type[Extension]]] = {}
-async def _get_extensions(folder:str):
+
+
+async def _get_extensions(folder: str):
     global _cache
     folder = files.get_abs_path(folder)
     if folder in _cache:
@@ -52,9 +54,7 @@ async def _get_extensions(folder:str):
     else:
         if not files.exists(folder):
             return []
-        classes = extract_tools.load_classes_from_folder(
-            folder, "*", Extension
-        )
+        classes = extract_tools.load_classes_from_folder(folder, "*", Extension)
         _cache[folder] = classes
 
     return classes

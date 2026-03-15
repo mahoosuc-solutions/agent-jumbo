@@ -26,7 +26,10 @@ async def test_finance_dashboard_api(tmp_path, monkeypatch):
     monkeypatch.setattr(files, "get_abs_path", lambda path: str(db_path))
 
     handler = FinanceDashboard(SimpleNamespace(), SimpleNamespace())
-    result = await handler.process({"period": "2025-01", "account_id": account["id"]}, DummyRequest({"period": "2025-01", "account_id": account["id"]}))
+    result = await handler.process(
+        {"period": "2025-01", "account_id": account["id"]},
+        DummyRequest({"period": "2025-01", "account_id": account["id"]}),
+    )
 
     assert result["success"] is True
     assert result["report"]["total_count"] >= 1

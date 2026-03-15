@@ -34,7 +34,7 @@ class GmailPushNotifications:
         project_id: str | None = None,
         topic_name: str = "gmail-push-notifications",
         subscription_name: str = "gmail-push-sub",
-        credentials_path: str | None = None
+        credentials_path: str | None = None,
     ):
         """
         Initialize Pub/Sub integration
@@ -46,10 +46,7 @@ class GmailPushNotifications:
             credentials_path: Path to service account JSON credentials
         """
         if pubsub_v1 is None:
-            raise ImportError(
-                "Google Cloud Pub/Sub library not installed. "
-                "Run: pip install google-cloud-pubsub"
-            )
+            raise ImportError("Google Cloud Pub/Sub library not installed. Run: pip install google-cloud-pubsub")
 
         self.project_id = project_id or os.getenv("GOOGLE_CLOUD_PROJECT_ID")
         self.topic_name = topic_name
@@ -58,9 +55,7 @@ class GmailPushNotifications:
         # Initialize Pub/Sub clients
         credentials = None
         if credentials_path:
-            credentials = service_account.Credentials.from_service_account_file(
-                credentials_path
-            )
+            credentials = service_account.Credentials.from_service_account_file(credentials_path)
 
         try:
             self.publisher = pubsub_v1.PublisherClient(credentials=credentials)
@@ -73,9 +68,7 @@ class GmailPushNotifications:
             self.subscriber = pubsub_v1.SubscriberClient(credentials=credentials)
 
         self.topic_path = self.publisher.topic_path(self.project_id, self.topic_name)
-        self.subscription_path = self.subscriber.subscription_path(
-            self.project_id, self.subscription_name
-        )
+        self.subscription_path = self.subscriber.subscription_path(self.project_id, self.subscription_name)
 
         self.oauth_handler = GmailOAuth2Handler()
         self.message_handlers = []
@@ -99,11 +92,7 @@ class GmailPushNotifications:
             # Create subscription
             try:
                 self.subscriber.create_subscription(
-                    request={
-                        "name": self.subscription_path,
-                        "topic": self.topic_path,
-                        "ack_deadline_seconds": 60
-                    }
+                    request={"name": self.subscription_path, "topic": self.topic_path, "ack_deadline_seconds": 60}
                 )
                 subscription_created = True
             except Exception:
@@ -115,14 +104,11 @@ class GmailPushNotifications:
                 "topic_path": self.topic_path,
                 "subscription_path": self.subscription_path,
                 "topic_created": topic_created,
-                "subscription_created": subscription_created
+                "subscription_created": subscription_created,
             }
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": f"Failed to setup Pub/Sub: {e!s}"
-            }
+            return {"success": False, "error": f"Failed to setup Pub/Sub: {e!s}"}
 
     def enable_push_notifications(self, account_name: str = "default") -> dict:
         """
@@ -138,29 +124,20 @@ class GmailPushNotifications:
             service = self.oauth_handler.get_gmail_service(account_name)
 
             # Watch Gmail mailbox
-            request = {
-                'labelIds': ['INBOX'],
-                'topicName': self.topic_path
-            }
+            request = {"labelIds": ["INBOX"], "topicName": self.topic_path}
 
-            watch_response = service.users().watch(
-                userId='me',
-                body=request
-            ).execute()
+            watch_response = service.users().watch(userId="me", body=request).execute()
 
             return {
                 "success": True,
                 "account_name": account_name,
-                "history_id": watch_response.get('historyId'),
-                "expiration": watch_response.get('expiration'),
-                "topic": self.topic_path
+                "history_id": watch_response.get("historyId"),
+                "expiration": watch_response.get("expiration"),
+                "topic": self.topic_path,
             }
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": f"Failed to enable push notifications: {e!s}"
-            }
+            return {"success": False, "error": f"Failed to enable push notifications: {e!s}"}
 
     def disable_push_notifications(self, account_name: str = "default") -> dict:
         """
@@ -175,19 +152,12 @@ class GmailPushNotifications:
         try:
             service = self.oauth_handler.get_gmail_service(account_name)
 
-            service.users().stop(userId='me').execute()
+            service.users().stop(userId="me").execute()
 
-            return {
-                "success": True,
-                "account_name": account_name,
-                "message": "Push notifications stopped"
-            }
+            return {"success": True, "account_name": account_name, "message": "Push notifications stopped"}
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": f"Failed to stop push notifications: {e!s}"
-            }
+            return {"success": False, "error": f"Failed to stop push notifications: {e!s}"}
 
     def register_message_handler(self, handler: Callable[[dict], None]):
         """
@@ -210,13 +180,13 @@ class GmailPushNotifications:
         """
         try:
             # Decode message data
-            data = json.loads(message.data.decode('utf-8'))
+            data = json.loads(message.data.decode("utf-8"))
 
             notification = {
-                "email_address": data.get('emailAddress'),
-                "history_id": data.get('historyId'),
+                "email_address": data.get("emailAddress"),
+                "history_id": data.get("historyId"),
                 "timestamp": datetime.now().isoformat(),
-                "message_id": message.message_id
+                "message_id": message.message_id,
             }
 
             # Acknowledge message
@@ -234,9 +204,7 @@ class GmailPushNotifications:
         except Exception as e:
             # Nack message on error
             message.nack()
-            return {
-                "error": f"Failed to process message: {e!s}"
-            }
+            return {"error": f"Failed to process message: {e!s}"}
 
     def start_listening(self, callback: Callable[[dict], None] | None = None):
         """
@@ -249,10 +217,7 @@ class GmailPushNotifications:
             self.register_message_handler(callback)
 
         # Start async subscription
-        streaming_pull_future = self.subscriber.subscribe(
-            self.subscription_path,
-            callback=self._process_push_message
-        )
+        streaming_pull_future = self.subscriber.subscribe(self.subscription_path, callback=self._process_push_message)
 
         print(f"Listening for push notifications on {self.subscription_path}")
 
@@ -263,12 +228,7 @@ class GmailPushNotifications:
             streaming_pull_future.cancel()
             print("Stopped listening for notifications")
 
-    def get_notification_history(
-        self,
-        account_name: str,
-        start_history_id: str,
-        max_results: int = 100
-    ) -> dict:
+    def get_notification_history(self, account_name: str, start_history_id: str, max_results: int = 100) -> dict:
         """
         Get Gmail history since last notification
 
@@ -283,51 +243,55 @@ class GmailPushNotifications:
         try:
             service = self.oauth_handler.get_gmail_service(account_name)
 
-            history = service.users().history().list(
-                userId='me',
-                startHistoryId=start_history_id,
-                maxResults=max_results
-            ).execute()
+            history = (
+                service.users()
+                .history()
+                .list(userId="me", startHistoryId=start_history_id, maxResults=max_results)
+                .execute()
+            )
 
             changes = []
 
-            for record in history.get('history', []):
+            for record in history.get("history", []):
                 # Process messages added
-                for msg in record.get('messagesAdded', []):
-                    changes.append({
-                        "type": "message_added",
-                        "message_id": msg['message']['id'],
-                        "labels": msg['message'].get('labelIds', [])
-                    })
+                for msg in record.get("messagesAdded", []):
+                    changes.append(
+                        {
+                            "type": "message_added",
+                            "message_id": msg["message"]["id"],
+                            "labels": msg["message"].get("labelIds", []),
+                        }
+                    )
 
                 # Process labels added
-                for label in record.get('labelsAdded', []):
-                    changes.append({
-                        "type": "label_added",
-                        "message_id": label['message']['id'],
-                        "labels": label.get('labelIds', [])
-                    })
+                for label in record.get("labelsAdded", []):
+                    changes.append(
+                        {
+                            "type": "label_added",
+                            "message_id": label["message"]["id"],
+                            "labels": label.get("labelIds", []),
+                        }
+                    )
 
                 # Process labels removed
-                for label in record.get('labelsRemoved', []):
-                    changes.append({
-                        "type": "label_removed",
-                        "message_id": label['message']['id'],
-                        "labels": label.get('labelIds', [])
-                    })
+                for label in record.get("labelsRemoved", []):
+                    changes.append(
+                        {
+                            "type": "label_removed",
+                            "message_id": label["message"]["id"],
+                            "labels": label.get("labelIds", []),
+                        }
+                    )
 
             return {
                 "success": True,
-                "history_id": history.get('historyId'),
+                "history_id": history.get("historyId"),
                 "changes": changes,
-                "next_page_token": history.get('nextPageToken')
+                "next_page_token": history.get("nextPageToken"),
             }
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": f"Failed to get history: {e!s}"
-            }
+            return {"success": False, "error": f"Failed to get history: {e!s}"}
 
 
 class WebhookHandler:
@@ -358,11 +322,7 @@ class WebhookHandler:
             # No verification if no secret configured
             return True
 
-        expected_signature = hmac.new(
-            self.secret_token.encode(),
-            data,
-            hashlib.sha256
-        ).hexdigest()
+        expected_signature = hmac.new(self.secret_token.encode(), data, hashlib.sha256).hexdigest()
 
         return hmac.compare_digest(signature, expected_signature)
 
@@ -378,20 +338,16 @@ class WebhookHandler:
         """
         try:
             # Extract Pub/Sub message
-            message = request_data.get('message', {})
+            message = request_data.get("message", {})
 
             # Decode data
-            if 'data' in message:
-                decoded_data = base64.b64decode(message['data']).decode('utf-8')
+            if "data" in message:
+                decoded_data = base64.b64decode(message["data"]).decode("utf-8")
                 notification = json.loads(decoded_data)
             else:
                 notification = {}
 
-            result = {
-                "success": True,
-                "notification": notification,
-                "timestamp": datetime.now().isoformat()
-            }
+            result = {"success": True, "notification": notification, "timestamp": datetime.now().isoformat()}
 
             # Call registered callbacks
             for callback in self.notification_callbacks:
@@ -403,10 +359,7 @@ class WebhookHandler:
             return result
 
         except Exception as e:
-            return {
-                "success": False,
-                "error": f"Failed to process webhook: {e!s}"
-            }
+            return {"success": False, "error": f"Failed to process webhook: {e!s}"}
 
     def register_callback(self, callback: Callable[[dict], None]):
         """

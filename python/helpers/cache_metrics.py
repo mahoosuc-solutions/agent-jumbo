@@ -9,7 +9,6 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import timedelta
 from pathlib import Path
-from typing import Optional
 
 from python.helpers.datetime_utils import isoformat_z, utc_now
 
@@ -35,7 +34,7 @@ class CacheMetrics:
 class CacheMetricsTracker:
     """SQLite-based cache metrics tracker"""
 
-    def __init__(self, db_path: Optional[str] = None):
+    def __init__(self, db_path: str | None = None):
         if db_path is None:
             data_dir = Path(__file__).parent.parent.parent / "data"
             data_dir.mkdir(exist_ok=True)
@@ -181,7 +180,7 @@ class CacheMetricsTracker:
 
     def get_cache_stats(
         self,
-        model: Optional[str] = None,
+        model: str | None = None,
         hours: int = 24,
     ) -> dict:
         """
@@ -289,7 +288,7 @@ class CacheMetricsTracker:
 
 
 # Global instance
-_cache_tracker: Optional[CacheMetricsTracker] = None
+_cache_tracker: CacheMetricsTracker | None = None
 
 
 def get_cache_tracker() -> CacheMetricsTracker:

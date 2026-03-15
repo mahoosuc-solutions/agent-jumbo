@@ -1,7 +1,7 @@
 """
 Code Review Tool
 
-Converted from Mahoosuc OS agent-os/code-reviewer agent to native Agent Zero tool.
+Converted from Mahoosuc OS agent-os/code-reviewer agent to native Agent Jumbo tool.
 Provides automated code quality analysis with security, performance, and best practices checks.
 
 Source: .claude/agents/agent-os/code-reviewer.md
@@ -40,7 +40,7 @@ class CodeReview(Tool):
         valid_focuses = ["security", "performance", "style", "all"]
         if focus not in valid_focuses:
             return Response(
-                message=f"Invalid focus: {focus}. " f"Must be one of: {', '.join(valid_focuses)}", break_loop=False
+                message=f"Invalid focus: {focus}. Must be one of: {', '.join(valid_focuses)}", break_loop=False
             )
 
         # Generate review

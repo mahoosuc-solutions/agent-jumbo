@@ -6,6 +6,7 @@ class Tunnel(ApiHandler):
     async def process(self, input: dict, request: Request) -> dict | Response:
         return await process(input)
 
+
 async def process(input: dict) -> dict | Response:
     # Lazy import - tunnel_manager requires flaredantic which may not be installed
     try:
@@ -27,13 +28,14 @@ async def process(input: dict) -> dict | Response:
         if tunnel_url is None:
             # Add a little delay and check again - tunnel might be starting
             import time
+
             time.sleep(2)
             tunnel_url = tunnel_manager.get_tunnel_url()
 
         return {
             "success": tunnel_url is not None,
             "tunnel_url": tunnel_url,
-            "message": "Tunnel creation in progress" if tunnel_url is None else "Tunnel created successfully"
+            "message": "Tunnel creation in progress" if tunnel_url is None else "Tunnel created successfully",
         }
 
     elif action == "stop":
@@ -41,22 +43,14 @@ async def process(input: dict) -> dict | Response:
 
     elif action == "get":
         tunnel_url = tunnel_manager.get_tunnel_url()
-        return {
-            "success": tunnel_url is not None,
-            "tunnel_url": tunnel_url,
-            "is_running": tunnel_manager.is_running
-        }
+        return {"success": tunnel_url is not None, "tunnel_url": tunnel_url, "is_running": tunnel_manager.is_running}
 
-    return {
-        "success": False,
-        "error": "Invalid action. Use 'create', 'stop', or 'get'."
-    }
+    return {"success": False, "error": "Invalid action. Use 'create', 'stop', or 'get'."}
+
 
 def stop():
     from python.helpers.tunnel_manager import TunnelManager
 
     tunnel_manager = TunnelManager.get_instance()
     tunnel_manager.stop_tunnel()
-    return {
-        "success": True
-    }
+    return {"success": True}

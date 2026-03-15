@@ -6,7 +6,7 @@ coordinates vector search with graph traversal and temporal scoring.
 """
 
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 from python.helpers.knowledge_graph import (
     KnowledgeEdge,
@@ -178,7 +178,7 @@ class MemoryInterface:
 
     # ── utility ──────────────────────────────────────────────────────
 
-    def get_node(self, node_id: str) -> Optional[KnowledgeNode]:
+    def get_node(self, node_id: str) -> KnowledgeNode | None:
         return self.graph.get_node(node_id)
 
     def apply_decay(self, decay_rate: float = 0.95) -> int:

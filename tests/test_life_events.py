@@ -1,7 +1,7 @@
 import os
 
-from python.helpers.life_events import emit_event
 from instruments.custom.life_os.life_db import LifeOSDatabase
+from python.helpers.life_events import emit_event
 
 
 def test_emit_event_writes_life_os(tmp_path):

@@ -1,13 +1,15 @@
 import asyncio
 import random
 import string
+import threading
+import time
 
 import nest_asyncio
 
 nest_asyncio.apply()
 
 import contextlib
-from collections import OrderedDict
+from collections import OrderedDict, deque
 from collections.abc import Awaitable, Callable, Coroutine
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -21,7 +23,16 @@ from langchain_core.prompts import (
 
 import models
 import python.helpers.log as Log
-from python.helpers import context as context_helper, dirty_json, errors, extract_tools, files, history, tokens
+from python.helpers import (
+    context as context_helper,
+    dirty_json,
+    errors,
+    extract_tools,
+    files,
+    history,
+    perf_metrics,
+    tokens,
+)
 from python.helpers.defer import DeferredTask
 from python.helpers.dirty_json import DirtyJson
 from python.helpers.errors import RepairableException
@@ -84,6 +95,17 @@ class AgentContext:
         self.last_message = last_message or datetime.now(timezone.utc)
         self.data = data or {}
         self.output_data = output_data or {}
+        self._queue_lock = threading.Lock()
+        self._message_queue: deque[QueuedMessage] = deque()
+        self._runtime_state = "idle"
+        self._dispatch_status: dict[str, Any] = {
+            "accepted": True,
+            "queued": False,
+            "queue_position": 0,
+            "queue_depth": 0,
+            "state": self._runtime_state,
+        }
+        self._sync_runtime_output()
 
     @staticmethod
     def get(id: str):
@@ -146,41 +168,58 @@ class AgentContext:
 
     def get_data(self, key: str, recursive: bool = True):
         # recursive is not used now, prepared for context hierarchy
-        return self.data.get(key, None)
+        data = getattr(self, "data", {}) or {}
+        return data.get(key, None)
 
     def set_data(self, key: str, value: Any, recursive: bool = True):
         # recursive is not used now, prepared for context hierarchy
+        if not hasattr(self, "data") or self.data is None:
+            self.data = {}
         self.data[key] = value
 
     def get_output_data(self, key: str, recursive: bool = True):
         # recursive is not used now, prepared for context hierarchy
-        return self.output_data.get(key, None)
+        output_data = getattr(self, "output_data", {}) or {}
+        return output_data.get(key, None)
 
     def set_output_data(self, key: str, value: Any, recursive: bool = True):
         # recursive is not used now, prepared for context hierarchy
+        if not hasattr(self, "output_data") or self.output_data is None:
+            self.output_data = {}
         self.output_data[key] = value
 
     def output(self):
+        created_at = getattr(self, "created_at", None)
+        last_message = getattr(self, "last_message", None)
+        no = getattr(self, "no", 0)
+        paused = bool(getattr(self, "paused", False))
+        ctx_type = getattr(self, "type", AgentContextType.USER)
+        if not isinstance(ctx_type, AgentContextType):
+            try:
+                ctx_type = AgentContextType(str(ctx_type))
+            except Exception:
+                ctx_type = AgentContextType.USER
+
         return {
             "id": self.id,
             "name": self.name,
             "created_at": (
-                Localization.get().serialize_datetime(self.created_at)
-                if self.created_at
+                Localization.get().serialize_datetime(created_at)
+                if created_at
                 else Localization.get().serialize_datetime(datetime.fromtimestamp(0))
             ),
-            "no": self.no,
+            "no": no,
             "log_guid": self.log.guid,
             "log_version": len(self.log.updates),
             "log_length": len(self.log.logs),
-            "paused": self.paused,
+            "paused": paused,
             "last_message": (
-                Localization.get().serialize_datetime(self.last_message)
-                if self.last_message
+                Localization.get().serialize_datetime(last_message)
+                if last_message
                 else Localization.get().serialize_datetime(datetime.fromtimestamp(0))
             ),
-            "type": self.type.value,
-            **self.output_data,
+            "type": ctx_type.value,
+            **(getattr(self, "output_data", {}) or {}),
         }
 
     @staticmethod
@@ -209,10 +248,16 @@ class AgentContext:
         self.agent0 = Agent(0, self.config, self)
         self.streaming_agent = None
         self.paused = False
+        with self._queue_lock:
+            self._message_queue.clear()
+        self._set_runtime_state("idle")
 
     def nudge(self):
         self.kill_process()
         self.paused = False
+        with self._queue_lock:
+            self._message_queue.clear()
+        self._set_runtime_state("running")
         self.task = self.run_task(self.get_agent().monologue)
         return self.task
 
@@ -220,21 +265,93 @@ class AgentContext:
         return self.streaming_agent or self.agent0
 
     def communicate(self, msg: "UserMessage", broadcast_level: int = 1):
-        self.paused = False  # unpause if paused
+        return self.communicate_with_policy(msg, broadcast_level=broadcast_level, policy="interrupt")
 
+    def communicate_with_policy(
+        self,
+        msg: "UserMessage",
+        broadcast_level: int = 1,
+        policy: str = "interrupt",
+        queue_max_depth: int = 0,
+        queue_drop_policy: str = "reject_new",
+    ):
         current_agent = self.get_agent()
+        self.last_message = datetime.now(timezone.utc)
+        normalized_policy = (policy or "interrupt").strip().lower()
 
-        if self.task and self.task.is_alive():
-            # set intervention messages to agent(s):
-            intervention_agent = current_agent
-            while intervention_agent and broadcast_level != 0:
-                intervention_agent.intervention = msg
-                broadcast_level -= 1
-                intervention_agent = intervention_agent.data.get(Agent.DATA_NAME_SUPERIOR, None)
-        else:
-            self.task = self.run_task(self._process_chain, current_agent, msg)
+        if normalized_policy != "queue_strict":
+            self.paused = False  # keep legacy behavior for interruption policy
+            self._set_runtime_state("running")
+            if self.task and self.task.is_alive():
+                intervention_agent = current_agent
+                while intervention_agent and broadcast_level != 0:
+                    intervention_agent.intervention = msg
+                    broadcast_level -= 1
+                    intervention_agent = intervention_agent.data.get(Agent.DATA_NAME_SUPERIOR, None)
+                self._set_dispatch_status(
+                    accepted=True,
+                    queued=False,
+                    queue_position=0,
+                    queue_depth=self._queue_depth(),
+                    state=self._runtime_state,
+                )
+            else:
+                self.task = self.run_task(self._process_chain, current_agent, msg)
+                self._set_dispatch_status(
+                    accepted=True,
+                    queued=False,
+                    queue_position=0,
+                    queue_depth=self._queue_depth(),
+                    state=self._runtime_state,
+                )
+            return self.task
 
+        task_running = bool(self.task and self.task.is_alive())
+        if task_running or self.paused:
+            queued, position, depth = self._enqueue_message(
+                msg=msg,
+                max_depth=queue_max_depth,
+                drop_policy=queue_drop_policy,
+            )
+            self._set_runtime_state("paused" if self.paused else "running")
+            self._set_dispatch_status(
+                accepted=queued,
+                queued=queued,
+                queue_position=position if queued else 0,
+                queue_depth=depth,
+                state=self._runtime_state,
+            )
+            if not self.task:
+                self.task = self.run_task(self._queue_ack_result)
+            return self.task
+
+        self._set_runtime_state("running")
+        self._set_dispatch_status(
+            accepted=True,
+            queued=False,
+            queue_position=0,
+            queue_depth=self._queue_depth(),
+            state=self._runtime_state,
+        )
+        self.task = self.run_task(self._process_queue_loop, current_agent, msg)
         return self.task
+
+    def resume_queued(self):
+        if self.paused:
+            self._set_runtime_state("paused")
+            return self.task
+        if self.task and self.task.is_alive():
+            return self.task
+        queued = self._dequeue_message()
+        if not queued:
+            self._set_runtime_state("idle")
+            return None
+        self._set_runtime_state("draining_queue")
+        self.task = self.run_task(self._process_queue_loop, self.get_agent(), queued.message)
+        return self.task
+
+    def get_dispatch_status(self):
+        return dict(getattr(self, "_dispatch_status", {}) or {})
 
     def run_task(self, func: Callable[..., Coroutine[Any, Any, Any]], *args: Any, **kwargs: Any):
         if not self.task:
@@ -243,6 +360,80 @@ class AgentContext:
             )
         self.task.start_task(func, *args, **kwargs)
         return self.task
+
+    async def _queue_ack_result(self):
+        return "Message queued."
+
+    async def _process_queue_loop(self, agent: "Agent", initial_msg: "UserMessage"):
+        pending: UserMessage | None = initial_msg
+        result: Any = ""
+        try:
+            while pending:
+                while self.paused:
+                    self._set_runtime_state("paused")
+                    await asyncio.sleep(0.1)
+                self._set_runtime_state("running")
+                result = await self._process_chain(agent, pending)
+                next_msg = self._dequeue_message()
+                if next_msg:
+                    self._set_runtime_state("draining_queue")
+                    pending = next_msg.message
+                else:
+                    pending = None
+            return result
+        finally:
+            self._set_runtime_state("paused" if self.paused else "idle")
+
+    def _enqueue_message(self, msg: "UserMessage", max_depth: int, drop_policy: str) -> tuple[bool, int, int]:
+        with self._queue_lock:
+            if max_depth > 0 and len(self._message_queue) >= max_depth:
+                normalized_drop = (drop_policy or "reject_new").strip().lower()
+                if normalized_drop == "drop_oldest":
+                    self._message_queue.popleft()
+                else:
+                    depth = len(self._message_queue)
+                    self._sync_runtime_output_locked(depth=depth)
+                    return False, 0, depth
+            self._message_queue.append(QueuedMessage(message=msg))
+            depth = len(self._message_queue)
+            self._sync_runtime_output_locked(depth=depth)
+            return True, depth, depth
+
+    def _dequeue_message(self) -> "QueuedMessage|None":
+        with self._queue_lock:
+            if not self._message_queue:
+                self._sync_runtime_output_locked(depth=0)
+                return None
+            queued = self._message_queue.popleft()
+            self._sync_runtime_output_locked(depth=len(self._message_queue))
+            return queued
+
+    def _queue_depth(self) -> int:
+        with self._queue_lock:
+            return len(self._message_queue)
+
+    def _set_dispatch_status(self, **kwargs: Any):
+        status = getattr(self, "_dispatch_status", {}) or {}
+        status.update(kwargs)
+        self._dispatch_status = status
+        self.set_output_data("chat_dispatch", dict(status))
+        self._sync_runtime_output()
+
+    def _set_runtime_state(self, state: str):
+        self._runtime_state = state
+        self._sync_runtime_output()
+
+    def _sync_runtime_output_locked(self, depth: int):
+        oldest_age = 0.0
+        if self._message_queue:
+            oldest_age = max(0.0, time.monotonic() - self._message_queue[0].enqueued_at_monotonic)
+        self.set_output_data("runtime_state", self._runtime_state)
+        self.set_output_data("chat_queue_depth", depth)
+        self.set_output_data("chat_queue_oldest_age_seconds", round(oldest_age, 3))
+
+    def _sync_runtime_output(self):
+        with self._queue_lock:
+            self._sync_runtime_output_locked(depth=len(self._message_queue))
 
     # this wrapper ensures that superior agents are called back if the chat was loaded from file and original callstack is gone
     async def _process_chain(self, agent: "Agent", msg: "UserMessage|str", user=True):
@@ -290,6 +481,12 @@ class UserMessage:
     system_message: list[str] = field(default_factory=list[str])
 
 
+@dataclass
+class QueuedMessage:
+    message: UserMessage
+    enqueued_at_monotonic: float = field(default_factory=time.monotonic)
+
+
 class LoopData:
     def __init__(self, **kwargs):
         self.iteration = -1
@@ -302,6 +499,7 @@ class LoopData:
         self.params_temporary: dict = {}
         self.params_persistent: dict = {}
         self.current_tool = None
+        self.model_used: str = ""  # provider/model_name of model that handled the request
 
         # override values with kwargs
         for key, value in kwargs.items():
@@ -481,18 +679,53 @@ class Agent:
 
     async def prepare_prompt(self, loop_data: LoopData) -> list[BaseMessage]:
         self.context.log.set_progress("Building prompt")
+        from python.helpers import settings as settings_helper
+
+        set = settings_helper.get_settings()
+        extension_timeout = int(set.get("prompt_build_extension_timeout_seconds", 20) or 20)
 
         # call extensions before setting prompts
-        await self.call_extensions("message_loop_prompts_before", loop_data=loop_data)
+        try:
+            await asyncio.wait_for(
+                self.call_extensions("message_loop_prompts_before", loop_data=loop_data),
+                timeout=extension_timeout,
+            )
+        except TimeoutError:
+            self.context.log.log(
+                type="warning",
+                heading="prompt build timeout",
+                content=(
+                    f"message_loop_prompts_before exceeded {extension_timeout}s. "
+                    "Continuing without blocking extension output."
+                ),
+                temp=True,
+            )
 
         # set system prompt and message history
+        self.context.log.set_progress("Building prompt: system context")
         loop_data.system = await self.get_system_prompt(self.loop_data)
+        self.context.log.set_progress("Building prompt: history")
         loop_data.history_output = self.history.output()
 
         # and allow extensions to edit them
-        await self.call_extensions("message_loop_prompts_after", loop_data=loop_data)
+        self.context.log.set_progress("Building prompt: extensions")
+        try:
+            await asyncio.wait_for(
+                self.call_extensions("message_loop_prompts_after", loop_data=loop_data),
+                timeout=extension_timeout,
+            )
+        except TimeoutError:
+            self.context.log.log(
+                type="warning",
+                heading="prompt build timeout",
+                content=(
+                    f"message_loop_prompts_after exceeded {extension_timeout}s. Continuing with base prompt context."
+                ),
+                temp=True,
+            )
 
         # concatenate system prompt
+        self.context.log.set_progress("Building prompt: finalize")
         system_text = "\n\n".join(loop_data.system)
 
         # join extras
@@ -557,18 +790,8 @@ class Agent:
 
         # Add User Profile if available
         try:
-            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
-
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-            db = WorkflowEngineDatabase(db_path)
-            conn = db._get_conn()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM user_profiles WHERE user_id = 'default_user'")
-            row = cursor.fetchone()
-            conn.close()
-
-            if row:
-                profile = dict(row)
+            profile = await asyncio.wait_for(self._load_default_user_profile(), timeout=2.0)
+            if profile:
                 profile_text = "## Power User Profile (Identity Verified via Passkey)\n"
                 profile_text += f"- **User**: {profile.get('full_name')} <{profile.get('email')}>\n"
                 profile_text += "- **Environment**: High-Security White-Hat Platform\n"
@@ -581,10 +804,42 @@ class Agent:
                     profile_text += f"- **Phone**: {profile.get('phone_number')}\n"
                 system_prompt.append(profile_text)
         except Exception:
-            pass  # Silently fail if DB or table not ready
+            pass  # Silently fail if DB or table not ready / timed out
 
-        await self.call_extensions("system_prompt", system_prompt=system_prompt, loop_data=loop_data)
+        from python.helpers import settings as settings_helper
+
+        set = settings_helper.get_settings()
+        extension_timeout = int(set.get("prompt_build_extension_timeout_seconds", 20) or 20)
+        try:
+            await asyncio.wait_for(
+                self.call_extensions("system_prompt", system_prompt=system_prompt, loop_data=loop_data),
+                timeout=extension_timeout,
+            )
+        except TimeoutError:
+            self.context.log.log(
+                type="warning",
+                heading="system prompt timeout",
+                content=(f"system_prompt extensions exceeded {extension_timeout}s. Continuing with core prompt only."),
+                temp=True,
+            )
         return system_prompt
+
+    async def _load_default_user_profile(self) -> dict | None:
+        def _load() -> dict | None:
+            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+
+            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
+            db = WorkflowEngineDatabase(db_path)
+            conn = db._get_conn()
+            try:
+                cursor = conn.cursor()
+                cursor.execute("SELECT * FROM user_profiles WHERE user_id = 'default_user'")
+                row = cursor.fetchone()
+                return dict(row) if row else None
+            finally:
+                conn.close()
+
+        return await asyncio.to_thread(_load)
 
     def parse_prompt(self, _prompt_file: str, **kwargs):
         dirs = [files.get_abs_path("prompts")]
@@ -645,7 +900,9 @@ class Agent:
         return msg
 
     def hist_add_ai_response(self, message: str):
-        self.loop_data.last_response = message
+        # Guard for external backends (codex/claude_code) that skip message_loop()
+        if hasattr(self, "loop_data") and self.loop_data is not None:
+            self.loop_data.last_response = message
         content = self.parse_prompt("fw.ai_response.md", message=message)
         return self.hist_add_message(True, content=content)
 
@@ -667,24 +924,46 @@ class Agent:
 
     def get_chat_model(self):
         # Check if LLM Router should select the model
+        import logging
+
         from python.helpers import settings
 
-        set = settings.get_settings()
-        if set.get("llm_router_enabled", False):
+        sett = settings.get_settings()
+        if sett.get("llm_router_enabled", False):
             try:
                 from python.helpers.llm_router import RoutingPriority, get_router
 
                 router = get_router()
+
+                # Derive context signals from conversation history
+                capabilities = ["chat"]
+                context_type = "USER"
+                if hasattr(self, "history") and self.history:
+                    history_text = self.history.output_text("user", "assistant")[-2000:]
+                    ht_lower = history_text.lower()
+                    if any(kw in ht_lower for kw in ("code", "function", "debug", "implement", "refactor")):
+                        capabilities.append("code")
+                    if any(kw in ht_lower for kw in ("image", "screenshot", "photo", "picture", "diagram")):
+                        capabilities.append("vision")
+                    if any(kw in ht_lower for kw in ("reason", "analyze", "complex", "math", "proof")):
+                        capabilities.append("reasoning")
+
                 model_info = router.select_model(
-                    role="chat", context_type="USER", priority=RoutingPriority.QUALITY, required_capabilities=["chat"]
+                    role="chat",
+                    context_type=context_type,
+                    priority=RoutingPriority.QUALITY,
+                    required_capabilities=capabilities,
                 )
                 if model_info:
+                    logging.info(f"[LLMRouter] Selected chat model: {model_info.provider}/{model_info.name}")
                     return models.get_chat_model(
                         model_info.provider,
                         model_info.name,
+                        model_config=self.config.chat_model,
+                        **self.config.chat_model.build_kwargs(),
                     )
-            except Exception:
-                pass  # Fall back to default
+            except Exception as e:
+                logging.warning(f"[LLMRouter] Chat model selection failed: {e}, using default")
 
         return models.get_chat_model(
             self.config.chat_model.provider,
@@ -695,10 +974,12 @@ class Agent:
 
     def get_utility_model(self):
         # Check if LLM Router should select the model
+        import logging
+
         from python.helpers import settings
 
-        set = settings.get_settings()
-        if set.get("llm_router_enabled", False):
+        sett = settings.get_settings()
+        if sett.get("llm_router_enabled", False):
             try:
                 from python.helpers.llm_router import RoutingPriority, get_router
 
@@ -710,12 +991,15 @@ class Agent:
                     required_capabilities=["chat"],
                 )
                 if model_info:
+                    logging.info(f"[LLMRouter] Selected utility model: {model_info.provider}/{model_info.name}")
                     return models.get_chat_model(
                         model_info.provider,
                         model_info.name,
+                        model_config=self.config.utility_model,
+                        **self.config.utility_model.build_kwargs(),
                     )
-            except Exception:
-                pass  # Fall back to default
+            except Exception as e:
+                logging.warning(f"[LLMRouter] Utility model selection failed: {e}, using default")
 
         return models.get_chat_model(
             self.config.utility_model.provider,
@@ -725,6 +1009,34 @@ class Agent:
         )
 
     def get_browser_model(self):
+        # Check if LLM Router should select the model
+        import logging
+
+        from python.helpers import settings
+
+        sett = settings.get_settings()
+        if sett.get("llm_router_enabled", False):
+            try:
+                from python.helpers.llm_router import RoutingPriority, get_router
+
+                router = get_router()
+                model_info = router.select_model(
+                    role="browser",
+                    context_type="TASK",
+                    priority=RoutingPriority.QUALITY,
+                    required_capabilities=["chat", "vision"],
+                )
+                if model_info:
+                    logging.info(f"[LLMRouter] Selected browser model: {model_info.provider}/{model_info.name}")
+                    return models.get_browser_model(
+                        model_info.provider,
+                        model_info.name,
+                        model_config=self.config.browser_model,
+                        **self.config.browser_model.build_kwargs(),
+                    )
+            except Exception as e:
+                logging.warning(f"[LLMRouter] Browser model selection failed: {e}, using default")
+
         return models.get_browser_model(
             self.config.browser_model.provider,
             self.config.browser_model.name,
@@ -733,6 +1045,33 @@ class Agent:
         )
 
     def get_embedding_model(self):
+        # Check if LLM Router should select the model
+        import logging
+
+        from python.helpers import settings
+
+        sett = settings.get_settings()
+        if sett.get("llm_router_enabled", False):
+            try:
+                from python.helpers.llm_router import get_router
+
+                router = get_router()
+                model_info = router.select_model(
+                    role="embedding",
+                    context_type="TASK",
+                    required_capabilities=["embedding"],
+                )
+                if model_info:
+                    logging.info(f"[LLMRouter] Selected embedding model: {model_info.provider}/{model_info.name}")
+                    return models.get_embedding_model(
+                        model_info.provider,
+                        model_info.name,
+                        model_config=self.config.embeddings_model,
+                        **self.config.embeddings_model.build_kwargs(),
+                    )
+            except Exception as e:
+                logging.warning(f"[LLMRouter] Embedding model selection failed: {e}, using default")
+
         return models.get_embedding_model(
             self.config.embeddings_model.provider,
             self.config.embeddings_model.name,
@@ -771,17 +1110,25 @@ class Agent:
             rate_limiter_callback=self.rate_limiter_callback if not call_data["background"] else None,
         )
 
+        # Record usage for dashboard stats
+        self._record_router_usage(
+            self.config.utility_model.provider,
+            self.config.utility_model.name,
+            response,
+            model_role="utility",
+        )
+
         return response
 
     def get_thinking_kwargs(self) -> dict:
         """Get kwargs for thinking/extended reasoning mode if enabled."""
         from python.helpers import settings
 
-        set = settings.get_settings()
+        sett = settings.get_settings()
 
         kwargs = {}
-        if set.get("thinking_enabled", False):
-            budget = set.get("thinking_budget", 1024)
+        if sett.get("thinking_enabled", False):
+            budget = sett.get("thinking_budget", 1024)
             # For Anthropic Claude models with extended thinking support
             kwargs["thinking"] = {"type": "enabled", "budget_tokens": int(budget)}
         return kwargs
@@ -793,10 +1140,66 @@ class Agent:
         reasoning_callback: Callable[[str, str], Awaitable[None]] | None = None,
         background: bool = False,
     ):
-        response = ""
+        import logging
 
-        # model class
+        from python.helpers import settings
+
+        sett = settings.get_settings()
+
+        # Check if failover is enabled
+        if sett.get("llm_router_enabled", False):
+            try:
+                from python.helpers.llm_router import RoutingPriority, call_with_failover, get_router
+
+                router = get_router()
+                primary_model = router.select_model(
+                    role="chat", context_type="USER", priority=RoutingPriority.QUALITY, required_capabilities=["chat"]
+                )
+
+                if primary_model:
+                    # Get thinking mode kwargs if enabled
+                    thinking_kwargs = self.get_thinking_kwargs()
+
+                    # Define the call function for failover wrapper
+                    async def make_call(provider: str, model_name: str):
+                        model = models.get_chat_model(
+                            provider,
+                            model_name,
+                            model_config=self.config.chat_model,
+                            **self.config.chat_model.build_kwargs(),
+                        )
+                        return await model.unified_call(
+                            messages=messages,
+                            reasoning_callback=reasoning_callback,
+                            response_callback=response_callback,
+                            rate_limiter_callback=self.rate_limiter_callback if not background else None,
+                            **thinking_kwargs,
+                        )
+
+                    # Execute with automatic failover
+                    result = await call_with_failover(
+                        primary_model=primary_model, call_func=make_call, required_capabilities=["chat"], max_retries=3
+                    )
+
+                    if result.success:
+                        model_label = f"{result.model_used.provider}/{result.model_used.name}"
+                        logging.info(f"[LLMRouter] Chat call succeeded with {model_label}")
+                        # Store model used on loop_data so the log extension can display it
+                        if hasattr(self, "loop_data") and self.loop_data:
+                            self.loop_data.model_used = model_label
+                        return result.response, result.reasoning
+                    else:
+                        logging.warning(f"[LLMRouter] All failover attempts failed: {result.error}")
+                        # Fall through to default model
+            except Exception as e:
+                logging.warning(f"[LLMRouter] Failover system error: {e}, using default model")
+
+        # Default: use configured model directly
         model = self.get_chat_model()
+
+        # Store default model info on loop_data so the log extension can display it
+        if hasattr(self, "loop_data") and self.loop_data:
+            self.loop_data.model_used = f"{self.config.chat_model.provider}/{self.config.chat_model.name}"
 
         # Get thinking mode kwargs if enabled
         thinking_kwargs = self.get_thinking_kwargs()
@@ -810,12 +1213,52 @@ class Agent:
             **thinking_kwargs,
         )
 
+        # Record usage for dashboard stats (non-failover path)
+        self._record_router_usage(
+            self.config.chat_model.provider,
+            self.config.chat_model.name,
+            response,
+            reasoning,
+            model_role="chat",
+        )
+
         return response, reasoning
 
     async def rate_limiter_callback(self, message: str, key: str, total: int, limit: int):
         # show the rate limit waiting in a progress bar, no need to spam the chat history
         self.context.log.set_progress(message, True)
         return False
+
+    def _record_router_usage(
+        self,
+        provider: str,
+        model_name: str,
+        response: str | None = None,
+        reasoning: str | None = None,
+        model_role: str | None = None,
+    ):
+        """Record a model call in the router usage database (best-effort)."""
+        try:
+            from python.helpers import settings as settings_helper
+
+            if not settings_helper.get_settings().get("llm_router_enabled", False):
+                return
+
+            from python.helpers.llm_router import get_router
+            from python.helpers.tokens import approximate_tokens
+
+            output_tokens = approximate_tokens(response or "") + approximate_tokens(reasoning or "")
+            get_router().record_call(
+                provider=provider,
+                model_name=model_name,
+                input_tokens=0,  # not available from unified_call
+                output_tokens=output_tokens,
+                latency_ms=0,  # not tracked on this path
+                success=True,
+                model_role=model_role,
+            )
+        except Exception:
+            pass  # non-critical — never break agent flow
 
     async def handle_intervention(self, progress: str = ""):
         while self.context.paused:
@@ -875,6 +1318,9 @@ class Agent:
 
             if tool:
                 self.loop_data.current_tool = tool
+                tool_started = asyncio.get_running_loop().time()
+                tool_status = "success"
+                perf_metrics.increment("runtime.tool_execution.requests")
                 try:
                     await self.handle_intervention()
                     await tool.before_execution(**tool_args)
@@ -888,7 +1334,15 @@ class Agent:
                     await tool.after_execution(response)
                     return response
                 except Exception as e:
+                    tool_status = "error"
+                    perf_metrics.increment("runtime.tool_execution.errors")
                     return tool.handle_exception(e) or e
+                finally:
+                    perf_metrics.observe_ms(
+                        "runtime.tool_execution.duration_ms",
+                        (asyncio.get_running_loop().time() - tool_started) * 1000.0,
+                        status=tool_status,
+                    )
             return None
 
         # search for all tool usage requests in agent message

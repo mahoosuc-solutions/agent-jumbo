@@ -30,21 +30,19 @@ class GmailAccountsList(ApiHandler):
                 # Get detailed status from OAuth2 handler
                 status = handler.get_account_status(account_name)
 
-                accounts_list.append({
-                    "name": account_name,
-                    "email": account_data.get("email", "Unknown"),
-                    "authenticated": status.get("authenticated", False),
-                    "valid": status.get("valid", False),
-                    "expired": status.get("expired", False),
-                    "scopes": status.get("scopes", []),
-                    "error": status.get("error")
-                })
+                accounts_list.append(
+                    {
+                        "name": account_name,
+                        "email": account_data.get("email", "Unknown"),
+                        "authenticated": status.get("authenticated", False),
+                        "valid": status.get("valid", False),
+                        "expired": status.get("expired", False),
+                        "scopes": status.get("scopes", []),
+                        "error": status.get("error"),
+                    }
+                )
 
-            return {
-                "success": True,
-                "accounts": accounts_list,
-                "count": len(accounts_list)
-            }
+            return {"success": True, "accounts": accounts_list, "count": len(accounts_list)}
 
         except Exception as e:
             return Response(f"Failed to list Gmail accounts: {e!s}", 500)

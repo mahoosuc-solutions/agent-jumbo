@@ -11,7 +11,6 @@ from python.helpers.tool import Response, Tool
 
 
 class BusinessXRay(Tool):
-
     async def execute(self, **kwargs):
         """
         Execute business analysis
@@ -51,27 +50,20 @@ class BusinessXRay(Tool):
                 return await self._analyze_life_balance(business_name, output_dir, data)
 
             else:
-                return Response(
-                    message=f"Unknown analysis type: {analysis_type}",
-                    break_loop=False
-                )
+                return Response(message=f"Unknown analysis type: {analysis_type}", break_loop=False)
 
         except Exception as e:
-            return Response(
-                message=f"Business X-Ray analysis failed: {e!s}",
-                break_loop=False
-            )
+            return Response(message=f"Business X-Ray analysis failed: {e!s}", break_loop=False)
 
     async def _run_comprehensive_analysis(self, business_name: str, output_dir: str):
         """Run comprehensive business analysis"""
 
-        script_path = Path(__file__).parent.parent.parent / "instruments" / "custom" / "business_xray" / "comprehensive_xray.py"
+        script_path = (
+            Path(__file__).parent.parent.parent / "instruments" / "custom" / "business_xray" / "comprehensive_xray.py"
+        )
 
         if not script_path.exists():
-            return Response(
-                message=f"Business X-Ray script not found at {script_path}",
-                break_loop=False
-            )
+            return Response(message=f"Business X-Ray script not found at {script_path}", break_loop=False)
 
         # Run comprehensive analysis script
         # Note: This requires interactive input - for agent use, we'll provide defaults
@@ -79,20 +71,19 @@ class BusinessXRay(Tool):
             [
                 "python3",
                 str(script_path),
-                "--business-name", business_name,
-                "--output-dir", output_dir,
-                "--quick"  # Use defaults for agent execution
+                "--business-name",
+                business_name,
+                "--output-dir",
+                output_dir,
+                "--quick",  # Use defaults for agent execution
             ],
             capture_output=True,
             text=True,
-            timeout=300  # 5 minute timeout
+            timeout=300,  # 5 minute timeout
         )
 
         if result.returncode != 0:
-            return Response(
-                message=f"Comprehensive analysis failed:\n{result.stderr}",
-                break_loop=False
-            )
+            return Response(message=f"Comprehensive analysis failed:\n{result.stderr}", break_loop=False)
 
         # Read generated reports
         reports = self._collect_reports(output_dir)
@@ -103,7 +94,7 @@ class BusinessXRay(Tool):
 Business: {business_name}
 Reports saved to: {output_dir}
 
-{reports.get('executive_summary', 'No summary available')}
+{reports.get("executive_summary", "No summary available")}
 
 **Generated Reports:**
 - Dashboard: {output_dir}/dashboard.md
@@ -122,15 +113,15 @@ View the dashboard for a complete overview.
         """Analyze business health metrics"""
 
         # Extract metrics from data or use defaults
-        revenue = data.get('monthly_revenue', 10000)
-        growth_rate = data.get('growth_rate', 5)
-        profit_margin = data.get('profit_margin', 20)
-        total_customers = data.get('total_customers', 100)
-        cac = data.get('cac', 100)
-        ltv = data.get('ltv', 1000)
+        revenue = data.get("monthly_revenue", 10000)
+        growth_rate = data.get("growth_rate", 5)
+        profit_margin = data.get("profit_margin", 20)
+        total_customers = data.get("total_customers", 100)
+        cac = data.get("cac", 100)
+        ltv = data.get("ltv", 1000)
 
         # Calculate health score
-        health_score = self._calculate_health_score(revenue, growth_rate, profit_margin, ltv/cac if cac > 0 else 0)
+        health_score = self._calculate_health_score(revenue, growth_rate, profit_margin, ltv / cac if cac > 0 else 0)
 
         # Generate Mermaid diagram
         diagram = f"""```mermaid
@@ -144,7 +135,7 @@ graph TB
     end
     subgraph "Customers"
         C1[Total: {total_customers}]
-        C2[LTV/CAC: {ltv/cac if cac > 0 else 0:.1f}x]
+        C2[LTV/CAC: {ltv / cac if cac > 0 else 0:.1f}x]
     end
 
     R1 --> Score[Health Score: {health_score}/100]
@@ -156,7 +147,7 @@ graph TB
 
         # Save diagram
         diagram_file = Path(output_dir) / "business_health.mmd"
-        with open(diagram_file, 'w') as f:
+        with open(diagram_file, "w") as f:
             f.write(diagram)
 
         message = f"""
@@ -170,10 +161,10 @@ Key Metrics:
 - Monthly Revenue: ${revenue:,.2f}
 - Growth Rate: {growth_rate}%
 - Profit Margin: {profit_margin}%
-- LTV/CAC Ratio: {ltv/cac if cac > 0 else 0:.1f}x
+- LTV/CAC Ratio: {ltv / cac if cac > 0 else 0:.1f}x
 
 Recommendations:
-{self._get_health_recommendations(health_score, growth_rate, profit_margin, ltv/cac if cac > 0 else 0)}
+{self._get_health_recommendations(health_score, growth_rate, profit_margin, ltv / cac if cac > 0 else 0)}
 """
 
         return Response(message=message, break_loop=False)
@@ -181,11 +172,11 @@ Recommendations:
     async def _audit_time_usage(self, business_name: str, output_dir: str, data: dict):
         """Audit time allocation"""
 
-        deep_work = data.get('deep_work_hours', 20)
-        meetings = data.get('meeting_hours', 10)
-        email = data.get('email_hours', 10)
-        shallow = data.get('shallow_work_hours', 10)
-        personal = data.get('personal_hours', 20)
+        deep_work = data.get("deep_work_hours", 20)
+        meetings = data.get("meeting_hours", 10)
+        email = data.get("email_hours", 10)
+        shallow = data.get("shallow_work_hours", 10)
+        personal = data.get("personal_hours", 20)
 
         total_work = deep_work + meetings + email + shallow
         efficiency_score = round((deep_work / total_work * 100) if total_work > 0 else 0, 1)
@@ -202,7 +193,7 @@ pie title Weekly Time Distribution
 **Time Efficiency Score: {efficiency_score}%**"""
 
         diagram_file = Path(output_dir) / "time_audit.mmd"
-        with open(diagram_file, 'w') as f:
+        with open(diagram_file, "w") as f:
             f.write(diagram)
 
         message = f"""
@@ -220,34 +211,34 @@ Recommendations:
         """Identify automation opportunities"""
 
         # Default common automation opportunities
-        opportunities = data.get('opportunities', [
-            {"task": "Invoice generation", "hours_week": 8, "potential": 95},
-            {"task": "Email responses", "hours_week": 6, "potential": 70},
-            {"task": "Data entry", "hours_week": 4, "potential": 90},
-            {"task": "Report generation", "hours_week": 4, "potential": 85},
-            {"task": "Social media posting", "hours_week": 5, "potential": 80},
-        ])
+        opportunities = data.get(
+            "opportunities",
+            [
+                {"task": "Invoice generation", "hours_week": 8, "potential": 95},
+                {"task": "Email responses", "hours_week": 6, "potential": 70},
+                {"task": "Data entry", "hours_week": 4, "potential": 90},
+                {"task": "Report generation", "hours_week": 4, "potential": 85},
+                {"task": "Social media posting", "hours_week": 5, "potential": 80},
+            ],
+        )
 
         # Calculate savings
-        hourly_rate = data.get('hourly_rate', 50)
+        hourly_rate = data.get("hourly_rate", 50)
         results = []
 
         for opp in opportunities:
-            hours = opp['hours_week']
-            potential = opp['potential']
+            hours = opp["hours_week"]
+            potential = opp["potential"]
             weekly_cost = hours * hourly_rate
             monthly_savings = weekly_cost * 4 * (potential / 100)
             annual_savings = monthly_savings * 12
 
-            results.append({
-                "task": opp['task'],
-                "hours_week": hours,
-                "potential": potential,
-                "annual_savings": annual_savings
-            })
+            results.append(
+                {"task": opp["task"], "hours_week": hours, "potential": potential, "annual_savings": annual_savings}
+            )
 
         # Sort by savings
-        results.sort(key=lambda x: x['annual_savings'], reverse=True)
+        results.sort(key=lambda x: x["annual_savings"], reverse=True)
 
         # Generate table
         table = "| Priority | Task | Hours/Week | Automation Potential | Annual Savings |\n"
@@ -256,7 +247,7 @@ Recommendations:
         for i, r in enumerate(results[:10], 1):
             table += f"| {i} | {r['task']} | {r['hours_week']} | {r['potential']}% | ${r['annual_savings']:,.0f} |\n"
 
-        total_savings = sum(r['annual_savings'] for r in results)
+        total_savings = sum(r["annual_savings"] for r in results)
 
         message = f"""
 **Automation Opportunities: {business_name}**
@@ -266,9 +257,9 @@ Recommendations:
 **Total Potential Savings: ${total_savings:,.2f}/year**
 
 Top 3 Quick Wins:
-1. {results[0]['task']} - ${results[0]['annual_savings']:,.0f}/year
-2. {results[1]['task']} - ${results[1]['annual_savings']:,.0f}/year
-3. {results[2]['task']} - ${results[2]['annual_savings']:,.0f}/year
+1. {results[0]["task"]} - ${results[0]["annual_savings"]:,.0f}/year
+2. {results[1]["task"]} - ${results[1]["annual_savings"]:,.0f}/year
+3. {results[2]["task"]} - ${results[2]["annual_savings"]:,.0f}/year
 
 Next Steps:
 - Start with highest ROI automation
@@ -279,7 +270,7 @@ Next Steps:
 
         # Save to file
         report_file = Path(output_dir) / "automation_opportunities.md"
-        with open(report_file, 'w') as f:
+        with open(report_file, "w") as f:
             f.write(message)
 
         return Response(message=message, break_loop=False)
@@ -287,18 +278,21 @@ Next Steps:
     async def _scan_revenue_opportunities(self, business_name: str, output_dir: str, data: dict):
         """Identify revenue growth opportunities"""
 
-        current_revenue = data.get('current_annual_revenue', 120000)
+        current_revenue = data.get("current_annual_revenue", 120000)
 
-        opportunities = data.get('opportunities', [
-            {"name": "Price increase", "potential": 12000, "difficulty": 3, "months": 1},
-            {"name": "Upsell existing customers", "potential": 24000, "difficulty": 4, "months": 3},
-            {"name": "New market segment", "potential": 36000, "difficulty": 7, "months": 6},
-            {"name": "Subscription model", "potential": 48000, "difficulty": 6, "months": 4},
-            {"name": "Digital products", "potential": 18000, "difficulty": 5, "months": 2},
-        ])
+        opportunities = data.get(
+            "opportunities",
+            [
+                {"name": "Price increase", "potential": 12000, "difficulty": 3, "months": 1},
+                {"name": "Upsell existing customers", "potential": 24000, "difficulty": 4, "months": 3},
+                {"name": "New market segment", "potential": 36000, "difficulty": 7, "months": 6},
+                {"name": "Subscription model", "potential": 48000, "difficulty": 6, "months": 4},
+                {"name": "Digital products", "potential": 18000, "difficulty": 5, "months": 2},
+            ],
+        )
 
         # Sort by potential
-        opportunities.sort(key=lambda x: x['potential'], reverse=True)
+        opportunities.sort(key=lambda x: x["potential"], reverse=True)
 
         # Generate diagram
         diagram = f"""```mermaid
@@ -309,7 +303,7 @@ graph LR
         for i, opp in enumerate(opportunities[:5], 1):
             diagram += f"    Current --> O{i}[{opp['name']}<br/>+${opp['potential']:,.0f}]\n"
 
-        total_potential = sum(opp['potential'] for opp in opportunities)
+        total_potential = sum(opp["potential"] for opp in opportunities)
         target = current_revenue + total_potential
 
         for i in range(1, len(opportunities[:5]) + 1):
@@ -318,7 +312,7 @@ graph LR
         diagram += f"    Target[Target Revenue<br/>${target:,.0f}/year]\n```"
 
         diagram_file = Path(output_dir) / "revenue_opportunities.mmd"
-        with open(diagram_file, 'w') as f:
+        with open(diagram_file, "w") as f:
             f.write(diagram)
 
         # Generate table
@@ -339,9 +333,9 @@ graph LR
 **Target Revenue: ${target:,.0f}/year**
 
 Implementation Priority:
-1. Low difficulty, high impact: {opportunities[0]['name']}
+1. Low difficulty, high impact: {opportunities[0]["name"]}
 2. Quick wins: Focus on 1-3 month opportunities
-3. Long-term growth: Plan {opportunities[2]['name']} for Q3-Q4
+3. Long-term growth: Plan {opportunities[2]["name"]} for Q3-Q4
 """
 
         return Response(message=message, break_loop=False)
@@ -349,18 +343,17 @@ Implementation Priority:
     async def _analyze_life_balance(self, business_name: str, output_dir: str, data: dict):
         """Analyze work-life balance"""
 
-        work_hours = data.get('work_hours_week', 50)
-        ideal_hours = data.get('ideal_hours_week', 40)
-        stress_level = data.get('stress_level', 6)
-        exercise_hours = data.get('exercise_hours_week', 3)
-        sleep_hours = data.get('sleep_hours_night', 7)
-        family_time = data.get('family_time_hours_week', 15)
-        life_satisfaction = data.get('life_satisfaction', 7)
+        work_hours = data.get("work_hours_week", 50)
+        ideal_hours = data.get("ideal_hours_week", 40)
+        stress_level = data.get("stress_level", 6)
+        exercise_hours = data.get("exercise_hours_week", 3)
+        sleep_hours = data.get("sleep_hours_night", 7)
+        family_time = data.get("family_time_hours_week", 15)
+        life_satisfaction = data.get("life_satisfaction", 7)
 
         # Calculate balance score
         balance_score = self._calculate_balance_score(
-            work_hours, ideal_hours, stress_level,
-            exercise_hours, sleep_hours, life_satisfaction
+            work_hours, ideal_hours, stress_level, exercise_hours, sleep_hours, life_satisfaction
         )
 
         diagram = f"""```mermaid
@@ -386,7 +379,7 @@ graph TB
 ```"""
 
         diagram_file = Path(output_dir) / "life_balance.mmd"
-        with open(diagram_file, 'w') as f:
+        with open(diagram_file, "w") as f:
             f.write(diagram)
 
         recommendations = self._get_balance_recommendations(
@@ -442,8 +435,9 @@ Recommendations:
 
         return min(score, 100)
 
-    def _calculate_balance_score(self, work_hours: float, ideal_hours: float, stress: int,
-                                 exercise: float, sleep: float, satisfaction: int) -> int:
+    def _calculate_balance_score(
+        self, work_hours: float, ideal_hours: float, stress: int, exercise: float, sleep: float, satisfaction: int
+    ) -> int:
         """Calculate work-life balance score"""
         score = 0
 
@@ -511,8 +505,9 @@ Recommendations:
 
         return "\n".join(f"- {r}" for r in recs)
 
-    def _get_balance_recommendations(self, work: float, ideal: float, stress: int,
-                                    exercise: float, sleep: float) -> str:
+    def _get_balance_recommendations(
+        self, work: float, ideal: float, stress: int, exercise: float, sleep: float
+    ) -> str:
         """Generate balance recommendations"""
         recs = []
 
@@ -540,6 +535,6 @@ Recommendations:
         summary_file = Path(output_dir) / "executive_summary.md"
         if summary_file.exists():
             with open(summary_file) as f:
-                reports['executive_summary'] = f.read()
+                reports["executive_summary"] = f.read()
 
         return reports

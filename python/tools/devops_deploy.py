@@ -156,7 +156,9 @@ class DevOpsDeploy(Tool):
         """
         return normalize_environment(environment)
 
-    def _build_deployment_result(self, environment: str, skip_tests: bool, skip_backup: bool, platform: str = "") -> dict:
+    def _build_deployment_result(
+        self, environment: str, skip_tests: bool, skip_backup: bool, platform: str = ""
+    ) -> dict:
         started_at = self._utc_now_iso()
         stage_runs: list[dict] = []
         failed_stage = ""
@@ -301,13 +303,13 @@ DEPLOYMENT WORKFLOW (POC):
   - Build verification: passed
   - Environment variables: configured
 
-{'✓ Step 3: Pre-Deployment Backup (simulated)' if not skip_backup else '○ Step 3: Backup skipped (--skip-backup)'}
-{'  - Database backup created' if not skip_backup else ''}
-{'  - Deployment artifacts backed up' if not skip_backup else ''}
+{"✓ Step 3: Pre-Deployment Backup (simulated)" if not skip_backup else "○ Step 3: Backup skipped (--skip-backup)"}
+{"  - Database backup created" if not skip_backup else ""}
+{"  - Deployment artifacts backed up" if not skip_backup else ""}
 
-{'✓ Step 4: Test Suite (simulated)' if not skip_tests else '○ Step 4: Tests skipped (--skip-tests)'}
-{'  - Unit tests: passed' if not skip_tests else ''}
-{'  - Integration tests: passed' if not skip_tests else ''}
+{"✓ Step 4: Test Suite (simulated)" if not skip_tests else "○ Step 4: Tests skipped (--skip-tests)"}
+{"  - Unit tests: passed" if not skip_tests else ""}
+{"  - Integration tests: passed" if not skip_tests else ""}
 
 ✓ Step 5: Build & Package (simulated)
   - Build completed successfully
@@ -332,13 +334,13 @@ DEPLOYMENT WORKFLOW (POC):
   - Git commit tagged
   - Team notified
 
-DEPLOYMENT STATUS: {'SUCCESS ✓' if result.get('status') == 'success' else 'FAILED ✗'}
+DEPLOYMENT STATUS: {"SUCCESS ✓" if result.get("status") == "success" else "FAILED ✗"}
 
 Deployment Report:
   Environment: {result["environment"]}
   Status: {result["status"]}
-  Health Checks: {'passed' if result["checks"]["health_checks_passed"] else 'failed'}
-  Smoke Tests: {'passed' if result["checks"]["smoke_tests_passed"] else 'failed'}
+  Health Checks: {"passed" if result["checks"]["health_checks_passed"] else "failed"}
+  Smoke Tests: {"passed" if result["checks"]["smoke_tests_passed"] else "failed"}
   Backup Created: {result["checks"]["backup_created"]}
   Tests Run: {result["checks"]["tests_run"]}
 

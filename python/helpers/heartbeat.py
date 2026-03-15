@@ -13,7 +13,7 @@ import re
 from typing import Any
 
 from python.helpers import files
-from python.helpers.event_bus import EventBus  # noqa: TCH001
+from python.helpers.event_bus import EventBus  # noqa: TC001
 from python.helpers.event_triggers import (
     HeartbeatTrigger,
     TriggerStore,

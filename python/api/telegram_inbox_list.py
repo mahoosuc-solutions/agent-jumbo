@@ -1,6 +1,6 @@
-from python.helpers.api import ApiHandler, Request, Response
-from python.helpers import files
 from instruments.custom.knowledge_ingest.knowledge_ingest_db import KnowledgeIngestDatabase
+from python.helpers import files
+from python.helpers.api import ApiHandler, Request, Response
 
 
 class TelegramInboxList(ApiHandler):

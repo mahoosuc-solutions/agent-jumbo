@@ -6,9 +6,7 @@ from typing import Any
 
 
 def capture_prints_async(
-    func: Callable[..., Awaitable[Any]],
-    *args,
-    **kwargs
+    func: Callable[..., Awaitable[Any]], *args, **kwargs
 ) -> tuple[Awaitable[Any], Callable[[], str]]:
     # Create a StringIO object to capture the output
     captured_output = io.StringIO()

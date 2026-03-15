@@ -55,7 +55,8 @@ jobs:
           fi
 
           # Check for unclosed code blocks
-          for file in docs/*.md web/docs/*.md 2>/dev/null; do
+          shopt -s nullglob
+          for file in docs/*.md web/docs/*.md; do
             if [ -f "$file" ]; then
               backticks=$(grep -c '```' "$file" || true)
               if [ $((backticks % 2)) -ne 0 ]; then

@@ -6,7 +6,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-zero-devops"
+name = "agent-jumbo-devops"
 version = "1.0.0-beta"
 description = "Intelligent multi-platform deployment orchestration for AI agents"
 authors = [
@@ -14,7 +14,7 @@ authors = [
 ]
 readme = "README.md"
 requires-python = ">=3.10"
-license = {text = "Apache Software License 2.0"}
+license = "Apache-2.0"
 keywords = [
     "deployment",
     "orchestration",
@@ -31,7 +31,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: Apache Software License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
@@ -105,17 +104,24 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/agent-zero-deploy/agent-zero-devops"
-"Bug Tracker" = "https://github.com/agent-zero-deploy/agent-zero-devops/issues"
-Documentation = "https://github.com/agent-zero-deploy/agent-zero-devops/tree/main/docs"
-"Source Code" = "https://github.com/agent-zero-deploy/agent-zero-devops"
-Discussions = "https://github.com/agent-zero-deploy/agent-zero-devops/discussions"
+Homepage = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops"
+"Bug Tracker" = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/issues"
+Documentation = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/tree/main/docs"
+"Source Code" = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops"
+Discussions = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/discussions"
 
 # ============================================
-# Ruff Configuration for Agent Zero
+# Setuptools Package Discovery
+# ============================================
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["python*", "instruments*"]
+
+# ============================================
+# Ruff Configuration for Agent Jumbo
 # ============================================
 [tool.ruff]
-target-version = "py312"
+target-version = "py310"
 line-length = 120
 indent-width = 4
 
@@ -165,6 +171,8 @@ ignore = [
     "SIM108", # Use ternary operator instead of if-else block
     "SIM113", # Use enumerate (existing patterns)
     "SIM115", # Use context manager for files (existing patterns)
+    "SIM103", # Return condition directly (existing patterns)
+    "SIM116", # Use dict instead of if/elif (existing patterns)
     "SIM117", # Single with statement (existing patterns)
     "UP007",  # Use X | Y for type annotations (keep Optional for clarity)
     "UP017",  # Use TimeoutError instead of asyncio.TimeoutError (Python 3.10 needs asyncio.TimeoutError)
@@ -181,8 +189,8 @@ unfixable = []
 
 [tool.ruff.lint.per-file-ignores]
 # Tests: allow sys.path manipulation, unused vars, conditional imports
-"tests/*" = ["E402", "F841", "SIM105", "PLR2004", "S101"]
-"tests/**/*.py" = ["E402", "F841", "SIM105", "PLR2004", "S101"]
+"tests/*" = ["E402", "F841", "SIM105", "PLR2004", "S101", "RUF059", "B017"]
+"tests/**/*.py" = ["E402", "F841", "SIM105", "PLR2004", "S101", "RUF059", "B017"]
 # Extensions may have conditional imports
 "**/extensions/*" = ["E402"]
 # Initialization requires sys.path setup

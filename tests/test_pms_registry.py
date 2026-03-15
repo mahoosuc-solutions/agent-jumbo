@@ -3,17 +3,15 @@ Unit tests for PMS Provider Registry
 Tests configuration management, provider loading, and persistence
 """
 
-import pytest
-import json
-import tempfile
-from pathlib import Path
-from unittest.mock import AsyncMock, patch, MagicMock
+from unittest.mock import AsyncMock, patch
 
-from instruments.custom.pms_hub.provider_registry import (
-    ProviderRegistry,
-    ProviderConfig,
-)
+import pytest
+
 from instruments.custom.pms_hub.pms_provider import ProviderType
+from instruments.custom.pms_hub.provider_registry import (
+    ProviderConfig,
+    ProviderRegistry,
+)
 
 
 class TestProviderConfig:
@@ -340,11 +338,7 @@ class TestProviderRegistry:
             provider_id="test",
             provider_type=ProviderType.HOSTAWAY,
             name="Test",
-            credentials={
-                "api_key": "x",
-                "user_id": "y",
-                "access_token": "z"
-            },
+            credentials={"api_key": "x", "user_id": "y", "access_token": "z"},
         )
 
         # Mock provider creation
@@ -434,10 +428,12 @@ class TestProviderRegistryEdgeCases:
 
         # Should raise ValueError when loading
         with pytest.raises(ValueError):
-            ProviderConfig.from_dict({
-                "provider_type": "invalid_type",
-                "name": "Test",
-                "enabled": True,
-                "credentials": {},
-                "options": {},
-            })
+            ProviderConfig.from_dict(
+                {
+                    "provider_type": "invalid_type",
+                    "name": "Test",
+                    "enabled": True,
+                    "credentials": {},
+                    "options": {},
+                }
+            )

@@ -1,7 +1,6 @@
 """HTTP health check utilities for deployment verification."""
 
 import time
-from typing import Optional
 
 import aiohttp
 
@@ -11,7 +10,7 @@ async def check_http_endpoint(
     timeout: int = 30,
     expected_status: int = 200,
     verify_ssl: bool = True,
-    headers: Optional[dict] = None,
+    headers: dict | None = None,
 ) -> tuple[bool, dict]:
     """
     Make HTTP health check request.

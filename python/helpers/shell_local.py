@@ -3,9 +3,9 @@ from python.helpers.shell_ssh import clean_string
 
 
 class LocalInteractiveSession:
-    def __init__(self, cwd: str|None = None):
-        self.session: tty_session.TTYSession|None = None
-        self.full_output = ''
+    def __init__(self, cwd: str | None = None):
+        self.session: tty_session.TTYSession | None = None
+        self.full_output = ""
         self.cwd = cwd
 
     async def connect(self):

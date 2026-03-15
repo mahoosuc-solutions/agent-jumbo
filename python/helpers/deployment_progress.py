@@ -2,13 +2,12 @@
 
 import logging
 from collections.abc import AsyncGenerator
-from typing import Optional
 
 
 class StreamingProgressReporter:
     """Yields progress messages for streaming output."""
 
-    async def report(self, message: str, percent: Optional[int] = None) -> AsyncGenerator[dict, None]:
+    async def report(self, message: str, percent: int | None = None) -> AsyncGenerator[dict, None]:
         """
         Yield progress update.
 
@@ -28,7 +27,7 @@ class LoggingProgressReporter:
     def __init__(self, logger: logging.Logger):
         self.logger = logger
 
-    def report(self, message: str, percent: Optional[int] = None):
+    def report(self, message: str, percent: int | None = None):
         """
         Log progress message.
 

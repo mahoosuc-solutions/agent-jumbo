@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import json
 import os
+import re
 from pathlib import Path
 from typing import Any
-import re
-
 
 STATE_PATH = Path(os.getenv("TELEGRAM_STATE_PATH", "data/telegram_state.json"))
 

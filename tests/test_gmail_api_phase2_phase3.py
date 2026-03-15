@@ -42,9 +42,9 @@ class TestGmailOAuth2Handler:
             scopes = handler.SCOPES
 
             # Check required scopes
-            assert 'https://www.googleapis.com/auth/gmail.send' in scopes
-            assert 'https://www.googleapis.com/auth/gmail.readonly' in scopes
-            assert 'https://www.googleapis.com/auth/gmail.modify' in scopes
+            assert "https://www.googleapis.com/auth/gmail.send" in scopes
+            assert "https://www.googleapis.com/auth/gmail.readonly" in scopes
+            assert "https://www.googleapis.com/auth/gmail.modify" in scopes
 
             print(f"✅ OAuth2 scopes verified: {len(scopes)} scopes configured")
 
@@ -59,10 +59,10 @@ class TestGmailOAuth2Handler:
             handler = GmailOAuth2Handler()
             status = handler.get_account_status("test_account")
 
-            assert 'account_name' in status
-            assert 'authenticated' in status
-            assert 'valid' in status
-            assert status['account_name'] == "test_account"
+            assert "account_name" in status
+            assert "authenticated" in status
+            assert "valid" in status
+            assert status["account_name"] == "test_account"
 
             print("✅ Account status structure validated")
 
@@ -115,10 +115,7 @@ class TestGmailPushNotifications:
 
             # Check if properly skips when Pub/Sub not installed
             try:
-                push = GmailPushNotifications(
-                    project_id="test-project",
-                    topic_name="test-topic"
-                )
+                push = GmailPushNotifications(project_id="test-project", topic_name="test-topic")
                 assert push.project_id == "test-project"
                 assert push.topic_name == "test-topic"
 
@@ -178,10 +175,7 @@ class TestIntegrationWorkflows:
     def test_multi_account_workflow_structure(self):
         """Test multi-account workflow structure"""
         # Define expected workflow
-        workflow = {
-            "accounts": ["sales", "support", "dev"],
-            "operations": ["authenticate", "send", "read", "label"]
-        }
+        workflow = {"accounts": ["sales", "support", "dev"], "operations": ["authenticate", "send", "read", "label"]}
 
         assert len(workflow["accounts"]) == 3
         assert "authenticate" in workflow["operations"]
@@ -195,7 +189,7 @@ class TestIntegrationWorkflows:
             "enable_watch",
             "receive_notification",
             "process_history",
-            "handle_new_messages"
+            "handle_new_messages",
         ]
 
         assert len(workflow_steps) == 5
@@ -212,12 +206,7 @@ class TestFeatureFlags:
         try:
             from python.helpers.email_sender import EmailSender
 
-            sender = EmailSender(
-                server="smtp.gmail.com",
-                port=587,
-                username="test@example.com",
-                password="test_pass"
-            )
+            sender = EmailSender(server="smtp.gmail.com", port=587, username="test@example.com", password="test_pass")
 
             assert sender.server == "smtp.gmail.com"
 
@@ -236,7 +225,7 @@ class TestFeatureFlags:
             status = handler.get_account_status("nonexistent")
 
             # Should return unauthenticated, not crash
-            assert not status['authenticated']
+            assert not status["authenticated"]
 
             print("✅ Graceful degradation working")
 
@@ -261,7 +250,7 @@ class TestSecurityFeatures:
             assert token_dir.is_dir()
 
             # Check no world-readable permissions (on Unix)
-            if hasattr(os, 'chmod'):
+            if hasattr(os, "chmod"):
                 # Directory should be created with proper permissions
                 pass
 
@@ -283,11 +272,7 @@ class TestSecurityFeatures:
 
             # Create test data and signature
             data = b"test webhook data"
-            signature = hmac.new(
-                secret.encode(),
-                data,
-                hashlib.sha256
-            ).hexdigest()
+            signature = hmac.new(secret.encode(), data, hashlib.sha256).hexdigest()
 
             # Should verify correctly
             assert handler.verify_webhook(data, signature)
@@ -333,9 +318,9 @@ def test_requirements_updated():
 
 def test_summary():
     """Print test summary"""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("GMAIL API PHASE 2 & 3 TEST SUMMARY")
-    print("="*60)
+    print("=" * 60)
     print("\n✅ All core tests passed!")
     print("\nTested Components:")
     print("  1. OAuth2 Handler - Initialization and scopes")
@@ -351,7 +336,7 @@ def test_summary():
     print("    - OAuth2 credentials (credentials.json)")
     print("    - Service account (for Pub/Sub)")
     print("\n📚 See docs/GMAIL_API_PHASE2_PHASE3.md for setup")
-    print("="*60)
+    print("=" * 60)
 
 
 if __name__ == "__main__":

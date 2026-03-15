@@ -56,8 +56,8 @@ class ApiLogGet(ApiHandler):
                     "start_position": start_pos,
                     "progress": context.log.progress,
                     "progress_active": context.log.progress_active,
-                    "items": log_items
-                }
+                    "items": log_items,
+                },
             }
 
         except Exception as e:

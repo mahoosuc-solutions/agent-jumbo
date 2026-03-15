@@ -2,6 +2,7 @@
 Gmail OAuth2 Start Flow API Handler
 Initiates OAuth2 authentication for Gmail API access
 """
+
 import secrets
 
 from flask import session
@@ -37,25 +38,22 @@ class GmailOauthStart(ApiHandler):
 
             # Generate CSRF state token
             state = secrets.token_urlsafe(32)
-            session['gmail_oauth_state'] = state
-            session['gmail_oauth_account'] = account_name
-            session['gmail_oauth_credentials'] = credentials_json
+            session["gmail_oauth_state"] = state
+            session["gmail_oauth_account"] = account_name
+            session["gmail_oauth_credentials"] = credentials_json
 
             # Initialize OAuth2 handler
             handler = GmailOAuth2Handler()
 
             # Get authorization URL (we'll need to modify gmail_oauth2.py to support this)
-            auth_url = handler.get_authorization_url(
-                credentials_json=credentials_json,
-                state=state
-            )
+            auth_url = handler.get_authorization_url(credentials_json=credentials_json, state=state)
 
             return {
                 "success": True,
                 "authorization_url": auth_url,
                 "auth_url": auth_url,
                 "state": state,
-                "message": "Open the authorization_url in a popup window to authorize"
+                "message": "Open the authorization_url in a popup window to authorize",
             }
 
         except Exception as e:

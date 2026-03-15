@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
-from typing import Any, Optional
+from typing import Any
 
 
 class DeploymentStrategy(ABC):
@@ -19,8 +19,8 @@ class DeploymentStrategy(ABC):
 
     def __init__(self):
         """Initialize strategy with progress reporter and metadata tracking."""
-        self.last_deployment_metadata: Optional[dict] = None
-        self.progress_reporter: Optional[Any] = None  # ProgressReporter type
+        self.last_deployment_metadata: dict | None = None
+        self.progress_reporter: Any | None = None  # ProgressReporter type
 
     def set_progress_reporter(self, reporter):
         """
@@ -31,7 +31,7 @@ class DeploymentStrategy(ABC):
         """
         self.progress_reporter = reporter
 
-    async def _report_progress(self, message: str, percent: Optional[int] = None):
+    async def _report_progress(self, message: str, percent: int | None = None):
         """
         Helper to report progress if reporter is set.
 

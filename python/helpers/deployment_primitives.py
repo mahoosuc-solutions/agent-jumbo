@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any
 
-
 VALID_ENVIRONMENTS = {
     "production": "production",
     "prod": "production",

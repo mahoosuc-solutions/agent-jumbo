@@ -25,9 +25,7 @@ class WorkflowEngineApi(ApiHandler):
             )
 
             # Get database path
-            db_path = files.get_abs_path(
-                "./instruments/custom/workflow_engine/data/workflow.db"
-            )
+            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
 
             # Ensure data directory exists
             data_dir = os.path.dirname(db_path)
@@ -49,7 +47,10 @@ class WorkflowEngineApi(ApiHandler):
                 workflow = manager.get_workflow(workflow_id=workflow_id, name=name)
                 if workflow and "error" not in workflow:
                     return {"success": True, "workflow": workflow}
-                return {"success": False, "error": workflow.get("error", "Workflow not found") if workflow else "Workflow not found"}
+                return {
+                    "success": False,
+                    "error": workflow.get("error", "Workflow not found") if workflow else "Workflow not found",
+                }
 
             elif action == "visualize_workflow":
                 workflow_id = input.get("workflow_id")
@@ -58,7 +59,10 @@ class WorkflowEngineApi(ApiHandler):
 
                 workflow = manager.get_workflow(workflow_id=workflow_id, name=name)
                 if not workflow or "error" in workflow:
-                    return {"success": False, "error": workflow.get("error", "Workflow not found") if workflow else "Workflow not found"}
+                    return {
+                        "success": False,
+                        "error": workflow.get("error", "Workflow not found") if workflow else "Workflow not found",
+                    }
 
                 # Get execution status if provided
                 execution_status = None

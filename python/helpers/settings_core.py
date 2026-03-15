@@ -77,6 +77,23 @@ class Settings(TypedDict):
     agent_profile: str
     agent_memory_subdir: str
     agent_knowledge_subdir: str
+    chat_execution_backend: str
+    chat_execution_timeout_seconds: int
+    chat_new_message_policy: str
+    chat_pause_behavior: str
+    chat_queue_max_depth: int
+    chat_queue_drop_policy: str
+    chat_queue_wait_warn_seconds: int
+    chat_response_wait_timeout_seconds: int
+    chat_background_timeout_seconds: int
+    chat_stale_intervention_seconds: int
+    prompt_build_extension_timeout_seconds: int
+    startup_auto_select_enabled: bool
+    startup_selection_goal: str
+    startup_context_priority: str
+    startup_fallback_policy: str
+    startup_fallback_chain: list[str]
+    startup_active_project: str
 
     memory_recall_enabled: bool
     memory_recall_delayed: bool
@@ -94,6 +111,8 @@ class Settings(TypedDict):
     memory_memorize_replace_threshold: float
     prompt_enhance_enabled: bool
     prompt_enhance_max_chars: int
+    prompt_enhance_timeout_seconds: int
+    prompt_enhance_fail_open: bool
 
     llm_router_enabled: bool
     llm_router_auto_configure: bool
@@ -171,6 +190,14 @@ class Settings(TypedDict):
     enable_persona_systems: bool
     max_concurrent_sessions: int
     perf_slo_profile: str
+
+    # MOS integration API keys
+    linear_api_key: str
+    linear_default_team_id: str
+    motion_api_key: str
+    motion_workspace_id: str
+    notion_api_key: str
+    notion_default_database_id: str
 
 
 class PartialSettings(Settings, total=False):
@@ -265,6 +292,13 @@ def get_default_ollama_base_url() -> str:
         # In containers, localhost points to the container itself.
         return "http://host.docker.internal:11434"
     return "http://localhost:11434"
+
+
+def _env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
 # ---------------------------------------------------------------------------
@@ -380,6 +414,7 @@ def get_default_settings() -> Settings:
     ollama_base_url = get_default_ollama_base_url()
     env_tier = os.getenv("TIER", "free").strip().lower()
     tier = env_tier if env_tier in {"free", "pro"} else "free"
+    laptop_mode = _env_flag("AGENT_ZERO_LAPTOP_MODE", False)
     env_profile = os.getenv("PERF_SLO_PROFILE", "").strip().lower()
     perf_profile = env_profile if env_profile in {"free", "pro"} else tier
     persona_default = "true" if tier == "pro" else "false"
@@ -394,6 +429,13 @@ def get_default_settings() -> Settings:
         max_concurrent_sessions = int(os.getenv("MAX_CONCURRENT_SESSIONS", str(max_sessions_default)))
     except ValueError:
         max_concurrent_sessions = max_sessions_default
+    if laptop_mode:
+        tier = "free"
+        perf_profile = "free"
+        enable_persona = False
+        max_concurrent_sessions = min(max_concurrent_sessions, 2)
+
+    default_ctx_length = 8192 if laptop_mode else 32768
 
     return Settings(
         version=_get_version(),
@@ -401,7 +443,7 @@ def get_default_settings() -> Settings:
         chat_model_name="gemini-2.0-flash",
         chat_model_api_base="",
         chat_model_kwargs={"temperature": "0"},
-        chat_model_ctx_length=32768,
+        chat_model_ctx_length=default_ctx_length,
         chat_model_ctx_history=0.7,
         chat_model_vision=False,
         chat_model_rl_requests=0,
@@ -410,7 +452,7 @@ def get_default_settings() -> Settings:
         util_model_provider="google",
         util_model_name="gemini-2.0-flash",
         util_model_api_base="",
-        util_model_ctx_length=32768,
+        util_model_ctx_length=default_ctx_length,
         util_model_ctx_input=0.7,
         util_model_kwargs={"temperature": "0"},
         util_model_rl_requests=0,
@@ -422,16 +464,16 @@ def get_default_settings() -> Settings:
         embed_model_kwargs={},
         embed_model_rl_requests=0,
         embed_model_rl_input=0,
-        browser_model_provider="ollama",
-        browser_model_name="qwen2.5-coder:3b",
-        browser_model_api_base=ollama_base_url,
+        browser_model_provider="ollama" if not laptop_mode else "google",
+        browser_model_name="qwen2.5-coder:3b" if not laptop_mode else "gemini-2.0-flash",
+        browser_model_api_base=ollama_base_url if not laptop_mode else "",
         browser_model_vision=False,
         browser_model_rl_requests=0,
         browser_model_rl_input=0,
         browser_model_rl_output=0,
         browser_model_kwargs={"temperature": "0"},
         browser_http_headers={},
-        memory_recall_enabled=True,
+        memory_recall_enabled=not laptop_mode,
         memory_recall_delayed=False,
         memory_recall_interval=3,
         memory_recall_history_len=10000,
@@ -442,15 +484,17 @@ def get_default_settings() -> Settings:
         memory_recall_similarity_threshold=0.7,
         memory_recall_query_prep=True,
         memory_recall_post_filter=True,
-        memory_memorize_enabled=True,
+        memory_memorize_enabled=not laptop_mode,
         memory_memorize_consolidation=True,
         memory_memorize_replace_threshold=0.9,
         prompt_enhance_enabled=False,
         prompt_enhance_max_chars=4000,
-        llm_router_enabled=True,
-        llm_router_auto_configure=True,
-        llm_local_only_mode=False,
-        llm_cloud_fallback_enabled=True,
+        prompt_enhance_timeout_seconds=8,
+        prompt_enhance_fail_open=True,
+        llm_router_enabled=not laptop_mode,
+        llm_router_auto_configure=not laptop_mode,
+        llm_local_only_mode=laptop_mode,
+        llm_cloud_fallback_enabled=not laptop_mode,
         api_keys={},
         auth_login="",
         auth_password="",
@@ -458,6 +502,23 @@ def get_default_settings() -> Settings:
         agent_profile="agent0",
         agent_memory_subdir="default",
         agent_knowledge_subdir="custom",
+        chat_execution_backend="native",
+        chat_execution_timeout_seconds=120,
+        chat_new_message_policy="queue_strict",
+        chat_pause_behavior="buffer_context",
+        chat_queue_max_depth=10,
+        chat_queue_drop_policy="reject_new",
+        chat_queue_wait_warn_seconds=60,
+        chat_response_wait_timeout_seconds=90,
+        chat_background_timeout_seconds=300,
+        chat_stale_intervention_seconds=45,
+        prompt_build_extension_timeout_seconds=20,
+        startup_auto_select_enabled=True,
+        startup_selection_goal="reliability",
+        startup_context_priority="project",
+        startup_fallback_policy="chain",
+        startup_fallback_chain=["claude_local", "codex_local", "native_local", "native_gemini"],
+        startup_active_project="",
         rfc_auto_docker=True,
         rfc_url="localhost",
         rfc_password="",
@@ -469,17 +530,17 @@ def get_default_settings() -> Settings:
         stt_silence_threshold=0.3,
         stt_silence_duration=1000,
         stt_waiting_timeout=2000,
-        tts_kokoro=True,
+        tts_kokoro=not laptop_mode,
         mcp_servers='{\n    "mcpServers": {}\n}',
         mcp_client_init_timeout=10,
         mcp_client_tool_timeout=120,
-        mcp_server_enabled=True,
+        mcp_server_enabled=not laptop_mode,
         mcp_server_token=create_auth_token(),
         a2a_server_enabled=False,
         variables="",
         secrets="",
         litellm_global_kwargs={},
-        update_check_enabled=True,
+        update_check_enabled=not laptop_mode,
         gmail_accounts={},
         google_voice_auto_send=False,
         google_voice_shortcuts=True,
@@ -506,4 +567,10 @@ def get_default_settings() -> Settings:
         enable_persona_systems=enable_persona,
         max_concurrent_sessions=max_concurrent_sessions,
         perf_slo_profile=perf_profile,
+        linear_api_key=dotenv.get_dotenv_value("LINEAR_API_KEY", ""),
+        linear_default_team_id=dotenv.get_dotenv_value("LINEAR_DEFAULT_TEAM_ID", ""),
+        motion_api_key=dotenv.get_dotenv_value("MOTION_API_KEY", ""),
+        motion_workspace_id=dotenv.get_dotenv_value("MOTION_WORKSPACE_ID", ""),
+        notion_api_key=dotenv.get_dotenv_value("NOTION_API_KEY", ""),
+        notion_default_database_id=dotenv.get_dotenv_value("NOTION_DEFAULT_DATABASE_ID", ""),
     )

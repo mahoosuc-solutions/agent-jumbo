@@ -45,16 +45,19 @@ async def _preload():
                 NotificationPriority.NORMAL,
                 "Loading Kokoro TTS model...",
                 display_time=99,
-                group="kokoro-preload")
+                group="kokoro-preload",
+            )
             PrintStyle.standard("Loading Kokoro TTS model...")
             from kokoro import KPipeline
+
             _pipeline = KPipeline(lang_code="a", repo_id="hexgrad/Kokoro-82M")
             NotificationManager.send_notification(
                 NotificationType.INFO,
                 NotificationPriority.NORMAL,
                 "Kokoro TTS model loaded.",
                 display_time=2,
-                group="kokoro-preload")
+                group="kokoro-preload",
+            )
     finally:
         is_updating_model = False
 
@@ -73,6 +76,7 @@ async def is_downloading():
 def _is_downloading():
     return is_updating_model
 
+
 async def is_downloaded():
     try:
         # return await runtime.call_development_function(_is_downloaded)
@@ -82,6 +86,7 @@ async def is_downloaded():
         raise e
         # Fallback to direct execution if RFC fails in development
         # return _is_downloaded()
+
 
 def _is_downloaded():
     return _pipeline is not None
@@ -107,12 +112,12 @@ async def _synthesize_sentences(sentences: list[str]):
     try:
         for sentence in sentences:
             if sentence.strip():
-                segments = _pipeline(sentence.strip(), voice=_voice, speed=_speed) # type: ignore
+                segments = _pipeline(sentence.strip(), voice=_voice, speed=_speed)  # type: ignore
                 segment_list = list(segments)
 
                 for segment in segment_list:
                     audio_tensor = segment.audio
-                    audio_numpy = audio_tensor.detach().cpu().numpy() # type: ignore
+                    audio_numpy = audio_tensor.detach().cpu().numpy()  # type: ignore
                     combined_audio.extend(audio_numpy)
 
         # Convert combined audio to bytes

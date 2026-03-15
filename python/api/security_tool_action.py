@@ -19,7 +19,7 @@ class security_tool_action(ApiHandler):
             return {"success": False, "error": "Missing requestId or action"}
 
         request_id = input["requestId"]
-        action = input["action"] # 'approve' or 'deny'
+        action = input["action"]  # 'approve' or 'deny'
 
         approved = action == "approve"
         success = SecurityManager.resolve_auth_request(request_id, approved=approved)
