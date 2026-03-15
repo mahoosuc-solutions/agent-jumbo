@@ -10,7 +10,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import Any, Optional
+from typing import Any
 
 from python.helpers.datetime_utils import isoformat_z, utc_now
 
@@ -62,10 +62,10 @@ class Task:
     status: TaskStatus = TaskStatus.PENDING
     prerequisites: list[str] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: isoformat_z(utc_now()))
-    started_at: Optional[str] = None
-    completed_at: Optional[str] = None
-    result: Optional[Any] = None
-    error: Optional[str] = None
+    started_at: str | None = None
+    completed_at: str | None = None
+    result: Any | None = None
+    error: str | None = None
     retry_count: int = 0
     max_retries: int = 3
     metadata: dict[str, Any] = field(default_factory=dict)
@@ -91,10 +91,10 @@ class Schedule:
     schedule_id: str
     task_id: str
     schedule_type: str  # one_time, recurring, conditional
-    trigger_time: Optional[str] = None
-    recurrence_pattern: Optional[str] = None
-    condition: Optional[dict[str, Any]] = None
-    next_execution: Optional[str] = None
+    trigger_time: str | None = None
+    recurrence_pattern: str | None = None
+    condition: dict[str, Any] | None = None
+    next_execution: str | None = None
     enabled: bool = True
 
 
@@ -105,7 +105,7 @@ class ResourceAllocation:
     allocation_id: str
     resource_type: ResourceType
     amount: float
-    task_id: Optional[str] = None
+    task_id: str | None = None
     allocated_at: str = field(default_factory=lambda: isoformat_z(utc_now()))
 
 
@@ -130,7 +130,7 @@ class AuditEntry:
     actor: str
     timestamp: str = field(default_factory=lambda: isoformat_z(utc_now()))
     details: dict[str, Any] = field(default_factory=dict)
-    decision_rationale: Optional[str] = None
+    decision_rationale: str | None = None
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -484,7 +484,7 @@ class ResourceManager:
         }
 
     def allocate_resources(
-        self, allocation_id: str, resource_type: ResourceType, amount: float, task_id: Optional[str] = None
+        self, allocation_id: str, resource_type: ResourceType, amount: float, task_id: str | None = None
     ) -> ResourceAllocation:
         """Allocate execution resources"""
         allocation = ResourceAllocation(

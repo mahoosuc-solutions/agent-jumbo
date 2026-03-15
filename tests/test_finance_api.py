@@ -23,7 +23,12 @@ async def test_finance_dashboard_api(tmp_path, monkeypatch):
     account = manager.connect_account(provider="mock", mock=True)
     manager.sync_transactions(account["id"], start="2025-01-01", end="2025-01-31")
 
-    monkeypatch.setattr(files, "get_abs_path", lambda path: str(db_path))
+    original_get_abs_path = files.get_abs_path
+    monkeypatch.setattr(
+        files,
+        "get_abs_path",
+        lambda path: str(db_path) if "finance_manager" in path else original_get_abs_path(path),
+    )
 
     handler = FinanceDashboard(SimpleNamespace(), SimpleNamespace())
     result = await handler.process(

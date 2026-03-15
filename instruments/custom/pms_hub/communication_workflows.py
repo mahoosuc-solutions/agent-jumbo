@@ -5,7 +5,7 @@ Manages pre-arrival, during-stay, and post-checkout communication workflows
 
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add imports path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -44,7 +44,7 @@ class CommunicationWorkflowService:
             print(f"Warning: EventBus not available: {e}")
             self.event_bus = None
 
-    async def initialize_workflow(self) -> Optional[dict[str, Any]]:
+    async def initialize_workflow(self) -> dict[str, Any] | None:
         """
         Initialize communication workflow service
 
@@ -90,7 +90,7 @@ class CommunicationWorkflowService:
             print(f"Error initializing workflow: {e}")
             return None
 
-    async def get_service_status(self) -> Optional[dict[str, Any]]:
+    async def get_service_status(self) -> dict[str, Any] | None:
         """
         Get communication workflow service status
 
@@ -144,7 +144,7 @@ class CommunicationWorkflowService:
             "include_discount_offer": False,
         }
 
-    async def create_pre_arrival_workflow(self, reservation: Reservation) -> Optional[dict[str, Any]]:
+    async def create_pre_arrival_workflow(self, reservation: Reservation) -> dict[str, Any] | None:
         """
         Create pre-arrival communication workflow for a reservation
 
@@ -245,7 +245,7 @@ class CommunicationWorkflowService:
             "transportation": ["Bus stop 2 blocks away", "Bike rental nearby"],
         }
 
-    async def create_post_checkout_workflow(self, reservation: Reservation) -> Optional[dict[str, Any]]:
+    async def create_post_checkout_workflow(self, reservation: Reservation) -> dict[str, Any] | None:
         """
         Create post-checkout communication workflow
 
@@ -337,7 +337,7 @@ class CommunicationWorkflowService:
 
     async def create_issue_resolution_workflow(
         self, reservation: Reservation, issue_type: str
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Create issue resolution communication workflow
 

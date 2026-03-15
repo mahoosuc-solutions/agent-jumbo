@@ -47,9 +47,14 @@ instruments/**
 !instruments/custom/google_voice/**
 !instruments/custom/twilio_voice/
 !instruments/custom/twilio_voice/**
+# Track all custom instrument Python source files
+!instruments/custom/**/
+!instruments/custom/**/*.py
 # Keep Python cache files ignored under custom instruments.
 instruments/custom/**/__pycache__/
 instruments/custom/**/__pycache__/**
+# Keep data directories ignored (SQLite DBs, uploads, etc.)
+instruments/custom/**/data/
 
 # Global rule to include .gitkeep files anywhere
 !**/.gitkeep

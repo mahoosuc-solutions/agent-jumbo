@@ -7,7 +7,7 @@ import sys
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 # Add imports path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -63,8 +63,8 @@ class CalendarSyncService:
             self.event_bus = None
 
     async def sync_reservation_to_calendar(
-        self, reservation: Reservation, calendar_id: Optional[int] = None
-    ) -> Optional[dict[str, Any]]:
+        self, reservation: Reservation, calendar_id: int | None = None
+    ) -> dict[str, Any] | None:
         """
         Sync a PMS reservation to calendar system
 
@@ -482,7 +482,7 @@ class CalendarSyncService:
     # Calendar Hub Integration Methods
     # ═══════════════════════════════════════════════════════════════════════
 
-    async def _connect_to_calendar(self, provider: str, calendar_id: int) -> Optional[dict[str, Any]]:
+    async def _connect_to_calendar(self, provider: str, calendar_id: int) -> dict[str, Any] | None:
         """
         Connect to a calendar provider (Google, Outlook, etc.)
 
@@ -510,7 +510,7 @@ class CalendarSyncService:
             print(f"Error connecting to {provider} calendar: {e}")
             return None
 
-    def _get_event_color_by_status(self, status: "ReservationStatus") -> Optional[str]:
+    def _get_event_color_by_status(self, status: "ReservationStatus") -> str | None:
         """
         Get calendar event color based on reservation status
 
@@ -538,7 +538,7 @@ class CalendarSyncService:
 
     async def _set_calendar_permissions(
         self, calendar_id: int, share_with: str, permission: str = "read"
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """
         Set calendar permissions and sharing settings
 
@@ -562,7 +562,7 @@ class CalendarSyncService:
             print(f"Error setting calendar permissions: {e}")
             return None
 
-    async def _sync_calendar_updates_to_pms(self, calendar_id: int) -> Optional[dict[str, Any]]:
+    async def _sync_calendar_updates_to_pms(self, calendar_id: int) -> dict[str, Any] | None:
         """
         Sync updates from calendar back to PMS (bidirectional sync)
 
@@ -702,7 +702,7 @@ class CalendarSyncService:
     # Calendar Event Update & Delete Methods
     # ═══════════════════════════════════════════════════════════════════════
 
-    async def update_calendar_event(self, reservation: Reservation, calendar_event_id: str) -> Optional[dict[str, Any]]:
+    async def update_calendar_event(self, reservation: Reservation, calendar_event_id: str) -> dict[str, Any] | None:
         """
         Update an existing calendar event with changed reservation details
 
@@ -799,7 +799,7 @@ class CalendarSyncService:
             print(f"Error deleting calendar event: {e}")
             return False
 
-    async def get_calendar_for_property(self, property_id: str) -> Optional[int]:
+    async def get_calendar_for_property(self, property_id: str) -> int | None:
         """
         Get the configured calendar ID for a property
 
@@ -820,7 +820,7 @@ class CalendarSyncService:
 
         return calendar_mapping.get(property_id, 1)  # Default to calendar 1
 
-    async def is_duplicate_sync(self, reservation: Reservation, calendar_id: Optional[int] = None) -> bool:
+    async def is_duplicate_sync(self, reservation: Reservation, calendar_id: int | None = None) -> bool:
         """
         Check if reservation already synced to this calendar
 

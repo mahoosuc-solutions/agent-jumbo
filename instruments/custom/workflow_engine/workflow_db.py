@@ -7,7 +7,6 @@ import json
 import os
 import sqlite3
 from datetime import datetime
-from typing import Optional
 
 
 class WorkflowEngineDatabase:
@@ -262,12 +261,12 @@ class WorkflowEngineDatabase:
         name: str,
         definition: dict,
         version: str = "1.0.0",
-        description: str = None,
+        description: str | None = None,
         workflow_type: str = "custom",
         is_template: bool = False,
-        metadata: dict = None,
+        metadata: dict | None = None,
         changed_by: str = "system",
-        change_notes: str = None,
+        change_notes: str | None = None,
     ) -> int:
         """Save or update a workflow definition with audit logging"""
         conn = self._get_conn()
@@ -350,7 +349,9 @@ class WorkflowEngineDatabase:
         finally:
             conn.close()
 
-    def get_workflow(self, workflow_id: int = None, name: str = None, version: str = None) -> Optional[dict]:
+    def get_workflow(
+        self, workflow_id: int | None = None, name: str | None = None, version: str | None = None
+    ) -> dict | None:
         """Get workflow by ID, or active version by name, or specific version by name"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -479,7 +480,7 @@ class WorkflowEngineDatabase:
 
     # ========== Execution Operations ==========
 
-    def start_execution(self, workflow_id: int, name: str = None, context: dict = None) -> int:
+    def start_execution(self, workflow_id: int, name: str | None = None, context: dict | None = None) -> int:
         """Start a new workflow execution"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -499,7 +500,7 @@ class WorkflowEngineDatabase:
         self._log_event(execution_id, "execution_started", data={"context": context})
         return execution_id
 
-    def get_execution(self, execution_id: int) -> Optional[dict]:
+    def get_execution(self, execution_id: int) -> dict | None:
         """Get execution details"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -517,12 +518,12 @@ class WorkflowEngineDatabase:
     def update_execution(
         self,
         execution_id: int,
-        status: str = None,
-        current_stage_id: str = None,
-        current_task_id: str = None,
-        context: dict = None,
-        result: str = None,
-        error: str = None,
+        status: str | None = None,
+        current_stage_id: str | None = None,
+        current_task_id: str | None = None,
+        context: dict | None = None,
+        result: str | None = None,
+        error: str | None = None,
     ):
         """Update execution state"""
         conn = self._get_conn()
@@ -560,7 +561,7 @@ class WorkflowEngineDatabase:
 
         conn.close()
 
-    def list_executions(self, workflow_id: int = None, status: str = None, limit: int = 50) -> list:
+    def list_executions(self, workflow_id: int | None = None, status: str | None = None, limit: int = 50) -> list:
         """List workflow executions"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -600,13 +601,13 @@ class WorkflowEngineDatabase:
         self,
         execution_id: int,
         stage_id: str,
-        status: str = None,
-        entry_criteria_met: list = None,
-        exit_criteria_met: list = None,
-        deliverables_completed: list = None,
-        approval_status: str = None,
-        approved_by: str = None,
-        notes: str = None,
+        status: str | None = None,
+        entry_criteria_met: list | None = None,
+        exit_criteria_met: list | None = None,
+        deliverables_completed: list | None = None,
+        approval_status: str | None = None,
+        approved_by: str | None = None,
+        notes: str | None = None,
     ):
         """Update stage progress"""
         conn = self._get_conn()
@@ -671,7 +672,7 @@ class WorkflowEngineDatabase:
 
         self._log_event(execution_id, "stage_updated", stage_id=stage_id, data={"status": status})
 
-    def get_stage_progress(self, execution_id: int, stage_id: str = None) -> list:
+    def get_stage_progress(self, execution_id: int, stage_id: str | None = None) -> list:
         """Get stage progress for execution"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -702,11 +703,11 @@ class WorkflowEngineDatabase:
         execution_id: int,
         stage_id: str,
         task_id: str,
-        status: str = None,
-        input_data: dict = None,
-        output_data: dict = None,
-        error: str = None,
-        assigned_to: str = None,
+        status: str | None = None,
+        input_data: dict | None = None,
+        output_data: dict | None = None,
+        error: str | None = None,
+        assigned_to: str | None = None,
     ):
         """Update task execution state"""
         conn = self._get_conn()
@@ -761,7 +762,7 @@ class WorkflowEngineDatabase:
 
         self._log_event(execution_id, "task_updated", stage_id=stage_id, task_id=task_id, data={"status": status})
 
-    def get_task_executions(self, execution_id: int, stage_id: str = None) -> list:
+    def get_task_executions(self, execution_id: int, stage_id: str | None = None) -> list:
         """Get task executions"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -791,10 +792,10 @@ class WorkflowEngineDatabase:
         skill_id: str,
         name: str,
         category: str,
-        description: str = None,
-        proficiency_levels: list = None,
-        prerequisites: list = None,
-        related_tools: list = None,
+        description: str | None = None,
+        proficiency_levels: list | None = None,
+        prerequisites: list | None = None,
+        related_tools: list | None = None,
     ):
         """Save or update a skill"""
         conn = self._get_conn()
@@ -827,7 +828,7 @@ class WorkflowEngineDatabase:
         conn.commit()
         conn.close()
 
-    def get_skill(self, skill_id: str) -> Optional[dict]:
+    def get_skill(self, skill_id: str) -> dict | None:
         """Get skill details"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -843,7 +844,7 @@ class WorkflowEngineDatabase:
             return r
         return None
 
-    def list_skills(self, category: str = None) -> list:
+    def list_skills(self, category: str | None = None) -> list:
         """List all skills"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -869,9 +870,9 @@ class WorkflowEngineDatabase:
         self,
         agent_id: str,
         skill_id: str,
-        current_level: int = None,
-        completions: int = None,
-        assessment_score: float = None,
+        current_level: int | None = None,
+        completions: int | None = None,
+        assessment_score: float | None = None,
     ):
         """Update agent's skill progress"""
         conn = self._get_conn()
@@ -913,7 +914,7 @@ class WorkflowEngineDatabase:
         conn.commit()
         conn.close()
 
-    def get_skill_progress(self, agent_id: str, skill_id: str = None) -> list:
+    def get_skill_progress(self, agent_id: str, skill_id: str | None = None) -> list:
         """Get agent's skill progress"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -957,10 +958,10 @@ class WorkflowEngineDatabase:
         path_id: str,
         name: str,
         target_role: str,
-        description: str = None,
-        estimated_hours: float = None,
-        modules: list = None,
-        certification: dict = None,
+        description: str | None = None,
+        estimated_hours: float | None = None,
+        modules: list | None = None,
+        certification: dict | None = None,
     ):
         """Save or update a learning path"""
         conn = self._get_conn()
@@ -993,7 +994,7 @@ class WorkflowEngineDatabase:
         conn.commit()
         conn.close()
 
-    def get_learning_path(self, path_id: str) -> Optional[dict]:
+    def get_learning_path(self, path_id: str) -> dict | None:
         """Get learning path details"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -1008,7 +1009,7 @@ class WorkflowEngineDatabase:
             return r
         return None
 
-    def list_learning_paths(self, target_role: str = None) -> list:
+    def list_learning_paths(self, target_role: str | None = None) -> list:
         """List learning paths"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -1032,7 +1033,12 @@ class WorkflowEngineDatabase:
     # ========== Event Logging ==========
 
     def _log_event(
-        self, execution_id: int, event_type: str, stage_id: str = None, task_id: str = None, data: dict = None
+        self,
+        execution_id: int,
+        event_type: str,
+        stage_id: str | None = None,
+        task_id: str | None = None,
+        data: dict | None = None,
     ):
         """Log workflow event"""
         conn = self._get_conn()
@@ -1222,7 +1228,7 @@ class WorkflowEngineDatabase:
             result["modules_completed"] = json.loads(result["modules_completed"])
         return result
 
-    def get_training_module(self, module_id: str) -> Optional[dict]:
+    def get_training_module(self, module_id: str) -> dict | None:
         """Get training module by ID"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -1274,7 +1280,7 @@ class WorkflowEngineDatabase:
             results.append(r)
         return results
 
-    def list_workflows(self, workflow_type: str = None, templates_only: bool = False) -> list:
+    def list_workflows(self, workflow_type: str | None = None, templates_only: bool = False) -> list:
         """List all workflows from the database"""
         conn = self._get_conn()
         cursor = conn.cursor()
@@ -1308,7 +1314,12 @@ class WorkflowEngineDatabase:
         return results
 
     def save_event(
-        self, execution_id: int, event_type: str, stage_id: str = None, task_id: str = None, data: dict = None
+        self,
+        execution_id: int,
+        event_type: str,
+        stage_id: str | None = None,
+        task_id: str | None = None,
+        data: dict | None = None,
     ):
         """Save a workflow event to the database"""
         self._log_event(execution_id, event_type, stage_id, task_id, data)
