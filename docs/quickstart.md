@@ -12,11 +12,11 @@ This guide provides a quick introduction to using Agent Jumbo. We'll cover launc
 python run_ui.py
 ```
 
-4. A message similar to this will appear in your terminal, indicating the Web UI is running:
+1. A message similar to this will appear in your terminal, indicating the Web UI is running:
 
-![](res/flask_link.png)
+![Terminal output showing Web UI URL](res/flask_link.png)
 
-5. Open your web browser and navigate to the URL shown in the terminal (usually `http://127.0.0.1:50001`). You should see the Agent Jumbo Web UI.
+1. Open your web browser and navigate to the URL shown in the terminal (usually `http://127.0.0.1:50001`). You should see the Agent Jumbo Web UI.
 
 ![New Chat](res/ui_newchat1.png)
 
@@ -26,7 +26,7 @@ python run_ui.py
 > Chats can be saved and loaded individually in `json` format and are stored in the
 > `/tmp/chats` directory.
 
-    ![Chat Management](res/ui_chat_management.png)
+![Chat Management](res/ui_chat_management.png)
 
 ## Running a Simple Task
 

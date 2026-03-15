@@ -26,14 +26,14 @@ Optional full mode:
 - validates persisted `chat_id -> ctxid` mapping survives module reload (restart simulation)
 - validates legacy state file without `last_update` remains readable and dedupe state is persisted after reload
 
-6. Live API checks:
+1. Live API checks:
 
 - `/health`
 - `/chat_readiness`
 - chat roundtrip (`/chat_create` -> `/message_async` -> `/poll`)
 - `/skills_list` discovery
 
-7. Full mode adds heavier integration subset.
+1. Full mode adds heavier integration subset.
 
 ## Output
 

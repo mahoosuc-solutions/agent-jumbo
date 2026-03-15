@@ -1,7 +1,9 @@
-# Provide search query for the following:
+# Provide search query for the following
 
-## User message:
+## User message
+
 {{message}}
 
-## Conversation history for context:
+## Conversation history for context
+
 {{history}}

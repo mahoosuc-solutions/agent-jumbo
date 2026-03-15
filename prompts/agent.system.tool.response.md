@@ -1,8 +1,10 @@
-### response:
+### response
+
 final answer to user
 ends task processing use only when done or no task active
 put result in text arg
 usage:
+
 ~~~json
 {
     "thoughts": [

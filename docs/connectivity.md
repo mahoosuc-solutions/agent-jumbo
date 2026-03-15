@@ -4,7 +4,7 @@ This guide covers the different ways to connect to Agent Jumbo from external app
 
 **Note:** You can find your specific URLs and API tokens in your Agent Jumbo instance under `Settings > External Services`.
 
-### API Token Information
+## API Token Information
 
 The API token is automatically generated from your username and password. This same token is used for External API endpoints, MCP server connections, and A2A communication. The token will change if you update your credentials.
 

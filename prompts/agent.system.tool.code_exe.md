@@ -7,7 +7,7 @@ select "session" number, 0 default, others for multitasking
 if code runs long, use "output" to wait, "reset" to kill process
 use "pip" "npm" "apt-get" in "terminal" to install packages
 to output, use print() or console.log()
-if tool outputs error, adjust code before retrying; 
+if tool outputs error, adjust code before retrying;
 important: check code for placeholders or demo data; replace with real variables; don't reuse snippets
 don't use with other tools except thoughts; wait for response before using others
 check dependencies before running code
@@ -34,6 +34,7 @@ usage:
 ~~~
 
 2 execute terminal command
+
 ~~~json
 {
     "thoughts": [
@@ -51,6 +52,7 @@ usage:
 ~~~
 
 2.1 wait for output with long-running scripts
+
 ~~~json
 {
     "thoughts": [
@@ -66,6 +68,7 @@ usage:
 ~~~
 
 2.2 reset terminal
+
 ~~~json
 {
     "thoughts": [

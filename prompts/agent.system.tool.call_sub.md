@@ -12,6 +12,7 @@ respond to existing subordinates using call_subordinate tool with reset false
 profile arg usage: select from available profiles for specialized subordinates, leave empty for default
 
 example usage
+
 ~~~json
 {
     "thoughts": [
@@ -28,6 +29,7 @@ example usage
 ~~~
 
 **response handling**
+
 - you might be part of long chain of subordinates, avoid slow and expensive rewriting subordinate responses, instead use `§§include(<path>)` alias to include the response as is
 
 **available profiles:**

@@ -1,3 +1,3 @@
-## Tools available:
+## Tools available
 
 {{tools}}

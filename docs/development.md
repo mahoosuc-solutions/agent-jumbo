@@ -7,6 +7,8 @@ This guide will show you how to setup a local development environment for Agent 
 > [!WARNING]
 > This guide is for developers and contributors. It assumes you have a basic understanding of how to use Git/GitHub, Docker, IDEs and Python.
 
+<!-- markdownlint-disable-next-line MD028 -->
+
 > [!NOTE]
 >
 > - Agent Jumbo runs in a Docker container, this simplifies installation and ensures unified environment and behavior across systems.
@@ -59,7 +61,7 @@ ms-python.python
 Now when you select one of the python files in the project, you should see proper Python syntax highlighting and error detection. It should immediately show some errors, because we did not yet install dependencies.
 ![VS Code Python](res/dev/devinst-2.png)
 
-2. Prepare the python environment to run Agent Jumbo in. (⚠️ This step assumes you have some Python runtime installed.) By clicking the python version in lower right corner (3.13.1 in my example), you should get a list of available environments. You can click the `+ Create Virtual Environment` button. You might be prompted to select the environment manager if you have multiple installed. I have venv and Conda, I will select Conda here. I'm also prompted for desired python version, I will select 3.12, that is known to work well.
+1. Prepare the python environment to run Agent Jumbo in. (⚠️ This step assumes you have some Python runtime installed.) By clicking the python version in lower right corner (3.13.1 in my example), you should get a list of available environments. You can click the `+ Create Virtual Environment` button. You might be prompted to select the environment manager if you have multiple installed. I have venv and Conda, I will select Conda here. I'm also prompted for desired python version, I will select 3.12, that is known to work well.
 ![VS Code Python environments](res/dev/devinst-3.png)
 ![VS Code Python environments](res/dev/devinst-4.png)
 
@@ -67,7 +69,7 @@ Now when you select one of the python files in the project, you should see prope
 
 ![VS Code env terminal](res/dev/devinst-5.png)
 
-3. Install dependencies. Run these two commands in the terminal:
+1. Install dependencies. Run these two commands in the terminal:
 
 ```bash
 pip install -r requirements.txt

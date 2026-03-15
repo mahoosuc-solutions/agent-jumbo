@@ -127,7 +127,7 @@ Agent Jumbo comes with a set of built-in tools designed to help agents perform t
 
 | Tool | Function |
 | --- | --- |
-| behavior_adjustment | Agent Jumbo use this tool to change its behavior according to a prior request from the user.
+| behavior_adjustment | Agent Jumbo use this tool to change its behavior according to a prior request from the user. |
 | call_subordinate | Allows agents to delegate tasks to subordinate agents |
 | code_execution_tool | Allows agents to execute Python, Node.js, and Shell code in the terminal |
 | input | Allows agents to use the keyboard to interact with an active shell |
@@ -269,6 +269,8 @@ The `prompts` directory contains various Markdown files that control agent behav
 > [!NOTE]
 > You can customize any of these files. Agent Jumbo will use the files in your custom `prompts_subdir`
 > if they exist, otherwise, it will fall back to the files in `prompts/default`.
+
+<!-- markdownlint-disable-next-line MD028 -->
 
 > [!TIP]
 > The behavior system allows for dynamic adjustments without modifying the base prompt files.

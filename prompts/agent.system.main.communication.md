@@ -1,8 +1,10 @@
 
 ## Communication
+
 respond valid json with fields
 
 ### Response format (json fields names)
+
 - thoughts: array thoughts before execution in natural language
 - headline: short headline summary of the response
 - tool_name: use tool name
@@ -11,6 +13,7 @@ respond valid json with fields
 no text allowed before or after json
 
 ### Response example
+
 ~~~json
 {
     "thoughts": [

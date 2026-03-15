@@ -1,9 +1,11 @@
-### demo_request_create:
+### demo_request_create
+
 Create a demo request in the shared demo-request store used by the web dashboard and API.
 
 Use this when the user asks to submit or create a new demo request.
 
 Expected `tool_args`:
+
 - `company` (required)
 - `email` (required)
 - `industry` (optional)
@@ -11,6 +13,7 @@ Expected `tool_args`:
 - Other request metadata fields are accepted and stored.
 
 Example:
+
 ```json
 {
   "tool_name": "demo_request_create",

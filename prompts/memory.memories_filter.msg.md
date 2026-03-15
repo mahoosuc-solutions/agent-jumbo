@@ -1,10 +1,13 @@
-# Provide array of indices of relevant memories and solutions in relation to user message and history:
+# Provide array of indices of relevant memories and solutions in relation to user message and history
 
-## Memories and solutions:
+## Memories and solutions
+
 {{memories}}
 
-## User message:
+## User message
+
 {{message}}
 
-## History for context:
+## History for context
+
 {{history}}

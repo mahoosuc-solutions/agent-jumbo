@@ -11,8 +11,8 @@ Move from active development to safe, legally clean external collaboration and r
 - `A`: generic improvements for Agent Zero upstream
 - `B`: Agent Jumbo-specific product features
 
-2. Run validation suite and archive results in `artifacts/validation/`.
-3. Confirm no secret leakage via logs/settings/tests.
+1. Run validation suite and archive results in `artifacts/validation/`.
+1. Confirm no secret leakage via logs/settings/tests.
 
 ## Phase 2: Legal and compliance review (this week)
 
@@ -27,8 +27,8 @@ Move from active development to safe, legally clean external collaboration and r
 
 - `docs/AGENT_ZERO_PRODUCT_UPDATE_DRAFT.md`
 
-2. Open issue(s) summarizing upstream proposals.
-3. Submit small PRs in this order:
+1. Open issue(s) summarizing upstream proposals.
+1. Submit small PRs in this order:
 
 - PR-1 MCP caching/reload
 - PR-2 chat queue/pause fault tolerance
@@ -43,8 +43,8 @@ Move from active development to safe, legally clean external collaboration and r
 - queue/pause reliability thresholds
 - no unresolved high severity defects
 
-2. Execute regression tests and lightweight load test.
-3. Publish RC notes and rollback plan.
+1. Execute regression tests and lightweight load test.
+1. Publish RC notes and rollback plan.
 
 ## Success criteria
 

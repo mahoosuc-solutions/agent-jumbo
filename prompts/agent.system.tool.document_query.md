@@ -1,4 +1,5 @@
 ### document_query
+
 read and analyze remote/local documents get text content or answer questions
 pass a single url/path or a list for multiple documents in "document"
 for web documents use "http://" or "https://"" prefix
@@ -9,6 +10,7 @@ supports various formats HTML PDF Office Text etc
 usage:
 
 1 get content
+
 ~~~json
 {
     "thoughts": [
@@ -23,6 +25,7 @@ usage:
 ~~~
 
 2 query document
+
 ~~~json
 {
     "thoughts": [
@@ -41,6 +44,7 @@ usage:
 ~~~
 
 3 query multiple documents
+
 ~~~json
 {
     "thoughts": [

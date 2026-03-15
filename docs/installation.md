@@ -4,7 +4,7 @@ Click to open a video to learn how to install Agent Jumbo:
 
 [![Easy Installation guide](/docs/res/easy_ins_vid.png)](https://www.youtube.com/watch?v=w5v5Kjx51hs)
 
-The following user guide provides instructions for installing and running Agent Jumbo using Docker, which is the primary runtime environment for the framework. For developers and contributors, we also provide instructions for setting up the [full development environment](#in-depth-guide-for-full-binaries-installation).
+The following user guide provides instructions for installing and running Agent Jumbo using Docker, which is the primary runtime environment for the framework. For developers and contributors, we also provide instructions for setting up the [full development environment](development.md).
 
 ## Windows, macOS and Linux Setup Guide
 
@@ -18,8 +18,10 @@ The following user guide provides instructions for installing and running Agent 
 
 1.2. Download the version for your operating system. For Windows users, the Intel/AMD version is the main download button.
 
+<!-- markdownlint-disable MD033 -->
 <img src="res/setup/image-8.png" alt="docker download" width="200"/>
 <br><br>
+<!-- markdownlint-enable MD033 -->
 
 > [!NOTE]
 > **Linux Users:** You can install either Docker Desktop or docker-ce (Community Edition).
@@ -40,17 +42,21 @@ The following user guide provides instructions for installing and running Agent 
 
 1.3. Run the installer with default settings. On macOS, drag and drop the application to your Applications folder.
 
+<!-- markdownlint-disable MD033 -->
 <img src="res/setup/image-9.png" alt="docker install" width="300"/>
 <img src="res/setup/image-10.png" alt="docker install" width="300"/>
 
 <img src="res/setup/image-12.png" alt="docker install" width="300"/>
 <br><br>
+<!-- markdownlint-enable MD033 -->
 
 1.4. Once installed, launch Docker Desktop:
 
+<!-- markdownlint-disable MD033 -->
 <img src="res/setup/image-11.png" alt="docker installed" height="100"/>
 <img src="res/setup/image-13.png" alt="docker installed" height="100"/>
 <br><br>
+<!-- markdownlint-enable MD033 -->
 
 > [!NOTE]
 > **MacOS Configuration:** In Docker Desktop's preferences (Docker menu) → Settings →
@@ -58,7 +64,7 @@ The following user guide provides instructions for installing and running Agent 
 
 ![docker socket macOS](res/setup/macsocket.png)
 
-2. **Run Agent Jumbo:**
+1. **Run Agent Jumbo:**
 
 - Note: Agent Jumbo also offers a Hacking Edition based on Kali linux with modified prompts for cybersecurity tasks. The setup is the same as the regular version, just use the agent0ai/agent-zero:hacking image instead of agent0ai/agent-zero.
 
@@ -149,12 +155,14 @@ Optionally you can map local folders for file persistence:
 > [!TIP]
 > You can also access the Web UI by clicking the ports right under the container ID in Docker Desktop.
 
+<!-- markdownlint-disable-next-line MD028 -->
+
 > [!NOTE]
 > After starting the container, you'll find all Agent Jumbo files in your chosen
 > directory. You can access and edit these files directly on your machine, and
 > the changes will be immediately reflected in the running container.
 
-3. Configure Agent Jumbo
+1. Configure Agent Jumbo
 
 - Refer to the following sections for a full guide on how to configure Agent Jumbo.
 
@@ -204,6 +212,8 @@ Agent Jumbo provides a comprehensive settings interface to customize various asp
 > [!CAUTION]
 > **GitHub Copilot Provider:** When using the GitHub Copilot provider, after selecting the model and entering your first prompt, the OAuth login procedure will begin. You'll find the authentication code and link in the output logs. Complete the authentication process by following the provided link and entering the code, then you may continue using Agent Jumbo.
 
+<!-- markdownlint-disable-next-line MD028 -->
+
 > [!NOTE]
 > **GitHub Copilot Limitations:** GitHub Copilot models typically have smaller rate limits and context windows compared to models hosted by other providers like OpenAI, Anthropic, or Azure. Consider this when working with large conversations or high-frequency requests.
 
@@ -219,7 +229,7 @@ Agent Jumbo provides a comprehensive settings interface to customize various asp
 
 - **RFC Parameters (local instances only):** configure URLs and ports for remote function calls between instances
 - **RFC Password:** Configure password for remote function calls
-Learn more about Remote Function Calls and their purpose [here](#7-configure-agent-jumbo-rfc).
+Learn more about Remote Function Calls and their purpose in the development guide.
 
 > [!IMPORTANT]
 > Always keep your API keys and passwords secure.
@@ -246,13 +256,13 @@ The Settings page is the control center for selecting the Large Language Models 
 
 If you're interested in Ollama, which is a powerful tool that allows you to run various large language models locally, here's how to install and use it:
 
-#### First step: installation
+### First step: installation
 
 **On Windows:**
 
 Download Ollama from the official website and install it on your machine.
 
-<button>[Download Ollama Setup](https://ollama.com/download/OllamaSetup.exe)</button>
+[Download Ollama Setup](https://ollama.com/download/OllamaSetup.exe)
 
 **On macOS:**
 
@@ -271,7 +281,7 @@ curl -fsSL https://ollama.com/install.sh | sh
 **Finding Model Names:**
 Visit the [Ollama model library](https://ollama.com/library) for a list of available models and their corresponding names.  The format is usually `provider/model-name` (or just `model-name` in some cases).
 
-#### Second step: pulling the model
+### Second step: pulling the model
 
 **On Windows, macOS, and Linux:**
 
@@ -283,7 +293,7 @@ ollama pull <model-name>
 
 2. A CLI message should confirm the model download on your system
 
-#### Selecting your model within Agent Jumbo
+### Selecting your model within Agent Jumbo
 
 1. Once you've downloaded your model(s), you must select it in the Settings page of the GUI.
 
@@ -297,7 +307,7 @@ ollama pull <model-name>
 
 ![ollama](res/setup/settings/4-local-models.png)
 
-#### Managing your downloaded models
+### Managing your downloaded models
 
 Once you've downloaded some models, you might want to check which ones you have available or remove any you no longer need.
 
@@ -339,11 +349,13 @@ Agent Jumbo's Web UI is accessible from any device on your network through the D
 > - You can find your external IP address by running `ipconfig` (Windows) or `ifconfig` (Linux/Mac)
 > - The port is automatically assigned by Docker unless you specify one
 
+<!-- markdownlint-disable-next-line MD028 -->
+
 > [!NOTE]
 > If you're running Agent Jumbo directly on your system (legacy approach) instead of
 > using Docker, you'll need to configure the host manually in `run_ui.py` to run on all interfaces using `host="0.0.0.0"`.
 
-For developers or users who need to run Agent Jumbo directly on their system,see the [In-Depth Guide for Full Binaries Installation](#in-depth-guide-for-full-binaries-installation).
+For developers or users who need to run Agent Jumbo directly on their system, see the [development guide](development.md).
 
 # How to update Agent Jumbo
 
@@ -368,7 +380,7 @@ For developers or users who need to run Agent Jumbo directly on their system,see
 > If you have issues loading your settings, you can try to delete the `/tmp/settings.json` file and let Agent Jumbo generate a new one.
 > The same goes for chats in `/tmp/chats/`, they might be incompatible with the new version
 
-2. **Update Process (Docker Desktop)**
+1. **Update Process (Docker Desktop)**
 
 - Go to Docker Desktop and stop the container from the "Containers" tab
 - Right-click and select "Remove" to remove the container
@@ -383,6 +395,8 @@ For developers or users who need to run Agent Jumbo directly on their system,see
 > Make sure to use the same volume mount path when running the new
 > container to preserve your data. The exact path depends on where you stored
 > your Agent Jumbo data directory (the chosen directory on your machine).
+
+<!-- markdownlint-disable-next-line MD028 -->
 
 > [!TIP]
 > Alternatively, run the following commands in your terminal:
@@ -404,7 +418,7 @@ For developers or users who need to run Agent Jumbo directly on their system,see
 > docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-zero
 > ```
 
-### Conclusion
+## Conclusion
 
 After following the instructions for your specific operating system, you should have Agent Jumbo successfully installed and running. You can now start exploring the framework's capabilities and experimenting with creating your own intelligent agents.
 

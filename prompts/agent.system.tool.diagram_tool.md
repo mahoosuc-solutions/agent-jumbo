@@ -1,9 +1,11 @@
-### diagram_tool:
+### diagram_tool
+
 Generate visual diagrams using Mermaid, Excalidraw, or Draw.io
 Create flowcharts, sequence diagrams, architecture diagrams, network diagrams, and more
 Output to files or inline rendering in chat
 
 **Diagram types supported:**
+
 - **mermaid**: Flowcharts, sequence, class, state, ER, Gantt, pie charts, git graphs
 - **excalidraw**: Hand-drawn style diagrams, sketches, architecture visuals
 - **drawio**: Professional technical diagrams, network topology, enterprise architecture
@@ -23,12 +25,12 @@ Use this for most diagrams - they render beautifully in the chat:
     "headline": "Creating flowchart diagram",
     "tool_name": "response",
     "tool_args": {
-        "text": "Here's the process flow:\n\n```mermaid\ngraph TD\n    A[Start] --> B{Decision}\n    B -->|Yes| C[Process]\n    B -->|No| D[End]\n    C --> D\n```"
+        "text": "Here's the process flow:\n\n~~~mermaid\ngraph TD\n    A[Start] --> B{Decision}\n    B -->|Yes| C[Process]\n    B -->|No| D[End]\n    C --> D\n```"
     }
 }
 ~~~
 
-2. **Mermaid to File (For saving/exporting)**
+1. **Mermaid to File (For saving/exporting)**
 
 ~~~json
 {
@@ -48,7 +50,7 @@ Use this for most diagrams - they render beautifully in the chat:
 }
 ~~~
 
-3. **Excalidraw Diagram**
+1. **Excalidraw Diagram**
 
 ~~~json
 {
@@ -67,7 +69,7 @@ Use this for most diagrams - they render beautifully in the chat:
 }
 ~~~
 
-4. **Draw.io Diagram**
+1. **Draw.io Diagram**
 
 ~~~json
 {
@@ -89,16 +91,18 @@ Use this for most diagrams - they render beautifully in the chat:
 **Mermaid Diagram Examples:**
 
 Flowchart:
-```mermaid
+
+~~~mermaid
 flowchart LR
     A[Start] --> B{Check}
     B -->|Pass| C[Continue]
     B -->|Fail| D[Error]
     C --> E[End]
-```
+~~~
 
 Sequence Diagram:
-```mermaid
+
+~~~mermaid
 sequenceDiagram
     participant User
     participant Agent
@@ -107,10 +111,11 @@ sequenceDiagram
     Agent->>Tool: Execute
     Tool-->>Agent: Result
     Agent-->>User: Response
-```
+~~~
 
 Class Diagram:
-```mermaid
+
+~~~mermaid
 classDiagram
     class Tool {
         +execute()
@@ -121,10 +126,11 @@ classDiagram
         +generate_diagram()
     }
     Tool <|-- DiagramTool
-```
+~~~
 
 State Diagram:
-```mermaid
+
+~~~mermaid
 stateDiagram-v2
     [*] --> Idle
     Idle --> Processing: Start
@@ -132,18 +138,20 @@ stateDiagram-v2
     Processing --> Error: Fail
     Success --> [*]
     Error --> Idle: Retry
-```
+~~~
 
 ER Diagram:
-```mermaid
+
+~~~mermaid
 erDiagram
     USER ||--o{ ORDER : places
     ORDER ||--|{ LINE-ITEM : contains
     PRODUCT ||--o{ LINE-ITEM : "ordered in"
-```
+~~~
 
 Gantt Chart:
-```mermaid
+
+~~~mermaid
 gantt
     title Project Timeline
     dateFormat YYYY-MM-DD
@@ -152,19 +160,21 @@ gantt
     Task 2: 2026-02-01, 20d
     section Phase 2
     Task 3: 2026-02-15, 25d
-```
+~~~
 
 Pie Chart:
-```mermaid
+
+~~~mermaid
 pie title Resource Distribution
     "CPU" : 45
     "Memory" : 30
     "Storage" : 15
     "Network" : 10
-```
+~~~
 
 Git Graph:
-```mermaid
+
+~~~mermaid
 gitGraph
     commit
     branch develop
@@ -173,9 +183,10 @@ gitGraph
     checkout main
     merge develop
     commit
-```
+~~~
 
 **Arguments:**
+
 - diagram_type: "mermaid" | "excalidraw" | "drawio"
 - code: Mermaid syntax (for mermaid type)
 - elements: Array of elements (for excalidraw type)
@@ -186,6 +197,7 @@ gitGraph
 - theme: "default" | "dark" | "forest" | "neutral" (mermaid only)
 
 **Best Practices:**
+
 1. Use Mermaid inline rendering for chat responses (easiest for users)
 2. Use diagram_tool for file exports when user needs to save/share
 3. For quick diagrams: Mermaid

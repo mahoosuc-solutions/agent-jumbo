@@ -1,17 +1,21 @@
-### notify_user:
+### notify_user
+
 This tool can be used to notify the user of a message independent of the current task.
 
 !!! This is a universal notification tool
 !!! Supported notification types: info, success, warning, error, progress
 
-#### Arguments:
- *  "message" (string) : The message to be displayed to the user.
- *  "title" (Optional, string) : The title of the notification.
- *  "detail" (Optional, string) : The detail of the notification. May contain html tags.
- *  "type" (Optional, string) : The type of the notification. Can be "info", "success", "warning", "error", "progress".
+#### Arguments
 
-#### Usage examples:
+* "message" (string) : The message to be displayed to the user.
+* "title" (Optional, string) : The title of the notification.
+* "detail" (Optional, string) : The detail of the notification. May contain html tags.
+* "type" (Optional, string) : The type of the notification. Can be "info", "success", "warning", "error", "progress".
+
+#### Usage examples
+
 ##### 1: Success notification
+
 ```json
 {
     "thoughts": [
@@ -26,7 +30,9 @@ This tool can be used to notify the user of a message independent of the current
     }
 }
 ```
+
 ##### 2: Error notification
+
 ```json
 {
     "thoughts": [

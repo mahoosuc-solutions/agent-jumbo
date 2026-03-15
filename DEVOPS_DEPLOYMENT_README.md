@@ -9,7 +9,7 @@ A production-ready, multi-platform deployment infrastructure for Agent Jumbo
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Overview](#overview)
 2. [Features](#features)
@@ -29,7 +29,7 @@ A production-ready, multi-platform deployment infrastructure for Agent Jumbo
 
 ---
 
-## 🎯 Overview
+## Overview
 
 The DevOps Deployment System provides a unified interface for deploying applications across multiple platforms (Kubernetes, SSH, GitHub Actions, AWS, GCP) with intelligent error handling, real-time progress reporting, and comprehensive health checking.
 
@@ -46,7 +46,7 @@ The DevOps Deployment System provides a unified interface for deploying applicat
 
 ---
 
-## ✨ Features
+## Features
 
 ### Core Capabilities
 
@@ -75,7 +75,7 @@ The DevOps Deployment System provides a unified interface for deploying applicat
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### 1. Installation
 
@@ -135,7 +135,7 @@ Health check: ✅ Passed
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 ### Design Pattern
 
@@ -240,7 +240,7 @@ The system follows a **Strategy Pattern** with **Dependency Injection**:
 
 ---
 
-## 📦 Components
+## Components
 
 ### Core Modules
 
@@ -266,13 +266,13 @@ The system follows a **Strategy Pattern** with **Dependency Injection**:
 
 ---
 
-## 🌐 Supported Platforms
+## Supported Platforms
 
 ### Production Ready ✅
 
 | Platform | Status | Integration | Documentation |
 |----------|--------|-------------|----------------|
-| **Kubernetes** | ✅ Production | Real SDK (v34.1.0) | [Link](#kubernetes-deployment) |
+| **Kubernetes** | ✅ Production | Real SDK (v34.1.0) | [Link](#2-basic-kubernetes-deployment) |
 
 ### POC Ready 🚀
 
@@ -287,7 +287,7 @@ All POC implementations follow the same interface and require only SDK integrati
 
 ---
 
-## 📥 Installation
+## Installation
 
 ### Prerequisites
 
@@ -342,7 +342,7 @@ pytest tests/test_deployment_strategies/ -v      # Strategy implementations
 
 ---
 
-## 🎮 Usage
+## Usage
 
 ### Basic Deployment
 
@@ -411,7 +411,7 @@ except TransientDeploymentError as e:
 
 ---
 
-## ⚙️ Configuration
+## Configuration
 
 ### Kubernetes Configuration
 
@@ -478,7 +478,7 @@ strategy.set_progress_reporter(CustomReporter())
 
 ---
 
-## 📖 API Reference
+## API Reference
 
 ### KubernetesStrategy Class
 
@@ -579,7 +579,7 @@ async for update in reporter.report("message", 50):
 
 ---
 
-## 🛡️ Error Handling
+## Error Handling
 
 ### Error Classification
 
@@ -629,7 +629,7 @@ except TransientDeploymentError as e:
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Run All Tests
 
@@ -694,7 +694,7 @@ async def test_kubernetes_deployment():
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 ### Quick Start Guides
 
@@ -736,7 +736,7 @@ tests/
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Setup
 
@@ -821,7 +821,7 @@ class MyPlatformStrategy(DeploymentStrategy):
 
 ---
 
-## 🆘 Support
+## Support
 
 ### Getting Help
 
@@ -877,7 +877,7 @@ Found a bug? Please:
 
 ---
 
-## 📊 Project Status
+## Project Status
 
 ### Completed ✅
 
@@ -907,13 +907,13 @@ Found a bug? Please:
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the Apache License 2.0. See LICENSE file for details.
 
 ---
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Kubernetes Python SDK team for excellent library
 - Agent Jumbo project for providing deployment context
@@ -921,7 +921,7 @@ This project is licensed under the Apache License 2.0. See LICENSE file for deta
 
 ---
 
-## 📞 Contact & Resources
+## Contact & Resources
 
 - **Repository**: <https://github.com/agent-jumbo-deploy/agent-jumbo-devops>
 - **Documentation**: See docs/ directory
@@ -930,7 +930,7 @@ This project is licensed under the Apache License 2.0. See LICENSE file for deta
 
 ---
 
-## 🎓 Learning Resources
+## Learning Resources
 
 ### For Beginners
 

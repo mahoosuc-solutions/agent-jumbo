@@ -5,6 +5,7 @@ A comprehensive rental property management tool for managing residential and com
 ## Purpose
 
 The Property Manager tool helps you:
+
 - Track multiple properties (houses, apartments, motels, commercial)
 - Manage tenants and lease agreements
 - Collect and track rent payments
@@ -15,6 +16,7 @@ The Property Manager tool helps you:
 ## Your Properties
 
 Currently configured properties:
+
 - **West Bethel Motel** - Commercial/Motel in Bethel, ME
 - **House 1, 2, 3** - Residential properties (update addresses when known)
 
@@ -29,6 +31,7 @@ property_manager_tool(action="dashboard")
 ```
 
 Shows:
+
 - Total properties and units
 - Occupancy rate
 - Monthly income/expenses
@@ -394,21 +397,25 @@ property_manager_tool(
 ### Setting Up a New Rental
 
 1. **Add the property:**
+
    ```python
    property_manager_tool(action="add_property", data={...})
    ```
 
 2. **Add tenant:**
+
    ```python
    property_manager_tool(action="add_tenant", data={...})
    ```
 
 3. **Create lease:**
+
    ```python
    property_manager_tool(action="create_lease", data={...})
    ```
 
 4. **Record first month's rent:**
+
    ```python
    property_manager_tool(action="record_payment", data={...})
    ```
@@ -416,16 +423,19 @@ property_manager_tool(
 ### Monthly Rent Collection
 
 1. **Check rent roll:**
+
    ```python
    property_manager_tool(action="rent_roll")
    ```
 
 2. **Record payments as received:**
+
    ```python
    property_manager_tool(action="record_payment", data={...})
    ```
 
 3. **Follow up on overdue:**
+
    ```python
    property_manager_tool(action="overdue_rent")
    ```
@@ -433,16 +443,19 @@ property_manager_tool(
 ### Managing the West Bethel Motel
 
 1. **Generate rooms:**
+
    ```python
    property_manager_tool(action="generate_motel_units", property_id=1, data={"count": 20, "base_rent": 89.00})
    ```
 
 2. **Track daily occupancy:**
+
    ```python
    property_manager_tool(action="get_property", property_id=1)
    ```
 
 3. **Record guest stays (short-term leases):**
+
    ```python
    property_manager_tool(action="create_lease", data={
        "property_id": 1,

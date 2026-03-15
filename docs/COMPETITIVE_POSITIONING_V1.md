@@ -64,19 +64,19 @@ Notes:
 
 - P95 `backend ready` time <= 45s on target laptop profile
 
-2. Time-to-first-agent-response:
+1. Time-to-first-agent-response:
 
 - P95 <= 12s after chat submission on validated default configuration
 
-3. Reliability:
+1. Reliability:
 
 - >= 99% successful completion for baseline validation workflows
 
-4. Fault tolerance:
+1. Fault tolerance:
 
 - 0 lost user messages during pause/queue resume flows in regression suite
 
-5. Cost predictability:
+1. Cost predictability:
 
 - Usage estimate error <= 20% vs observed cost for top 5 workflow templates
 

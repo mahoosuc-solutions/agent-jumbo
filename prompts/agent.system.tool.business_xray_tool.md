@@ -21,6 +21,7 @@ business_xray_tool(
 ```
 
 This generates:
+
 - Business health score with revenue, profitability, customer metrics
 - Time usage audit with efficiency analysis
 - Automation opportunities with ROI calculations
@@ -48,6 +49,7 @@ business_xray_tool(
 ```
 
 Generates:
+
 - Health score (0-100) based on key metrics
 - Mermaid flowchart showing revenue, profitability, customer economics
 - Specific recommendations for improvement
@@ -71,6 +73,7 @@ business_xray_tool(
 ```
 
 Generates:
+
 - Time efficiency score
 - Pie chart showing time distribution
 - Recommendations for optimizing focus time
@@ -97,6 +100,7 @@ business_xray_tool(
 ```
 
 Generates:
+
 - Prioritized list of automation opportunities
 - Annual savings calculations
 - ROI analysis
@@ -123,6 +127,7 @@ business_xray_tool(
 ```
 
 Generates:
+
 - Revenue opportunity flowchart
 - Prioritized opportunity matrix
 - Implementation timeline
@@ -149,6 +154,7 @@ business_xray_tool(
 ```
 
 Generates:
+
 - Balance score (0-100)
 - Multi-dimensional balance diagram
 - Specific recommendations for improvement
@@ -276,6 +282,7 @@ All analyses generate these outputs in the specified output_dir:
 ### Time Efficiency Score
 
 Percentage of time spent on deep work vs total work time:
+
 - **40%+**: Excellent
 - **30-40%**: Good
 - **20-30%**: Needs improvement
@@ -358,6 +365,7 @@ diagram_tool(
 ## Future Enhancements
 
 Planned modules (not yet implemented):
+
 - Customer journey mapping with touchpoint analysis
 - Competitive intelligence gathering
 - Financial health scanner with cash flow projections

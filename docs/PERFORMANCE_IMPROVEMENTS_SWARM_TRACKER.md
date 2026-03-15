@@ -12,19 +12,19 @@ Implement prioritized performance, reliability, and validation improvements acro
 - Scope: startup/init timing, lightweight metrics surface, low-overhead runtime timers.
 - Success: measurable startup + runtime metrics available and validated.
 
-2. Frontend polling optimization
+1. Frontend polling optimization
 
 - Owner: Worker B
 - Scope: adaptive polling interval/backoff/jitter with active-chat responsiveness.
 - Success: lower idle poll load without response lag in active generation.
 
-3. Security UX + secrets guardrails
+1. Security UX + secrets guardrails
 
 - Owner: Worker C
 - Scope: clear PAT/secrets guidance, tests/guardrails for secret-safe handling.
 - Success: no recommendation path that asks users to paste tokens into code/chat.
 
-4. QA orchestration expansion
+1. QA orchestration expansion
 
 - Owner: Worker D
 - Scope: extend 360 validation for persistence/readiness/perf sanity.

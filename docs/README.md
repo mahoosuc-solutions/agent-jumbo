@@ -15,7 +15,7 @@ To begin with Agent Jumbo, follow the links below for detailed guides on various
 - **[Contributing](contribution.md):** Learn how to contribute to the Agent Jumbo project.
 - **[Troubleshooting and FAQ](troubleshooting.md):** Find answers to common issues and questions.
 
-### Your experience with Agent Jumbo starts now
+## Your experience with Agent Jumbo starts now
 
 - **Download Agent Jumbo:** Follow the [installation guide](installation.md) to download and run Agent Jumbo.
 - **Join the Community:** Join the Agent Jumbo [Skool](https://www.skool.com/agent-jumbo) or [Discord](https://discord.gg/B8KZKNsPpj) community to discuss ideas, ask questions, and collaborate with other contributors.

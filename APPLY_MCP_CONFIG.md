@@ -134,7 +134,7 @@ http://localhost:8080
    docker restart agent-jumbo
    ```
 
-4. **Wait ~30 seconds** for the container to fully restart
+1. **Wait ~30 seconds** for the container to fully restart
 
 ### Step 5: Verify MCP Servers
 

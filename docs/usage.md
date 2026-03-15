@@ -144,8 +144,8 @@ One of Agent Jumbo's unique features is multi-agent cooperation.
 * **Communication:** Agents can communicate with each other, sharing information and coordinating actions. The system prompt and message history play a key role in guiding this communication.
 * **Hierarchy:** Agent Jumbo uses a [hierarchical structure](architecture.md#agent-hierarchy-and-communication), with superior agents delegating tasks to subordinates.  This allows for structured problem-solving and efficient resource allocation.
 
-![](res/physics.png)
-![](res/physics-2.png)
+![Agent hierarchy diagram](res/physics.png)
+![Agent communication flow](res/physics-2.png)
 
 ## Prompt Engineering
 
@@ -406,6 +406,8 @@ Sharing Agent Jumbo configurations:
 
 > [!IMPORTANT]
 > Always test your backup and restore process in a safe environment before relying on it for critical data. Keep multiple backup versions and store them in secure, accessible locations.
+
+<!-- markdownlint-disable-next-line MD028 -->
 
 > [!TIP]
 > The backup system is designed to work across different operating systems and Agent Jumbo installations. Your backups from a Windows system will work on Linux, and vice versa.

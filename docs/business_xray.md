@@ -35,9 +35,9 @@ This will analyze:
 Focus on one area:
 
 > "Analyze automation opportunities for my business"
-
+>
 > "Check my work-life balance"
-
+>
 > "Scan for revenue opportunities"
 
 ## Analysis Modules

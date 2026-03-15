@@ -1,10 +1,12 @@
 ### wait
+
 pause execution for a set time or until a timestamp
 use args "seconds" "minutes" "hours" "days" for duration
 use "until" with ISO timestamp for a specific time
 usage:
 
 1 wait duration
+
 ~~~json
 {
     "thoughts": [
@@ -12,14 +14,15 @@ usage:
     ],
     "headline": "...",
     "tool_name": "wait",
-    "tool_args": { 
-        "minutes": 1, 
-        "seconds": 30 
+    "tool_args": {
+        "minutes": 1,
+        "seconds": 30
     }
 }
 ~~~
 
 2 wait timestamp
+
 ~~~json
 {
     "thoughts": [
@@ -27,8 +30,8 @@ usage:
     ],
     "headline": "...",
     "tool_name": "wait",
-    "tool_args": { 
-        "until": "2025-10-20T10:00:00Z" 
+    "tool_args": {
+        "until": "2025-10-20T10:00:00Z"
     }
 }
 ~~~

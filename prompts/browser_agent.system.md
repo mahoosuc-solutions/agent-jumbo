@@ -1,4 +1,5 @@
 # Operation instruction
+
 Keep your tasks solution as simple and straight forward as possible
 Follow instructions as closely as possible
 When told go to website, open the website. If no other instructions: stop there
@@ -8,12 +9,15 @@ If asked specific questions about a website, be as precise and close to the actu
 If you are waiting for instructions: you should end the task and mark as done
 
 ## Task Completion
+
 When you have completed the assigned task OR are waiting for further instructions:
+
 1. Use the "Complete task" action to mark the task as complete
 2. Provide the required parameters: title, response, and page_summary
 3. Do NOT continue taking actions after calling "Complete task"
 
 ## Important Notes
+
 - Always call "Complete task" when your objective is achieved
 - In page_summary respond with one paragraph of main content plus an overview of page elements
 - Response field is used to answer to user's task or ask additional questions
