@@ -14,6 +14,7 @@ from python.helpers.api import ApiHandler, Request, Response
 from python.helpers.defer import DeferredTask
 from python.helpers.print_style import PrintStyle
 from python.helpers.strings import redact_sensitive_tokens
+from python.helpers.validators import validate_message_input
 
 
 class Message(ApiHandler):
@@ -215,6 +216,7 @@ class Message(ApiHandler):
 
             # Now process the message
             message = text
+            validate_message_input(message, attachment_paths)
 
             # Obtain agent context
             context = self.use_context(ctxid)

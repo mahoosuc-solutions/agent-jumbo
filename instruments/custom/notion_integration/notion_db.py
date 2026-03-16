@@ -72,6 +72,14 @@ class NotionDatabase:
             )
         """)
 
+        # Indexes for commonly-queried columns
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_pages_database_id ON pages_cache(database_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_pages_last_edited ON pages_cache(last_edited_time)")
+        cursor.execute(
+            "CREATE INDEX IF NOT EXISTS idx_notion_linear_map_linear_id ON notion_linear_map(linear_issue_id)"
+        )
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_notion_crm_map_customer_id ON notion_crm_map(customer_id)")
+
         conn.commit()
         conn.close()
 

@@ -69,14 +69,28 @@ class ApiHandler:
             if isinstance(output, Response):
                 return output
             else:
+                import uuid as _uuid
+
+                request_id = _uuid.uuid4().hex[:12]
                 response_json = json.dumps(output)
-                return Response(response=response_json, status=200, mimetype="application/json")
+                resp = Response(response=response_json, status=200, mimetype="application/json")
+                resp.headers["X-Request-ID"] = request_id
+                return resp
 
             # return exceptions with 500
         except Exception as e:
+            import uuid as _uuid
+
+            request_id = _uuid.uuid4().hex[:12]
             error = format_error(e)
-            PrintStyle.error(f"API error: {error}")
-            return Response(response=error, status=500, mimetype="text/plain")
+            PrintStyle.error(f"API error [{request_id}]: {error}")
+            response = Response(
+                response=json.dumps({"error": "Internal server error", "request_id": request_id}),
+                status=500,
+                mimetype="application/json",
+            )
+            response.headers["X-Request-ID"] = request_id
+            return response
 
     # get context to run agent zero in
     def use_context(self, ctxid: str, create_if_not_exists: bool = True):

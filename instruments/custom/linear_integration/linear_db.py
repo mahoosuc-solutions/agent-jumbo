@@ -71,6 +71,13 @@ class LinearDatabase:
             )
         """)
 
+        # Indexes for commonly-queried columns
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_project_id ON issues(project_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_state_name ON issues(state_name)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_team_id ON issues(team_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_updated_at ON issues(updated_at)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_projects_team_id ON projects(team_id)")
+
         conn.commit()
         conn.close()
 

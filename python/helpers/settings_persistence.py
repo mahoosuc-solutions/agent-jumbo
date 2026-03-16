@@ -14,6 +14,7 @@ It contains:
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import threading
@@ -39,6 +40,7 @@ from .settings_core import (
 # ---------------------------------------------------------------------------
 
 _settings: Settings | None = None
+_settings_lock = threading.Lock()
 
 
 # ---------------------------------------------------------------------------
@@ -48,19 +50,21 @@ _settings: Settings | None = None
 
 def get_settings() -> Settings:
     global _settings
-    if not _settings:
-        _settings = _read_settings_file()
-    if not _settings:
-        _settings = get_default_settings()
-    norm = normalize_settings(_settings)
-    return norm
+    with _settings_lock:
+        if not _settings:
+            _settings = _read_settings_file()
+        if not _settings:
+            _settings = get_default_settings()
+        norm = normalize_settings(_settings)
+        return norm
 
 
 def set_settings(settings: Settings, apply: bool = True):
     global _settings
-    previous = _settings
-    _settings = normalize_settings(settings)
-    _write_settings_file(_settings)
+    with _settings_lock:
+        previous = _settings
+        _settings = normalize_settings(settings)
+        _write_settings_file(_settings)
     if apply:
         _apply_settings(previous)
 
@@ -139,9 +143,20 @@ def _write_settings_file(settings: Settings):
     _write_sensitive_settings(settings)
     _remove_sensitive_settings(settings)
 
-    # write settings
     content = json.dumps(settings, indent=4)
-    files.write_file(SETTINGS_FILE, content)
+    # Atomic write: write to temp file then rename
+    import tempfile
+
+    dir_name = os.path.dirname(SETTINGS_FILE) or "."
+    fd, tmp_path = tempfile.mkstemp(dir=dir_name, suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            f.write(content)
+        os.replace(tmp_path, SETTINGS_FILE)
+    except Exception:
+        with contextlib.suppress(OSError):
+            os.unlink(tmp_path)
+        raise
 
 
 def _remove_sensitive_settings(settings: Settings):

@@ -12,6 +12,12 @@ interface RealtimeState {
   connected: boolean
 }
 
+/**
+ * Real-time chat updates via SSE with automatic polling fallback.
+ *
+ * Attempts SSE first for lower latency and reduced server load.
+ * Falls back to polling (1.5s interval) if SSE connection fails.
+ */
 export function useRealtime(contextId: string | null, enabled = true) {
   const [state, setState] = useState<RealtimeState>({
     logs: [],
@@ -25,59 +31,112 @@ export function useRealtime(contextId: string | null, enabled = true) {
   const logVersionRef = useRef(0)
   const logGuidRef = useRef('')
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const eventSourceRef = useRef<EventSource | null>(null)
+  const useSSERef = useRef(true) // Start with SSE, fallback to polling
 
+  // Handle incoming data (shared between SSE and polling)
+  const handleData = useCallback((data: PollResponse) => {
+    // Handle log_guid change (context reset)
+    if (logGuidRef.current && logGuidRef.current !== data.log_guid) {
+      logVersionRef.current = 0
+      logGuidRef.current = data.log_guid
+      setState((prev) => ({ ...prev, logs: [] }))
+      // Will get fresh data on next update
+      return
+    }
+
+    logGuidRef.current = data.log_guid
+
+    if (data.log_version !== logVersionRef.current) {
+      setState((prev) => ({
+        ...prev,
+        logs: logVersionRef.current === 0 ? data.logs : [...prev.logs, ...data.logs],
+        contexts: data.contexts,
+        progress: data.log_progress,
+        progressActive: data.log_progress_active,
+        paused: data.paused,
+        connected: true,
+      }))
+      logVersionRef.current = data.log_version
+    } else {
+      setState((prev) => ({
+        ...prev,
+        contexts: data.contexts,
+        progress: data.log_progress,
+        progressActive: data.log_progress_active,
+        paused: data.paused,
+        connected: true,
+      }))
+    }
+  }, [])
+
+  // SSE connection
+  const connectSSE = useCallback(() => {
+    if (!enabled || !useSSERef.current) return
+
+    const params = new URLSearchParams()
+    if (contextId) params.set('context', contextId)
+    params.set('log_version', String(logVersionRef.current))
+
+    const url = `/api/backend/sse?${params.toString()}`
+    const es = new EventSource(url)
+    eventSourceRef.current = es
+
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        if (data.error) {
+          console.warn('SSE error:', data.error)
+          return
+        }
+        handleData(data as PollResponse)
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    es.addEventListener('reset', (event) => {
+      try {
+        const data = JSON.parse((event as MessageEvent).data)
+        logVersionRef.current = 0
+        logGuidRef.current = data.log_guid || ''
+        setState((prev) => ({ ...prev, logs: [] }))
+      } catch {
+        // Ignore
+      }
+    })
+
+    es.addEventListener('reconnect', () => {
+      es.close()
+      // Reconnect after a brief delay
+      setTimeout(() => connectSSE(), 1000)
+    })
+
+    es.onerror = () => {
+      es.close()
+      eventSourceRef.current = null
+      // Fall back to polling
+      useSSERef.current = false
+      startPolling()
+    }
+  }, [contextId, enabled, handleData])
+
+  // Polling fallback
   const doPoll = useCallback(async () => {
     if (!enabled) return
     try {
       const data: PollResponse = await pollChat(contextId, logVersionRef.current)
-
-      // Handle log_guid change (context reset)
-      if (logGuidRef.current && logGuidRef.current !== data.log_guid) {
-        logVersionRef.current = 0
-        logGuidRef.current = data.log_guid
-        setState((prev) => ({ ...prev, logs: [] }))
-        // Re-poll with version 0
-        const fresh = await pollChat(contextId, 0)
-        logVersionRef.current = fresh.log_version
-        setState((prev) => ({
-          ...prev,
-          logs: fresh.logs,
-          contexts: fresh.contexts,
-          progress: fresh.log_progress,
-          progressActive: fresh.log_progress_active,
-          paused: fresh.paused,
-          connected: true,
-        }))
-        return
-      }
-
-      logGuidRef.current = data.log_guid
-
-      if (data.log_version !== logVersionRef.current) {
-        setState((prev) => ({
-          ...prev,
-          logs: logVersionRef.current === 0 ? data.logs : [...prev.logs, ...data.logs],
-          contexts: data.contexts,
-          progress: data.log_progress,
-          progressActive: data.log_progress_active,
-          paused: data.paused,
-          connected: true,
-        }))
-        logVersionRef.current = data.log_version
-      } else {
-        setState((prev) => ({
-          ...prev,
-          contexts: data.contexts,
-          progress: data.log_progress,
-          progressActive: data.log_progress_active,
-          paused: data.paused,
-          connected: true,
-        }))
-      }
+      handleData(data)
     } catch {
       setState((prev) => ({ ...prev, connected: false }))
     }
-  }, [contextId, enabled])
+  }, [contextId, enabled, handleData])
+
+  const startPolling = useCallback(() => {
+    if (intervalRef.current) clearInterval(intervalRef.current)
+    doPoll()
+    intervalRef.current = setInterval(doPoll, 1500)
+  }, [doPoll])
 
   // Reset on context change
   useEffect(() => {
@@ -86,17 +145,27 @@ export function useRealtime(contextId: string | null, enabled = true) {
     setState((prev) => ({ ...prev, logs: [] }))
   }, [contextId])
 
-  // Polling interval
+  // Main connection effect
   useEffect(() => {
     if (!enabled) return
 
-    doPoll()
-    intervalRef.current = setInterval(doPoll, 1500)
+    if (useSSERef.current) {
+      connectSSE()
+    } else {
+      startPolling()
+    }
 
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
+      if (eventSourceRef.current) {
+        eventSourceRef.current.close()
+        eventSourceRef.current = null
+      }
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current)
+        intervalRef.current = null
+      }
     }
-  }, [doPoll, enabled])
+  }, [connectSSE, startPolling, enabled])
 
   return state
 }

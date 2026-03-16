@@ -4,6 +4,7 @@ Centralized SQLite connection handling and utilities
 """
 
 import sqlite3
+import threading
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
@@ -27,29 +28,32 @@ class DatabaseManager:
         self.data_dir.mkdir(parents=True, exist_ok=True)
         self.db_path = self.data_dir / db_name
         self._connection: sqlite3.Connection | None = None
+        self._lock = threading.Lock()
 
     @property
     def connection(self) -> sqlite3.Connection:
         """Get or create database connection"""
         if self._connection is None:
-            self._connection = sqlite3.connect(str(self.db_path), check_same_thread=False)
+            self._connection = sqlite3.connect(str(self.db_path), check_same_thread=False, timeout=5.0)
             self._connection.row_factory = sqlite3.Row
-            # Enable foreign keys
             self._connection.execute("PRAGMA foreign_keys = ON")
+            self._connection.execute("PRAGMA journal_mode=WAL")
+            self._connection.execute("PRAGMA busy_timeout=5000")
         return self._connection
 
     @contextmanager
     def cursor(self):
         """Context manager for database cursor"""
-        cur = self.connection.cursor()
-        try:
-            yield cur
-            self.connection.commit()
-        except Exception as e:
-            self.connection.rollback()
-            raise e
-        finally:
-            cur.close()
+        with self._lock:
+            cur = self.connection.cursor()
+            try:
+                yield cur
+                self.connection.commit()
+            except Exception as e:
+                self.connection.rollback()
+                raise e
+            finally:
+                cur.close()
 
     def execute(self, sql: str, params: tuple = ()) -> sqlite3.Cursor:
         """Execute SQL and return cursor"""

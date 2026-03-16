@@ -9,6 +9,8 @@ from typing import Any
 
 import aiohttp
 
+from python.helpers.api_throttle import throttled
+
 NOTION_API_URL = "https://api.notion.com/v1"
 NOTION_VERSION = "2022-06-28"
 
@@ -21,6 +23,7 @@ class NotionClient:
         if not self.api_key:
             raise ValueError("Notion API key required. Set notion_api_key in settings or NOTION_API_KEY env var.")
 
+    @throttled(calls_per_minute=150, max_retries=5)
     async def _request(
         self,
         method: str,

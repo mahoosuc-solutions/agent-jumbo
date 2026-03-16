@@ -790,6 +790,45 @@ class BackupService:
             if os.path.exists(temp_dir):
                 os.rmdir(temp_dir)
 
+    def _validate_zip_member_path(self, archive_path: str, backup_metadata: dict[str, Any]) -> None:
+        """Validate a zip member path to prevent path traversal attacks.
+
+        Args:
+            archive_path: Member path from the zip archive's namelist
+            backup_metadata: Backup metadata containing the original agent_jumbo_root
+
+        Raises:
+            ValueError: If the path contains traversal components or escapes expected roots
+        """
+        # Reject any path that contains literal '..' components before normalization.
+        # Splitting on both POSIX and Windows separators covers cross-platform archives.
+        parts = archive_path.replace("\\", "/").split("/")
+        if ".." in parts:
+            raise ValueError(f"Rejected zip member with path traversal component: {archive_path!r}")
+
+        # Normalise the path and re-check so that encoded or mixed-separator
+        # variants (e.g. "foo/bar/../../../etc/passwd") are also caught.
+        normalised = os.path.normpath(archive_path)
+        normalised_parts = normalised.replace("\\", "/").split("/")
+        if ".." in normalised_parts:
+            raise ValueError(
+                f"Rejected zip member whose normalised path contains traversal component: {archive_path!r}"
+            )
+
+        # If the path is absolute it must be anchored inside one of the two
+        # known roots (the backed-up root recorded in metadata, or the current
+        # agent root) so it cannot escape to arbitrary filesystem locations.
+        if os.path.isabs(normalised):
+            environment_info = backup_metadata.get("environment_info", {})
+            backed_up_root = environment_info.get("agent_jumbo_root", "").rstrip("/")
+            current_root = self.agent_jumbo_root.rstrip("/")
+
+            allowed_roots = [r for r in (backed_up_root, current_root) if r]
+            if allowed_roots and not any(
+                normalised == root or normalised.startswith(root + "/") for root in allowed_roots
+            ):
+                raise ValueError(f"Rejected zip member with absolute path outside expected roots: {archive_path!r}")
+
     def _translate_restore_path(self, archive_path: str, backup_metadata: dict[str, Any]) -> str:
         """Translate file path from backed up system to current system.
 
@@ -802,7 +841,13 @@ class BackupService:
 
         Returns:
             Translated path for the current system
+
+        Raises:
+            ValueError: If the archive_path contains path traversal components
         """
+        # Validate before any translation to prevent path traversal attacks.
+        self._validate_zip_member_path(archive_path, backup_metadata)
+
         # Get the backed up agent zero root path from metadata
         environment_info = backup_metadata.get("environment_info", {})
         backed_up_agent_root = environment_info.get("agent_jumbo_root", "")

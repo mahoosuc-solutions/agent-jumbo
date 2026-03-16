@@ -10,6 +10,8 @@ from typing import Any
 
 import aiohttp
 
+from python.helpers.api_throttle import throttled
+
 LINEAR_API_URL = "https://api.linear.app/graphql"
 
 
@@ -21,6 +23,7 @@ class LinearClient:
         if not self.api_key:
             raise ValueError("Linear API key required. Set linear_api_key in settings or LINEAR_API_KEY env var.")
 
+    @throttled(calls_per_minute=50, max_retries=5)
     async def execute(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
         """Execute a GraphQL query against Linear."""
         headers = {

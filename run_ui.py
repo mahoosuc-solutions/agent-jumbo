@@ -12,6 +12,8 @@ from datetime import timedelta
 from functools import wraps
 
 from flask import Flask, Response, redirect, render_template_string, request, session, url_for
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.wrappers.response import Response as BaseResponse
 
 logging.getLogger().setLevel(logging.WARNING)
@@ -26,6 +28,7 @@ from python.helpers.api import ApiHandler
 from python.helpers.extract_tools import load_classes_from_folder
 from python.helpers.files import get_abs_path
 from python.helpers.print_style import PrintStyle
+from python.helpers.structured_log import setup_structured_logging
 
 # Set the new timezone to 'UTC'
 os.environ["TZ"] = "UTC"
@@ -45,11 +48,23 @@ webapp.config.update(
     SESSION_PERMANENT=True,
     PERMANENT_SESSION_LIFETIME=timedelta(days=1),
 )
+webapp.config["MAX_CONTENT_LENGTH"] = 100 * 1024 * 1024  # 100MB max upload
+
+limiter = Limiter(
+    get_remote_address,
+    app=webapp,
+    default_limits=[],
+    storage_uri="memory://",
+)
 
 lock = threading.Lock()
 _mcp_token_lock = threading.Lock()
 _active_mcp_token: str | None = None
 _startup_tasks: list[object] = []
+
+_login_attempts: dict[str, list[float]] = {}
+_LOGIN_MAX_ATTEMPTS = 5
+_LOGIN_WINDOW_SECONDS = 60
 
 
 def _is_laptop_mode() -> bool:
@@ -151,9 +166,7 @@ def csrf_protect(f):
     async def decorated(*args, **kwargs):
         token = session.get("csrf_token")
         header = request.headers.get("X-CSRF-Token")
-        cookie = request.cookies.get("csrf_token_" + runtime.get_runtime_id())
-        sent = header or cookie
-        if not token or not sent or token != sent:
+        if not token or not header or token != header:
             return Response("CSRF token missing or invalid", 403)
         return await f(*args, **kwargs)
 
@@ -161,13 +174,26 @@ def csrf_protect(f):
 
 
 @webapp.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 async def login_handler():
     error = None
     if request.method == "POST":
+        ip = request.remote_addr or "unknown"
+        now = time.time()
+        window_start = now - _LOGIN_WINDOW_SECONDS
+        attempts = _login_attempts.get(ip, [])
+        attempts = [t for t in attempts if t > window_start]
+        if len(attempts) >= _LOGIN_MAX_ATTEMPTS:
+            _login_attempts[ip] = attempts
+            return Response("Too many login attempts. Please try again later.", 429)
+        attempts.append(now)
+        _login_attempts[ip] = attempts
+
         user = dotenv.get_dotenv_value("AUTH_LOGIN")
         password = dotenv.get_dotenv_value("AUTH_PASSWORD")
 
         if request.form["username"] == user and request.form["password"] == password:
+            _login_attempts.pop(ip, None)
             session["authentication"] = login.get_credentials_hash()
             return redirect(url_for("serve_index"))
         else:
@@ -189,12 +215,20 @@ def add_security_headers(response):
     response.headers["X-Frame-Options"] = "SAMEORIGIN"
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
+    _CDN_HOSTS = (
+        "https://cdn.jsdelivr.net "
+        "https://cdnjs.cloudflare.com "
+        "https://fonts.googleapis.com "
+        "https://fonts.gstatic.com "
+        "https://unpkg.com"
+    )
     response.headers["Content-Security-Policy"] = (
-        "default-src 'self' 'unsafe-inline' 'unsafe-eval' https://* blob:; "
-        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://* blob:; "
-        "script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' https://* blob:; "
-        "img-src 'self' data: https://* blob:; "
-        "font-src 'self' data: https://fonts.gstatic.com;"
+        f"default-src 'self' 'unsafe-inline' {_CDN_HOSTS} blob:; "
+        f"script-src 'self' 'unsafe-inline' {_CDN_HOSTS} blob:; "
+        f"script-src-elem 'self' 'unsafe-inline' {_CDN_HOSTS} blob:; "
+        f"img-src 'self' data: {_CDN_HOSTS} blob:; "
+        f"font-src 'self' data: https://fonts.gstatic.com; "
+        "connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com;"
     )
     return response
 
@@ -265,6 +299,7 @@ def _ensure_active_mcp_token(force_rotate: bool = False) -> str:
 
 def run():
     PrintStyle().print("Initializing framework...")
+    setup_structured_logging()
 
     # Suppress only request logs but keep the startup messages
     from a2wsgi import ASGIMiddleware
@@ -297,6 +332,14 @@ def run():
             handler_wrap = requires_api_key(handler_wrap)
         if handler.requires_csrf():
             handler_wrap = csrf_protect(handler_wrap)
+
+        # Rate limiting for specific handlers
+        rate_limits = {
+            "upload": "10 per minute",
+            "csrf_token": "30 per minute",
+        }
+        if name in rate_limits:
+            handler_wrap = limiter.limit(rate_limits[name])(handler_wrap)
 
         app.add_url_rule(
             f"/{name}",

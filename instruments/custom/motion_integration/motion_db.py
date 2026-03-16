@@ -67,6 +67,12 @@ class MotionDatabase:
             )
         """)
 
+        # Indexes for commonly-queried columns
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tasks_workspace_id ON tasks_cache(workspace_id)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tasks_status ON tasks_cache(status)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tasks_updated_at ON tasks_cache(updated_at)")
+        cursor.execute("CREATE INDEX IF NOT EXISTS idx_tasks_project_id ON tasks_cache(project_id)")
+
         conn.commit()
         conn.close()
 

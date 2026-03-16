@@ -9,6 +9,8 @@ from typing import Any
 
 import aiohttp
 
+from python.helpers.api_throttle import throttled
+
 MOTION_API_URL = "https://api.usemotion.com/v1"
 
 
@@ -20,6 +22,7 @@ class MotionClient:
         if not self.api_key:
             raise ValueError("Motion API key required. Set motion_api_key in settings or MOTION_API_KEY env var.")
 
+    @throttled(calls_per_minute=28, max_retries=5)
     async def _request(
         self,
         method: str,
