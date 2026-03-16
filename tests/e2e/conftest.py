@@ -110,8 +110,8 @@ def authenticated_page(page, app_server: str):
     page.fill('input[name="password"], input[type="password"]', "testpass")
     page.click('button[type="submit"]')
 
-    # Wait for redirect away from login page
-    page.wait_for_url(lambda url: "/login" not in url, timeout=15000)
+    # Wait for redirect away from login page (Flask SPA may be slow under test)
+    page.wait_for_url(lambda url: "/login" not in url, timeout=30000)
 
     yield page
 

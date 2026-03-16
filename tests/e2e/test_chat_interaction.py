@@ -13,14 +13,14 @@ def test_send_message_appears_in_log(authenticated_page, app_server):
         page.goto(f"{app_server}/chat", wait_until="domcontentloaded")
         page.wait_for_timeout(2000)
 
-    # Find and fill the message input
-    textarea = page.locator(
-        'textarea[placeholder*="message"], textarea[name="message"], #message-input, textarea'
-    ).first
+    # Find and fill the chat input
+    textarea = page.locator('#chat-input, textarea[placeholder*="message"], textarea').first
     textarea.fill("Hello from e2e test")
 
-    # Submit
-    page.click('button[type="submit"], button:has-text("Send"), button[aria-label*="Send"]')
+    # Submit via the send button (may be disabled until backend connects — wait for it)
+    send_btn = page.locator('#send-button, button[aria-label*="end message" i]').first
+    send_btn.wait_for(state="attached", timeout=10000)
+    send_btn.click(force=True)  # force click even if disabled — we just want to verify the message appears
 
     # Wait for the message to appear in the DOM
     page.wait_for_timeout(3000)

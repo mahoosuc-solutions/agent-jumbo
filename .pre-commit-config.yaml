@@ -58,7 +58,7 @@ repos:
       - id: pip-audit
         name: pip-audit
         language: system
-        entry: bash -c 'tmpf=$(mktemp) && uv export --format requirements-txt --no-hashes > "$tmpf" 2>/dev/null && uv run pip-audit -r "$tmpf" --skip-editable --progress-spinner=off --ignore-vuln CVE-2026-26013 --ignore-vuln CVE-2026-28500; rc=$?; rm -f "$tmpf"; exit $rc'
+        entry: bash -c 'tmpf=$(mktemp) && uv export --format requirements-txt --no-hashes > "$tmpf" 2>/dev/null && uv run pip-audit -r "$tmpf" --skip-editable --progress-spinner=off --ignore-vuln CVE-2026-28500; rc=$?; rm -f "$tmpf"; exit $rc'
         pass_filenames: false
         files: '(pyproject\.toml|uv\.lock)$'
 
