@@ -8,8 +8,8 @@ from typing import Any
 
 import faiss
 import numpy as np
-from langchain.embeddings import CacheBackedEmbeddings
-from langchain.storage import InMemoryByteStore, LocalFileStore
+from langchain_classic.embeddings import CacheBackedEmbeddings
+from langchain_classic.storage import LocalFileStore
 from langchain_community.docstore.in_memory import InMemoryDocstore
 
 # from langchain_chroma import Chroma
@@ -18,6 +18,7 @@ from langchain_community.vectorstores.utils import (
     DistanceStrategy,
 )
 from langchain_core.documents import Document
+from langchain_core.stores import InMemoryByteStore
 from simpleeval import simple_eval
 
 import models

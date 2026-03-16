@@ -1,20 +1,13 @@
 from collections.abc import Callable
 from typing import TypedDict
 
-try:
-    from langchain.prompts import (
-        ChatPromptTemplate,
-        FewShotChatMessagePromptTemplate,
-    )
-except Exception:
-    from langchain_core.prompts import (
-        ChatPromptTemplate,
-        FewShotChatMessagePromptTemplate,
-    )
-
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.language_models.llms import BaseLLM
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.prompts import (
+    ChatPromptTemplate,
+    FewShotChatMessagePromptTemplate,
+)
 
 
 class Example(TypedDict):

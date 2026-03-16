@@ -10,11 +10,11 @@ from typing import (
 
 import litellm
 import openai
-from langchain.embeddings.base import Embeddings
 from langchain_core.callbacks.manager import (
     AsyncCallbackManagerForLLMRun,
     CallbackManagerForLLMRun,
 )
+from langchain_core.embeddings import Embeddings
 from langchain_core.language_models.chat_models import SimpleChatModel
 from langchain_core.messages import (
     AIMessageChunk,

@@ -4,14 +4,14 @@ from typing import Any
 
 # faiss needs to be patched for python 3.12 on arm #TODO remove once not needed
 import faiss
-from langchain.embeddings import CacheBackedEmbeddings
-from langchain.storage import InMemoryByteStore
+from langchain_classic.embeddings import CacheBackedEmbeddings
 from langchain_community.docstore.in_memory import InMemoryDocstore
 from langchain_community.vectorstores import FAISS
 from langchain_community.vectorstores.utils import (
     DistanceStrategy,
 )
 from langchain_core.documents import Document
+from langchain_core.stores import InMemoryByteStore
 from simpleeval import simple_eval
 
 from agent import Agent
