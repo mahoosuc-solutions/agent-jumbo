@@ -3,7 +3,7 @@ from __future__ import annotations
 import threading
 import time
 from collections import deque
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 _lock = threading.Lock()
@@ -11,7 +11,7 @@ _lock = threading.Lock()
 _MAX_RECENT_STARTUP_PHASES = 32
 
 _metrics: dict[str, Any] = {
-    "booted_at": datetime.now(timezone.utc).isoformat(),
+    "booted_at": datetime.now(UTC).isoformat(),
     "counters": {},
     "timers": {},
     "startup_phases": deque(maxlen=_MAX_RECENT_STARTUP_PHASES),
@@ -19,7 +19,7 @@ _metrics: dict[str, Any] = {
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def increment(name: str, value: int = 1) -> None:

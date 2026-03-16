@@ -7,11 +7,11 @@ import json
 import sqlite3
 import threading
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass
@@ -93,14 +93,14 @@ class KnowledgeGraph:
     @staticmethod
     def _dt_to_str(dt: datetime) -> str:
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
         return dt.isoformat()
 
     @staticmethod
     def _str_to_dt(s: str) -> datetime:
         dt = datetime.fromisoformat(s)
         if dt.tzinfo is None:
-            dt = dt.replace(tzinfo=timezone.utc)
+            dt = dt.replace(tzinfo=UTC)
         return dt
 
     def _row_to_node(self, row: sqlite3.Row) -> KnowledgeNode:

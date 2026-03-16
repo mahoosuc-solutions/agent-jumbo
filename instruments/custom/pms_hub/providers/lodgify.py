@@ -7,7 +7,7 @@ API: https://docs.lodgify.com/reference/webhooks
 import hashlib
 import hmac
 import json
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
@@ -569,7 +569,7 @@ class LodgifyProvider(PMSProvider):
             max_guests=int(data.get("max_guests", 1)),
             base_price=Decimal(str(data.get("nightly_price", 0))),
             currency=data.get("currency", "USD"),
-            synced_at=datetime.now(timezone.utc),
+            synced_at=datetime.now(UTC),
         )
 
     def _transform_reservation(self, data: dict[str, Any]) -> Reservation:
@@ -609,7 +609,7 @@ class LodgifyProvider(PMSProvider):
             guest_phone=data.get("guest_phone"),
             special_requests=data.get("special_requests"),
             source="pms",
-            synced_at=datetime.now(timezone.utc),
+            synced_at=datetime.now(UTC),
         )
 
     def _transform_message(self, data: dict[str, Any]) -> Message:
@@ -626,7 +626,7 @@ class LodgifyProvider(PMSProvider):
             is_read=bool(data.get("is_read")),
             requires_response=not bool(data.get("from_host")),
             created_at=parse_iso_datetime(data.get("created_at")),
-            synced_at=datetime.now(timezone.utc),
+            synced_at=datetime.now(UTC),
         )
 
     def _transform_review(self, data: dict[str, Any]) -> Review:
@@ -640,7 +640,7 @@ class LodgifyProvider(PMSProvider):
             title=data.get("title"),
             comment=data.get("comment", ""),
             created_at=parse_iso_datetime(data.get("created_at")),
-            synced_at=datetime.now(timezone.utc),
+            synced_at=datetime.now(UTC),
         )
 
     def _transform_calendar(self, data: dict[str, Any], property_id: str) -> Calendar:
@@ -653,7 +653,7 @@ class LodgifyProvider(PMSProvider):
             status=data.get("status", "available"),
             price=Decimal(str(data.get("price"))) if data.get("price") else None,
             min_nights=int(data.get("minimum_stay", 1)),
-            synced_at=datetime.now(timezone.utc),
+            synced_at=datetime.now(UTC),
         )
 
     async def __aenter__(self):

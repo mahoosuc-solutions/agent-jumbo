@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 from python.helpers.secrets import get_secrets_manager
@@ -10,7 +10,7 @@ TELEMETRY_KEY = "telemetry"
 
 
 def _now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 def _mask_value(secrets_mgr, value: Any) -> Any:

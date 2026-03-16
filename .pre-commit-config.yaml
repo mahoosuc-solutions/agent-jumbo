@@ -1,3 +1,6 @@
+default_language_version:
+  python: python3.11
+
 repos:
   # Ruff - Fast Python linter and formatter
   - repo: https://github.com/astral-sh/ruff-pre-commit

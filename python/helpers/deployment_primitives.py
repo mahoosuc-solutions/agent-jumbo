@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 VALID_ENVIRONMENTS = {
@@ -35,7 +35,7 @@ def execute_deployment(environment: str, platform: str | None = None) -> dict[st
         "environment": environment,
         "platform": platform or "default",
         "status": "success",
-        "deployed_at": datetime.now(timezone.utc).isoformat(),
+        "deployed_at": datetime.now(UTC).isoformat(),
         "health_checks_passed": True,
         "smoke_tests_passed": True,
     }
@@ -44,7 +44,7 @@ def execute_deployment(environment: str, platform: str | None = None) -> dict[st
 def record_deployment_result(result: dict[str, Any]) -> dict[str, Any]:
     return {
         "recorded": True,
-        "recorded_at": datetime.now(timezone.utc).isoformat(),
+        "recorded_at": datetime.now(UTC).isoformat(),
         "summary": {
             "environment": result.get("environment"),
             "status": result.get("status"),

@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from python.helpers.localization import Localization
 from python.helpers.print_style import PrintStyle
@@ -18,7 +18,7 @@ class WaitTool(Tool):
 
         is_duration_wait = not bool(until_timestamp_str)
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         target_time = None
 
         if until_timestamp_str:

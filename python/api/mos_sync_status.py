@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import sqlite3
 import traceback
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from python.helpers import files
 from python.helpers.api import ApiHandler
@@ -71,7 +71,7 @@ class MOSSyncStatus(ApiHandler):
         db_path = files.get_abs_path(f"./{db_rel}")
         self._ensure_sync_log_table(db_path)
 
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         conn = sqlite3.connect(db_path)
         try:
             cursor = conn.execute(
@@ -153,7 +153,7 @@ class MOSSyncStatus(ApiHandler):
             error_msg = str(exc)
 
         # Update the sync_log row
-        completed = datetime.now(timezone.utc).isoformat()
+        completed = datetime.now(UTC).isoformat()
         try:
             conn = sqlite3.connect(db_path)
             conn.execute(
@@ -246,7 +246,7 @@ def _cache_linear_issues(db_path: str, issues: list[dict]) -> None:
         )
         """
     )
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     for issue in issues:
         conn.execute(
             """
@@ -286,7 +286,7 @@ def _cache_motion_tasks(db_path: str, tasks: list[dict]) -> None:
         )
         """
     )
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     for task in tasks:
         conn.execute(
             """

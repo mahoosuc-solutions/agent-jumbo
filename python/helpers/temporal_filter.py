@@ -4,13 +4,13 @@ recency, access frequency, and activation score.
 """
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from python.helpers.knowledge_graph import KnowledgeNode
 
 
 def _utcnow() -> datetime:
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 @dataclass
@@ -40,10 +40,10 @@ def recency_score(
     """
     now = current_time or _utcnow()
     if now.tzinfo is None:
-        now = now.replace(tzinfo=timezone.utc)
+        now = now.replace(tzinfo=UTC)
     last = node.last_accessed
     if last.tzinfo is None:
-        last = last.replace(tzinfo=timezone.utc)
+        last = last.replace(tzinfo=UTC)
 
     elapsed_hours = max((now - last).total_seconds() / 3600.0, 0.0)
     # Exponential decay: 0.5^(elapsed / half_life)

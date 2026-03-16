@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 from collections import deque
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import TYPE_CHECKING, Any, Literal
 
 from pathspec import PathSpec
@@ -111,8 +111,8 @@ def file_tree(
         name=root_name,
         level=0,
         item_type="folder",
-        created=datetime.fromtimestamp(root_stat.st_ctime, tz=timezone.utc),
-        modified=datetime.fromtimestamp(root_stat.st_mtime, tz=timezone.utc),
+        created=datetime.fromtimestamp(root_stat.st_ctime, tz=UTC),
+        modified=datetime.fromtimestamp(root_stat.st_mtime, tz=UTC),
         parent=None,
         items=[],
         rel_path="",
@@ -134,8 +134,8 @@ def file_tree(
             name=entry.name,
             level=level,
             item_type=item_type,
-            created=datetime.fromtimestamp(stat.st_ctime, tz=timezone.utc),
-            modified=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
+            created=datetime.fromtimestamp(stat.st_ctime, tz=UTC),
+            modified=datetime.fromtimestamp(stat.st_mtime, tz=UTC),
             parent=parent,
             items=[] if item_type == "folder" else None,
             rel_path=rel_posix,
@@ -405,8 +405,8 @@ def _create_folder_unprocessed_comment(
                 name=entry.name,
                 level=folder_node.level + 1,
                 item_type="folder",
-                created=datetime.fromtimestamp(stat.st_ctime, tz=timezone.utc),
-                modified=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
+                created=datetime.fromtimestamp(stat.st_ctime, tz=UTC),
+                modified=datetime.fromtimestamp(stat.st_mtime, tz=UTC),
                 parent=folder_node,
                 items=None,
                 rel_path=os.path.join(folder_node.rel_path, entry.name),
@@ -419,8 +419,8 @@ def _create_folder_unprocessed_comment(
                 name=entry.name,
                 level=folder_node.level + 1,
                 item_type="file",
-                created=datetime.fromtimestamp(stat.st_ctime, tz=timezone.utc),
-                modified=datetime.fromtimestamp(stat.st_mtime, tz=timezone.utc),
+                created=datetime.fromtimestamp(stat.st_ctime, tz=UTC),
+                modified=datetime.fromtimestamp(stat.st_mtime, tz=UTC),
                 parent=folder_node,
                 items=None,
                 rel_path=os.path.join(folder_node.rel_path, entry.name),

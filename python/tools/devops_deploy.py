@@ -13,7 +13,7 @@ Enhanced with multi-platform deployment strategies:
 - GCP (Cloud Run, GKE, Cloud Build)
 """
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from time import perf_counter
 
 from python.helpers.deployment_primitives import (
@@ -251,7 +251,7 @@ class DevOpsDeploy(Tool):
 
     @staticmethod
     def _utc_now_iso() -> str:
-        return datetime.now(timezone.utc).isoformat()
+        return datetime.now(UTC).isoformat()
 
     def _generate_deployment_poc(self, result: dict) -> str:
         """

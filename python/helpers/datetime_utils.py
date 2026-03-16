@@ -1,20 +1,20 @@
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 
 
 def utc_now() -> datetime:
     """Return timezone-aware UTC now."""
-    return datetime.now(timezone.utc)
+    return datetime.now(UTC)
 
 
 def isoformat_z(value: datetime, timespec: str = "seconds") -> str:
     """Serialize datetime as ISO-8601 in UTC with a trailing Z."""
     normalized = value
     if normalized.tzinfo is None:
-        normalized = normalized.replace(tzinfo=timezone.utc)
+        normalized = normalized.replace(tzinfo=UTC)
     else:
-        normalized = normalized.astimezone(timezone.utc)
+        normalized = normalized.astimezone(UTC)
     return normalized.isoformat(timespec=timespec).replace("+00:00", "Z")
 
 
@@ -41,9 +41,9 @@ def parse_iso_datetime(value: str | None, default: datetime | None = None) -> da
         parsed = datetime.combine(parsed_date, datetime.min.time())
 
     if parsed.tzinfo is None:
-        parsed = parsed.replace(tzinfo=timezone.utc)
+        parsed = parsed.replace(tzinfo=UTC)
     else:
-        parsed = parsed.astimezone(timezone.utc)
+        parsed = parsed.astimezone(UTC)
 
     return parsed
 
