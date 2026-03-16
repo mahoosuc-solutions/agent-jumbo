@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import sys
 import tarfile
 from pathlib import Path
 
@@ -88,7 +89,10 @@ class SkillPackager:
                 member_path = os.path.normpath(member.name)
                 if member_path.startswith("..") or os.path.isabs(member_path):
                     raise ValueError(f"Unsafe path in archive: {member.name}")
-            tar.extractall(target_dir, filter="data")
+            if sys.version_info >= (3, 12):
+                tar.extractall(target_dir, filter="data")
+            else:
+                tar.extractall(target_dir)  # nosec B202 — members validated above
 
         # The top-level directory inside the archive is the skill name.
         stem = package_path.name.replace(".tar.gz", "")

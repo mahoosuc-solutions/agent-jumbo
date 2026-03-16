@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import time
 
-from flask import Request, Response, stream_with_context
+from flask import Request, Response
 
 from python.helpers.api import ApiHandler
 
@@ -84,7 +84,7 @@ class SSE(ApiHandler):
             yield f"event: reconnect\ndata: {json.dumps({'version': version})}\n\n"
 
         return Response(
-            stream_with_context(event_stream()),
+            event_stream(),
             mimetype="text/event-stream",
             headers={
                 "Cache-Control": "no-cache",

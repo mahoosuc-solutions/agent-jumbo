@@ -12,8 +12,8 @@ KEY_RFC_PASSWORD = "RFC_PASSWORD"
 KEY_ROOT_PASSWORD = "ROOT_PASSWORD"
 
 
-def load_dotenv():
-    _load_dotenv(get_dotenv_file_path(), override=True)
+def load_dotenv(*, override: bool = False):
+    _load_dotenv(get_dotenv_file_path(), override=override)
 
 
 def get_dotenv_file_path():
@@ -44,4 +44,4 @@ def save_dotenv_value(key: str, value: str):
         f.seek(0)
         f.writelines(lines)
         f.truncate()
-    load_dotenv()
+    load_dotenv(override=True)

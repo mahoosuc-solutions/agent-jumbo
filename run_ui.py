@@ -174,7 +174,7 @@ def csrf_protect(f):
 
 
 @webapp.route("/login", methods=["GET", "POST"])
-@limiter.limit("5 per minute")
+@limiter.limit("5 per minute", methods=["POST"])
 async def login_handler():
     error = None
     if request.method == "POST":
@@ -273,6 +273,31 @@ async def serve_index():
         samesite="Strict",
     )
     return response
+
+
+# SPA routes: serve the index for client-side routes, with auth enforced.
+_SPA_PATHS = [
+    "chat",
+    "settings",
+    "memory",
+    "files",
+    "overview",
+    "skills",
+    "workflows",
+    "messaging",
+    "scheduler",
+    "observability",
+    "llm-router",
+    "connections",
+]
+
+for _spa_path in _SPA_PATHS:
+    webapp.add_url_rule(
+        f"/{_spa_path}",
+        f"spa_{_spa_path}",
+        requires_auth(serve_index),
+        methods=["GET"],
+    )
 
 
 def _ensure_active_mcp_token(force_rotate: bool = False) -> str:
