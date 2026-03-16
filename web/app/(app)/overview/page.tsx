@@ -32,17 +32,19 @@ export default function OverviewPage() {
     },
     {
       label: 'Uptime',
-      value: health.data?.uptime
-        ? `${Math.floor(health.data.uptime / 3600)}h`
+      value: health.data?.checks?.uptime_seconds
+        ? `${Math.floor(health.data.checks.uptime_seconds / 3600)}h`
         : '--',
       icon: Clock,
       color: 'text-info',
     },
     {
-      label: 'Version',
-      value: health.data?.version || '1.0.0-beta',
+      label: 'Disk Free',
+      value: health.data?.checks?.disk?.free_gb
+        ? `${health.data.checks.disk.free_gb} GB`
+        : '--',
       icon: Rocket,
-      color: 'text-warning',
+      color: health.data?.checks?.disk?.ok === false ? 'text-danger' : 'text-warning',
     },
   ]
 

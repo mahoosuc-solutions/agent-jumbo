@@ -109,6 +109,9 @@ export interface UpdateTriggerInput extends Partial<CreateTriggerInput> {
 
 const TriggersListResponseSchema = z.object({ triggers: z.array(HeartbeatTriggerSchema) }).passthrough()
 
+// Cast required: Zod schema uses z.record() for config, but TriggerConfig is a
+// discriminated union. Runtime validation still catches structural mismatches;
+// the cast only affects the compile-time return type.
 export function listHeartbeatTriggers(): Promise<{ triggers: HeartbeatTrigger[] }> {
   return validatedApi('heartbeat_triggers_list', TriggersListResponseSchema, { method: 'GET' }) as unknown as Promise<{ triggers: HeartbeatTrigger[] }>
 }

@@ -72,6 +72,12 @@ export async function api<T = unknown>(
   return res.text() as unknown as T
 }
 
+/**
+ * Fetch + validate an API response against a Zod schema.
+ *
+ * The return type is inferred from the schema by default.
+ * Dev mode throws on validation failure; production logs a warning only.
+ */
 export function validatedApi<T>(
   path: string,
   schema: ZodSchema<T>,

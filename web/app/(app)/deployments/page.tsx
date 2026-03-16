@@ -22,7 +22,7 @@ export default function DeploymentsPage() {
   const isLoading = telemetryLoading || healthLoading
 
   const systemStatus = healthData?.status ?? 'unknown'
-  const uptime = healthData?.uptime ?? null
+  const uptime = healthData?.checks?.uptime_seconds ?? null
 
   return (
     <div className="space-y-6">
@@ -31,8 +31,8 @@ export default function DeploymentsPage() {
           <h1 className="text-2xl font-bold text-[var(--text-primary)]">Deployments</h1>
           <p className="text-sm text-[var(--text-secondary)] mt-1">System status and deployment telemetry</p>
         </div>
-        <Badge variant={systemStatus === 'ok' ? 'success' : systemStatus === 'degraded' ? 'warning' : 'info'}>
-          {systemStatus === 'ok' ? 'Healthy' : systemStatus}
+        <Badge variant={systemStatus === 'healthy' ? 'success' : systemStatus === 'degraded' ? 'warning' : 'info'}>
+          {systemStatus === 'healthy' ? 'Healthy' : systemStatus}
         </Badge>
       </div>
 
@@ -46,11 +46,11 @@ export default function DeploymentsPage() {
             ) : (
               <div className="flex items-center gap-2 mt-1">
                 <StatusDot
-                  status={systemStatus === 'ok' ? 'success' : systemStatus === 'degraded' ? 'warning' : 'neutral'}
-                  pulse={systemStatus === 'ok'}
+                  status={systemStatus === 'healthy' ? 'success' : systemStatus === 'degraded' ? 'warning' : 'neutral'}
+                  pulse={systemStatus === 'healthy'}
                 />
                 <span className="text-sm font-medium text-[var(--text-primary)]">
-                  {systemStatus === 'ok' ? 'All Systems Operational' : systemStatus}
+                  {systemStatus === 'healthy' ? 'All Systems Operational' : systemStatus}
                 </span>
               </div>
             )}

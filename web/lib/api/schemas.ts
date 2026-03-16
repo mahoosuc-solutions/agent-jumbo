@@ -41,11 +41,20 @@ export const CreateChatResponseSchema = z.object({
 }).passthrough()
 
 // ── Health ────────────────────────────────────
+export const HealthCheckSubSchema = z.object({
+  ok: z.boolean(),
+}).passthrough()
+
 export const HealthResponseSchema = z.object({
   ok: z.boolean(),
-  status: z.string(),
-  version: z.string().optional(),
-  uptime: z.number().optional(),
+  status: z.enum(['healthy', 'degraded']),
+  checks: z.object({
+    git: z.object({ ok: z.boolean() }).passthrough(),
+    disk: z.object({ ok: z.boolean(), free_gb: z.number() }).passthrough(),
+    memory: z.object({ ok: z.boolean() }).passthrough(),
+    uptime_seconds: z.number(),
+    runtime_metrics: z.record(z.string(), z.unknown()),
+  }).passthrough(),
 }).passthrough()
 
 // ── Backups ───────────────────────────────────
