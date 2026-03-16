@@ -1,3 +1,0 @@
-# Generated lock entrypoint for Docker dependency layer.
-# Replace with fully pinned output from `docker/lock-deps.sh` for deterministic builds.
--r requirements.txt

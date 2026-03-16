@@ -302,18 +302,18 @@ def test_documentation_exists():
 
 
 def test_requirements_updated():
-    """Test that requirements.txt includes new dependencies"""
-    requirements_file = Path(__file__).parent.parent / "requirements.txt"
+    """Test that pyproject.toml includes new dependencies"""
+    pyproject_file = Path(__file__).parent.parent / "pyproject.toml"
 
-    assert requirements_file.exists()
+    assert pyproject_file.exists()
 
-    content = requirements_file.read_text()
+    content = pyproject_file.read_text()
 
     # Check for Phase 2/3 dependencies
     assert "aiosmtplib" in content  # Phase 1
     assert "google-auth-oauthlib" in content or "# google" in content.lower()  # Phase 2
 
-    print("✅ Requirements.txt updated")
+    print("Requirements (pyproject.toml) updated")
 
 
 def test_summary():

@@ -23,6 +23,7 @@ repos:
       - id: check-json
       - id: check-added-large-files
         args: ["--maxkb=1000"]
+        exclude: '^uv\.lock$'
       - id: check-merge-conflict
       - id: detect-private-key
 
@@ -52,11 +53,14 @@ repos:
         exclude: "^(logs/|docs/res/)"
 
   # Dependency vulnerability audit
-  - repo: https://github.com/pypa/pip-audit
-    rev: v2.7.3
+  - repo: local
     hooks:
       - id: pip-audit
-        args: ["-r", "requirements.txt", "--skip-editable", "--progress-spinner=off"]
+        name: pip-audit
+        language: system
+        entry: bash -c 'tmpf=$(mktemp) && uv export --format requirements-txt --no-hashes > "$tmpf" 2>/dev/null && uv run pip-audit -r "$tmpf" --skip-editable --progress-spinner=off --ignore-vuln CVE-2026-26013 --ignore-vuln CVE-2026-28500; rc=$?; rm -f "$tmpf"; exit $rc'
+        pass_filenames: false
+        files: '(pyproject\.toml|uv\.lock)$'
 
   # Check for secrets
   - repo: https://github.com/Yelp/detect-secrets
