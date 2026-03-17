@@ -4,7 +4,6 @@ Measures page load times, API SLA compliance, memory stability,
 and concurrent connection handling.
 """
 
-import asyncio
 import json
 import time
 import urllib.parse
@@ -298,30 +297,26 @@ class TestResources:
         delta_mb = (final_rss - baseline_rss) / (1024 * 1024)
         assert delta_mb < 50, f"RSS grew by {delta_mb:.1f} MB over 50 requests (limit 50 MB)"
 
-    @pytest.mark.asyncio
-    async def test_concurrent_connections(self, app_server, auth_cookies):
+    def test_concurrent_connections(self, app_server, auth_cookies):
         """10 concurrent GET /health requests all succeed."""
-        try:
-            import aiohttp
-        except ImportError:
-            pytest.skip("aiohttp not installed")
+        from concurrent.futures import ThreadPoolExecutor, as_completed
 
         cookie = _cookie_header(auth_cookies)
         errors: list[str] = []
 
-        async def fetch(session: "aiohttp.ClientSession", idx: int):
+        def fetch(idx: int) -> None:
             try:
-                async with session.get(
-                    f"{app_server}/health",
-                    headers={"Cookie": cookie},
-                    timeout=aiohttp.ClientTimeout(total=10),
-                ) as resp:
-                    if resp.status != 200:
-                        errors.append(f"Request {idx}: status {resp.status}")
+                req = urllib.request.Request(f"{app_server}/health")
+                req.add_header("Cookie", cookie)
+                resp = urllib.request.urlopen(req, timeout=10)
+                if resp.status != 200:
+                    errors.append(f"Request {idx}: status {resp.status}")
             except Exception as exc:
                 errors.append(f"Request {idx}: {exc}")
 
-        async with aiohttp.ClientSession() as session:
-            await asyncio.gather(*(fetch(session, i) for i in range(10)))
+        with ThreadPoolExecutor(max_workers=10) as pool:
+            futures = [pool.submit(fetch, i) for i in range(10)]
+            for f in as_completed(futures):
+                f.result()  # propagate exceptions
 
         assert len(errors) == 0, f"Concurrent requests had errors: {errors}"

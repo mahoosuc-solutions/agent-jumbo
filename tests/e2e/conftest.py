@@ -107,11 +107,20 @@ def page(browser):
 
 @pytest.fixture()
 def authenticated_page(page, app_server: str):
-    page.goto(f"{app_server}/login", wait_until="domcontentloaded")
-    page.fill('input[name="username"], input[type="text"]', "testuser")
-    page.fill('input[name="password"], input[type="password"]', "testpass")
-    page.click('button[type="submit"]')
-    page.wait_for_url(lambda url: "/login" not in url, timeout=30000)
+    # Retry login in case rate limiter is active from previous tests
+    for attempt in range(3):
+        page.goto(f"{app_server}/login", wait_until="domcontentloaded")
+        page.fill('input[name="username"], input[type="text"]', "testuser")
+        page.fill('input[name="password"], input[type="password"]', "testpass")
+        page.click('button[type="submit"]')
+        try:
+            page.wait_for_url(lambda url: "/login" not in url, timeout=15000)
+            break
+        except Exception:
+            if attempt < 2:
+                time.sleep(3)  # wait for rate limiter cooldown
+                continue
+            raise
     yield page
 
 
