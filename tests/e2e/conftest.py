@@ -1,14 +1,13 @@
-"""E2E test fixtures for Agent Zero.
-
-Provides server management, browser lifecycle, and authentication helpers
-for Playwright-based end-to-end tests.
-"""
+"""E2E test fixtures for Agent Zero."""
 
 import os
+import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 import time
+import urllib.parse
 import urllib.request
 
 import pytest
@@ -38,14 +37,21 @@ def server_port() -> int:
 
 
 @pytest.fixture(scope="session")
-def app_server(server_port: int):
-    """Start the Flask app server with auth enabled for the test session."""
+def upload_dir():
+    d = tempfile.mkdtemp(prefix="e2e_uploads_")
+    yield d
+    shutil.rmtree(d, ignore_errors=True)
+
+
+@pytest.fixture(scope="session")
+def app_server(server_port: int, upload_dir: str):
     env = os.environ.copy()
     env["WEB_UI_HOST"] = "127.0.0.1"
     env["WEB_UI_PORT"] = str(server_port)
     env["AUTH_LOGIN"] = "testuser"
     env["AUTH_PASSWORD"] = "testpass"  # pragma: allowlist secret
     env["TOKENIZERS_PARALLELISM"] = "false"
+    env["UPLOAD_DIR"] = upload_dir
 
     proc = subprocess.Popen(
         [sys.executable, "run_ui.py"],
@@ -74,7 +80,6 @@ def app_server(server_port: int):
 
 @pytest.fixture(scope="session")
 def browser():
-    """Launch a headless Chromium browser for the test session."""
     try:
         from playwright.sync_api import sync_playwright
     except ImportError:
@@ -95,7 +100,6 @@ def browser():
 
 @pytest.fixture()
 def page(browser):
-    """Create a fresh browser page for each test."""
     pg = browser.new_page()
     yield pg
     pg.close()
@@ -103,22 +107,40 @@ def page(browser):
 
 @pytest.fixture()
 def authenticated_page(page, app_server: str):
-    """Log in and yield an authenticated page at the app root."""
     page.goto(f"{app_server}/login", wait_until="domcontentloaded")
-
     page.fill('input[name="username"], input[type="text"]', "testuser")
     page.fill('input[name="password"], input[type="password"]', "testpass")
     page.click('button[type="submit"]')
-
-    # Wait for redirect away from login page (Flask SPA may be slow under test)
     page.wait_for_url(lambda url: "/login" not in url, timeout=30000)
-
     yield page
+
+
+@pytest.fixture(scope="session")
+def auth_cookies(app_server: str):
+    import http.cookiejar
+
+    cj = http.cookiejar.CookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    data = urllib.parse.urlencode({"username": "testuser", "password": "testpass"}).encode()
+    req = urllib.request.Request(f"{app_server}/login", data=data, method="POST")
+    opener.open(req)
+    return {c.name: c.value for c in cj}
+
+
+@pytest.fixture(scope="session")
+def warmup(app_server: str, auth_cookies: dict):
+    cookie_header = "; ".join(f"{k}={v}" for k, v in auth_cookies.items())
+    for _ in range(10):
+        try:
+            req = urllib.request.Request(f"{app_server}/health")
+            req.add_header("Cookie", cookie_header)
+            urllib.request.urlopen(req, timeout=5)
+        except Exception:
+            pass
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Capture a screenshot on test failure for debugging."""
     outcome = yield
     rep = outcome.get_result()
     if rep.when == "call" and rep.failed:
