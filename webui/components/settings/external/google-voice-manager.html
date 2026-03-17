@@ -83,7 +83,7 @@
             </div>
             <div class="tag-presets">
                 <div class="tag-presets-row">
-                    <select class="tag-filter" @change="$store.googleVoiceManager.applyTagPreset(JSON.parse($event.target.value))">
+                    <select class="tag-filter" @change="$store.googleVoiceManager.applyTagPreset(JSON.parse($event.target.value))" aria-label="Tag preset">
                         <option value="">Select preset</option>
                         <template x-for="preset in $store.googleVoiceManager.tagPresets" :key="preset.name">
                             <option :value="JSON.stringify(preset)" x-text="preset.name"></option>

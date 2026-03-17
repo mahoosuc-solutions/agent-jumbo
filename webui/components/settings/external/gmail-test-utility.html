@@ -71,7 +71,7 @@
                     </div>
                     <div class="field">
                         <label>Account to Test</label>
-                        <select x-model="$store.gmailTestUtilityStore.selectedAccount" @change="$store.gmailTestUtilityStore.onAccountSelect()">
+                        <select x-model="$store.gmailTestUtilityStore.selectedAccount" @change="$store.gmailTestUtilityStore.onAccountSelect()" aria-label="Account to test">
                             <option value="">Select an account</option>
                             <template x-for="account in $store.gmailTestUtilityStore.accounts" :key="account.name">
                                 <option :value="account.name" x-text="account.name"></option>

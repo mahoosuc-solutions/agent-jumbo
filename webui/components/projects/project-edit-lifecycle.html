@@ -10,7 +10,7 @@
       <div class="lifecycle-section">
         <div class="lifecycle-controls">
           <label class="lifecycle-label">Current phase</label>
-          <select class="lifecycle-select" x-model="$store.projects.selectedProject.lifecycle.current_phase">
+          <select class="lifecycle-select" x-model="$store.projects.selectedProject.lifecycle.current_phase" aria-label="Current phase">
             <template x-for="phase in Object.keys($store.projects.selectedProject.lifecycle.phase_bindings || {})" :key="phase">
               <option :value="phase" x-text="phase"></option>
             </template>

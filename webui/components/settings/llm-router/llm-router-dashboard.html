@@ -111,7 +111,8 @@
                 <div class="default-row">
                   <span class="role-label" x-text="role.charAt(0).toUpperCase() + role.slice(1)"></span>
                   <select class="model-select"
-                          @change="$store.llmRouterStore.onModelSelected(role, $event)">
+                          @change="$store.llmRouterStore.onModelSelected(role, $event)"
+                          :aria-label="role + ' model'">
                     <option value="">
                       <span x-text="$store.llmRouterStore.getDefaultDisplay(role)"></span>
                     </option>
