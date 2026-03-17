@@ -137,7 +137,7 @@ def test_chat_send_message(authenticated_page, app_server):
 
     # The chat input is hidden behind a welcome screen (Alpine.js store).
     # Dismiss the welcome screen by setting the store value directly.
-    page.evaluate("if (window.Alpine && Alpine.store('welcomestore')) Alpine.store('welcomestore').isvisible = false")
+    page.evaluate("if (window.Alpine && Alpine.store('welcomeStore')) Alpine.store('welcomeStore').isVisible = false")
     page.wait_for_timeout(2000)  # wait for Alpine to re-render
 
     # Wait for the chat input to appear (nested x-component loading)
@@ -196,12 +196,20 @@ def test_upload_allowed_file(authenticated_page, app_server):
     """Uploading a .txt file via #file-input should succeed."""
     page = authenticated_page
 
-    page.goto(f"{app_server}/chat", wait_until="domcontentloaded")
+    # Navigate to main page and wait for x-components to load
+    page.goto(app_server, wait_until="domcontentloaded")
+    page.wait_for_timeout(5000)
+
+    # Dismiss welcome screen so chat area (with file input) is visible
+    page.evaluate("if (window.Alpine && Alpine.store('welcomeStore')) Alpine.store('welcomeStore').isVisible = false")
     page.wait_for_timeout(2000)
 
+    # #file-input is display:none inside nested x-component (chat-bar-input.html)
     file_input = page.locator("#file-input, input[type='file']").first
-    if file_input.count() == 0:
-        pytest.skip("No file upload input found on chat page")
+    try:
+        file_input.wait_for(state="attached", timeout=15000)
+    except Exception:
+        pytest.skip("File upload input not loaded (x-component async loading)")
 
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, prefix="e2e_upload_") as f:
         f.write("E2E upload test content.")

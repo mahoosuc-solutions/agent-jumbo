@@ -194,8 +194,9 @@ jobs:
       - name: Install dependencies
         run: uv sync --extra dev
 
-      - name: Install Playwright Chromium
-        run: uv run playwright install chromium
+      - name: Install Playwright Chromium with system deps
+        run: |
+          uv run playwright install --with-deps chromium
 
       - name: Run E2E tests
         run: |
@@ -208,7 +209,8 @@ jobs:
         env:
           PR_LABELS: ${{ toJSON(github.event.pull_request.labels.*.name) }}
         run: |
-          uv run python scripts/ci/e2e_gate.py e2e-results.json --labels "$PR_LABELS"
+          uv run python scripts/ci/e2e_gate.py e2e-results.json \
+            --labels "${PR_LABELS:-[]}"
 
       - name: Upload E2E artifacts
         if: always()

@@ -33,6 +33,14 @@ def _cookie_header(auth_cookies: dict) -> str:
     return "; ".join(f"{k}={v}" for k, v in auth_cookies.items())
 
 
+def _get_csrf(base_url: str, auth_cookies: dict) -> str:
+    """Fetch a CSRF token for the session."""
+    req = urllib.request.Request(f"{base_url}/csrf_token")
+    req.add_header("Cookie", _cookie_header(auth_cookies))
+    resp = urllib.request.urlopen(req, timeout=5)
+    return json.loads(resp.read())["token"]
+
+
 def _authed_request(
     url: str,
     auth_cookies: dict,
@@ -40,12 +48,15 @@ def _authed_request(
     method: str = "GET",
     data: bytes | None = None,
     content_type: str | None = None,
+    csrf_token: str | None = None,
     timeout: float = 10,
 ) -> urllib.request.Request:
     req = urllib.request.Request(url, data=data, method=method)
     req.add_header("Cookie", _cookie_header(auth_cookies))
     if content_type:
         req.add_header("Content-Type", content_type)
+    if csrf_token:
+        req.add_header("X-CSRF-Token", csrf_token)
     return req
 
 
@@ -228,18 +239,37 @@ class TestApiSLA:
         assert elapsed < 2.0, f"SSE first data: took {elapsed:.2f}s (limit 2s)"
 
     def test_settings_save_roundtrip(self, app_server, auth_cookies):
-        """POST settings then GET verify completes in under 1 second (soft)."""
-        # Try to POST a benign settings payload
-        payload = json.dumps({"theme": "dark"}).encode()
+        """POST settings_set then GET settings_get completes in under 1 second (soft)."""
+        # First GET current settings so we can round-trip a real value
+        get_req = _authed_request(
+            f"{app_server}/settings_get",
+            auth_cookies,
+            method="GET",
+        )
+
+        t0 = time.monotonic()
+        try:
+            resp = urllib.request.urlopen(get_req, timeout=5)
+            current = json.loads(resp.read())
+        except urllib.error.HTTPError as exc:
+            if exc.code in (404, 405):
+                pytest.skip("Settings get endpoint not available")
+            current = {}
+        except urllib.error.URLError:
+            pytest.skip("Settings get endpoint not reachable")
+
+        # POST a benign settings payload via settings_set (CSRF-protected)
+        csrf = _get_csrf(app_server, auth_cookies)
+        payload = json.dumps(current.get("settings", {})).encode()
         post_req = _authed_request(
-            f"{app_server}/settings",
+            f"{app_server}/settings_set",
             auth_cookies,
             method="POST",
             data=payload,
             content_type="application/json",
+            csrf_token=csrf,
         )
 
-        t0 = time.monotonic()
         try:
             resp = urllib.request.urlopen(post_req, timeout=5)
             resp.read()
@@ -251,9 +281,9 @@ class TestApiSLA:
             pytest.skip("Settings save endpoint not reachable")
 
         # Verify with GET
-        get_req = _authed_request(f"{app_server}/settings", auth_cookies)
+        verify_req = _authed_request(f"{app_server}/settings_get", auth_cookies)
         try:
-            resp = urllib.request.urlopen(get_req, timeout=5)
+            resp = urllib.request.urlopen(verify_req, timeout=5)
             resp.read()
         except (urllib.error.HTTPError, urllib.error.URLError):
             pass

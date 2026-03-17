@@ -19,16 +19,17 @@
             <div>
                 <select x-model="$store.microphoneSetting.selectedDevice"
                     @change="$store.microphoneSetting.onSelectDevice()"
-                    x-show="$store.microphoneSetting.devices.length > 0">
+                    x-show="$store.microphoneSetting.devices.length > 0"
+                    aria-label="Microphone device">
                     <template x-for="option in $store.microphoneSetting.devices" :key="option.deviceId">
                         <option :value="option.deviceId" x-text="option.label"
                             :selected="option.deviceId === $store.microphoneSetting.selectedDevice"></option>
                     </template>
                 </select>
-                <button class="btn btn-field" 
+                <button class="btn btn-field"
                     x-show="$store.microphoneSetting.devices.length == 0 && !$store.microphoneSetting.requestingPermission"
                     @click="$store.microphoneSetting.requestPermission()">Request permission to select device</button>
-                <button class="btn btn-field" 
+                <button class="btn btn-field"
                     x-show="$store.microphoneSetting.requestingPermission"
                     @click="$store.microphoneSetting.requestPermission()">
                     <span>Waiting for devices... [retry]</span>

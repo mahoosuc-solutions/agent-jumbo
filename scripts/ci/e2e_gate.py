@@ -110,7 +110,10 @@ def main() -> int:
         return 1
 
     report = json.loads(args.report.read_text())
-    labels = json.loads(args.labels)
+    try:
+        labels = json.loads(args.labels) if args.labels.strip() else []
+    except (json.JSONDecodeError, AttributeError):
+        labels = []
     override = "force-merge" in labels
 
     results = categorize_tests(report)

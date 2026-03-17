@@ -7,6 +7,7 @@ import socket
 import struct
 import threading
 import time
+import uuid
 import warnings
 from datetime import timedelta
 from functools import wraps
@@ -207,6 +208,13 @@ async def login_handler():
 async def logout_handler():
     session.pop("authentication", None)
     return redirect(url_for("login_handler"))
+
+
+@webapp.after_request
+def add_request_id(response):
+    if "X-Request-ID" not in response.headers:
+        response.headers["X-Request-ID"] = uuid.uuid4().hex
+    return response
 
 
 @webapp.after_request

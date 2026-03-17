@@ -183,7 +183,7 @@
                     <x-component path="welcome/welcome-screen.html"></x-component>
                 </div>
                 <!-- Message History (actual messages) -->
-                <div id="chat-history" role="log" aria-live="polite" aria-label="Chat messages" x-data x-show="!$store.welcomeStore || !$store.welcomeStore.isVisible"></div>
+                <div id="chat-history" role="log" aria-live="polite" aria-label="Chat messages" tabindex="0" x-data x-show="!$store.welcomeStore || !$store.welcomeStore.isVisible"></div>
 
                 <!-- NEW: Toast Stack Component -->
                 <div style="position: relative; height: 0;">
@@ -223,7 +223,7 @@
                         <button class="modal-close" @click="handleCancel()">&times;</button>
                     </div>
 
-                    <div class="modal-content">
+                    <div class="modal-content" tabindex="0">
                         <!-- Tab Navigation -->
                         <div class="settings-tabs-container">
                             <div class="settings-tabs">
@@ -367,7 +367,8 @@
                                                 <!-- Select field -->
                                                 <template x-if="field.type === 'select'">
                                                     <select :class="field.classes" x-model="field.value"
-                                                        :disabled="field.readonly === true">
+                                                        :disabled="field.readonly === true"
+                                                        :aria-label="field.title || field.id">
                                                         <template x-for="option in field.options" :key="option.value">
                                                             <option :value="option.value" x-text="option.label"
                                                                 :selected="option.value === field.value"></option>
@@ -446,7 +447,7 @@
                                                 <label class="scheduler-form-label">Type</label>
                                                 <div class="scheduler-form-help">Task execution method</div>
                                             </div>
-                                            <select x-model="editingTask.type">
+                                            <select x-model="editingTask.type" aria-label="Task type">
                                                 <option value="scheduled">Scheduled (Cron)</option>
                                                 <option value="adhoc">Ad-hoc (Manual)</option>
                                                 <option value="planned">Planned (Specific Times)</option>
@@ -464,7 +465,8 @@
                                                           :style="editingTask.project?.color ? { backgroundColor: editingTask.project.color } : { border: '1px solid var(--color-border)' }"></span> -->
                                                     <select class="scheduler-project-select"
                                                             x-model="selectedProjectSlug"
-                                                            @change="onProjectSelect($event.target.value)">
+                                                            @change="onProjectSelect($event.target.value)"
+                                                            aria-label="Project">
                                                         <option value="">No project</option>
                                                         <template x-for="proj in projectOptions" :key="proj.name">
                                                             <option :value="proj.name" x-text="proj.title"></option>
@@ -743,7 +745,7 @@
                                                 <div class="scheduler-form-help">Task type cannot be changed after
                                                     creation</div>
                                             </div>
-                                            <select x-model="editingTask.type" disabled>
+                                            <select x-model="editingTask.type" disabled aria-label="Task type">
                                                 <option value="scheduled">Scheduled Task</option>
                                                 <option value="adhoc">Ad-hoc Task</option>
                                                 <option value="planned">Planned Task</option>
@@ -1007,7 +1009,7 @@
                                     <div class="scheduler-filters">
                                         <div class="scheduler-filter-group">
                                             <span class="scheduler-filter-label">Type:</span>
-                                            <select class="scheduler-filter-select" x-model="filterType">
+                                            <select class="scheduler-filter-select" x-model="filterType" aria-label="Filter by type">
                                                 <option value="all">All Types</option>
                                                 <option value="scheduled">Scheduled</option>
                                                 <option value="adhoc">Ad-hoc</option>
@@ -1017,7 +1019,7 @@
 
                                         <div class="scheduler-filter-group">
                                             <span class="scheduler-filter-label">State:</span>
-                                            <select class="scheduler-filter-select" x-model="filterState">
+                                            <select class="scheduler-filter-select" x-model="filterState" aria-label="Filter by state">
                                                 <option value="all">All States</option>
                                                 <option value="idle">Idle</option>
                                                 <option value="running">Running</option>

@@ -143,7 +143,8 @@
                             <span class="backend-switcher-label">Backend</span>
                             <select class="backend-switcher-select"
                                     x-model="$store.modelSelector.currentBackend"
-                                    @change="$store.modelSelector.switchBackend($event.target.value)">
+                                    @change="$store.modelSelector.switchBackend($event.target.value)"
+                                    aria-label="Backend provider">
                                 <template x-for="backend in $store.modelSelector.backendOptions" :key="backend.value">
                                     <option :value="backend.value" x-text="backend.label"></option>
                                 </template>
