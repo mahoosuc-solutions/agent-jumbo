@@ -34,11 +34,19 @@ def _cookie_header(auth_cookies: dict) -> str:
 
 
 def _get_csrf(base_url: str, auth_cookies: dict) -> str:
-    """Fetch a CSRF token for the session."""
-    req = urllib.request.Request(f"{base_url}/csrf_token")
-    req.add_header("Cookie", _cookie_header(auth_cookies))
-    resp = urllib.request.urlopen(req, timeout=5)
-    return json.loads(resp.read())["token"]
+    """Fetch a CSRF token for the session, retrying on 429."""
+    for attempt in range(5):
+        req = urllib.request.Request(f"{base_url}/csrf_token")
+        req.add_header("Cookie", _cookie_header(auth_cookies))
+        try:
+            resp = urllib.request.urlopen(req, timeout=5)
+            return json.loads(resp.read())["token"]
+        except urllib.error.HTTPError as e:
+            if e.code == 429 and attempt < 4:
+                time.sleep(5 * (attempt + 1))
+                continue
+            raise
+    raise RuntimeError("CSRF token fetch failed after retries")
 
 
 def _authed_request(
