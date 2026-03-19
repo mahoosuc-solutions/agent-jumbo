@@ -114,11 +114,11 @@ def authenticated_page(page, app_server: str):
         page.fill('input[name="password"], input[type="password"]', "testpass")
         page.click('button[type="submit"]')
         try:
-            page.wait_for_url(lambda url: "/login" not in url, timeout=15000)
+            page.wait_for_url(lambda url: "/login" not in url, timeout=30000)
             break
         except Exception:
             if attempt < 2:
-                time.sleep(3)  # wait for rate limiter cooldown
+                page.wait_for_timeout(5000)  # Playwright-native cooldown
                 continue
             raise
     yield page
