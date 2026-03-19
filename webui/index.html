@@ -226,24 +226,24 @@
                     <div class="modal-content" tabindex="0">
                         <!-- Tab Navigation -->
                         <div class="settings-tabs-container">
-                            <div class="settings-tabs">
-                                <div class="settings-tab" :class="{'active': activeTab === 'agent'}"
+                            <div class="settings-tabs" tabindex="0" role="tablist" aria-label="Settings categories">
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'agent'}"
                                     @click="switchTab('agent')" title="Agent Settings">Agent Settings</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'external'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'external'}"
                                     @click="switchTab('external')" title="External Services">External Services</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'llm-router'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'llm-router'}"
                                     @click="switchTab('llm-router')" title="LLM Router">LLM Router</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'mcp'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'mcp'}"
                                     @click="switchTab('mcp')" title="MCP">MCP/A2A</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'developer'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'developer'}"
                                     @click="switchTab('developer')" title="Developer">Developer</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'scheduler'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'scheduler'}"
                                     @click="switchTab('scheduler')" title="Task Scheduler">Task Scheduler</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'backup'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'backup'}"
                                     @click="switchTab('backup')" title="Backup & Restore">Backup & Restore</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'platform-info'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'platform-info'}"
                                     @click="switchTab('platform-info')" title="Platform Documentation">Platform Info</div>
-                                <div class="settings-tab" :class="{'active': activeTab === 'security-cockpit'}"
+                                <div class="settings-tab" role="tab" :class="{'active': activeTab === 'security-cockpit'}"
                                     @click="switchTab('security-cockpit')" title="Security Audit Logs">Security Dashboard</div>
                             </div>
                         </div>
