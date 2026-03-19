@@ -1,0 +1,269 @@
+{
+  "$schema": "../schemas/workflow.schema.json",
+  "id": "work_item_implementation",
+  "name": "Work Item Implementation",
+  "version": "1.0.0",
+  "description": "Autonomous implementation of a work queue item: plan, implement, test, review",
+  "stages": [
+    {
+      "id": "plan",
+      "name": "Implementation Planning",
+      "type": "design",
+      "description": "Generate an implementation plan from the work item context",
+      "duration_days": 1,
+      "entry_criteria": [
+        {
+          "id": "work_item_loaded",
+          "description": "Work item details loaded from queue",
+          "required": true,
+          "verification": "automated"
+        }
+      ],
+      "tasks": [
+        {
+          "id": "analyze_context",
+          "name": "Analyze Work Item Context",
+          "description": "Read the work item description, file path, and surrounding code to understand scope",
+          "role": "developer",
+          "priority": 1
+        },
+        {
+          "id": "generate_plan",
+          "name": "Generate Implementation Plan",
+          "description": "Create step-by-step plan with specific files to modify, changes to make, and tests to write",
+          "role": "developer",
+          "dependencies": ["analyze_context"],
+          "priority": 2
+        },
+        {
+          "id": "estimate_effort",
+          "name": "Estimate Effort",
+          "description": "Estimate time and complexity for the implementation",
+          "role": "developer",
+          "dependencies": ["generate_plan"],
+          "priority": 3
+        }
+      ],
+      "deliverables": [
+        {
+          "id": "implementation_plan",
+          "name": "Implementation Plan",
+          "format": "markdown",
+          "required": true
+        }
+      ],
+      "exit_criteria": [
+        {
+          "id": "plan_approved",
+          "description": "Implementation plan reviewed and approved by user",
+          "required": true,
+          "verification": "approval"
+        }
+      ],
+      "approval_required": true,
+      "approvers": ["user"]
+    },
+    {
+      "id": "implement",
+      "name": "Implementation",
+      "type": "mvp",
+      "description": "Execute the approved plan — make code changes",
+      "duration_days": 3,
+      "entry_criteria": [
+        {
+          "id": "plan_approved",
+          "description": "Plan stage approved",
+          "required": true
+        }
+      ],
+      "tasks": [
+        {
+          "id": "create_branch",
+          "name": "Create Feature Branch",
+          "description": "Create a git branch for the work item changes",
+          "role": "developer",
+          "priority": 1
+        },
+        {
+          "id": "make_changes",
+          "name": "Implement Changes",
+          "description": "Execute code changes as described in the plan",
+          "role": "developer",
+          "dependencies": ["create_branch"],
+          "priority": 2
+        },
+        {
+          "id": "write_tests",
+          "name": "Write Tests",
+          "description": "Add or update tests to cover the changes",
+          "role": "developer",
+          "dependencies": ["make_changes"],
+          "priority": 3
+        }
+      ],
+      "deliverables": [
+        {
+          "id": "code_changes",
+          "name": "Code Changes",
+          "format": "code",
+          "required": true
+        },
+        {
+          "id": "test_updates",
+          "name": "Test Updates",
+          "format": "code",
+          "required": false
+        }
+      ],
+      "exit_criteria": [
+        {
+          "id": "changes_made",
+          "description": "All planned changes implemented",
+          "required": true
+        }
+      ],
+      "approval_required": false
+    },
+    {
+      "id": "test",
+      "name": "Testing & Verification",
+      "type": "poc",
+      "description": "Run tests and verify changes work correctly",
+      "duration_days": 1,
+      "entry_criteria": [
+        {
+          "id": "implementation_complete",
+          "description": "Implementation stage completed",
+          "required": true
+        }
+      ],
+      "tasks": [
+        {
+          "id": "run_tests",
+          "name": "Run Test Suite",
+          "description": "Execute relevant tests to verify changes don't break anything",
+          "role": "qa",
+          "priority": 1
+        },
+        {
+          "id": "verify_fix",
+          "name": "Verify Work Item Resolved",
+          "description": "Confirm the original issue (TODO removed, test passing, dep updated) is resolved",
+          "role": "qa",
+          "dependencies": ["run_tests"],
+          "priority": 2
+        },
+        {
+          "id": "generate_diff",
+          "name": "Generate Change Summary",
+          "description": "Create a summary of all changes made for review",
+          "role": "developer",
+          "dependencies": ["verify_fix"],
+          "priority": 3
+        }
+      ],
+      "deliverables": [
+        {
+          "id": "test_results",
+          "name": "Test Results",
+          "format": "markdown",
+          "required": true
+        },
+        {
+          "id": "change_summary",
+          "name": "Change Summary / Diff",
+          "format": "markdown",
+          "required": true
+        }
+      ],
+      "exit_criteria": [
+        {
+          "id": "tests_passing",
+          "description": "All relevant tests passing",
+          "required": true,
+          "verification": "automated"
+        },
+        {
+          "id": "test_approved",
+          "description": "User approves test results before proceeding to review",
+          "required": true,
+          "verification": "approval"
+        }
+      ],
+      "approval_required": true,
+      "approvers": ["user"]
+    },
+    {
+      "id": "review",
+      "name": "Final Review",
+      "type": "production",
+      "description": "Present changes for final approval — commit or discard",
+      "duration_days": 1,
+      "entry_criteria": [
+        {
+          "id": "tests_approved",
+          "description": "Test stage approved",
+          "required": true
+        }
+      ],
+      "tasks": [
+        {
+          "id": "present_diff",
+          "name": "Present Changes",
+          "description": "Show the full diff and change summary to the user",
+          "role": "developer",
+          "priority": 1
+        },
+        {
+          "id": "commit_changes",
+          "name": "Commit & Push",
+          "description": "Commit changes and optionally create a PR",
+          "role": "developer",
+          "dependencies": ["present_diff"],
+          "priority": 2
+        }
+      ],
+      "deliverables": [
+        {
+          "id": "commit",
+          "name": "Git Commit",
+          "format": "code",
+          "required": true
+        }
+      ],
+      "exit_criteria": [
+        {
+          "id": "changes_committed",
+          "description": "Changes committed (or discarded) by user",
+          "required": true,
+          "verification": "approval"
+        }
+      ],
+      "approval_required": true,
+      "approvers": ["user"]
+    }
+  ],
+  "transitions": [
+    {"from": "plan", "to": "implement", "condition": "plan_approved"},
+    {"from": "implement", "to": "test", "condition": "changes_made"},
+    {"from": "test", "to": "review", "condition": "test_approved"},
+    {"from": "review", "to": null, "condition": "changes_committed"}
+  ],
+  "global_context": {
+    "default_roles": ["developer", "qa", "user"],
+    "required_tools": [],
+    "context_keys": ["work_item_id", "title", "description", "file_path", "line_number", "project_path", "source", "source_type"]
+  },
+  "settings": {
+    "parallel_execution": false,
+    "require_approvals": true,
+    "auto_retry": false,
+    "max_retries": 1,
+    "notification_channels": ["dashboard"]
+  },
+  "metadata": {
+    "author": "Work Queue System",
+    "organization": "Agent Jumbo",
+    "created_at": "2026-03-19T00:00:00Z"
+  }
+}

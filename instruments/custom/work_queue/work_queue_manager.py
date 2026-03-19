@@ -292,10 +292,27 @@ class WorkQueueManager:
     # ── Execution bridge (Phase 4) ────────────────────────────────────
 
     def execute_item(self, item_id: int) -> dict[str, Any]:
-        """Start a workflow execution for the given work item."""
+        """Start a workflow execution for the given work item.
+
+        Guards:
+        - Rejects if item not found.
+        - Rejects if item is already in_progress (double-execution guard).
+        - Rejects if item is in a terminal state (done/dismissed).
+        - Sets status to in_progress with timestamp before launching workflow.
+        """
         item = self.db.get_item(item_id)
         if not item:
             return {"success": False, "error": "Item not found"}
+
+        current_status = item.get("status", "discovered")
+        if current_status == "in_progress":
+            return {
+                "success": False,
+                "error": "Item is already in progress",
+                "execution_id": item.get("execution_id"),
+            }
+        if current_status in ("done", "dismissed"):
+            return {"success": False, "error": f"Item is already {current_status}"}
 
         try:
             from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
@@ -331,6 +348,27 @@ class WorkQueueManager:
             return {"success": False, "error": "Workflow engine not available"}
         except Exception as e:
             return {"success": False, "error": str(e)}
+
+    # ── Stale item cleanup ──────────────────────────────────────────────
+
+    def cleanup_stale_items(self, stale_hours: int = 24) -> int:
+        """Reset in_progress items older than stale_hours back to 'queued'.
+
+        This catches items whose workflow execution died without reporting back.
+        Returns the number of items reset.
+        """
+        conn = self.db.get_connection()
+        cursor = conn.execute(
+            "UPDATE work_items SET status = 'queued', execution_status = 'stale', "
+            "updated_at = CURRENT_TIMESTAMP "
+            "WHERE status = 'in_progress' "
+            "AND started_at < datetime('now', ?)",
+            (f"-{stale_hours} hours",),
+        )
+        count = cursor.rowcount
+        conn.commit()
+        conn.close()
+        return count
 
     # ── Settings ──────────────────────────────────────────────────────
 

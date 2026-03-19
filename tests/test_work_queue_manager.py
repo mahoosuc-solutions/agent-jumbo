@@ -344,3 +344,74 @@ class TestWorkQueueManager:
         self.manager.set_setting("my_key", "updated")
         settings2 = self.manager.get_settings()
         assert settings2["my_key"] == "updated"
+
+    # ── execute_item guards (hardening) ──────────────────────────────
+
+    def test_execute_item_rejects_in_progress(self):
+        """execute_item refuses to re-execute an item already in_progress."""
+        with patch(SCAN_ALL_TARGET, return_value=SAMPLE_SCAN_FINDINGS):
+            self.manager.run_codebase_scan(self.project_path)
+        item_id = self.manager.get_items()["items"][0]["id"]
+        self.manager.db.update_item_status(item_id, "in_progress")
+
+        result = self.manager.execute_item(item_id)
+        assert result["success"] is False
+        assert "already in progress" in result["error"].lower()
+
+    def test_execute_item_rejects_done(self):
+        """execute_item refuses to execute items in terminal state."""
+        with patch(SCAN_ALL_TARGET, return_value=SAMPLE_SCAN_FINDINGS):
+            self.manager.run_codebase_scan(self.project_path)
+        item_id = self.manager.get_items()["items"][0]["id"]
+        self.manager.db.update_item_status(item_id, "done")
+
+        result = self.manager.execute_item(item_id)
+        assert result["success"] is False
+        assert "already done" in result["error"].lower()
+
+    def test_execute_item_rejects_dismissed(self):
+        """execute_item refuses to execute dismissed items."""
+        with patch(SCAN_ALL_TARGET, return_value=SAMPLE_SCAN_FINDINGS):
+            self.manager.run_codebase_scan(self.project_path)
+        item_id = self.manager.get_items()["items"][0]["id"]
+        self.manager.db.update_item_status(item_id, "dismissed")
+
+        result = self.manager.execute_item(item_id)
+        assert result["success"] is False
+        assert "already dismissed" in result["error"].lower()
+
+    # ── cleanup_stale_items ──────────────────────────────────────────
+
+    def test_cleanup_stale_items_resets_old_in_progress(self):
+        """cleanup_stale_items resets stale in_progress items to queued."""
+        with patch(SCAN_ALL_TARGET, return_value=SAMPLE_SCAN_FINDINGS):
+            self.manager.run_codebase_scan(self.project_path)
+        item_id = self.manager.get_items()["items"][0]["id"]
+        self.manager.db.update_item_status(item_id, "in_progress")
+
+        # Manually backdate the started_at to 48 hours ago
+        conn = self.manager.db.get_connection()
+        conn.execute(
+            "UPDATE work_items SET started_at = datetime('now', '-48 hours') WHERE id = ?",
+            (item_id,),
+        )
+        conn.commit()
+        conn.close()
+
+        count = self.manager.cleanup_stale_items(stale_hours=24)
+        assert count == 1
+        item = self.manager.db.get_item(item_id)
+        assert item["status"] == "queued"
+        assert item["execution_status"] == "stale"
+
+    def test_cleanup_stale_items_ignores_recent(self):
+        """cleanup_stale_items does not touch recently-started items."""
+        with patch(SCAN_ALL_TARGET, return_value=SAMPLE_SCAN_FINDINGS):
+            self.manager.run_codebase_scan(self.project_path)
+        item_id = self.manager.get_items()["items"][0]["id"]
+        self.manager.db.update_item_status(item_id, "in_progress")
+
+        count = self.manager.cleanup_stale_items(stale_hours=24)
+        assert count == 0
+        item = self.manager.db.get_item(item_id)
+        assert item["status"] == "in_progress"
