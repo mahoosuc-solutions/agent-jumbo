@@ -179,6 +179,116 @@ class WorkQueueManager:
                 count += 1
         return count
 
+    # ── Scheduled scanning (Phase 5) ─────────────────────────────────
+
+    def get_scan_schedule(self) -> dict[str, Any] | None:
+        """Return the current scan schedule config from settings."""
+        enabled = self.db.get_setting("scan_schedule_enabled", "false")
+        cron = self.db.get_setting("scan_schedule_cron", "0 */6 * * *")
+        scan_types = self.db.get_setting("scan_schedule_types", "")
+        project_path = self.db.get_setting("scan_schedule_project_path", "")
+        task_uuid = self.db.get_setting("scan_schedule_task_uuid", "")
+        return {
+            "enabled": enabled == "true",
+            "cron": cron,
+            "scan_types": [s.strip() for s in scan_types.split(",") if s.strip()] if scan_types else [],
+            "project_path": project_path,
+            "task_uuid": task_uuid,
+        }
+
+    async def schedule_scan(
+        self,
+        cron: str = "0 */6 * * *",
+        project_path: str = ".",
+        scan_types: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Register a ScheduledTask that runs work queue scans on a cron schedule."""
+        try:
+            from python.helpers.task_scheduler import (
+                ScheduledTask,
+                TaskSchedule,
+                TaskScheduler,
+            )
+        except ImportError:
+            return {"success": False, "error": "Scheduler not available (crontab not installed)"}
+
+        # Remove existing schedule first
+        await self.unschedule_scan()
+
+        # Parse cron expression
+        parts = cron.split()
+        if len(parts) != 5:
+            return {"success": False, "error": f"Invalid cron expression: {cron} (need 5 fields)"}
+
+        schedule = TaskSchedule(
+            minute=parts[0],
+            hour=parts[1],
+            day=parts[2],
+            month=parts[3],
+            weekday=parts[4],
+        )
+
+        types_str = ",".join(scan_types) if scan_types else ""
+        prompt = (
+            f"Run a work queue scan for project at '{project_path}'.\n"
+            f"Call the work_queue_scan API endpoint with project_path='{project_path}'"
+        )
+        if types_str:
+            prompt += f" and scan_types=[{types_str}]"
+        prompt += ".\nReport the scan results summary."
+
+        task = ScheduledTask.create(
+            name="Work Queue Scan",
+            system_prompt=(
+                "You are a maintenance agent. When triggered, call the work_queue_scan API "
+                "to scan the codebase for TODOs, skipped tests, coverage gaps, and other work items. "
+                "Report a brief summary of what was found."
+            ),
+            prompt=prompt,
+            schedule=schedule,
+        )
+
+        scheduler = TaskScheduler.get()
+        await scheduler.reload()
+        await scheduler.add_task(task)
+
+        # Persist config in work queue settings
+        self.db.set_setting("scan_schedule_enabled", "true")
+        self.db.set_setting("scan_schedule_cron", cron)
+        self.db.set_setting("scan_schedule_types", types_str)
+        self.db.set_setting("scan_schedule_project_path", project_path)
+        self.db.set_setting("scan_schedule_task_uuid", task.uuid)
+
+        return {
+            "success": True,
+            "task_uuid": task.uuid,
+            "cron": cron,
+            "project_path": project_path,
+            "scan_types": scan_types or [],
+        }
+
+    async def unschedule_scan(self) -> dict[str, Any]:
+        """Remove the scheduled scan task if it exists."""
+        task_uuid = self.db.get_setting("scan_schedule_task_uuid", "")
+        if not task_uuid:
+            return {"success": True, "message": "No scan schedule to remove"}
+
+        try:
+            from python.helpers.task_scheduler import TaskScheduler
+
+            scheduler = TaskScheduler.get()
+            await scheduler.reload()
+            await scheduler.remove_task_by_uuid(task_uuid)
+        except ImportError:
+            pass
+        except Exception as e:
+            return {"success": False, "error": f"Failed to remove scheduler task: {e}"}
+
+        self.db.set_setting("scan_schedule_enabled", "false")
+        self.db.set_setting("scan_schedule_task_uuid", "")
+
+        return {"success": True, "message": "Scan schedule removed"}
+
     # ── Execution bridge (Phase 4) ────────────────────────────────────
 
     def execute_item(self, item_id: int) -> dict[str, Any]:

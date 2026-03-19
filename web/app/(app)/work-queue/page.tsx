@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { Card, CardHeader, CardBody } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
@@ -18,6 +18,8 @@ import {
   ExternalLink,
   ChevronLeft,
   ChevronRight,
+  Clock,
+  Power,
 } from 'lucide-react'
 import {
   useWorkQueueDashboard,
@@ -26,6 +28,9 @@ import {
   useUpdateItemStatus,
   useExecuteItem,
   useBulkUpdate,
+  useWorkQueueSchedule,
+  useSetSchedule,
+  useRemoveSchedule,
 } from '@/hooks/useWorkQueue'
 import type { WorkItem } from '@/lib/api/endpoints/work-queue'
 
@@ -81,6 +86,22 @@ export default function WorkQueuePage() {
   const updateStatus = useUpdateItemStatus()
   const executeItem = useExecuteItem()
   const bulkUpdate = useBulkUpdate()
+
+  // Schedule
+  const { data: scheduleData } = useWorkQueueSchedule()
+  const setSchedule = useSetSchedule()
+  const removeSchedule = useRemoveSchedule()
+  const [cronInput, setCronInput] = useState('')
+  const schedule = scheduleData?.schedule
+
+  const handleToggleSchedule = useCallback(() => {
+    if (schedule?.enabled) {
+      removeSchedule.mutate()
+    } else {
+      const cron = cronInput.trim() || '0 */6 * * *'
+      setSchedule.mutate({ cron, projectPath: projectPath || undefined })
+    }
+  }, [schedule?.enabled, cronInput, projectPath, removeSchedule, setSchedule])
 
   const items = itemsData?.items ?? []
   const totalItems = itemsData?.total ?? 0
@@ -160,6 +181,41 @@ export default function WorkQueuePage() {
           </Card>
         ))}
       </div>
+
+      {/* Schedule Bar */}
+      <Card>
+        <CardBody>
+          <div className="flex items-center gap-3 flex-wrap">
+            <Clock className="h-4 w-4 text-[var(--text-secondary)]" />
+            <span className="text-sm font-medium text-[var(--text-primary)]">Scheduled Scan</span>
+            {schedule?.enabled ? (
+              <Badge variant="success">Active</Badge>
+            ) : (
+              <Badge variant="neutral">Off</Badge>
+            )}
+            <input
+              type="text"
+              aria-label="Cron expression"
+              placeholder={schedule?.cron || '0 */6 * * *'}
+              value={cronInput}
+              onChange={(e) => setCronInput(e.target.value)}
+              className="text-sm rounded-md border border-[var(--border-primary)] bg-[var(--surface-primary)] text-[var(--text-primary)] px-2 py-1 w-40 font-mono"
+            />
+            <span className="text-xs text-[var(--text-tertiary)]">
+              {schedule?.enabled ? `cron: ${schedule.cron}` : 'e.g. 0 */6 * * * (every 6h)'}
+            </span>
+            <Button
+              size="sm"
+              variant={schedule?.enabled ? 'secondary' : 'primary'}
+              onClick={handleToggleSchedule}
+              disabled={setSchedule.isPending || removeSchedule.isPending}
+            >
+              <Power className="h-3.5 w-3.5" />
+              {schedule?.enabled ? 'Disable' : 'Enable'}
+            </Button>
+          </div>
+        </CardBody>
+      </Card>
 
       {/* Filters */}
       <div className="flex items-center gap-2 flex-wrap">

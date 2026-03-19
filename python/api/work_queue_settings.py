@@ -52,6 +52,25 @@ class WorkQueueSettings(ApiHandler):
                 count = manager.recalculate_priorities()
                 return {"success": True, "recalculated": count}
 
+            if action == "get_schedule":
+                schedule = manager.get_scan_schedule()
+                return {"success": True, "schedule": schedule}
+
+            if action == "set_schedule":
+                cron = input.get("cron", "0 */6 * * *")
+                project_path = input.get("project_path", ".")
+                scan_types = input.get("scan_types")
+                result = await manager.schedule_scan(
+                    cron=cron,
+                    project_path=project_path,
+                    scan_types=scan_types,
+                )
+                return result
+
+            if action == "remove_schedule":
+                result = await manager.unschedule_scan()
+                return result
+
             return {"success": False, "error": f"Unknown action: {action}"}
 
         except Exception as e:

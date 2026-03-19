@@ -197,3 +197,47 @@ export function setWorkQueueSetting(key: string, value: string) {
     body: { action: 'set', key, value },
   })
 }
+
+// ── Schedule ────────────────────────────────────────
+
+const ScheduleSchema = z.object({
+  enabled: z.boolean(),
+  cron: z.string(),
+  scan_types: z.array(z.string()),
+  project_path: z.string(),
+  task_uuid: z.string(),
+})
+
+const ScheduleResponseSchema = z.object({
+  success: z.boolean(),
+  schedule: ScheduleSchema,
+}).passthrough()
+
+export type ScanSchedule = z.infer<typeof ScheduleSchema>
+
+export function getWorkQueueSchedule() {
+  return validatedApi('work_queue_settings', ScheduleResponseSchema, {
+    body: { action: 'get_schedule' },
+  })
+}
+
+export function setWorkQueueSchedule(params: {
+  cron: string
+  projectPath?: string
+  scanTypes?: string[]
+}) {
+  return validatedApi('work_queue_settings', OkResponseSchema.passthrough(), {
+    body: {
+      action: 'set_schedule',
+      cron: params.cron,
+      project_path: params.projectPath,
+      scan_types: params.scanTypes,
+    },
+  })
+}
+
+export function removeWorkQueueSchedule() {
+  return validatedApi('work_queue_settings', OkResponseSchema.passthrough(), {
+    body: { action: 'remove_schedule' },
+  })
+}

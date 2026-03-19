@@ -12,6 +12,9 @@ import {
   getWorkQueueProjects,
   registerWorkQueueProject,
   removeWorkQueueProject,
+  getWorkQueueSchedule,
+  setWorkQueueSchedule,
+  removeWorkQueueSchedule,
 } from '@/lib/api/endpoints/work-queue'
 
 const KEYS = {
@@ -19,6 +22,7 @@ const KEYS = {
   items: (params: Record<string, unknown>) => ['work-queue', 'items', params] as const,
   item: (id: number) => ['work-queue', 'item', id] as const,
   projects: ['work-queue', 'projects'] as const,
+  schedule: ['work-queue', 'schedule'] as const,
 }
 
 export function useWorkQueueDashboard(projectPath?: string) {
@@ -122,6 +126,36 @@ export function useRemoveProject() {
     mutationFn: (path: string) => removeWorkQueueProject(path),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['work-queue'] })
+    },
+  })
+}
+
+// ── Schedule hooks ──────────────────────────────────
+
+export function useWorkQueueSchedule() {
+  return useQuery({
+    queryKey: KEYS.schedule,
+    queryFn: getWorkQueueSchedule,
+  })
+}
+
+export function useSetSchedule() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (params: { cron: string; projectPath?: string; scanTypes?: string[] }) =>
+      setWorkQueueSchedule(params),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.schedule })
+    },
+  })
+}
+
+export function useRemoveSchedule() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => removeWorkQueueSchedule(),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: KEYS.schedule })
     },
   })
 }
