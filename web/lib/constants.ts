@@ -1,7 +1,7 @@
 import {
   MessageSquare, LayoutDashboard, Rocket, Workflow, Calendar,
   MessageCircle, Puzzle, Eye, GitBranch, Brain, FolderOpen,
-  Archive, Users, Settings, type LucideIcon,
+  Archive, Users, Settings, ClipboardList, type LucideIcon,
 } from 'lucide-react'
 
 export const SITE_NAME = 'Agent Jumbo'
@@ -65,6 +65,7 @@ export const APP_NAVIGATION: NavGroup[] = [
     items: [
       { label: 'Deployments', href: '/deployments', icon: Rocket },
       { label: 'Workflows', href: '/workflows', icon: Workflow },
+      { label: 'Work Queue', href: '/work-queue', icon: ClipboardList },
       { label: 'Scheduler', href: '/scheduler', icon: Calendar },
     ],
   },
