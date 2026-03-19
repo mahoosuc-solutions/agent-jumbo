@@ -77,7 +77,7 @@ def test_login_rate_limiting(app_server):
     # use authenticated_page (which calls POST /login) don't get 429.
     import time
 
-    time.sleep(15)
+    time.sleep(30)
 
 
 # ---------------------------------------------------------------------------
@@ -142,18 +142,15 @@ def test_chat_send_message(authenticated_page, app_server):
 
     # Wait for the chat input to appear (nested x-component loading)
     textarea = page.locator("#chat-input, textarea, #visual-input").first
-    try:
-        textarea.wait_for(state="attached", timeout=15000)
-    except Exception:
-        pytest.skip("Chat input component did not load (x-component async loading)")
+    textarea.wait_for(state="attached", timeout=30000)
 
     textarea.fill("Hello from e2e test")
 
-    send_btn = page.locator("#send-button").first
-    try:
-        send_btn.wait_for(state="attached", timeout=15000)
-    except Exception:
-        pytest.skip("Send button component did not load (x-component async loading)")
+    # Wait for send button with broader selectors for async-loaded components
+    send_btn = page.locator(
+        "#send-button, button:has-text('Send'), [aria-label*='send' i], form button[type='submit']"
+    ).first
+    send_btn.wait_for(state="attached", timeout=30000)
 
     send_btn.click(force=True)
     page.wait_for_timeout(3000)
@@ -206,10 +203,7 @@ def test_upload_allowed_file(authenticated_page, app_server):
 
     # #file-input is display:none inside nested x-component (chat-bar-input.html)
     file_input = page.locator("#file-input, input[type='file']").first
-    try:
-        file_input.wait_for(state="attached", timeout=15000)
-    except Exception:
-        pytest.skip("File upload input not loaded (x-component async loading)")
+    file_input.wait_for(state="attached", timeout=30000)
 
     with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, prefix="e2e_upload_") as f:
         f.write("E2E upload test content.")
