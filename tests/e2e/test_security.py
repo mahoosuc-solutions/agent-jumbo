@@ -520,6 +520,12 @@ def test_rate_limit_upload(app_server, auth_cookies):
             break
     assert got_429, "Expected 429 after 11 rapid upload attempts"
 
+    # Cooldown: rate limiter has a 1-minute window. Wait so subsequent tests
+    # that need CSRF tokens or authenticated requests don't get 429.
+    import time
+
+    time.sleep(30)
+
 
 # ---------------------------------------------------------------------------
 # 15. CORS not wildcard
