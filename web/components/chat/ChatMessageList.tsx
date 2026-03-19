@@ -18,7 +18,7 @@ export function ChatMessageList({ logs, autoScroll = true }: ChatMessageListProp
   }, [logs.length, autoScroll])
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" role="log" aria-live="polite" aria-label="Chat messages">
+    <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3" role="log" aria-live="polite" aria-label="Chat messages" tabIndex={0}>
       {logs.map((log) => (
         <ChatMessage key={log.id ?? log.no} log={log} />
       ))}

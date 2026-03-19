@@ -27,7 +27,7 @@ export function ChatSidebar({ contexts, activeContextId, onSelect, onCreate, onD
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-2 space-y-0.5">
+      <div className="flex-1 overflow-y-auto p-2 space-y-0.5" tabIndex={0} role="list" aria-label="Chat conversations">
         {contexts.map((ctx) => (
           <button
             key={ctx.id}
