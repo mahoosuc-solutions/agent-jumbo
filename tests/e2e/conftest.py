@@ -148,6 +148,13 @@ def warmup(app_server: str, auth_cookies: dict):
             pass
 
 
+@pytest.fixture(autouse=True, scope="module")
+def _rate_limit_cooldown():
+    """Brief cooldown between test modules to avoid rate-limiter buildup."""
+    yield
+    time.sleep(1)
+
+
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield

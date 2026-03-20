@@ -75,6 +75,26 @@ def api_post(app_server: str, auth_cookies: dict, endpoint: str, body: dict) -> 
         raise
 
 
+def api_post_tolerant(
+    app_server: str,
+    auth_cookies: dict,
+    endpoint: str,
+    body: dict,
+    retries: int = 3,
+    backoff: float = 5.0,
+) -> dict:
+    """POST with retry on 429 rate-limit responses."""
+    for attempt in range(retries):
+        try:
+            return api_post(app_server, auth_cookies, endpoint, body)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429 and attempt < retries - 1:
+                time.sleep(backoff * (attempt + 1))
+                continue
+            raise
+    raise AssertionError(f"api_post_tolerant failed after {retries} retries")
+
+
 def api_get(app_server: str, auth_cookies: dict, endpoint: str) -> dict:
     """GET /<endpoint> with auth cookies. Returns parsed JSON."""
     req = urllib.request.Request(f"{app_server}/{endpoint}", method="GET")
