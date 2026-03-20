@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import hmac
+import json
 import time
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -42,8 +44,28 @@ class SignalAdapter(ChannelBridge):
         )
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        # TODO: POST to {signal_api_url}/v2/send with JSON body
-        return {"recipient": target_id, "text": text, "ok": True}
+        api_url = self.config.get("signal_api_url", "").rstrip("/")
+        sender_number = self.config.get("signal_sender_number", "")
+        if not api_url or not sender_number:
+            return {"ok": False, "error": "missing signal_api_url or signal_sender_number"}
+        url = f"{api_url}/v2/send"
+        payload = json.dumps({
+            "message": text,
+            "number": sender_number,
+            "recipients": [target_id],
+        }).encode()
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={"Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                result = json.loads(resp.read().decode())
+            return {"ok": True, **result}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         # signal-cli REST API does not natively sign webhooks;
@@ -55,8 +77,20 @@ class SignalAdapter(ChannelBridge):
         return hmac.compare_digest(secret, header_token)
 
     async def connect(self) -> None:
-        # TODO: verify signal_api_url reachability and phone registration
-        self.status = ChannelStatus.CONNECTED
+        api_url = self.config.get("signal_api_url", "").rstrip("/")
+        if not api_url:
+            self.status = ChannelStatus.ERROR
+            return
+        url = f"{api_url}/v1/about"
+        req = urllib.request.Request(url)
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    self.status = ChannelStatus.CONNECTED
+                else:
+                    self.status = ChannelStatus.ERROR
+        except Exception:
+            self.status = ChannelStatus.ERROR
 
     async def disconnect(self) -> None:
         self.status = ChannelStatus.DISCONNECTED

@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import time
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -44,8 +46,34 @@ class ViberAdapter(ChannelBridge):
         )
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        # TODO: POST to https://chatapi.viber.com/pa/send_message
-        return {"receiver": target_id, "text": text, "ok": True}
+        auth_token = self.config.get("viber_auth_token", "")
+        sender_name = self.config.get("viber_sender_name", "Bot")
+        if not auth_token:
+            return {"ok": False, "error": "missing viber_auth_token"}
+        url = "https://chatapi.viber.com/pa/send_message"
+        payload = json.dumps({
+            "receiver": target_id,
+            "min_api_version": 1,
+            "sender": {"name": sender_name},
+            "tracking_data": kwargs.get("tracking_data", ""),
+            "type": "text",
+            "text": text,
+        }).encode()
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "X-Viber-Auth-Token": auth_token,
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                result = json.loads(resp.read().decode())
+            return {"ok": result.get("status") == 0, **result}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         auth_token = self.config.get("viber_auth_token", "")
@@ -56,9 +84,74 @@ class ViberAdapter(ChannelBridge):
         return hmac.compare_digest(computed, signature)
 
     async def connect(self) -> None:
-        # TODO: POST to https://chatapi.viber.com/pa/set_webhook
-        self.status = ChannelStatus.CONNECTED
+        auth_token = self.config.get("viber_auth_token", "")
+        webhook_url = self.config.get("viber_webhook_url", "")
+        if not auth_token:
+            self.status = ChannelStatus.ERROR
+            return
+        if webhook_url:
+            url = "https://chatapi.viber.com/pa/set_webhook"
+            payload = json.dumps({
+                "url": webhook_url,
+                "event_types": ["delivered", "seen", "failed", "message", "conversation_started"],
+            }).encode()
+            req = urllib.request.Request(
+                url,
+                data=payload,
+                headers={
+                    "X-Viber-Auth-Token": auth_token,
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=10) as resp:
+                    result = json.loads(resp.read().decode())
+                if result.get("status") == 0:
+                    self.status = ChannelStatus.CONNECTED
+                else:
+                    self.status = ChannelStatus.ERROR
+                return
+            except Exception:
+                self.status = ChannelStatus.ERROR
+                return
+        # No webhook URL configured -- just verify account info
+        url = "https://chatapi.viber.com/pa/get_account_info"
+        req = urllib.request.Request(
+            url,
+            data=b"{}",
+            headers={
+                "X-Viber-Auth-Token": auth_token,
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                result = json.loads(resp.read().decode())
+            if result.get("status") == 0:
+                self.status = ChannelStatus.CONNECTED
+            else:
+                self.status = ChannelStatus.ERROR
+        except Exception:
+            self.status = ChannelStatus.ERROR
 
     async def disconnect(self) -> None:
-        # TODO: remove webhook via Viber API
+        auth_token = self.config.get("viber_auth_token", "")
+        if auth_token:
+            url = "https://chatapi.viber.com/pa/set_webhook"
+            payload = json.dumps({"url": ""}).encode()
+            req = urllib.request.Request(
+                url,
+                data=payload,
+                headers={
+                    "X-Viber-Auth-Token": auth_token,
+                    "Content-Type": "application/json",
+                },
+                method="POST",
+            )
+            try:
+                urllib.request.urlopen(req, timeout=10)
+            except Exception:
+                pass
         self.status = ChannelStatus.DISCONNECTED

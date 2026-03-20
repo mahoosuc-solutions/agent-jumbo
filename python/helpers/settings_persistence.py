@@ -311,10 +311,9 @@ def _apply_settings(previous: Settings | None):
 
             EventLoopThread("Background").run_coroutine(update_mcp_settings(config.mcp_servers))
 
-        # update token in mcp server
-        current_token = (
-            create_auth_token()
-        )  # TODO - ugly, token in settings is generated from dotenv and does not always correspond
+        # update token in mcp server — use the token already computed during
+        # _normalize_settings (line 117) so it stays consistent with what's in _settings
+        current_token = _settings["mcp_server_token"]
         if not previous or current_token != previous["mcp_server_token"]:
 
             async def update_mcp_token(token: str):

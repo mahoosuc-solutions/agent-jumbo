@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import hmac
+import json
 import time
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -49,16 +51,36 @@ class MattermostAdapter(ChannelBridge):
         )
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        # TODO: POST to {mattermost_url}/api/v4/posts
-        return {"channel_id": target_id, "message": text, "ok": True}
+        base_url = self.config.get("mattermost_url", "").rstrip("/")
+        token = self.config.get("mattermost_token", "")
+        if not base_url or not token:
+            return {"ok": False, "error": "missing mattermost_url or mattermost_token"}
+        url = f"{base_url}/api/v4/posts"
+        payload = json.dumps({
+            "channel_id": target_id,
+            "message": text,
+        }).encode()
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                result = json.loads(resp.read().decode())
+            return {"ok": True, **result}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         token = self.config.get("mattermost_webhook_token", "")
         if not token:
             return True
         # Mattermost outgoing webhooks include a token field in the payload
-        import json
-
         try:
             payload = json.loads(body)
             return hmac.compare_digest(token, payload.get("token", ""))
@@ -66,8 +88,24 @@ class MattermostAdapter(ChannelBridge):
             return False
 
     async def connect(self) -> None:
-        # TODO: verify mattermost_token against {mattermost_url}/api/v4/users/me
-        self.status = ChannelStatus.CONNECTED
+        base_url = self.config.get("mattermost_url", "").rstrip("/")
+        token = self.config.get("mattermost_token", "")
+        if not base_url or not token:
+            self.status = ChannelStatus.ERROR
+            return
+        url = f"{base_url}/api/v4/users/me"
+        req = urllib.request.Request(
+            url,
+            headers={"Authorization": f"Bearer {token}"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    self.status = ChannelStatus.CONNECTED
+                else:
+                    self.status = ChannelStatus.ERROR
+        except Exception:
+            self.status = ChannelStatus.ERROR
 
     async def disconnect(self) -> None:
         self.status = ChannelStatus.DISCONNECTED

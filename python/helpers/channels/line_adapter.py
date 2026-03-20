@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import time
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -47,8 +49,39 @@ class LineAdapter(ChannelBridge):
         )
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        # TODO: POST to https://api.line.me/v2/bot/message/push
-        return {"to": target_id, "text": text, "ok": True}
+        access_token = self.config.get("line_channel_access_token", "")
+        if not access_token:
+            return {"ok": False, "error": "missing line_channel_access_token"}
+        # Use reply if reply_token provided, else push
+        reply_token = kwargs.get("reply_token", "")
+        if reply_token:
+            url = "https://api.line.me/v2/bot/message/reply"
+            payload = json.dumps({
+                "replyToken": reply_token,
+                "messages": [{"type": "text", "text": text}],
+            }).encode()
+        else:
+            url = "https://api.line.me/v2/bot/message/push"
+            payload = json.dumps({
+                "to": target_id,
+                "messages": [{"type": "text", "text": text}],
+            }).encode()
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                resp_body = resp.read().decode()
+                result = json.loads(resp_body) if resp_body else {}
+            return {"ok": True, **result}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         channel_secret = self.config.get("line_channel_secret", "")
@@ -62,8 +95,23 @@ class LineAdapter(ChannelBridge):
         return hmac.compare_digest(computed, signature)
 
     async def connect(self) -> None:
-        # TODO: verify line_channel_access_token with LINE API
-        self.status = ChannelStatus.CONNECTED
+        access_token = self.config.get("line_channel_access_token", "")
+        if not access_token:
+            self.status = ChannelStatus.ERROR
+            return
+        url = "https://api.line.me/v2/bot/info"
+        req = urllib.request.Request(
+            url,
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    self.status = ChannelStatus.CONNECTED
+                else:
+                    self.status = ChannelStatus.ERROR
+        except Exception:
+            self.status = ChannelStatus.ERROR
 
     async def disconnect(self) -> None:
         self.status = ChannelStatus.DISCONNECTED

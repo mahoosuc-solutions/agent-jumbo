@@ -4,7 +4,9 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import json
 import time
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -49,7 +51,33 @@ class WhatsAppAdapter(ChannelBridge):
         )
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        return {"to": target_id, "text": text, "sent": True}
+        access_token = self.config.get("whatsapp_access_token", "")
+        phone_number_id = self.config.get("whatsapp_phone_number_id", "")
+        api_version = self.config.get("whatsapp_api_version", "v17.0")
+        if not access_token or not phone_number_id:
+            return {"ok": False, "error": "missing whatsapp_access_token or whatsapp_phone_number_id"}
+        url = f"https://graph.facebook.com/{api_version}/{phone_number_id}/messages"
+        payload = json.dumps({
+            "messaging_product": "whatsapp",
+            "to": target_id,
+            "type": "text",
+            "text": {"body": text},
+        }).encode()
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                result = json.loads(resp.read().decode())
+            return {"ok": True, **result}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         app_secret = self.config.get("app_secret", "")
@@ -63,7 +91,25 @@ class WhatsAppAdapter(ChannelBridge):
             return False
 
     async def connect(self) -> None:
-        self.status = ChannelStatus.CONNECTED
+        access_token = self.config.get("whatsapp_access_token", "")
+        phone_number_id = self.config.get("whatsapp_phone_number_id", "")
+        api_version = self.config.get("whatsapp_api_version", "v17.0")
+        if not access_token or not phone_number_id:
+            self.status = ChannelStatus.ERROR
+            return
+        url = f"https://graph.facebook.com/{api_version}/{phone_number_id}"
+        req = urllib.request.Request(
+            url,
+            headers={"Authorization": f"Bearer {access_token}"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    self.status = ChannelStatus.CONNECTED
+                else:
+                    self.status = ChannelStatus.ERROR
+        except Exception:
+            self.status = ChannelStatus.ERROR
 
     async def disconnect(self) -> None:
         self.status = ChannelStatus.DISCONNECTED

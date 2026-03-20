@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import hmac
+import json
 import time
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -45,8 +47,34 @@ class RocketChatAdapter(ChannelBridge):
         )
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
-        # TODO: POST to {rocketchat_url}/api/v1/chat.sendMessage
-        return {"rid": target_id, "msg": text, "ok": True}
+        base_url = self.config.get("rocketchat_url", "").rstrip("/")
+        auth_token = self.config.get("rocketchat_auth_token", "")
+        user_id = self.config.get("rocketchat_user_id", "")
+        if not all([base_url, auth_token, user_id]):
+            return {"ok": False, "error": "missing rocketchat_url, rocketchat_auth_token, or rocketchat_user_id"}
+        url = f"{base_url}/api/v1/chat.sendMessage"
+        payload = json.dumps({
+            "message": {
+                "rid": target_id,
+                "msg": text,
+            },
+        }).encode()
+        req = urllib.request.Request(
+            url,
+            data=payload,
+            headers={
+                "X-Auth-Token": auth_token,
+                "X-User-Id": user_id,
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=15) as resp:
+                result = json.loads(resp.read().decode())
+            return {"ok": result.get("success", False), **result}
+        except Exception as exc:
+            return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         token = self.config.get("rocketchat_webhook_token", "")
@@ -56,8 +84,28 @@ class RocketChatAdapter(ChannelBridge):
         return hmac.compare_digest(token, header_token)
 
     async def connect(self) -> None:
-        # TODO: authenticate with rocketchat_url using user_id + auth_token
-        self.status = ChannelStatus.CONNECTED
+        base_url = self.config.get("rocketchat_url", "").rstrip("/")
+        auth_token = self.config.get("rocketchat_auth_token", "")
+        user_id = self.config.get("rocketchat_user_id", "")
+        if not all([base_url, auth_token, user_id]):
+            self.status = ChannelStatus.ERROR
+            return
+        url = f"{base_url}/api/v1/me"
+        req = urllib.request.Request(
+            url,
+            headers={
+                "X-Auth-Token": auth_token,
+                "X-User-Id": user_id,
+            },
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                if resp.status == 200:
+                    self.status = ChannelStatus.CONNECTED
+                else:
+                    self.status = ChannelStatus.ERROR
+        except Exception:
+            self.status = ChannelStatus.ERROR
 
     async def disconnect(self) -> None:
         self.status = ChannelStatus.DISCONNECTED
