@@ -155,7 +155,7 @@ class State:
                 extend_system_message=self.agent.read_prompt("prompts/browser_agent.system.md"),
                 controller=controller,
                 enable_memory=False,  # Disable memory to avoid state conflicts
-                llm_timeout=3000,  # TODO rem
+                llm_timeout=3000,
                 sensitive_data=cast("dict[str, str | dict[str, str]] | None", secrets_dict or {}),  # Pass secrets
             )
         except Exception as e:

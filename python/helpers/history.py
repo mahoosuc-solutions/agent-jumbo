@@ -166,7 +166,6 @@ class Topic(Record):
         )
         large_msgs = []
         for m in (m for m in self.messages if not m.summary):
-            # TODO refactor this
             out = m.output()
             text = output_text(out)
             tok = m.get_tokens()
@@ -211,8 +210,7 @@ class Topic(Record):
         return False
 
     async def summarize_messages(self, messages: list[Message]):
-        # FIXME: vision bytes are sent to utility LLM, send summary instead
-        msg_txt = [m.output_text() for m in messages]
+        msg_txt = [_strip_vision_for_summary(m.output_text()) for m in messages]
         summary = await self.history.agent.call_utility_model(
             system=self.history.agent.read_prompt("fw.topic_summary.sys.md"),
             message=self.history.agent.read_prompt("fw.topic_summary.msg.md", content=msg_txt),
@@ -542,6 +540,17 @@ def _merge_properties(a: dict[str, MessageContent], b: dict[str, MessageContent]
 
 def _is_raw_message(obj: object) -> bool:
     return isinstance(obj, Mapping) and "raw_content" in obj
+
+
+def _strip_vision_for_summary(text: str) -> str:
+    """Remove base64 image data from text before sending to utility LLM for summarization.
+
+    Vision messages contain data:image/...;base64,<large blob> which wastes tokens
+    when sent to the utility model. Replace with a short placeholder.
+    """
+    import re
+
+    return re.sub(r"data:image/[^;]+;base64,[A-Za-z0-9+/=]+", "[image]", text)
 
 
 def _json_dumps(obj):
