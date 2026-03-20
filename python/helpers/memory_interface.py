@@ -5,7 +5,7 @@ Provides a single surface for save/recall/connect/get_context that
 coordinates vector search with graph traversal and temporal scoring.
 """
 
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from typing import Any
 
 from python.helpers.knowledge_graph import (
@@ -18,7 +18,7 @@ from python.helpers.temporal_filter import ScoringWeights, rank_nodes, score
 
 
 def _utcnow() -> datetime:
-    return datetime.now(UTC)
+    return datetime.now(timezone.utc)
 
 
 class MemoryInterface:

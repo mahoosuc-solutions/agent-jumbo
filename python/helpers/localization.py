@@ -1,4 +1,4 @@
-from datetime import UTC, datetime, timedelta, timezone as dt_timezone
+from datetime import datetime, timedelta, timezone
 
 import pytz  # type: ignore
 
@@ -8,8 +8,8 @@ from python.helpers.print_style import PrintStyle
 
 class Localization:
     """
-    Localization class for handling timezone conversions between UTC and local time.
-    Now stores a fixed UTC offset (in minutes) derived from the provided timezone name
+    Localization class for handling timezone conversions between timezone.utc and local time.
+    Now stores a fixed timezone.utc offset (in minutes) derived from the provided timezone name
     to avoid noisy updates when equivalent timezones share the same offset.
     """
 
@@ -104,9 +104,9 @@ class Localization:
 
     def localtime_str_to_utc_dt(self, localtime_str: str | None) -> datetime | None:
         """
-        Convert a local time ISO string to a UTC datetime object.
+        Convert a local time ISO string to a timezone.utc datetime object.
         Returns None if input is None or invalid.
-        When input lacks tzinfo, assume the configured fixed UTC offset.
+        When input lacks tzinfo, assume the configured fixed timezone.utc offset.
         """
         if not localtime_str:
             return None
@@ -122,25 +122,25 @@ class Localization:
                 if local_datetime_obj.tzinfo is None:
                     # If no timezone info, assume fixed offset
                     local_datetime_obj = local_datetime_obj.replace(
-                        tzinfo=dt_timezone(timedelta(minutes=self._offset_minutes))
+                        tzinfo=timezone(timedelta(minutes=self._offset_minutes))
                     )
             except ValueError:
                 # If timezone parsing fails, try without timezone
                 base = normalized.split("+")[0]
                 local_datetime_obj = datetime.fromisoformat(base)
                 local_datetime_obj = local_datetime_obj.replace(
-                    tzinfo=dt_timezone(timedelta(minutes=self._offset_minutes))
+                    tzinfo=timezone(timedelta(minutes=self._offset_minutes))
                 )
 
             # Convert to UTC
-            return local_datetime_obj.astimezone(UTC)
+            return local_datetime_obj.astimezone(timezone.utc)
         except Exception as e:
             PrintStyle.error(f"Error converting localtime string to UTC: {e}")
             return None
 
     def utc_dt_to_localtime_str(self, utc_dt: datetime | None, sep: str = "T", timespec: str = "auto") -> str | None:
         """
-        Convert a UTC datetime object to a local time ISO string using the fixed UTC offset.
+        Convert a timezone.utc datetime object to a local time ISO string using the fixed timezone.utc offset.
         Returns None if input is None.
         """
         if utc_dt is None:
@@ -152,12 +152,12 @@ class Localization:
         try:
             # Ensure datetime is timezone aware in UTC
             if utc_dt.tzinfo is None:
-                utc_dt = utc_dt.replace(tzinfo=UTC)
+                utc_dt = utc_dt.replace(tzinfo=timezone.utc)
             else:
-                utc_dt = utc_dt.astimezone(UTC)
+                utc_dt = utc_dt.astimezone(timezone.utc)
 
             # Convert to local time using fixed offset
-            local_tz = dt_timezone(timedelta(minutes=self._offset_minutes))
+            local_tz = timezone(timedelta(minutes=self._offset_minutes))
             local_datetime_obj = utc_dt.astimezone(local_tz)
             return local_datetime_obj.isoformat(sep=sep, timespec=timespec)
         except Exception as e:
@@ -178,9 +178,9 @@ class Localization:
         try:
             # Ensure datetime is timezone aware (if not, assume UTC)
             if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=UTC)
+                dt = dt.replace(tzinfo=timezone.utc)
 
-            local_tz = dt_timezone(timedelta(minutes=self._offset_minutes))
+            local_tz = timezone(timedelta(minutes=self._offset_minutes))
             local_dt = dt.astimezone(local_tz)
             return local_dt.isoformat()
         except Exception as e:

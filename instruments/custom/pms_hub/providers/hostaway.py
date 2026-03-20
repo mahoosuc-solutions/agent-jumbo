@@ -4,7 +4,7 @@ Integration with Hostaway's REST API for property management and channel coordin
 API: https://api.hostaway.com/documentation
 """
 
-from datetime import UTC, date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import Any
 
@@ -529,7 +529,7 @@ class HostawayProvider(PMSProvider):
             square_feet=data.get("squareMeters"),
             base_price=Decimal(str(data.get("basePrice", 0))),
             currency=data.get("currency", "USD"),
-            synced_at=datetime.now(UTC),
+            synced_at=datetime.now(timezone.utc),
         )
 
     def _transform_reservation(self, data: dict[str, Any]) -> Reservation:
@@ -570,7 +570,7 @@ class HostawayProvider(PMSProvider):
             guest_phone=data.get("guestPhone"),
             special_requests=data.get("specialRequests"),
             source="pms",
-            synced_at=datetime.now(UTC),
+            synced_at=datetime.now(timezone.utc),
         )
 
     def _transform_message(self, data: dict[str, Any]) -> Message:
@@ -596,7 +596,7 @@ class HostawayProvider(PMSProvider):
             is_read=bool(data.get("isRead")),
             requires_response=not bool(data.get("isHost")),
             created_at=parse_iso_datetime(data.get("createdAt")),
-            synced_at=datetime.now(UTC),
+            synced_at=datetime.now(timezone.utc),
         )
 
     def _transform_review(self, data: dict[str, Any]) -> Review:
@@ -616,7 +616,7 @@ class HostawayProvider(PMSProvider):
                 "value": float(data.get("value", 5.0)),
             },
             created_at=parse_iso_datetime(data.get("createdAt")),
-            synced_at=datetime.now(UTC),
+            synced_at=datetime.now(timezone.utc),
         )
 
     def _transform_calendar(self, data: dict[str, Any], property_id: str) -> Calendar:
@@ -630,7 +630,7 @@ class HostawayProvider(PMSProvider):
             price=Decimal(str(data.get("price"))) if data.get("price") else None,
             blocked_reason=data.get("blockedReason"),
             min_nights=int(data.get("minimumStay", 1)),
-            synced_at=datetime.now(UTC),
+            synced_at=datetime.now(timezone.utc),
         )
 
     async def __aenter__(self):

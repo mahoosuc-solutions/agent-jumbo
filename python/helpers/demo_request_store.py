@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import json
 import os
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -25,7 +25,7 @@ def create_demo_request(payload: dict[str, Any]) -> dict[str, Any]:
 
     record: dict[str, Any] = {
         "id": f"dr_{uuid4().hex[:12]}",
-        "created_at": datetime.now(UTC).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat(),
     }
     record.update(payload)
 

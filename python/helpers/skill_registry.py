@@ -5,7 +5,7 @@ from __future__ import annotations
 import contextlib
 import os
 from dataclasses import dataclass, field
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Literal
 
@@ -89,7 +89,7 @@ def _manifest_from_frontmatter(fm: dict, path: Path) -> SkillManifest | None:
         capabilities=capabilities,
         path=path,
         enabled=fm.get("enabled", True),
-        installed_at=datetime.now(UTC),
+        installed_at=datetime.now(timezone.utc),
         description=fm.get("description", ""),
     )
 
@@ -135,7 +135,7 @@ class SkillRegistry:
 
     def install(self, manifest: SkillManifest) -> None:
         if manifest.installed_at is None:
-            manifest.installed_at = datetime.now(UTC)
+            manifest.installed_at = datetime.now(timezone.utc)
         self._skills[manifest.name] = manifest
 
     def uninstall(self, name: str) -> None:

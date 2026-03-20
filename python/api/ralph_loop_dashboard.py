@@ -4,7 +4,7 @@ Provides aggregated data for loop stats, active loops, and recent completions.
 """
 
 import os
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from python.helpers import files
 from python.helpers.api import ApiHandler, Request, Response
@@ -27,13 +27,13 @@ class RalphLoopDashboard(ApiHandler):
             normalized = raw.replace("Z", "+00:00")
             dt = datetime.fromisoformat(normalized)
             if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=UTC)
-            return dt.astimezone(UTC)
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(timezone.utc)
         except Exception:
             # Handles sqlite CURRENT_TIMESTAMP format: "YYYY-MM-DD HH:MM:SS"
             try:
                 dt = datetime.strptime(raw, "%Y-%m-%d %H:%M:%S")
-                return dt.replace(tzinfo=UTC)
+                return dt.replace(tzinfo=timezone.utc)
             except Exception:
                 return None
 
@@ -86,7 +86,7 @@ class RalphLoopDashboard(ApiHandler):
             stats = manager.get_stats()
 
             # Get active loops and filter out stale ones so UI reflects currently running work.
-            now_utc = datetime.now(UTC)
+            now_utc = datetime.now(timezone.utc)
             active_candidates = manager.list_loops(status="active", limit=20)
             active_loops = [loop for loop in active_candidates if self._is_live_active_loop(manager, loop, now_utc)]
             stale_active_loops = max(0, len(active_candidates) - len(active_loops))

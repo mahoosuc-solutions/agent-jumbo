@@ -1,5 +1,5 @@
 import asyncio
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 
 from agent import LoopData
 from python.helpers import settings
@@ -116,7 +116,7 @@ class PromptEnhancer(Extension):
         payload = {
             "original": user_text,
             "enhanced": enhanced,
-            "timestamp": datetime.now(UTC).isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "suggested_tools": suggested_tools,
         }
         self.agent.context.set_output_data("prompt_enhance_last", payload)

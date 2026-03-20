@@ -5,7 +5,7 @@ import os
 import time
 from copy import deepcopy
 from dataclasses import dataclass
-from datetime import UTC, datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from uuid import uuid4
@@ -30,7 +30,7 @@ class PhaseRunOptions:
 
 
 def _now_iso() -> str:
-    return datetime.now(UTC).isoformat()
+    return datetime.now(timezone.utc).isoformat()
 
 
 def _slug(value: str) -> str:
@@ -169,7 +169,7 @@ def _acquire_run_lock(project_name: str) -> None:
             lock_started = str(existing.get("started_at", "")).strip()
             if lock_started:
                 then = datetime.fromisoformat(lock_started.replace("Z", "+00:00"))
-                age_seconds = (datetime.now(UTC) - then).total_seconds()
+                age_seconds = (datetime.now(timezone.utc) - then).total_seconds()
                 if age_seconds > 3600:
                     lock_path.unlink(missing_ok=True)
         except Exception:
@@ -408,7 +408,7 @@ def run_phase(
                 raise Exception(created["error"])
             workflow = manager.get_workflow(name=workflow_name)
 
-        execution_name = f"{project_name}_{phase_id}_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}"
+        execution_name = f"{project_name}_{phase_id}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
         started = manager.start_workflow(
             workflow_name=workflow_name,
             execution_name=execution_name,
