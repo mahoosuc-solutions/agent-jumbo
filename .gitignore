@@ -140,3 +140,6 @@ docker/run-old-*
 
 # E2E test screenshots (generated on failure)
 tests/e2e/screenshots/
+
+# Git worktrees
+.worktrees/
