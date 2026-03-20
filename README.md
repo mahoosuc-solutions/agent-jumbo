@@ -2,7 +2,7 @@
 
 [![Tests](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/workflows/tests/badge.svg)](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/actions)
 [![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)](https://github.com/agent-jumbo-deploy/agent-jumbo-devops)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 **Intelligent multi-platform deployment orchestration for AI agents and applications.**
