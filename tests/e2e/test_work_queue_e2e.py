@@ -194,9 +194,6 @@ def test_item_get_not_found(app_server, auth_cookies):
 
 
 @pytest.mark.e2e
-@pytest.mark.skip(
-    reason="Work queue UI exists in Next.js frontend (web/) but Flask serves Alpine.js SPA (webui/) — browser tests deferred until frontend integration"
-)
 def test_work_queue_page_loads(authenticated_page, app_server):
     """Navigate to /work-queue and verify the page renders meaningful content."""
     page = authenticated_page
@@ -210,9 +207,6 @@ def test_work_queue_page_loads(authenticated_page, app_server):
 
 
 @pytest.mark.e2e
-@pytest.mark.skip(
-    reason="Work queue UI exists in Next.js frontend (web/) but Flask serves Alpine.js SPA (webui/) — browser tests deferred until frontend integration"
-)
 def test_work_queue_shows_stats_cards(authenticated_page, app_server):
     """Work queue dashboard should display stat cards (Total, Discovered, etc.)."""
     page = authenticated_page
@@ -231,9 +225,6 @@ def test_work_queue_shows_stats_cards(authenticated_page, app_server):
 
 
 @pytest.mark.e2e
-@pytest.mark.skip(
-    reason="Work queue UI exists in Next.js frontend (web/) but Flask serves Alpine.js SPA (webui/) — browser tests deferred until frontend integration"
-)
 def test_work_queue_filter_dropdown_present(authenticated_page, app_server):
     """Work queue page should have at least one filter <select> element."""
     page = authenticated_page
