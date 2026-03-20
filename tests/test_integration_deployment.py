@@ -70,11 +70,14 @@ async def test_kubernetes_end_to_end_deployment():
                         assert final_result["status"] == "success"
                         assert final_result["deployment_name"] == "api-server"
 
-    # Run smoke tests
+    # Run smoke tests (mock HTTP check to avoid real network call / 30s timeout)
     config_with_health = config.copy()
     config_with_health["health_endpoint"] = "http://localhost:8080/health"
 
-    passed, smoke_results = await strategy.run_smoke_tests(config_with_health)
+    with patch(
+        "python.tools.deployment_strategies.kubernetes.check_http_endpoint", return_value=(True, {"status": 200})
+    ):
+        passed, smoke_results = await strategy.run_smoke_tests(config_with_health)
     assert isinstance(passed, bool)
 
     # Rollback
