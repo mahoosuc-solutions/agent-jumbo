@@ -43,3 +43,26 @@ def workflow_db(temp_db):
     """)
     conn.close()
     return temp_db
+
+
+@pytest.fixture()
+def life_os_db(temp_db):
+    """Temp DB initialized by LifeOSManager (via LifeOSDatabase schema init)."""
+    from instruments.custom.life_os.life_manager import LifeOSManager
+
+    LifeOSManager(temp_db)
+    return temp_db
+
+
+@pytest.fixture()
+def workflow_engine_db():
+    """Temp DB initialized by WorkflowEngineDatabase — uses a real temp dir so
+    os.makedirs(dirname) inside the constructor doesn't fail."""
+    import tempfile
+
+    from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        db_path = os.path.join(tmpdir, "workflow_engine.db")
+        WorkflowEngineDatabase(db_path)
+        yield db_path

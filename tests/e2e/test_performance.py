@@ -11,6 +11,8 @@ import urllib.request
 
 import pytest
 
+from tests.e2e.helpers import cookie_header, get_csrf_token_and_cookies
+
 pytestmark = [pytest.mark.e2e, pytest.mark.performance]
 
 
@@ -29,26 +31,6 @@ def _build_opener(auth_cookies: dict):
     return opener
 
 
-def _cookie_header(auth_cookies: dict) -> str:
-    return "; ".join(f"{k}={v}" for k, v in auth_cookies.items())
-
-
-def _get_csrf(base_url: str, auth_cookies: dict) -> str:
-    """Fetch a CSRF token for the session, retrying on 429."""
-    for attempt in range(5):
-        req = urllib.request.Request(f"{base_url}/csrf_token")
-        req.add_header("Cookie", _cookie_header(auth_cookies))
-        try:
-            resp = urllib.request.urlopen(req, timeout=5)
-            return json.loads(resp.read())["token"]
-        except urllib.error.HTTPError as e:
-            if e.code == 429 and attempt < 4:
-                time.sleep(5 * (attempt + 1))
-                continue
-            raise
-    raise RuntimeError("CSRF token fetch failed after retries")
-
-
 def _authed_request(
     url: str,
     auth_cookies: dict,
@@ -60,7 +42,7 @@ def _authed_request(
     timeout: float = 10,
 ) -> urllib.request.Request:
     req = urllib.request.Request(url, data=data, method=method)
-    req.add_header("Cookie", _cookie_header(auth_cookies))
+    req.add_header("Cookie", cookie_header(auth_cookies))
     if content_type:
         req.add_header("Content-Type", content_type)
     if csrf_token:
@@ -268,7 +250,7 @@ class TestApiSLA:
 
         # POST a benign settings payload via settings_set (CSRF-protected)
         try:
-            csrf = _get_csrf(app_server, auth_cookies)
+            csrf, _ = get_csrf_token_and_cookies(app_server, auth_cookies)
         except (urllib.error.HTTPError, RuntimeError):
             pytest.skip("CSRF token rate-limited — settings roundtrip skipped")
         payload = json.dumps(current.get("settings", {})).encode()
@@ -311,7 +293,7 @@ class TestApiSLA:
 class TestResources:
     def test_memory_no_leak(self, app_server, auth_cookies, warmup):
         """RSS growth stays under 50 MB over 50 mixed requests."""
-        cookie = _cookie_header(auth_cookies)
+        cookie = cookie_header(auth_cookies)
 
         def get_rss() -> int:
             req = urllib.request.Request(f"{app_server}/debug_metrics")
@@ -342,7 +324,7 @@ class TestResources:
         """10 concurrent GET /health requests all succeed."""
         from concurrent.futures import ThreadPoolExecutor, as_completed
 
-        cookie = _cookie_header(auth_cookies)
+        cookie = cookie_header(auth_cookies)
         errors: list[str] = []
 
         def fetch(idx: int) -> None:

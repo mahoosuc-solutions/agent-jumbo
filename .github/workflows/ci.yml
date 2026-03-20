@@ -50,7 +50,7 @@ jobs:
           pip install --upgrade pip "setuptools<78" wheel
           pip install --no-build-isolation openai-whisper==20240930
           pip install -r requirements.txt
-          pip install pytest pytest-cov pytest-asyncio
+          pip install pytest pytest-cov pytest-asyncio pytest-json-report
 
       - name: Run tests
         run: |
@@ -189,7 +189,6 @@ jobs:
 
       - name: Run Bandit security linter
         run: bandit -r python/ instruments/ -ll -ii
-        continue-on-error: true
 
       - name: Install uv
         uses: astral-sh/setup-uv@v4

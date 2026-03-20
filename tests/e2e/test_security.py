@@ -7,16 +7,14 @@ import urllib.request
 
 import pytest
 
+from tests.e2e.helpers import cookie_header, get_csrf_token_and_cookies
+
 pytestmark = [pytest.mark.e2e, pytest.mark.security]
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-def _cookie_header(auth_cookies: dict) -> str:
-    return "; ".join(f"{k}={v}" for k, v in auth_cookies.items())
 
 
 def _get(url: str, headers: dict | None = None, timeout: int = 10):
@@ -41,26 +39,6 @@ def _post(url: str, data: bytes | None = None, headers: dict | None = None, time
         return resp.status, dict(resp.headers), resp.read().decode("utf-8", errors="replace")
     except urllib.error.HTTPError as e:
         return e.code, dict(e.headers), e.read().decode("utf-8", errors="replace")
-
-
-def _get_csrf_token(base_url: str, cookies: dict, retries: int = 5) -> str:
-    """Fetch a CSRF token from /csrf_token endpoint, retrying on 429."""
-    import time as _time
-
-    status = None
-    for attempt in range(retries):
-        status, _hdrs, body = _get(
-            f"{base_url}/csrf_token",
-            headers={"Cookie": _cookie_header(cookies)},
-        )
-        if status == 429:
-            _time.sleep(5 * (attempt + 1))  # aggressive backoff for rate limiter
-            continue
-        assert status == 200, f"Expected 200 from /csrf_token, got {status}: {body}"
-        data = json.loads(body)
-        assert data.get("ok"), f"CSRF endpoint returned ok=false: {data}"
-        return data["token"]
-    pytest.fail(f"CSRF token fetch failed after {retries} retries (last status: {status})")
 
 
 def _login_and_get_cookies(base_url: str) -> dict:
@@ -121,7 +99,7 @@ def test_csrf_token_required(app_server, auth_cookies):
         f"{app_server}/chat_create",
         data=json.dumps({}).encode(),
         headers={
-            "Cookie": _cookie_header(auth_cookies),
+            "Cookie": cookie_header(auth_cookies),
             "Content-Type": "application/json",
         },
     )
@@ -228,20 +206,20 @@ def test_session_invalidated_on_logout(app_server):
     _time.sleep(15)  # cooldown from rate limit tests (1-minute window)
 
     cookies = _login_and_get_cookies(app_server)
-    cookie_header = _cookie_header(cookies)
+    cookie_hdr = cookie_header(cookies)
 
     # Verify we're authenticated: get a CSRF token and use it to access a protected endpoint
-    status1, _h, body1 = _get(f"{app_server}/csrf_token", headers={"Cookie": cookie_header})
+    status1, _h, body1 = _get(f"{app_server}/csrf_token", headers={"Cookie": cookie_hdr})
     assert status1 == 200, f"Expected 200 from /csrf_token after login, got {status1}"
     csrf = json.loads(body1)["token"]
 
     # Logout using GET /logout
-    _get(f"{app_server}/logout", headers={"Cookie": cookie_header})
+    _get(f"{app_server}/logout", headers={"Cookie": cookie_hdr})
 
     # After logout, the session is destroyed. Try getting a new CSRF token with
     # the old session cookies — it should generate a new token (different from before)
     # because the session was reset.
-    status2, _h, body2 = _get(f"{app_server}/csrf_token", headers={"Cookie": cookie_header})
+    status2, _h, body2 = _get(f"{app_server}/csrf_token", headers={"Cookie": cookie_hdr})
 
     if status2 == 200:
         # Server returned a new CSRF token — this is for a new/anonymous session
@@ -254,7 +232,7 @@ def test_session_invalidated_on_logout(app_server):
             f"{app_server}/chat_create",
             data=json.dumps({"new_context": "post_logout_test"}).encode(),
             headers={
-                "Cookie": cookie_header,
+                "Cookie": cookie_hdr,
                 "Content-Type": "application/json",
                 "X-CSRF-Token": csrf,  # old token
             },
@@ -273,7 +251,7 @@ def test_session_invalidated_on_logout(app_server):
 
 def test_error_no_stack_trace(app_server, auth_cookies):
     """Trigger a 500 error, verify response has request_id but NO Python traceback."""
-    csrf = _get_csrf_token(app_server, auth_cookies)
+    csrf, _ = get_csrf_token_and_cookies(app_server, auth_cookies)
     # Send a malformed multipart upload with invalid file content to trigger a server error.
     # The boundary must match the Content-Type so CSRF passes, but the file content
     # will cause the upload handler to fail.
@@ -290,7 +268,7 @@ def test_error_no_stack_trace(app_server, auth_cookies):
         f"{app_server}/upload",
         data=body,
         headers={
-            "Cookie": _cookie_header(auth_cookies),
+            "Cookie": cookie_header(auth_cookies),
             "Content-Type": "multipart/form-data; boundary=----E2EBoundaryStackTrace",
             "X-CSRF-Token": csrf,
         },
@@ -326,7 +304,7 @@ def test_error_404_sanitized(app_server):
 
 def test_sql_injection_chat(app_server, auth_cookies):
     """POST /chat_create with SQL injection payload — must be treated as normal text."""
-    csrf = _get_csrf_token(app_server, auth_cookies)
+    csrf, _ = get_csrf_token_and_cookies(app_server, auth_cookies)
     payload = json.dumps(
         {
             "current_context": "'; DROP TABLE users;--",
@@ -337,7 +315,7 @@ def test_sql_injection_chat(app_server, auth_cookies):
         f"{app_server}/chat_create",
         data=payload,
         headers={
-            "Cookie": _cookie_header(auth_cookies),
+            "Cookie": cookie_header(auth_cookies),
             "Content-Type": "application/json",
             "X-CSRF-Token": csrf,
         },
@@ -396,7 +374,7 @@ def test_xss_payload_chat(authenticated_page, app_server):
 
 def test_path_traversal_upload(app_server, auth_cookies):
     """Upload file with name ../../etc/passwd — must be rejected or sanitized."""
-    csrf = _get_csrf_token(app_server, auth_cookies)
+    csrf, _ = get_csrf_token_and_cookies(app_server, auth_cookies)
     filename = "../../etc/passwd"
     body = (
         "------E2EBoundary\r\n"
@@ -410,7 +388,7 @@ def test_path_traversal_upload(app_server, auth_cookies):
         f"{app_server}/upload",
         data=body,
         headers={
-            "Cookie": _cookie_header(auth_cookies),
+            "Cookie": cookie_header(auth_cookies),
             "Content-Type": "multipart/form-data; boundary=----E2EBoundary",
             "X-CSRF-Token": csrf,
         },
@@ -434,7 +412,7 @@ def test_path_traversal_upload(app_server, auth_cookies):
 
 def test_upload_magic_bytes(app_server, auth_cookies):
     """Upload .exe content renamed to .png — must be rejected (HTTP 500 with generic error)."""
-    csrf = _get_csrf_token(app_server, auth_cookies)
+    csrf, _ = get_csrf_token_and_cookies(app_server, auth_cookies)
     # MZ header (PE executable magic bytes) in a file named .png
     exe_content = b"MZ\x90\x00\x03\x00\x00\x00\x04\x00\x00\x00\xff\xff\x00\x00"
     body = (
@@ -451,7 +429,7 @@ def test_upload_magic_bytes(app_server, auth_cookies):
         f"{app_server}/upload",
         data=body,
         headers={
-            "Cookie": _cookie_header(auth_cookies),
+            "Cookie": cookie_header(auth_cookies),
             "Content-Type": "multipart/form-data; boundary=----E2EBoundaryMagic",
             "X-CSRF-Token": csrf,
         },
@@ -494,7 +472,7 @@ def test_rate_limit_login(app_server):
 
 def test_rate_limit_upload(app_server, auth_cookies):
     """11 rapid uploads must trigger 429 (limit is 10 per minute)."""
-    csrf = _get_csrf_token(app_server, auth_cookies)
+    csrf, _ = get_csrf_token_and_cookies(app_server, auth_cookies)
     # A minimal valid .txt upload
     body = (
         b"------E2EBoundaryRate\r\n"
@@ -510,7 +488,7 @@ def test_rate_limit_upload(app_server, auth_cookies):
             f"{app_server}/upload",
             data=body,
             headers={
-                "Cookie": _cookie_header(auth_cookies),
+                "Cookie": cookie_header(auth_cookies),
                 "Content-Type": "multipart/form-data; boundary=----E2EBoundaryRate",
                 "X-CSRF-Token": csrf,
             },
