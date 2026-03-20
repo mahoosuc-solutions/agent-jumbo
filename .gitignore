@@ -129,7 +129,6 @@ node_modules/
 scripts/training/output/
 
 # Docker runtime artifacts (generated when running Docker containers)
-docker/run/
 
 # Local MCP server wiring (contains ephemeral tokenized URLs)
 .mcp.json
