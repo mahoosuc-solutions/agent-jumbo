@@ -19,7 +19,8 @@ import json
 import os
 import threading
 
-from python.helpers import defer, whisper
+from python.helpers import whisper
+from python.helpers.defer import EventLoopThread
 from python.helpers.print_style import PrintStyle
 from python.helpers.secrets import get_default_secrets_manager
 
@@ -264,9 +265,7 @@ def _apply_settings(previous: Settings | None):
 
         # reload whisper model if necessary
         if not previous or _settings["stt_model_size"] != previous["stt_model_size"]:
-            defer.DeferredTask().start_task(
-                whisper.preload, _settings["stt_model_size"]
-            )  # TODO overkill, replace with background task
+            EventLoopThread("Background").run_coroutine(whisper.preload(_settings["stt_model_size"]))
 
         # force memory reload on embedding model change
         if not previous or (
@@ -310,9 +309,7 @@ def _apply_settings(previous: Settings | None):
                 )
                 AgentContext.log_to_all(type="info", content="Finished updating MCP settings.", temp=True)
 
-            defer.DeferredTask().start_task(
-                update_mcp_settings, config.mcp_servers
-            )  # TODO overkill, replace with background task
+            EventLoopThread("Background").run_coroutine(update_mcp_settings(config.mcp_servers))
 
         # update token in mcp server
         current_token = (
@@ -325,9 +322,7 @@ def _apply_settings(previous: Settings | None):
 
                 DynamicMcpProxy.get_instance().reconfigure(token=token)
 
-            defer.DeferredTask().start_task(
-                update_mcp_token, current_token
-            )  # TODO overkill, replace with background task
+            EventLoopThread("Background").run_coroutine(update_mcp_token(current_token))
 
         # update token in a2a server
         if not previous or current_token != previous["mcp_server_token"]:
@@ -337,9 +332,7 @@ def _apply_settings(previous: Settings | None):
 
                 DynamicA2AProxy.get_instance().reconfigure(token=token)
 
-            defer.DeferredTask().start_task(
-                update_a2a_token, current_token
-            )  # TODO overkill, replace with background task
+            EventLoopThread("Background").run_coroutine(update_a2a_token(current_token))
 
 
 # ---------------------------------------------------------------------------
