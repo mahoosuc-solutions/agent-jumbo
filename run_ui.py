@@ -297,6 +297,7 @@ _SPA_PATHS = [
     "observability",
     "llm-router",
     "connections",
+    "work-queue",
 ]
 
 for _spa_path in _SPA_PATHS:

@@ -136,7 +136,7 @@ def test_chat_send_message(authenticated_page, app_server):
     page.wait_for_timeout(5000)  # x-components load asynchronously
 
     # The chat input is hidden behind a welcome screen (Alpine.js store).
-    # Dismiss the welcome screen by setting the store value directly.
+    # Dismiss the welcome screen so the chat input is accessible.
     page.evaluate("if (window.Alpine && Alpine.store('welcomeStore')) Alpine.store('welcomeStore').isVisible = false")
     page.wait_for_timeout(2000)  # wait for Alpine to re-render
 
@@ -147,16 +147,24 @@ def test_chat_send_message(authenticated_page, app_server):
     except Exception:
         pytest.skip("Chat input not attached — backend connection not ready (no AI model in test env)")
 
+    # Check if an AI model is configured — without one, sent messages won't
+    # echo back into the chat log even though the UI is connected via SSE.
+    has_model = page.evaluate("""(() => {
+        try {
+            const s = Alpine.store('chatTop');
+            return !!(s && s.model && s.model !== '');
+        } catch { return false; }
+    })()""")
+    if not has_model:
+        pytest.skip("No AI model configured in test env — chat send/echo requires a backend model")
+
     textarea.fill("Hello from e2e test")
 
-    # The send button is in the same x-component but may render after the textarea.
-    # Use keyboard submission as primary, button click as fallback.
     send_btn = page.locator("#send-button, [aria-label*='Send' i], button.chat-button").first
     try:
-        send_btn.wait_for(state="attached", timeout=30000)
+        send_btn.wait_for(state="visible", timeout=5000)
         send_btn.click(force=True)
     except Exception:
-        # Fallback: submit via Enter key (the textarea has @keydown.enter handler)
         textarea.press("Enter")
     page.wait_for_timeout(3000)
 
