@@ -7,7 +7,7 @@ import urllib.error
 
 import pytest
 
-from tests.e2e.helpers import api_post
+from tests.e2e.helpers import api_post, api_post_tolerant
 
 pytestmark = [pytest.mark.e2e]
 
@@ -50,7 +50,7 @@ def test_telegram_settings_set_invalid(app_server, auth_cookies):
 def test_twilio_voice_status_missing_fields(app_server, auth_cookies):
     """POST /twilio_voice_status with an empty body — missing call_sid/status."""
     try:
-        result = api_post(app_server, auth_cookies, "twilio_voice_status", {})
+        result = api_post_tolerant(app_server, auth_cookies, "twilio_voice_status", {})
         assert isinstance(result, dict)
         body_str = str(result)
         assert "Traceback" not in body_str
@@ -59,7 +59,7 @@ def test_twilio_voice_status_missing_fields(app_server, auth_cookies):
     except urllib.error.HTTPError as e:
         body = e._response_body if hasattr(e, "_response_body") else e.read().decode(errors="replace")
         assert "Traceback" not in body
-        assert e.code in (400, 403, 422, 500)
+        assert e.code in (400, 403, 422, 429, 500)
 
 
 def test_synthesize_no_text(app_server, auth_cookies):

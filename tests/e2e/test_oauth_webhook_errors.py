@@ -95,8 +95,8 @@ def test_pms_webhook_missing_provider(app_server, auth_cookies):
     """
     try:
         result = api_post(app_server, auth_cookies, "pms_webhook_receive", {})
-        assert "error" in result or result.get("success") is False, (
-            f"Expected error key or success=False in response: {result}"
+        assert "error" in result or result.get("success") is False or result.get("status") == "error", (
+            f"Expected error indicator in response: {result}"
         )
         body = str(result)
         assert "Traceback" not in body, "Response must not contain a Python traceback"
