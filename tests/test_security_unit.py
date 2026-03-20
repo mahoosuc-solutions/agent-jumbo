@@ -108,19 +108,16 @@ class TestPathTraversalProtection:
 
 
 class TestCSPHeaders:
-    """Verify CSP no longer allows unsafe-eval or https://*."""
+    """Verify CSP contains required directives for Alpine.js and does not allow wildcard HTTPS."""
 
-    def test_no_unsafe_eval_in_csp(self):
-        """CSP must not contain 'unsafe-eval'."""
-        # Read the actual source to verify the string
-        # Get the CSP by simulating the header build
-        # The CSP is set in add_security_headers, check the source
+    def test_unsafe_eval_present_in_csp(self):
+        """CSP must contain 'unsafe-eval' (required by Alpine.js standard build)."""
         import inspect
 
         import run_ui
 
         source = inspect.getsource(run_ui.add_security_headers)
-        assert "'unsafe-eval'" not in source, "CSP still contains 'unsafe-eval'"
+        assert "'unsafe-eval'" in source, "CSP missing 'unsafe-eval' required by Alpine.js"
 
     def test_no_wildcard_https_in_csp(self):
         """CSP must not allow https://* (any HTTPS origin)."""

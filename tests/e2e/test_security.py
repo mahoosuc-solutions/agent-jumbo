@@ -74,16 +74,15 @@ def test_security_headers_present(app_server):
 
 
 # ---------------------------------------------------------------------------
-# 2. CSP must not contain unsafe-eval
+# 2. CSP allows unsafe-eval (required by Alpine.js) and whitelists CDN
 # ---------------------------------------------------------------------------
 
 
-def test_csp_no_unsafe_eval(app_server):
-    """CSP header must NOT contain 'unsafe-eval'. 'unsafe-inline' is intentional (Alpine.js)."""
+def test_csp_alpine_requirements(app_server):
+    """CSP header must contain 'unsafe-eval' and 'unsafe-inline' (required by Alpine.js standard build)."""
     _status, hdrs, _body = _get(app_server)
     csp = hdrs.get("Content-Security-Policy", "")
-    assert "unsafe-eval" not in csp, f"CSP contains unsafe-eval: {csp}"
-    # Verify expected intentional entries are present
+    assert "unsafe-eval" in csp, f"CSP missing unsafe-eval (required by Alpine.js): {csp}"
     assert "unsafe-inline" in csp, "CSP should contain unsafe-inline for Alpine.js"
     assert "cdn.jsdelivr.net" in csp, "CSP should whitelist cdn.jsdelivr.net"
 

@@ -232,11 +232,11 @@ def add_security_headers(response):
     )
     response.headers["Content-Security-Policy"] = (
         f"default-src 'self' 'unsafe-inline' {_CDN_HOSTS} blob:; "
-        f"script-src 'self' 'unsafe-inline' {_CDN_HOSTS} blob:; "
-        f"script-src-elem 'self' 'unsafe-inline' {_CDN_HOSTS} blob:; "
+        f"script-src 'self' 'unsafe-inline' 'unsafe-eval' {_CDN_HOSTS} blob:; "
+        f"script-src-elem 'self' 'unsafe-inline' 'unsafe-eval' {_CDN_HOSTS} blob:; "
         f"img-src 'self' data: {_CDN_HOSTS} blob:; "
         f"font-src 'self' data: https://fonts.gstatic.com; "
-        "connect-src 'self' https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com;"
+        f"connect-src 'self' {_CDN_HOSTS} https://api.openai.com https://api.anthropic.com https://generativelanguage.googleapis.com;"
     )
     return response
 
