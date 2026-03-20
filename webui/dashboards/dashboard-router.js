@@ -28,6 +28,12 @@ const dashboardRouterModel = {
             label: 'MOS Integration',
             icon: 'mos',
             component: 'dashboards/mos/mos-dashboard.html'
+        },
+        workQueue: {
+            id: 'workQueue',
+            label: 'Work Queue',
+            icon: 'workQueue',
+            component: 'dashboards/work-queue/work-queue-dashboard.html'
         }
     },
 
@@ -52,7 +58,8 @@ const dashboardRouterModel = {
             const storeLoader = {
                 portfolio: () => import('/dashboards/portfolio/portfolio-store.js'),
                 workflows: () => import('/dashboards/workflows/workflow-store.js'),
-                mos: () => import('/dashboards/mos/mos-store.js')
+                mos: () => import('/dashboards/mos/mos-store.js'),
+                workQueue: () => import('/dashboards/work-queue/work-queue-store.js')
             }[dashboardId];
             if (storeLoader) {
                 await storeLoader();
@@ -85,6 +92,20 @@ const dashboardRouterModel = {
         return this.activeDashboard !== null;
     },
 
+    initFromUrl() {
+        const path = window.location.pathname.replace(/^\//, '');
+        const urlMap = {
+            'work-queue': 'workQueue',
+            'workflows': 'workflows',
+            'portfolio': 'portfolio',
+            'mos': 'mos'
+        };
+        const dashboardId = urlMap[path];
+        if (dashboardId && this.dashboards[dashboardId]) {
+            this.showDashboard(dashboardId);
+        }
+    },
+
     // Icon helpers
     getIconSvg(iconName) {
         const icons = {
@@ -101,7 +122,11 @@ const dashboardRouterModel = {
                 <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                 <path d="M2 17l10 5 10-5"/>
                 <path d="M2 12l10 5 10-5"/>
-            </svg>`
+            </svg>`,
+            workQueue: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <path d="M9 7h6M9 11h6M9 15h4"/>
+</svg>`
         };
         return icons[iconName] || icons.portfolio;
     }
@@ -110,4 +135,8 @@ const dashboardRouterModel = {
 // Register the store when Alpine loads
 document.addEventListener('alpine:init', () => {
     Alpine.store('dashboardRouter', dashboardRouterModel);
+    // Auto-open dashboard if URL matches
+    setTimeout(() => {
+        Alpine.store('dashboardRouter').initFromUrl();
+    }, 100);
 });
