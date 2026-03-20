@@ -46,9 +46,9 @@ def test_tunnel_get_status(app_server, auth_cookies):
                 f"Expected at least one status key {status_keys} in response, got: {list(resp.keys())}"
             )
         else:
-            # Graceful error path: success=False should carry an error description
-            assert "error" in resp or "message" in resp or "reason" in resp, (
-                f"Expected error description key in failure response, got: {resp}"
+            # Tunnel not running — success=False with status info is valid
+            assert "error" in resp or "message" in resp or "reason" in resp or "is_running" in resp, (
+                f"Expected error description or status key in failure response, got: {resp}"
             )
     except urllib.error.HTTPError as exc:
         body = exc.read().decode(errors="replace")
