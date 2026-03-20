@@ -1,0 +1,920 @@
+<html>
+
+<head>
+  <title>Work Queue</title>
+  <script type="module">
+    import { store } from "/dashboards/work-queue/work-queue-store.js";
+  </script>
+</head>
+
+<body>
+  <div x-data>
+    <template x-if="$store.workQueueStore">
+      <div class="wq-dashboard dashboard-page"
+           data-testid="work-queue-dashboard"
+           x-create="$store.workQueueStore.onOpen()"
+           x-destroy="$store.workQueueStore.cleanup()">
+
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+          <div class="dashboard-title-section">
+            <button class="dashboard-back-btn" @click="$store.dashboardRouter?.closeDashboard()" title="Back to Chat">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h1 class="dashboard-title">Work Queue</h1>
+          </div>
+          <div class="dashboard-actions">
+            <button class="btn"
+                    data-testid="schedule-button"
+                    @click="$store.workQueueStore.scheduleOpen = !$store.workQueueStore.scheduleOpen">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+              Schedule
+            </button>
+            <button class="btn btn-primary"
+                    data-testid="scan-now-button"
+                    @click="$store.workQueueStore.scanNow()"
+                    :disabled="$store.workQueueStore.loading">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              Scan Now
+            </button>
+            <button class="btn"
+                    data-testid="refresh-button"
+                    @click="$store.workQueueStore.refresh()"
+                    :disabled="$store.workQueueStore.loading">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6M1 20v-6h6"/>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Bar -->
+        <div class="schedule-bar" x-show="$store.workQueueStore.scheduleOpen">
+          <span class="schedule-label">Scheduled Scan</span>
+          <label class="toggle-switch">
+            <input type="checkbox"
+                   :checked="$store.workQueueStore.schedule.enabled"
+                   @change="$store.workQueueStore.schedule.enabled = $event.target.checked">
+            <span class="toggle-slider"></span>
+          </label>
+          <input type="text"
+                 :value="$store.workQueueStore.schedule.cron"
+                 @input="$store.workQueueStore.schedule.cron = $event.target.value"
+                 placeholder="cron expression">
+          <span class="schedule-hint" x-text="$store.workQueueStore.schedule.hint || 'Every 6 hours'"></span>
+          <button class="btn btn-sm" style="margin-left: auto;" @click="$store.workQueueStore.saveSchedule()">Save</button>
+        </div>
+
+        <!-- Error display -->
+        <div class="wq-error" data-testid="wq-error" x-show="$store.workQueueStore.error"
+             x-text="$store.workQueueStore.error"></div>
+
+        <!-- Loading indicator -->
+        <div class="wq-loading" data-testid="wq-loading" x-show="$store.workQueueStore.loading">
+          Loading...
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards" data-testid="stats-cards">
+          <div class="stat-card" data-testid="stat-total">
+            <div class="stat-label">Total Items</div>
+            <div class="stat-value" data-testid="stat-total-value" x-text="$store.workQueueStore.stats.total"></div>
+            <div class="stat-sub">discovered items</div>
+          </div>
+          <div class="stat-card" data-testid="stat-queued">
+            <div class="stat-label">Queued</div>
+            <div class="stat-value text-blue" data-testid="stat-queued-value" x-text="$store.workQueueStore.stats.by_status?.queued || 0"></div>
+            <div class="stat-sub">ready to work</div>
+          </div>
+          <div class="stat-card" data-testid="stat-in-progress">
+            <div class="stat-label">In Progress</div>
+            <div class="stat-value text-amber" data-testid="stat-in-progress-value" x-text="$store.workQueueStore.stats.by_status?.in_progress || 0"></div>
+            <div class="stat-sub">being executed</div>
+          </div>
+          <div class="stat-card" data-testid="stat-done">
+            <div class="stat-label">Done This Week</div>
+            <div class="stat-value text-green" data-testid="stat-done-value" x-text="$store.workQueueStore.stats.done_this_week"></div>
+            <div class="stat-sub">completed items</div>
+          </div>
+        </div>
+
+        <!-- Toolbar: Filters + Bulk Actions -->
+        <div class="wq-toolbar">
+          <div class="wq-filters">
+            <select data-testid="status-filter"
+                    @change="$store.workQueueStore.statusFilter = $event.target.value; $store.workQueueStore.applyFilters()">
+              <option value="">All Statuses</option>
+              <option value="discovered">Discovered</option>
+              <option value="queued">Queued</option>
+              <option value="in_progress">In Progress</option>
+              <option value="review">Review</option>
+              <option value="done">Done</option>
+              <option value="dismissed">Dismissed</option>
+            </select>
+            <select data-testid="source-filter"
+                    @change="$store.workQueueStore.sourceFilter = $event.target.value; $store.workQueueStore.applyFilters()">
+              <option value="">All Sources</option>
+              <option value="scanner">Scanner</option>
+              <option value="linear">Linear</option>
+            </select>
+            <input type="search"
+                   placeholder="Search items..."
+                   data-testid="search-input"
+                   :value="$store.workQueueStore.searchQuery"
+                   @input="$store.workQueueStore.searchQuery = $event.target.value; $store.workQueueStore.searchItems()">
+          </div>
+          <div class="wq-bulk-actions" x-show="$store.workQueueStore.selectedIds.length > 0">
+            <span class="bulk-count" x-text="$store.workQueueStore.selectedIds.length + ' selected'"></span>
+            <button class="btn btn-sm" @click="$store.workQueueStore.bulkAction('queue')">Queue</button>
+            <button class="btn btn-sm btn-danger" @click="$store.workQueueStore.bulkAction('dismiss')">Dismiss</button>
+          </div>
+        </div>
+
+        <!-- Item Table -->
+        <div class="wq-table-container">
+          <table class="wq-table" data-testid="items-table">
+            <thead>
+              <tr>
+                <th class="td-checkbox">
+                  <input type="checkbox"
+                         :checked="$store.workQueueStore.selectAll"
+                         @change="$store.workQueueStore.toggleSelectAll()">
+                </th>
+                <th>Priority</th>
+                <th>Title</th>
+                <th>Source</th>
+                <th>Type</th>
+                <th>File</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Empty state row -->
+              <tr x-show="!$store.workQueueStore.loading && $store.workQueueStore.items.length === 0">
+                <td colspan="8">
+                  <div class="empty-state">
+                    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                      <rect x="9" y="3" width="6" height="4" rx="1"/>
+                    </svg>
+                    <p>No items found</p>
+                    <p>Try adjusting filters or run a scan</p>
+                  </div>
+                </td>
+              </tr>
+              <!-- Item rows -->
+              <template x-for="item in $store.workQueueStore.items" :key="item.id">
+                <tr @click="$store.workQueueStore.openDetail(item.id)"
+                    :class="{ 'row-done': item.status === 'done' || item.status === 'dismissed' }">
+                  <td class="td-checkbox" @click.stop>
+                    <input type="checkbox"
+                           :checked="$store.workQueueStore.isSelected(item.id)"
+                           @change="$store.workQueueStore.toggleItem(item.id)">
+                  </td>
+                  <td>
+                    <div class="priority-cell">
+                      <div class="priority-bar" :class="$store.workQueueStore.priorityClass(item.priority_score)"></div>
+                      <span class="priority-score" x-text="item.priority_score"></span>
+                    </div>
+                  </td>
+                  <td><strong x-text="item.title"></strong></td>
+                  <td><span class="source-badge" x-text="item.source"></span></td>
+                  <td><span class="type-badge" x-text="item.item_type"></span></td>
+                  <td>
+                    <span class="file-path"
+                          x-text="$store.workQueueStore.truncatePath(item.file_path)"
+                          :title="item.file_path"></span>
+                  </td>
+                  <td>
+                    <span class="status-pill"
+                          :class="$store.workQueueStore.statusClass(item.status)"
+                          x-text="item.status?.replace('_', ' ')"></span>
+                  </td>
+                  <td @click.stop>
+                    <template x-if="item.status === 'done' || item.status === 'dismissed'">
+                      <span class="action-done">Completed</span>
+                    </template>
+                    <template x-if="item.status === 'in_progress'">
+                      <button class="btn btn-sm" disabled>Running...</button>
+                    </template>
+                    <template x-if="item.status === 'queued' || item.status === 'review'">
+                      <button class="btn btn-sm btn-primary"
+                              @click="$store.workQueueStore.executeItem(item.id)">Execute</button>
+                    </template>
+                    <template x-if="item.status === 'discovered'">
+                      <button class="btn btn-sm"
+                              @click="$store.workQueueStore.updateStatus(item.id, 'queued')">Queue</button>
+                    </template>
+                  </td>
+                </tr>
+              </template>
+            </tbody>
+          </table>
+
+          <!-- Pagination -->
+          <div class="wq-pagination">
+            <span x-text="'Showing ' + (($store.workQueueStore.page - 1) * $store.workQueueStore.pageSize + 1) +
+              '-' + Math.min($store.workQueueStore.page * $store.workQueueStore.pageSize, $store.workQueueStore.totalItems) +
+              ' of ' + $store.workQueueStore.totalItems + ' items'"></span>
+            <div class="page-buttons">
+              <button class="page-btn"
+                      :disabled="$store.workQueueStore.page <= 1"
+                      @click="$store.workQueueStore.prevPage()">&larr; Prev</button>
+              <button class="page-btn"
+                      :disabled="$store.workQueueStore.page * $store.workQueueStore.pageSize >= $store.workQueueStore.totalItems"
+                      @click="$store.workQueueStore.nextPage()">Next &rarr;</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail Slide-Over -->
+        <div class="wq-detail-overlay"
+             x-show="$store.workQueueStore.detailOpen"
+             @click.self="$store.workQueueStore.closeDetail()">
+          <div class="wq-detail-panel" x-show="$store.workQueueStore.detailItem">
+            <div class="detail-header">
+              <h2 class="detail-title" x-text="$store.workQueueStore.detailItem?.title"></h2>
+              <button class="detail-close" @click="$store.workQueueStore.closeDetail()">&times;</button>
+            </div>
+
+            <div class="detail-section">
+              <h3>Status</h3>
+              <span class="status-pill"
+                    :class="$store.workQueueStore.statusClass($store.workQueueStore.detailItem?.status)"
+                    x-text="$store.workQueueStore.detailItem?.status?.replace('_', ' ')"></span>
+            </div>
+
+            <div class="detail-section">
+              <h3>Details</h3>
+              <div class="detail-row">
+                <span class="label">Source</span>
+                <span x-text="$store.workQueueStore.detailItem?.source"></span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Type</span>
+                <span x-text="$store.workQueueStore.detailItem?.item_type"></span>
+              </div>
+              <div class="detail-row">
+                <span class="label">File</span>
+                <span class="file-path" x-text="$store.workQueueStore.detailItem?.file_path || '—'"></span>
+              </div>
+              <div class="detail-row">
+                <span class="label">Discovered</span>
+                <span x-text="$store.workQueueStore.formatDate($store.workQueueStore.detailItem?.discovered_at)"></span>
+              </div>
+              <div class="detail-row" x-show="$store.workQueueStore.detailItem?.effort">
+                <span class="label">Effort</span>
+                <span x-text="$store.workQueueStore.detailItem?.effort"></span>
+              </div>
+            </div>
+
+            <div class="detail-section" x-show="$store.workQueueStore.detailItem?.priority_breakdown">
+              <h3>Priority Breakdown</h3>
+              <div class="priority-breakdown">
+                <template x-for="[key, val] in Object.entries($store.workQueueStore.detailItem?.priority_breakdown || {})" :key="key">
+                  <div class="pb-row">
+                    <span class="pb-label" x-text="key"></span>
+                    <div class="pb-bar-bg">
+                      <div class="pb-bar-fill fill-blue" :style="'width: ' + Math.min(100, val) + '%'"></div>
+                    </div>
+                    <span class="pb-score" x-text="val"></span>
+                  </div>
+                </template>
+              </div>
+              <div class="priority-total">
+                Total: <span x-text="$store.workQueueStore.detailItem?.priority_score"></span>
+              </div>
+            </div>
+
+            <div class="detail-section" x-show="$store.workQueueStore.detailItem?.description">
+              <h3>Description</h3>
+              <p class="detail-description" x-text="$store.workQueueStore.detailItem?.description"></p>
+            </div>
+
+            <div class="detail-actions">
+              <template x-if="$store.workQueueStore.detailItem?.status !== 'done' && $store.workQueueStore.detailItem?.status !== 'dismissed'">
+                <button class="btn btn-primary" style="flex:1;"
+                        @click="$store.workQueueStore.executeItem($store.workQueueStore.detailItem?.id)">Execute</button>
+              </template>
+              <template x-if="$store.workQueueStore.detailItem?.status !== 'dismissed' && $store.workQueueStore.detailItem?.status !== 'done'">
+                <button class="btn btn-danger"
+                        @click="$store.workQueueStore.updateStatus($store.workQueueStore.detailItem?.id, 'dismissed'); $store.workQueueStore.closeDetail()">Dismiss</button>
+              </template>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  <style>
+    /* ── Dashboard Page Layout ── */
+    .wq-dashboard.dashboard-page {
+      padding: var(--spacing-lg, 2rem);
+      height: 100%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: var(--color-background);
+      max-width: 1200px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    /* ── Header ── */
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .dashboard-title-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dashboard-back-btn {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      color: var(--color-text);
+      padding: 6px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .dashboard-back-btn:hover {
+      background: var(--color-message-bg);
+      border-color: var(--color-primary);
+    }
+
+    .dashboard-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--color-text);
+    }
+
+    .dashboard-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-message-bg);
+      color: var(--color-text);
+      font-family: var(--font-family-main);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--color-primary);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--color-highlight);
+      border-color: var(--color-highlight);
+      color: #fff;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      opacity: 0.9;
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.78rem;
+    }
+
+    .btn-danger {
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+      background: transparent;
+    }
+
+    .btn-danger:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--color-accent) 15%, transparent);
+    }
+
+    /* ── Error / Loading ── */
+    .wq-error {
+      background: #3b1f1f;
+      color: #f7c9c9;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .wq-loading {
+      color: var(--color-primary);
+      font-style: italic;
+      padding: 20px;
+      text-align: center;
+      font-size: var(--font-size-small);
+    }
+
+    /* ── Stats Cards ── */
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .stat-card .stat-label {
+      font-size: var(--font-size-small);
+      color: var(--color-primary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--color-text);
+    }
+
+    .stat-card .stat-sub {
+      font-size: var(--font-size-small);
+      color: var(--color-secondary);
+      margin-top: 4px;
+    }
+
+    .stat-value.text-blue { color: #5b9bd5; }
+    .stat-value.text-amber { color: #e5a54b; }
+    .stat-value.text-green { color: #5cb85c; }
+
+    /* ── Schedule Bar ── */
+    .schedule-bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .schedule-bar .schedule-label {
+      color: var(--color-primary);
+      font-size: var(--font-size-small);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .schedule-bar input[type="text"] {
+      background: var(--color-input);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-text);
+      padding: 4px 10px;
+      font-family: var(--font-family-code);
+      font-size: 0.82rem;
+      width: 120px;
+    }
+
+    .schedule-hint {
+      color: var(--color-primary);
+      font-size: 0.82rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: var(--color-secondary);
+      border-radius: 22px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .toggle-slider::before {
+      content: "";
+      position: absolute;
+      height: 16px; width: 16px;
+      left: 3px; bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    .toggle-switch input:checked + .toggle-slider { background: #4CAF50; }
+    .toggle-switch input:checked + .toggle-slider::before { transform: translateX(18px); }
+
+    /* ── Toolbar ── */
+    .wq-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .wq-filters {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .wq-filters select,
+    .wq-filters input {
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      color: var(--color-text);
+      padding: 7px 12px;
+      font-family: var(--font-family-main);
+      font-size: 0.85rem;
+    }
+
+    .wq-filters select { min-width: 140px; }
+    .wq-filters input[type="search"] { min-width: 220px; }
+
+    .wq-bulk-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .wq-bulk-actions .bulk-count {
+      font-size: var(--font-size-small);
+      color: var(--color-primary);
+      margin-right: 4px;
+    }
+
+    /* ── Item Table ── */
+    .wq-table-container {
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .wq-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .wq-table thead th {
+      text-align: left;
+      padding: 12px 14px;
+      font-size: var(--font-size-small);
+      color: var(--color-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 500;
+      border-bottom: 1px solid var(--color-border);
+      white-space: nowrap;
+    }
+
+    .wq-table tbody tr {
+      border-bottom: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+
+    .wq-table tbody tr:hover {
+      background: color-mix(in srgb, var(--color-border) 30%, transparent);
+    }
+
+    .wq-table tbody tr:last-child { border-bottom: none; }
+
+    .wq-table td {
+      padding: 11px 14px;
+      font-size: 0.88rem;
+      vertical-align: middle;
+    }
+
+    .wq-table td.td-checkbox { width: 36px; text-align: center; }
+
+    .wq-table input[type="checkbox"] {
+      accent-color: var(--color-highlight);
+      width: 15px; height: 15px;
+      cursor: pointer;
+    }
+
+    .row-done { opacity: 0.6; }
+
+    /* ── Priority Bar ── */
+    .priority-cell {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .priority-bar {
+      width: 4px;
+      height: 28px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .priority-bar.p-critical { background: #e74c3c; }
+    .priority-bar.p-high { background: #e5a54b; }
+    .priority-bar.p-medium { background: #5b9bd5; }
+    .priority-bar.p-low { background: var(--color-secondary); }
+
+    .priority-score {
+      font-family: var(--font-family-code);
+      font-size: 0.8rem;
+      min-width: 24px;
+    }
+
+    /* ── Badges ── */
+    .source-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      background: color-mix(in srgb, var(--color-border) 60%, transparent);
+    }
+
+    .type-badge {
+      font-size: 0.78rem;
+      font-family: var(--font-family-code);
+      color: var(--color-primary);
+    }
+
+    /* ── Status Pills ── */
+    .status-pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .status-pill.s-discovered { background: #333; color: #aaa; }
+    .status-pill.s-queued { background: #1a365d; color: #63b3ed; }
+    .status-pill.s-in_progress { background: #44370a; color: #ecc94b; }
+    .status-pill.s-review { background: #1a365d; color: #9ab5ed; }
+    .status-pill.s-done { background: #1a3a2a; color: #68d391; }
+    .status-pill.s-dismissed { background: #2d2d2d; color: #888; }
+
+    /* ── File Path ── */
+    .file-path {
+      font-family: var(--font-family-code);
+      font-size: 0.78rem;
+      color: var(--color-primary);
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      display: inline-block;
+    }
+
+    .action-done {
+      color: var(--color-secondary);
+      font-size: 0.82rem;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-primary);
+    }
+
+    .empty-state svg { margin-bottom: 12px; opacity: 0.5; }
+    .empty-state p { margin: 4px 0; }
+
+    /* ── Pagination ── */
+    .wq-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-top: 1px solid var(--color-border);
+      font-size: var(--font-size-small);
+      color: var(--color-primary);
+    }
+
+    .wq-pagination .page-buttons {
+      display: flex;
+      gap: 6px;
+    }
+
+    .page-btn {
+      padding: 4px 12px;
+      background: var(--color-message-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      color: var(--color-text);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) { border-color: var(--color-primary); }
+    .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Detail Slide-Over ── */
+    .wq-detail-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .wq-detail-panel {
+      width: 420px;
+      max-width: 90vw;
+      background: var(--color-panel);
+      border-left: 1px solid var(--color-border);
+      padding: 24px;
+      overflow-y: auto;
+      animation: wqSlideIn 0.2s ease-out;
+    }
+
+    @keyframes wqSlideIn {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    .detail-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .detail-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 0;
+      line-height: 1.3;
+      color: var(--color-text);
+    }
+
+    .detail-close {
+      background: transparent;
+      border: none;
+      color: var(--color-primary);
+      font-size: 1.4rem;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .detail-close:hover { color: var(--color-text); }
+
+    .detail-section {
+      margin-bottom: 18px;
+    }
+
+    .detail-section h3 {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--color-primary);
+      margin: 0 0 8px 0;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 0.88rem;
+      border-bottom: 1px solid color-mix(in srgb, var(--color-border) 40%, transparent);
+    }
+
+    .detail-row .label { color: var(--color-primary); }
+
+    .detail-description {
+      font-size: 0.88rem;
+      color: var(--color-text);
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .detail-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 20px;
+    }
+
+    /* ── Priority Breakdown (detail panel) ── */
+    .priority-breakdown {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pb-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8rem;
+    }
+
+    .pb-row .pb-label {
+      min-width: 80px;
+      color: var(--color-primary);
+      text-transform: capitalize;
+    }
+
+    .pb-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: var(--color-message-bg);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .pb-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    .pb-bar-fill.fill-red { background: #e74c3c; }
+    .pb-bar-fill.fill-amber { background: #e5a54b; }
+    .pb-bar-fill.fill-blue { background: #5b9bd5; }
+
+    .pb-score {
+      font-family: var(--font-family-code);
+      min-width: 28px;
+      text-align: right;
+    }
+
+    .priority-total {
+      text-align: right;
+      margin-top: 8px;
+      font-family: var(--font-family-code);
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .stats-cards { grid-template-columns: 1fr 1fr; }
+      .wq-toolbar { flex-direction: column; align-items: stretch; }
+      .wq-filters { flex-direction: column; }
+      .wq-filters select,
+      .wq-filters input { min-width: unset; width: 100%; }
+    }
+  </style>
+</body>
+
+</html>
