@@ -11,13 +11,20 @@ keep_running = True
 pause_time = 0
 
 
+def _seconds_until_next_minute() -> float:
+    """Return seconds until the next minute boundary (plus a 1s buffer)."""
+    now = time.time()
+    elapsed_in_minute = now % 60
+    return (60 - elapsed_in_minute) + 1
+
+
 async def run_loop():
     global pause_time, keep_running
 
     while True:
         if runtime.is_development():
             # Signal to container that the job loop should be paused
-            # if we are runing a development instance to avoid duble-running the jobs
+            # if we are running a development instance to avoid double-running the jobs
             try:
                 await runtime.call_development_function(pause_loop)
             except Exception as e:
@@ -29,9 +36,10 @@ async def run_loop():
                 await scheduler_tick()
             except Exception as e:
                 PrintStyle().error(errors.format_error(e))
-        await asyncio.sleep(
-            SLEEP_TIME
-        )  # TODO! - if we lower it under 1min, it can run a 5min job multiple times in it's target minute
+        # Sleep until the next minute boundary so cron checks align to clock minutes.
+        # The de-duplication guard in ScheduledTask.check_schedule() prevents double-runs
+        # even if the sleep drifts or the loop frequency is changed.
+        await asyncio.sleep(_seconds_until_next_minute())
 
 
 async def scheduler_tick():

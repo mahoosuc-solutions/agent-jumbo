@@ -371,7 +371,8 @@ class ScheduledTask(BaseTask):
             task_timezone = pytz.timezone(self.schedule.timezone or Localization.get().get_timezone())
 
             # Get reference time in task's timezone (by default now - frequency_seconds)
-            reference_time = datetime.now(UTC) - timedelta(seconds=frequency_seconds)
+            now_utc = datetime.now(UTC)
+            reference_time = now_utc - timedelta(seconds=frequency_seconds)
             reference_time = reference_time.astimezone(task_timezone)
 
             # Get next run time as seconds until next execution
@@ -382,7 +383,19 @@ class ScheduledTask(BaseTask):
             if next_run_seconds is None:
                 return False
 
-            return next_run_seconds < frequency_seconds
+            if next_run_seconds >= frequency_seconds:
+                return False
+
+            # De-duplication: skip if already ran in this cron minute.
+            # Truncate both now and last_run to the minute and compare.
+            if self.last_run is not None:
+                last_run_utc = self.last_run if self.last_run.tzinfo else pytz.utc.localize(self.last_run)
+                now_minute = now_utc.replace(second=0, microsecond=0)
+                last_minute = last_run_utc.replace(second=0, microsecond=0)
+                if last_minute >= now_minute:
+                    return False
+
+            return True
 
     def get_next_run(self) -> datetime | None:
         with self._lock:
