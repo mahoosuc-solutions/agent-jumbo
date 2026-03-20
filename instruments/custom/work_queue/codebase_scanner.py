@@ -358,7 +358,8 @@ def scan_coverage(project_path: str) -> list[dict[str, Any]]:
 
         # Skip small files — wrappers and re-exports don't need dedicated tests
         try:
-            line_count = sum(1 for _ in open(full_path, errors="ignore"))
+            with open(full_path, errors="ignore") as _fh:
+                line_count = sum(1 for _ in _fh)
             if line_count < min_lines:
                 continue
         except OSError:

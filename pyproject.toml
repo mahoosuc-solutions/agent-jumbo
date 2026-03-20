@@ -244,28 +244,7 @@ skip-magic-trailing-comma = false
 line-ending = "auto"
 
 # ============================================
-# Pytest Configuration
-# ============================================
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-pythonpath = ["."]
-norecursedirs = ["docker", "node_modules", ".git"]
-asyncio_mode = "auto"
-filterwarnings = [
-    "ignore::DeprecationWarning",
-    "ignore::PendingDeprecationWarning",
-]
-markers = [
-    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
-    "integration: marks tests as integration tests",
-    "e2e: marks tests as end-to-end tests",
-    "security: marks tests as security probes (hard block in CI)",
-    "performance: marks tests as performance SLA checks (soft block in CI)",
-    "a11y: marks tests as accessibility audits (advisory in CI)",
-]
-
-# ============================================
-# Coverage Configuration
+# Coverage Configuration (pytest config is in pytest.ini)
 # ============================================
 [tool.coverage.run]
 source = ["python", "instruments"]
