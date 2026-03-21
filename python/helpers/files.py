@@ -394,19 +394,19 @@ def deabsolute_path(path: str):
 
 
 def fix_dev_path(path: str):
-    "On dev environment, convert /a0/... paths to local absolute paths"
+    "On dev environment, convert /aj/... paths to local absolute paths"
     from python.helpers.runtime import is_development
 
-    if is_development() and path.startswith("/a0/"):
-        path = path.replace("/a0/", "")
+    if is_development() and path.startswith("/aj/"):
+        path = path.replace("/aj/", "")
     return get_abs_path(path)
 
 
 def normalize_a0_path(path: str):
-    "Convert absolute paths into /a0/... paths"
+    "Convert absolute paths into /aj/... paths"
     if is_in_base_dir(path):
         deabs = deabsolute_path(path)
-        return "/a0/" + deabs
+        return "/aj/" + deabs
     return path
 
 

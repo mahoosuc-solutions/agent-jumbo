@@ -62,7 +62,7 @@ except ImportError:  # pragma: no cover – library not installed
 _PRINTER = PrintStyle(italic=True, font_color="purple", padding=False)
 
 
-class AgentZeroWorker(Worker):  # type: ignore[misc]
+class AgentJumboWorker(Worker):  # type: ignore[misc]
     """Agent Jumbo implementation of FastA2A Worker."""
 
     def __init__(self, broker, storage):
@@ -226,7 +226,7 @@ class DynamicA2AProxy:
 
             provider: AgentProvider = {  # type: ignore
                 "organization": "Agent Jumbo",
-                "url": "https://github.com/frdel/agent-zero",
+                "url": "https://github.com/frdel/agent-jumbo",
             }
 
             # Create new FastA2A app with proper thread safety
@@ -248,7 +248,7 @@ class DynamicA2AProxy:
             # Store for later lazy startup (needs active event-loop)
             self._storage = storage  # type: ignore[attr-defined]
             self._broker = broker  # type: ignore[attr-defined]
-            self._worker = AgentZeroWorker(broker=broker, storage=storage)  # type: ignore[attr-defined]
+            self._worker = AgentJumboWorker(broker=broker, storage=storage)  # type: ignore[attr-defined]
 
             # Atomic update of the app
             self.app = new_app

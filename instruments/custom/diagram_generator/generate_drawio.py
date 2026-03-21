@@ -24,7 +24,7 @@ def create_drawio_xml(cells: list, **kwargs) -> str:
     """
     # Base XML structure
     xml_template = """<?xml version="1.0" encoding="UTF-8"?>
-<mxfile host="agent-zero" modified="{modified}" agent="Agent Zero" version="1.0" type="device">
+<mxfile host="agent-jumbo" modified="{modified}" agent="Agent Jumbo" version="1.0" type="device">
   <diagram name="Diagram" id="diagram1">
     <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>

@@ -84,7 +84,7 @@ def generate_excalidraw_diagram(elements: list[dict], output_path: str, format: 
     excalidraw_data = {
         "type": "excalidraw",
         "version": 2,
-        "source": "agent-zero",
+        "source": "agent-jumbo",
         "elements": elements,
         "appState": {
             "gridSize": kwargs.get("gridSize"),

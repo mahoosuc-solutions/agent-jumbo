@@ -1,5 +1,5 @@
 """
-Skill Importer - Import Claude Code plugins and skills into Agent Zero
+Skill Importer - Import Claude Code plugins and skills into Agent Jumbo
 """
 
 from .importer_manager import SkillImporterManager

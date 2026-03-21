@@ -8,7 +8,7 @@ class PasskeyAuth(ApiHandler):
     async def process(self, input: dict, request: Request) -> dict | Response:
         action = input.get("action")
         user_id = input.get("user_id", "admin")
-        username = input.get("username", "AgentZeroUser")
+        username = input.get("username", "AgentJumboUser")
 
         # Security: Rate Limiting
         if not SecurityManager.check_rate_limit(f"passkey_{action}", limit=10, window=300):

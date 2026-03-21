@@ -94,7 +94,7 @@ class CustomerLifecycleManager:
             structured_requirements=structured_reqs,
             pain_points=pain_points,
             success_criteria=success_criteria,
-            interviewer="Agent Zero",
+            interviewer="Agent Jumbo",
         )
 
         # Update customer stage
@@ -155,7 +155,7 @@ class CustomerLifecycleManager:
             architecture_type=solution_design.get("architecture_type"),
             tech_stack=solution_design.get("tech_stack"),
             components=solution_design.get("components"),
-            created_by="Agent Zero",
+            created_by="Agent Jumbo",
         )
 
         return {
@@ -355,7 +355,7 @@ class CustomerLifecycleManager:
             (customer_id, interaction_type, subject, notes, sentiment, recorded_by)
             VALUES (?, ?, ?, ?, ?, ?)
         """,
-            (customer_id, interaction_type, subject, notes, sentiment, "Agent Zero"),
+            (customer_id, interaction_type, subject, notes, sentiment, "Agent Jumbo"),
         )
 
         conn.commit()

@@ -18,8 +18,8 @@ class CoworkFoldersSet(ApiHandler):
             if not cleaned:
                 continue
             normalized_path = files.normalize_a0_path(files.fix_dev_path(cleaned))
-            if normalized_path == "/a0/.":
-                normalized_path = "/a0"
+            if normalized_path == "/aj/.":
+                normalized_path = "/aj"
             if normalized_path not in seen:
                 normalized.append(normalized_path)
                 seen.add(normalized_path)

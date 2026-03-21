@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from agent import AgentContext
 
 PROJECTS_PARENT_DIR = "usr/projects"
-PROJECT_META_DIR = ".a0proj"
+PROJECT_META_DIR = ".ajproj"
 PROJECT_INSTRUCTIONS_DIR = "instructions"
 PROJECT_KNOWLEDGE_DIR = "knowledge"
 PROJECT_VALIDATION_DIR = "validation"

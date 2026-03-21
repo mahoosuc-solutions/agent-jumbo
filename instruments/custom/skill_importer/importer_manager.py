@@ -1,6 +1,6 @@
 """
 Skill Importer Manager
-Business logic for importing Claude Code plugin skills into Agent Zero
+Business logic for importing Claude Code plugin skills into Agent Jumbo
 """
 
 import json
@@ -13,7 +13,7 @@ from .skill_db import SkillDatabase
 
 
 class SkillImporterManager:
-    """Manages importing and converting Claude Code skills to Agent Zero tools"""
+    """Manages importing and converting Claude Code skills to Agent Jumbo tools"""
 
     def __init__(self, db_path: str):
         self.db = SkillDatabase(db_path)
@@ -151,7 +151,7 @@ class SkillImporterManager:
 
     def generate_tool_prompt(self, skill_id: int) -> str:
         """
-        Generate an Agent Zero tool prompt from an imported skill
+        Generate an Agent Jumbo tool prompt from an imported skill
 
         Args:
             skill_id: ID of the imported skill
@@ -361,7 +361,7 @@ class SkillImporterManager:
         """Check if a skill can be executed"""
         requirements = skill.get("tool_requirements", [])
 
-        # Map Claude Code tools to Agent Zero equivalents
+        # Map Claude Code tools to Agent Jumbo equivalents
         tool_mapping = {
             "Bash": "code_execution_tool",
             "Read": "code_execution_tool",
@@ -381,7 +381,7 @@ class SkillImporterManager:
                 mapped_requirements.append(mapped)
 
         return {
-            "can_execute": True,  # Agent Zero can execute most things
+            "can_execute": True,  # Agent Jumbo can execute most things
             "required_tools": mapped_requirements,
             "original_requirements": requirements,
         }
@@ -630,9 +630,9 @@ class SkillImporterManager:
 
     def get_plugin_mcp_config(self, plugin_id: int) -> dict:
         """
-        Get MCP configuration for Agent Zero integration
+        Get MCP configuration for Agent Jumbo integration
 
-        Returns config that can be added to Agent Zero's MCP settings
+        Returns config that can be added to Agent Jumbo's MCP settings
         """
         servers = self.db.list_mcp_servers(plugin_id=plugin_id)
 

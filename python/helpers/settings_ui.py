@@ -485,7 +485,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
     api_keys_section: SettingsSection = {
         "id": "api_keys",
         "title": "API Keys",
-        "description": "API keys for model providers and services used by Agent Jumbo. You can set multiple API keys separated by a comma (,). They will be used in round-robin fashion.<br>For more information abou Agent Jumbo Venice provider, see <a href='http://agent-zero.ai/?community/api-dashboard/about' target='_blank'>Agent Jumbo Venice</a>.",
+        "description": "API keys for model providers and services used by Agent Jumbo. You can set multiple API keys separated by a comma (,). They will be used in round-robin fashion.<br>For more information abou Agent Jumbo Venice provider, see <a href='http://agent-jumbo.ai/?community/api-dashboard/about' target='_blank'>Agent Jumbo Venice</a>.",
         "fields": api_keys_fields,
         "tab": "external",
     }

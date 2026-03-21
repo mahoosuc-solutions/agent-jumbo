@@ -1,4 +1,4 @@
-"""Consolidated E2E functional tests for Agent Zero.
+"""Consolidated E2E functional tests for Agent Jumbo.
 
 Covers: authentication, chat, file upload, settings, and SSE transport.
 """

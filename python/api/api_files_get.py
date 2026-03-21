@@ -40,14 +40,14 @@ class ApiFilesGet(ApiHandler):
             for path in paths:
                 try:
                     # Convert internal paths to external paths
-                    if path.startswith("/a0/tmp/uploads/"):
+                    if path.startswith("/aj/tmp/uploads/"):
                         # Internal path - convert to external
-                        filename = path.replace("/a0/tmp/uploads/", "")
+                        filename = path.replace("/aj/tmp/uploads/", "")
                         external_path = files.get_abs_path("tmp/uploads", filename)
                         filename = os.path.basename(external_path)
-                    elif path.startswith("/a0/"):
+                    elif path.startswith("/aj/"):
                         # Other internal Agent Jumbo paths
-                        relative_path = path.replace("/a0/", "")
+                        relative_path = path.replace("/aj/", "")
                         external_path = files.get_abs_path(relative_path)
                         filename = os.path.basename(external_path)
                     else:

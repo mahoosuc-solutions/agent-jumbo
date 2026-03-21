@@ -206,7 +206,7 @@ def get_registry() -> SkillRegistry:
         env_dir = os.getenv("A0_SKILLS_DIR", "").strip()
         if env_dir:
             candidate_dirs.append(Path(env_dir))
-        candidate_dirs.extend([Path("skills"), Path("/a0/skills")])
+        candidate_dirs.extend([Path("skills"), Path("/aj/skills")])
         for skills_dir in candidate_dirs:
             with contextlib.suppress(Exception):
                 _global_registry.scan_directory(skills_dir)

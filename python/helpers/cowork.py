@@ -63,7 +63,7 @@ def summarize_args(tool_args: dict[str, Any], max_len: int = 240) -> dict[str, A
 def resolve_path(path: str) -> str:
     if not path:
         return ""
-    if path.startswith("/a0"):
+    if path.startswith("/aj"):
         return os.path.realpath(files.fix_dev_path(path))
     if os.path.isabs(path):
         return os.path.realpath(path)

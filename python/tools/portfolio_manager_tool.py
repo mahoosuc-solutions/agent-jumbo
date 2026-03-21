@@ -34,7 +34,7 @@ class PortfolioManager(Tool):
         from portfolio_manager.portfolio_manager import PortfolioManager as PM
 
         action = kwargs.get("action", "list")
-        output_dir = kwargs.get("output_dir", "/a0/data/portfolio_exports")
+        output_dir = kwargs.get("output_dir", "/aj/data/portfolio_exports")
 
         try:
             pm = PM()

@@ -551,7 +551,7 @@ def get_default_settings() -> Settings:
         twilio_from_number=dotenv.get_dotenv_value("TWILIO_FROM_NUMBER", ""),
         cowork_enabled=False,
         cowork_require_approvals=True,
-        cowork_allowed_paths=["/a0"],
+        cowork_allowed_paths=["/aj"],
         cowork_impactful_tools="code_execution_tool,email,email_advanced,memory_delete,memory_forget,memory_save,scheduler,browser_agent",
         telemetry_enabled=False,
         telemetry_max_events=200,

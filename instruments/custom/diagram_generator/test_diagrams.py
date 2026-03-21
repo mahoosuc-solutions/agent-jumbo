@@ -49,7 +49,7 @@ def main():
     test_dir = Path("/tmp/diagram_tests")  # nosec B108 - test output directory
     test_dir.mkdir(exist_ok=True)
 
-    script_base = Path("/a0/instruments/custom/diagram_generator")
+    script_base = Path("/aj/instruments/custom/diagram_generator")
 
     results = []
 
@@ -251,7 +251,7 @@ def main():
                 "--output",
                 str(test_dir / "excalidraw_custom.excalidraw"),
                 "--elements",
-                '[{"type":"rectangle","x":100,"y":100,"width":200,"height":100,"text":"Hello Agent Zero"}]',
+                '[{"type":"rectangle","x":100,"y":100,"width":200,"height":100,"text":"Hello Agent Jumbo"}]',
             ],
             test_dir / "excalidraw_custom.excalidraw",
         )

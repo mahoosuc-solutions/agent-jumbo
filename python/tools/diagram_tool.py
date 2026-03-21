@@ -42,7 +42,7 @@ class DiagramTool(Tool):
             return Response(message="Error: 'code' argument is required for Mermaid diagrams", break_loop=False)
 
         # Use the instrument script
-        script_path = "/a0/instruments/custom/diagram_generator/generate_mermaid.py"
+        script_path = "/aj/instruments/custom/diagram_generator/generate_mermaid.py"
 
         if output_path:
             # Generate to file
@@ -80,7 +80,7 @@ class DiagramTool(Tool):
         format = self.args.get("format", "json")
         template = self.args.get("template")
 
-        script_path = "/a0/instruments/custom/diagram_generator/generate_excalidraw.py"
+        script_path = "/aj/instruments/custom/diagram_generator/generate_excalidraw.py"
 
         cmd = ["python3", script_path, "--output", output_path, "--format", format]
 
@@ -113,7 +113,7 @@ class DiagramTool(Tool):
         format = self.args.get("format", "png")
         template = self.args.get("template")
 
-        script_path = "/a0/instruments/custom/diagram_generator/generate_drawio.py"
+        script_path = "/aj/instruments/custom/diagram_generator/generate_drawio.py"
 
         cmd = ["python3", script_path, "--output", output_path, "--format", format]
 

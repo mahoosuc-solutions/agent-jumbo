@@ -14,7 +14,7 @@ from typing import Any
 class DatabaseManager:
     """Manages SQLite database connections and operations"""
 
-    DEFAULT_DATA_DIR = "/a0/data"
+    DEFAULT_DATA_DIR = "/aj/data"
 
     def __init__(self, db_name: str, data_dir: str | None = None):
         """
@@ -22,7 +22,7 @@ class DatabaseManager:
 
         Args:
             db_name: Name of the database file (e.g., 'portfolio.db')
-            data_dir: Directory for database files (default: /a0/data)
+            data_dir: Directory for database files (default: /aj/data)
         """
         self.data_dir = Path(data_dir or self.DEFAULT_DATA_DIR)
         self.data_dir.mkdir(parents=True, exist_ok=True)

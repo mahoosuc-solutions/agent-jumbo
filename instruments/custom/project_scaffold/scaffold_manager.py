@@ -499,7 +499,7 @@ import './globals.css'
 
 export const metadata: Metadata = {{
   title: '{vars["project_name"]}',
-  description: '{vars.get("description", "Generated with Agent Zero")}',
+  description: '{vars.get("description", "Generated with Agent Jumbo")}',
 }}
 
 export default function RootLayout({{
@@ -627,7 +627,7 @@ alembic>=1.13.0"""
         # main.py
         main_py = f'''"""
 {vars["project_name"]} API
-{vars.get("description", "Generated with Agent Zero")}
+{vars.get("description", "Generated with Agent Jumbo")}
 """
 
 from fastapi import FastAPI
@@ -891,11 +891,11 @@ services:
         # README.md
         readme = f"""# {vars["project_name"]}
 
-{vars.get("description", "Generated with Agent Zero")}
+{vars.get("description", "Generated with Agent Jumbo")}
 
 ## Getting Started
 
-This project was scaffolded with Agent Zero using the `{template["name"]}` template.
+This project was scaffolded with Agent Jumbo using the `{template["name"]}` template.
 
 ## Development
 
@@ -912,7 +912,7 @@ npm run dev  # or uvicorn main:app --reload
 Generated on {vars["created_date"]}
 
 ---
-*Generated with Agent Zero Project Scaffold*
+*Generated with Agent Jumbo Project Scaffold*
 """
         self._write_file(output / "README.md", readme)
         files.append("README.md")

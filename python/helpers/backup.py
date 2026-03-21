@@ -538,7 +538,7 @@ class BackupService:
                     target_path = self._translate_restore_path(archive_path, original_backup_metadata)
 
                     # For pattern matching, we need to use the translated path (current system)
-                    # so that patterns like "/home/rafael/a0/data/**" can match files correctly
+                    # so that patterns like "/home/rafael/aj/data/**" can match files correctly
                     translated_path_for_matching = target_path.lstrip("/")
 
                     # Check if file matches restore patterns
@@ -712,7 +712,7 @@ class BackupService:
                     target_path = self._translate_restore_path(archive_path, original_backup_metadata)
 
                     # For pattern matching, we need to use the translated path (current system)
-                    # so that patterns like "/home/rafael/a0/data/**" can match files correctly
+                    # so that patterns like "/home/rafael/aj/data/**" can match files correctly
                     translated_path_for_matching = target_path.lstrip("/")
 
                     # Check if file matches restore patterns
