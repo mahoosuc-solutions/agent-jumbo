@@ -94,7 +94,7 @@ async def _transcribe(model_name: str, audio_bytes_b64: str):
     # Create temp audio file
     import os
 
-    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as audio_file:
+    with tempfile.NamedTemporaryFile(suffix=".ogg", delete=False) as audio_file:
         audio_file.write(audio_bytes)
         temp_path = audio_file.name
     try:

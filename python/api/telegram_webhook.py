@@ -1,4 +1,5 @@
 import os
+import random
 import uuid
 
 from agent import UserMessage
@@ -14,6 +15,7 @@ from python.helpers.telegram_bridge import (
     should_ignore_update,
 )
 from python.helpers.telegram_client import send_message
+from python.helpers.telegram_media import TelegramMedia, cleanup_stale_uploads, extract_media
 
 
 class TelegramWebhook(ApiHandler):
@@ -32,26 +34,44 @@ class TelegramWebhook(ApiHandler):
             if header != secret:
                 return Response(response="forbidden", status=403, mimetype="text/plain")
 
-        data = request.get_json(silent=True) or {}
-        update_id = data.get("update_id")
-        message = data.get("message") or data.get("edited_message") or {}
+        req_data = request.get_json(silent=True) or {}
+        update_id = req_data.get("update_id")
+        message = req_data.get("message") or req_data.get("edited_message") or {}
         chat = message.get("chat") or {}
         chat_id = chat.get("id")
-        text = message.get("text") or message.get("caption")
 
-        if not chat_id or not text:
+        if not chat_id:
             return {"status": "ignored"}
 
         chat_id_str = str(chat_id)
         if isinstance(update_id, int) and should_ignore_update(chat_id_str, update_id):
             return {"status": "duplicate"}
 
-        if text.strip().lower() in {"/new", "/reset"}:
+        # Check for reset commands before media extraction
+        raw_text = message.get("text") or ""
+        if raw_text.strip().lower() in {"/new", "/reset"}:
             clear_context_for_chat(chat_id_str)
             token = os.getenv("TELEGRAM_BOT_TOKEN")
             if token:
                 send_message(token, chat_id_str, "Context reset. Start a new thread.")
             return {"status": "reset"}
+
+        # Extract media (photos, video, voice, audio, documents)
+        token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+        if not token:
+            PrintStyle.error("[TelegramWebhook] TELEGRAM_BOT_TOKEN not set; media downloads will fail")
+        media: TelegramMedia | None = None
+        try:
+            media = await extract_media(message, token)
+        except Exception as e:
+            PrintStyle.error(f"Media extraction failed: {e}")
+            media = TelegramMedia(text=raw_text)
+
+        text = media.text
+        attachment_paths = media.attachment_paths
+
+        if not text and not attachment_paths:
+            return {"status": "ignored"}
 
         shared_context = os.getenv("TELEGRAM_AGENT_CONTEXT")
         ctxid = shared_context or get_context_for_chat(chat_id_str)
@@ -62,9 +82,10 @@ class TelegramWebhook(ApiHandler):
 
         context = self.use_context(ctxid)
 
-        data = {"message": text, "attachment_paths": []}
-        await extension.call_extensions("user_message_ui", agent=context.get_agent(), data=data)
-        text = data.get("message", "")
+        ext_data = {"message": text, "attachment_paths": attachment_paths}
+        await extension.call_extensions("user_message_ui", agent=context.get_agent(), data=ext_data)
+        text = ext_data.get("message", "")
+        attachment_paths = ext_data.get("attachment_paths", attachment_paths)
 
         tags = extract_tags(text)
         tags.append(f"chat:{chat_id_str}")
@@ -75,12 +96,17 @@ class TelegramWebhook(ApiHandler):
 
         await self._store_telegram_message(text, title, tags)
 
-        task = context.communicate(UserMessage(text, []))
-        result = await task.result()  # type: ignore
+        try:
+            task = context.communicate(UserMessage(message=text, attachments=attachment_paths))
+            result = await task.result()  # type: ignore
 
-        token = os.getenv("TELEGRAM_BOT_TOKEN")
-        if token:
-            send_message(token, chat_id_str, result)
+            if token:
+                send_message(token, chat_id_str, result)
+        finally:
+            if media:
+                media.cleanup()
+            if random.random() < 0.05:
+                cleanup_stale_uploads()
 
         return {"status": "ok"}
 

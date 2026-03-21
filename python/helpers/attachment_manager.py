@@ -13,6 +13,8 @@ class AttachmentManager:
         "image": {"jpg", "jpeg", "png", "bmp"},
         "code": {"py", "js", "sh", "html", "css"},
         "document": {"md", "pdf", "txt", "csv", "json"},
+        "audio": {"ogg", "mp3", "wav", "m4a", "flac"},
+        "video": {"mp4", "mov", "avi", "webm"},
     }
 
     def __init__(self, work_dir: str):
@@ -38,7 +40,7 @@ class AttachmentManager:
     def validate_mime_type(self, file) -> bool:
         try:
             mime_type = file.content_type
-            return mime_type.split("/")[0] in ["image", "text", "application"]
+            return mime_type.split("/")[0] in ["image", "text", "application", "audio", "video"]
         except AttributeError:
             return False
 
