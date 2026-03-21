@@ -105,12 +105,40 @@ async def _handle_approval_resolved(event: AgentMeshEvent) -> None:
             )
 
 
+def _get_or_create_mesh_context():
+    """Get or create a dedicated AgentContext for mesh task execution.
+
+    Uses AgentContextType.TASK with a fixed ID so mesh tasks never
+    interfere with user chat sessions.
+    """
+    from agent import AgentContext, AgentContextType
+
+    mesh_ctx_id = "agentmesh-worker"
+    ctx = AgentContext.get(mesh_ctx_id)
+    if ctx:
+        return ctx
+
+    # Create a fresh context with the current agent config
+    from initialize import initialize_agent
+
+    config = initialize_agent()
+
+    ctx = AgentContext(
+        config=config,
+        id=mesh_ctx_id,
+        name="AgentMesh Worker",
+        type=AgentContextType.TASK,
+    )
+    logger.info("Created dedicated AgentMesh context (id=%s)", mesh_ctx_id)
+    return ctx
+
+
 async def _execute_task(
     task_id: str,
     payload: dict[str, Any],
     correlation_id: str | None,
 ) -> None:
-    """Execute a task by sending it to Agent Jumbo's message processing."""
+    """Execute a task using a dedicated mesh context."""
     bridge = _get_bridge()
     if not bridge:
         logger.error("No AgentMesh bridge available")
@@ -145,14 +173,11 @@ async def _execute_task(
 
     start_time = time.monotonic()
     try:
-        # Use the existing AgentContext to process the task
         import asyncio
 
-        from agent import AgentContext, UserMessage
+        from agent import UserMessage
 
-        ctx = AgentContext.first()
-        if not ctx:
-            raise RuntimeError("No AgentContext available")
+        ctx = _get_or_create_mesh_context()
 
         msg = UserMessage(message=task_prompt)
         deferred = ctx.communicate(msg)

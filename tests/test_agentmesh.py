@@ -167,3 +167,37 @@ class TestAgentMeshBridge:
         assert len(bridge._processed_task_ids) == 0
         bridge._processed_task_ids.add("task.assigned:task-1")
         assert "task.assigned:task-1" in bridge._processed_task_ids
+
+
+# ── Task Handler ─────────────────────────────────────────────────────────
+
+
+class TestTaskHandler:
+    """Test task handler logic."""
+
+    def test_category_profile_mapping(self):
+        from python.helpers.agentmesh_task_handler import CATEGORY_PROFILE_MAP
+
+        assert CATEGORY_PROFILE_MAP["deployment"] == "actor-ops"
+        assert CATEGORY_PROFILE_MAP["security_scan"] == "hacker"
+        assert CATEGORY_PROFILE_MAP["code_review"] == "developer"
+        assert CATEGORY_PROFILE_MAP["general"] == "base"
+
+    def test_mesh_context_factory_creates_task_type(self):
+        """Verify _get_or_create_mesh_context creates a TASK-type context."""
+        from python.helpers.agentmesh_task_handler import _get_or_create_mesh_context
+
+        ctx = _get_or_create_mesh_context()
+        from agent import AgentContext, AgentContextType
+
+        assert ctx is not None
+        assert ctx.id == "agentmesh-worker"
+        assert ctx.type == AgentContextType.TASK
+        assert ctx.name == "AgentMesh Worker"
+
+        # Second call returns same context
+        ctx2 = _get_or_create_mesh_context()
+        assert ctx2 is ctx
+
+        # Cleanup
+        AgentContext.remove("agentmesh-worker")
