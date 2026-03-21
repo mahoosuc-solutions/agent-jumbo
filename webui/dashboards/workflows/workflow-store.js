@@ -1,5 +1,6 @@
 import { createStore } from "/js/AlpineStore.js";
 import { callJsonApi } from "/js/api.js";
+import { marked } from "../../vendor/marked/marked.esm.js";
 
 const model = {
   // State
@@ -35,10 +36,16 @@ const model = {
   selectedPath: null,
   pathProgress: null,
 
+  // Lesson viewer state
+  expandedModule: null,
+  activeLesson: null,
+
   // Skills data
   skills: [],
   skillsByCategory: {},
   agentProficiency: [],
+  selectedSkill: null,
+  selectedSkillProgress: null,
 
   // Polling
   pollingInterval: null,
@@ -158,7 +165,7 @@ const model = {
       }
       if (visualResp.success) {
         this.workflowVisualization = visualResp.diagram || "";
-        this.$nextTick(() => this.renderMermaid());
+        queueMicrotask(() => this.renderMermaid());
       }
       if (historyResp && historyResp.success) {
         this.workflowHistory = historyResp.history || [];
@@ -279,24 +286,109 @@ const model = {
 
       if (skillsResp.success) {
         this.skills = skillsResp.skills || [];
-        // Group by category
-        this.skillsByCategory = {};
-        for (const skill of this.skills) {
-          const cat = skill.category || "other";
-          if (!this.skillsByCategory[cat]) {
-            this.skillsByCategory[cat] = [];
-          }
-          this.skillsByCategory[cat].push(skill);
-        }
       }
       if (profResp.success) {
         this.agentProficiency = profResp.proficiency || [];
+        // Merge proficiency data into skill objects
+        const profMap = {};
+        for (const p of this.agentProficiency) { profMap[p.skill_id] = p; }
+        for (const skill of this.skills) {
+          const prog = profMap[skill.skill_id];
+          if (prog) {
+            skill.current_level = prog.current_level;
+            skill.completions = prog.completions;
+            skill.last_practiced = prog.last_practiced;
+          }
+        }
+      }
+      // Group by category (after merge so cards have progress data)
+      this.skillsByCategory = {};
+      for (const skill of this.skills) {
+        const cat = skill.category || "other";
+        if (!this.skillsByCategory[cat]) {
+          this.skillsByCategory[cat] = [];
+        }
+        this.skillsByCategory[cat].push(skill);
+      }
+      // Load learning paths for cross-referencing if not already loaded
+      if (!this.learningPaths.length) {
+        const pathsResp = await callJsonApi("/workflow_training_api", { action: "list_paths" });
+        if (pathsResp.success) this.learningPaths = pathsResp.paths || [];
       }
     } catch (err) {
       this.error = err?.message || "Failed to load skills";
     } finally {
       this.loading = false;
     }
+  },
+
+  async openSkill(skillId) {
+    this.loading = true;
+    try {
+      const [skillResp, profResp] = await Promise.all([
+        callJsonApi("/workflow_training_api", { action: "get_skill", skill_id: skillId }),
+        callJsonApi("/workflow_training_api", { action: "get_proficiency", agent_id: "agent_0" }),
+      ]);
+      if (skillResp.success) {
+        this.selectedSkill = skillResp.skill;
+        const allProf = profResp.success ? (profResp.proficiency || []) : this.agentProficiency;
+        this.selectedSkillProgress = allProf.find(p => p.skill_id === skillId) || null;
+      }
+    } catch (err) {
+      this.error = err?.message || "Failed to load skill";
+    } finally {
+      this.loading = false;
+    }
+  },
+
+  closeSkill() {
+    this.selectedSkill = null;
+    this.selectedSkillProgress = null;
+  },
+
+  getNextLevelRequirements(skill, progress) {
+    if (!skill) return null;
+    const currentLevel = progress?.current_level || 1;
+    const completions = progress?.completions || 0;
+    const levels = skill?.proficiency_levels || [];
+    const next = levels.find(l => l.level === currentLevel + 1);
+    if (!next) return null;
+    const needed = next.min_completions || next.level * 5;
+    const current = levels.find(l => l.level === currentLevel);
+    const prevNeeded = current?.min_completions || currentLevel * 5;
+    const rangeTotal = needed - prevNeeded;
+    const rangeProgress = completions - prevNeeded;
+    return {
+      nextLevel: next.level,
+      nextLevelName: next.name,
+      completionsNeeded: needed,
+      completionsCurrent: completions,
+      progressPercent: rangeTotal > 0 ? Math.min(100, Math.round((rangeProgress / rangeTotal) * 100)) : 0,
+      criteria: next.criteria || [],
+    };
+  },
+
+  getPrerequisiteSkills(skill) {
+    const prereqs = skill?.prerequisites || [];
+    return prereqs.map(pid => this.skills.find(s => s.skill_id === pid)).filter(Boolean);
+  },
+
+  getRelatedPaths(skillId) {
+    if (!skillId) return [];
+    return (this.learningPaths || []).filter(path =>
+      (path.modules || []).some(m => (m.skills || []).includes(skillId))
+    );
+  },
+
+  getCardProgressPercent(skill) {
+    const level = skill.current_level || 1;
+    const completions = skill.completions || 0;
+    if (level >= 5) return 100;
+    const nextThreshold = (level + 1) * 5;
+    const currentThreshold = level * 5;
+    const range = nextThreshold - currentThreshold;
+    if (range <= 0) return 0;
+    return Math.min(100, Math.max(0, Math.round(((completions - currentThreshold) / range) * 100)));
   },
 
   // Helpers
@@ -369,6 +461,23 @@ const model = {
     const filled = "\u2605";
     const empty = "\u2606";
     return filled.repeat(level) + empty.repeat(5 - level);
+  },
+
+  toggleModule(moduleId) {
+    this.expandedModule = this.expandedModule === moduleId ? null : moduleId;
+  },
+
+  openLesson(mod, lessonIndex) {
+    this.activeLesson = mod.lessons[lessonIndex];
+  },
+
+  closeLesson() {
+    this.activeLesson = null;
+  },
+
+  renderLessonContent() {
+    if (!this.activeLesson?.content) return '';
+    return marked.parse(this.activeLesson.content, { breaks: true });
   },
 
   getProgressPercent(completed, total) {

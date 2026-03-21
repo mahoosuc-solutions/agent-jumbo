@@ -118,15 +118,18 @@
     <script defer src="vendor/katex/katex.auto-render.min.js" crossorigin="anonymous"></script>
 
     <!-- Mermaid.js for diagrams -->
-    <script type="module">
-        import mermaid from './vendor/mermaid.min.js';
-        mermaid.initialize({
-            startOnLoad: false,
-            theme: 'default',
-            securityLevel: 'loose',
-            fontFamily: 'system-ui, -apple-system, sans-serif'
+    <script src="vendor/mermaid.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (window.mermaid) {
+                window.mermaid.initialize({
+                    startOnLoad: false,
+                    theme: 'default',
+                    securityLevel: 'loose',
+                    fontFamily: 'system-ui, -apple-system, sans-serif'
+                });
+            }
         });
-        window.mermaid = mermaid;
     </script>
 
     <!-- QR Code Library -->
