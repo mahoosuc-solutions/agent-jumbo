@@ -80,9 +80,10 @@ class TelegramWebhook(ApiHandler):
                 sync_core_projects_to_portfolio()
             except Exception as e:
                 PrintStyle.error(f"Portfolio sync failed: {e}")
+        translated_text = None
         if cmd is not None:
             # Translate slash command to natural language for the agent
-            raw_text = slash_command_to_prompt(cmd, cmd_args)
+            translated_text = slash_command_to_prompt(cmd, cmd_args)
 
         # Extract media (photos, video, voice, audio, documents)
         token = os.getenv("TELEGRAM_BOT_TOKEN", "")
@@ -106,7 +107,8 @@ class TelegramWebhook(ApiHandler):
             }
             set_session_meta(chat_id_str, "vision_context", vision_summary)
 
-        text = media.text
+        # Use translated slash command prompt if available, otherwise use media text
+        text = translated_text or media.text
         attachment_paths = media.attachment_paths
 
         if not text and not attachment_paths:
