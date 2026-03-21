@@ -318,7 +318,7 @@ class PortfolioManager(Tool):
 
     async def _get_dashboard(self, pm) -> Response:
         """Get portfolio dashboard"""
-        stats = pm.get_portfolio_stats()
+        stats = pm.db.get_portfolio_stats()
 
         dashboard = f"""
 ## 📊 Portfolio Dashboard
