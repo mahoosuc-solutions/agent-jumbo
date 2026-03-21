@@ -11,12 +11,80 @@ Run: python scripts/setup_ai_solutioning_training.py
 """
 
 import os
+import re
 import sys
 
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from python.helpers import files
+
+# Mapping from module_id to content file
+MODULE_CONTENT_FILES = {
+    "discovery_fundamentals": "01-discovery-fundamentals.md",
+    "solution_design_mastery": "02-solution-design.md",
+    "sales_and_roi": "03-sales-and-roi.md",
+    "implementation_excellence": "04-implementation.md",
+    "deployment_operations": "05-deployment.md",
+    "optimization_support": "06-optimization-support.md",
+    # Hospitality Operations Manager path
+    "guest_communication_mastery": "07-guest-communication.md",
+    "cleaning_and_operations": "08-cleaning-ops.md",
+    "revenue_and_reviews": "09-revenue-reviews.md",
+    "hospitality_capstone": "10-hospitality-capstone.md",
+    # Knowledge & Content Strategist path
+    "knowledge_system_foundations": "11-knowledge-foundations.md",
+    "digest_and_distribution": "12-digest-distribution.md",
+    "advanced_knowledge_ops": "13-advanced-knowledge.md",
+    "knowledge_capstone": "14-knowledge-capstone.md",
+    # Workflow & Automation Engineer path
+    "workflow_engine_deep_dive": "15-workflow-engine-deep.md",
+    "scheduling_and_automation": "16-scheduling-automation.md",
+    "integration_and_scaling": "17-integration-scaling.md",
+    "automation_capstone": "18-automation-capstone.md",
+    # Business Development Operator path
+    "pipeline_management": "19-pipeline-management.md",
+    "proposal_and_closing": "20-proposal-closing.md",
+    "account_management": "21-account-management.md",
+    # Platform Administrator path
+    "platform_configuration": "22-platform-config.md",
+    "security_and_monitoring": "23-security-monitoring.md",
+    "admin_capstone": "24-admin-capstone.md",
+}
+
+
+def load_lesson_content(module_id: str, lesson_title: str) -> str:
+    """Load lesson content from markdown file by extracting the section for this lesson.
+
+    Content files use '## Lesson: {title}' as section headers.
+    Returns everything between the matching header and the next '## Lesson:' or EOF.
+    Falls back to the original one-liner if the file or section is not found.
+    """
+    filename = MODULE_CONTENT_FILES.get(module_id)
+    if not filename:
+        return lesson_title  # fallback
+
+    content_dir = os.path.join(os.path.dirname(__file__), "..", "training", "content")
+    content_path = os.path.join(content_dir, filename)
+
+    if not os.path.exists(content_path):
+        print(f"  ⚠ Content file not found: {content_path}")
+        return lesson_title  # fallback
+
+    with open(content_path, encoding="utf-8") as f:
+        full_text = f.read()
+
+    # Extract section between ## Lesson: {title} and next ## Lesson: or end of file
+    pattern = re.compile(
+        r"^## Lesson:\s*" + re.escape(lesson_title) + r"\s*\n(.*?)(?=^## Lesson:|\Z)",
+        re.MULTILINE | re.DOTALL,
+    )
+    match = pattern.search(full_text)
+    if match:
+        return match.group(1).strip()
+
+    print(f"  ⚠ Lesson section not found: '{lesson_title}' in {filename}")
+    return lesson_title  # fallback
 
 
 def setup_training():
@@ -244,9 +312,193 @@ def setup_training():
         },
     ]
 
+    # ========================================
+    # CATEGORY 7: Hospitality Skills
+    # ========================================
+    hospitality_skills = [
+        {
+            "skill_id": "guest_messaging",
+            "name": "Guest Messaging & Approval Workflows",
+            "category": "hospitality",
+            "description": "Draft, review, and send guest communications using approval workflow patterns",
+            "prerequisites": ["prompt_engineering"],
+            "learning_resources": ["Hospitality Ops SKILL.md", "Approval Workflow SKILL.md"],
+        },
+        {
+            "skill_id": "cleaning_dispatch",
+            "name": "Cleaning Dispatch Automation",
+            "category": "hospitality",
+            "description": "Automate cleaning scheduling based on PMS checkout/checkin data and priority tiers",
+            "prerequisites": [],
+            "learning_resources": ["Hospitality Ops SKILL.md", "Daily Ops Rhythm SKILL.md"],
+        },
+        {
+            "skill_id": "pms_interpretation",
+            "name": "PMS Data Interpretation",
+            "category": "hospitality",
+            "description": "Read and act on property management system data: bookings, rates, availability, guest profiles",
+            "prerequisites": [],
+            "learning_resources": ["PMS Integration Guide", "Hospitality Ops SKILL.md"],
+        },
+        {
+            "skill_id": "review_management",
+            "name": "Review Solicitation & Management",
+            "category": "hospitality",
+            "description": "Automate review collection, monitor ratings, and respond to guest feedback",
+            "prerequisites": ["guest_messaging"],
+            "learning_resources": ["Hospitality Ops SKILL.md", "Review Platform Guides"],
+        },
+    ]
+
+    # ========================================
+    # CATEGORY 8: Knowledge & Content Skills
+    # ========================================
+    knowledge_skills = [
+        {
+            "skill_id": "knowledge_ingestion",
+            "name": "Knowledge Ingestion & RAG",
+            "category": "knowledge",
+            "description": "Ingest documents, build knowledge bases, and configure retrieval-augmented generation pipelines",
+            "prerequisites": [],
+            "learning_resources": ["Knowledge Base Tool Guide", "RAG Architecture Patterns"],
+        },
+        {
+            "skill_id": "digest_design",
+            "name": "Digest Design & Distribution",
+            "category": "knowledge",
+            "description": "Design automated digests and intelligence briefs delivered via Telegram or other channels",
+            "prerequisites": ["knowledge_ingestion"],
+            "learning_resources": ["Daily Ops Rhythm SKILL.md", "Telegram Formatting Guide"],
+        },
+        {
+            "skill_id": "rag_optimization",
+            "name": "RAG Quality Optimization",
+            "category": "knowledge",
+            "description": "Tune retrieval quality, chunk sizing, embedding strategies, and relevance scoring",
+            "prerequisites": ["knowledge_ingestion"],
+            "learning_resources": ["RAG Tuning Guide", "Embedding Model Comparison"],
+        },
+        {
+            "skill_id": "content_governance",
+            "name": "Content Governance & Lifecycle",
+            "category": "knowledge",
+            "description": "Manage content freshness, archival policies, taxonomy maintenance, and quality audits",
+            "prerequisites": ["knowledge_ingestion"],
+            "learning_resources": ["Content Lifecycle Guide", "Taxonomy Best Practices"],
+        },
+    ]
+
+    # ========================================
+    # CATEGORY 9: Automation & Workflow Skills
+    # ========================================
+    automation_skills = [
+        {
+            "skill_id": "workflow_engineering",
+            "name": "Workflow Engineering",
+            "category": "automation",
+            "description": "Design and build multi-stage workflows with branching, looping, and error recovery",
+            "prerequisites": ["workflow_design"],
+            "learning_resources": ["Workflow Engine Documentation", "Stage Design Patterns"],
+        },
+        {
+            "skill_id": "scheduler_management",
+            "name": "Scheduler & Task Management",
+            "category": "automation",
+            "description": "Configure scheduled tasks, cron expressions, and recurring automation triggers",
+            "prerequisites": [],
+            "learning_resources": ["Scheduler Configuration Guide", "Cron Expression Reference"],
+        },
+        {
+            "skill_id": "agent_orchestration",
+            "name": "Agent Orchestration",
+            "category": "automation",
+            "description": "Coordinate multiple AI agents across workflows with handoff, escalation, and parallel execution",
+            "prerequisites": ["workflow_engineering"],
+            "learning_resources": ["Agent Orchestration Guide", "Multi-Agent Patterns"],
+        },
+        {
+            "skill_id": "integration_design",
+            "name": "External Integration Design",
+            "category": "automation",
+            "description": "Design integrations with external services: APIs, webhooks, Telegram, and third-party platforms",
+            "prerequisites": [],
+            "learning_resources": ["Integration Patterns Guide", "Webhook Configuration"],
+        },
+    ]
+
+    # ========================================
+    # CATEGORY 10: Business Development Skills
+    # ========================================
+    bizdev_skills = [
+        {
+            "skill_id": "pipeline_analytics",
+            "name": "Pipeline Analytics & Forecasting",
+            "category": "bizdev",
+            "description": "Track deal pipeline health, forecast revenue, and identify conversion bottlenecks",
+            "prerequisites": ["customer_intake"],
+            "learning_resources": ["Pipeline Dashboard Guide", "Revenue Forecasting Methods"],
+        },
+        {
+            "skill_id": "proposal_automation",
+            "name": "Proposal Automation Pipelines",
+            "category": "bizdev",
+            "description": "Automate proposal generation from business analysis data with dynamic pricing and scope",
+            "prerequisites": ["proposal_creation"],
+            "learning_resources": ["Sales Generator Tool Guide", "Proposal Template Library"],
+        },
+        {
+            "skill_id": "account_health_monitoring",
+            "name": "Account Health Monitoring",
+            "category": "bizdev",
+            "description": "Monitor client health scores, predict churn risk, and identify expansion opportunities",
+            "prerequisites": ["customer_success"],
+            "learning_resources": ["Customer Lifecycle Guide", "Health Score Methodology"],
+        },
+    ]
+
+    # ========================================
+    # CATEGORY 11: Platform Administration Skills
+    # ========================================
+    admin_skills = [
+        {
+            "skill_id": "platform_configuration",
+            "name": "Platform Configuration",
+            "category": "administration",
+            "description": "Configure platform dashboards, instruments, tools, and system settings",
+            "prerequisites": [],
+            "learning_resources": ["Platform Architecture Guide", "Dashboard Configuration"],
+        },
+        {
+            "skill_id": "security_administration",
+            "name": "Security & Access Management",
+            "category": "administration",
+            "description": "Manage API keys, access controls, environment security, and audit logging",
+            "prerequisites": [],
+            "learning_resources": ["Security Configuration Guide", "Access Control Patterns"],
+        },
+        {
+            "skill_id": "observability_ops",
+            "name": "Observability & Monitoring",
+            "category": "administration",
+            "description": "Configure health checks, performance monitoring, alerting, and operational dashboards",
+            "prerequisites": ["platform_configuration"],
+            "learning_resources": ["Observability Guide", "Health Check Configuration"],
+        },
+    ]
+
     # Register all skills
     all_skills = (
-        discovery_skills + design_skills + sales_skills + implementation_skills + deployment_skills + support_skills
+        discovery_skills
+        + design_skills
+        + sales_skills
+        + implementation_skills
+        + deployment_skills
+        + support_skills
+        + hospitality_skills
+        + knowledge_skills
+        + automation_skills
+        + bizdev_skills
+        + admin_skills
     )
 
     print(f"\n📚 Registering {len(all_skills)} skills...")
@@ -404,7 +656,351 @@ def setup_training():
             },
             "total_hours": 6,
         },
+        # ========================================
+        # PATH 3: Hospitality Operations Manager
+        # ========================================
+        {
+            "path_id": "hospitality_ops_manager",
+            "name": "Hospitality Operations Manager",
+            "description": "Master guest communications, cleaning operations, and revenue optimization for vacation rental management",
+            "target_role": "pm",
+            "modules": [
+                {
+                    "module_id": "guest_communication_mastery",
+                    "name": "Guest Communication Mastery",
+                    "description": "Master the art of guest messaging across the entire stay lifecycle",
+                    "skills": ["guest_messaging", "prompt_engineering"],
+                    "lessons": [
+                        {"title": "Guest Messaging Fundamentals", "content": "placeholder"},
+                        {"title": "Automated Guest Lifecycle", "content": "placeholder"},
+                        {"title": "Handling Escalations", "content": "placeholder"},
+                        {"title": "Multi-Property at Scale", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+                {
+                    "module_id": "cleaning_and_operations",
+                    "name": "Cleaning & Operations",
+                    "description": "Automate cleaning dispatch and daily operations workflows",
+                    "skills": ["cleaning_dispatch", "pms_interpretation"],
+                    "lessons": [
+                        {"title": "PMS Data Interpretation", "content": "placeholder"},
+                        {"title": "Cleaning Dispatch Automation", "content": "placeholder"},
+                        {"title": "Daily Operations Rhythm", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "revenue_and_reviews",
+                    "name": "Revenue & Reviews",
+                    "description": "Optimize revenue through review management and pricing strategies",
+                    "skills": ["review_management", "performance_monitoring"],
+                    "lessons": [
+                        {"title": "Review Solicitation Strategy", "content": "placeholder"},
+                        {"title": "Revenue Monitoring", "content": "placeholder"},
+                        {"title": "Seasonal Pricing", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "hospitality_capstone",
+                    "name": "Hospitality Capstone",
+                    "description": "Apply everything in a comprehensive multi-property project",
+                    "skills": ["guest_messaging", "cleaning_dispatch", "pms_interpretation", "review_management"],
+                    "lessons": [
+                        {"title": "Multi-Property Setup Project", "content": "placeholder"},
+                        {"title": "Operations Playbook Creation", "content": "placeholder"},
+                        {"title": "Performance Review", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+            ],
+            "certification": {
+                "name": "Certified Hospitality Operations Manager",
+                "requirements": [
+                    "Complete all modules",
+                    "Achieve Intermediate level in hospitality skills",
+                    "Complete multi-property capstone project",
+                ],
+            },
+            "total_hours": 18,
+        },
+        # ========================================
+        # PATH 4: Knowledge & Content Strategist
+        # ========================================
+        {
+            "path_id": "knowledge_content_strategist",
+            "name": "Knowledge & Content Strategist",
+            "description": "Build and manage knowledge systems, automated digests, and content pipelines",
+            "target_role": "analyst",
+            "modules": [
+                {
+                    "module_id": "knowledge_system_foundations",
+                    "name": "Knowledge System Foundations",
+                    "description": "Understand knowledge architecture and document ingestion",
+                    "skills": ["knowledge_ingestion"],
+                    "lessons": [
+                        {"title": "Knowledge Architecture Overview", "content": "placeholder"},
+                        {"title": "Document Ingestion Workflows", "content": "placeholder"},
+                        {"title": "Organizing Knowledge Taxonomies", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "digest_and_distribution",
+                    "name": "Digest & Distribution",
+                    "description": "Design and deliver automated intelligence digests",
+                    "skills": ["digest_design", "prompt_engineering"],
+                    "lessons": [
+                        {"title": "Digest Builder Fundamentals", "content": "placeholder"},
+                        {"title": "Telegram Digest Delivery", "content": "placeholder"},
+                        {"title": "Research Agent Workflows", "content": "placeholder"},
+                        {"title": "Content Pipeline Automation", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "advanced_knowledge_ops",
+                    "name": "Advanced Knowledge Ops",
+                    "description": "Optimize RAG quality and establish content governance",
+                    "skills": ["rag_optimization", "content_governance", "prompt_optimization"],
+                    "lessons": [
+                        {"title": "RAG Quality Optimization", "content": "placeholder"},
+                        {"title": "Brand Voice and Writing Standards", "content": "placeholder"},
+                        {"title": "Knowledge Governance", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "knowledge_capstone",
+                    "name": "Knowledge Capstone",
+                    "description": "Build a complete knowledge system from scratch",
+                    "skills": ["knowledge_ingestion", "digest_design", "rag_optimization", "content_governance"],
+                    "lessons": [
+                        {"title": "Knowledge Base Build-Out", "content": "placeholder"},
+                        {"title": "Automated Intelligence Brief", "content": "placeholder"},
+                        {"title": "Knowledge System Audit", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+            ],
+            "certification": {
+                "name": "Certified Knowledge Strategist",
+                "requirements": [
+                    "Complete all modules",
+                    "Achieve Intermediate level in knowledge skills",
+                    "Complete knowledge system capstone project",
+                ],
+            },
+            "total_hours": 16,
+        },
+        # ========================================
+        # PATH 5: Workflow & Automation Engineer
+        # ========================================
+        {
+            "path_id": "workflow_automation_engineer",
+            "name": "Workflow & Automation Engineer",
+            "description": "Design, build, and operate complex multi-stage automations and agent orchestrations",
+            "target_role": "devops",
+            "modules": [
+                {
+                    "module_id": "workflow_engine_deep_dive",
+                    "name": "Workflow Engine Deep Dive",
+                    "description": "Master the workflow engine internals and stage design",
+                    "skills": ["workflow_engineering", "workflow_design"],
+                    "lessons": [
+                        {"title": "Workflow Engine Architecture", "content": "placeholder"},
+                        {"title": "Stage Design and Transitions", "content": "placeholder"},
+                        {"title": "Execution Tracking and History", "content": "placeholder"},
+                        {"title": "Workflow Templates and Reuse", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+                {
+                    "module_id": "scheduling_and_automation",
+                    "name": "Scheduling & Automation",
+                    "description": "Configure schedulers, approval workflows, and agent orchestration",
+                    "skills": ["scheduler_management", "agent_orchestration"],
+                    "lessons": [
+                        {"title": "Scheduler Deep Dive", "content": "placeholder"},
+                        {"title": "Approval Workflow Patterns", "content": "placeholder"},
+                        {"title": "Agent Orchestration", "content": "placeholder"},
+                        {"title": "Error Handling and Recovery", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+                {
+                    "module_id": "integration_and_scaling",
+                    "name": "Integration & Scaling",
+                    "description": "Connect external services and scale operations",
+                    "skills": ["integration_design", "cicd_setup"],
+                    "lessons": [
+                        {"title": "Telegram Integration Patterns", "content": "placeholder"},
+                        {"title": "External Service Integration", "content": "placeholder"},
+                        {"title": "Multi-Dashboard Operations", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+                {
+                    "module_id": "automation_capstone",
+                    "name": "Automation Capstone",
+                    "description": "Build and optimize a production automation end-to-end",
+                    "skills": [
+                        "workflow_engineering",
+                        "scheduler_management",
+                        "agent_orchestration",
+                        "integration_design",
+                    ],
+                    "lessons": [
+                        {"title": "End-to-End Automation Build", "content": "placeholder"},
+                        {"title": "Load Testing and Optimization", "content": "placeholder"},
+                        {"title": "Automation Governance", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+            ],
+            "certification": {
+                "name": "Certified Automation Engineer",
+                "requirements": [
+                    "Complete all modules",
+                    "Achieve Intermediate level in automation skills",
+                    "Complete end-to-end automation capstone project",
+                ],
+            },
+            "total_hours": 20,
+        },
+        # ========================================
+        # PATH 6: Business Development Operator
+        # ========================================
+        {
+            "path_id": "bizdev_operator",
+            "name": "Business Development Operator",
+            "description": "Master pipeline management, proposal automation, and account health monitoring for sales operations",
+            "target_role": "analyst",
+            "modules": [
+                {
+                    "module_id": "pipeline_management",
+                    "name": "Pipeline Management",
+                    "description": "Track deals, forecast revenue, and gather competitive intelligence",
+                    "skills": ["pipeline_analytics", "customer_intake", "business_analysis"],
+                    "lessons": [
+                        {"title": "Customer Lifecycle Mastery", "content": "placeholder"},
+                        {"title": "Pipeline Analytics and Forecasting", "content": "placeholder"},
+                        {"title": "Competitive Intelligence Gathering", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "proposal_and_closing",
+                    "name": "Proposal & Closing",
+                    "description": "Automate proposal generation and optimize deal closing",
+                    "skills": ["proposal_automation", "roi_calculation", "proposal_creation"],
+                    "lessons": [
+                        {"title": "Business X-Ray for Sales", "content": "placeholder"},
+                        {"title": "Proposal Generation Pipeline", "content": "placeholder"},
+                        {"title": "Follow-Up Automation", "content": "placeholder"},
+                        {"title": "Objection Handling with Data", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+                {
+                    "module_id": "account_management",
+                    "name": "Account Management",
+                    "description": "Monitor account health and drive expansion",
+                    "skills": ["account_health_monitoring", "customer_success"],
+                    "lessons": [
+                        {"title": "Client Health Monitoring", "content": "placeholder"},
+                        {"title": "Expansion and Upsell Identification", "content": "placeholder"},
+                        {"title": "Renewal Automation", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 5,
+                },
+            ],
+            "certification": {
+                "name": "Certified BizDev Operator",
+                "requirements": [
+                    "Complete all modules",
+                    "Achieve Intermediate level in bizdev skills",
+                    "Complete account management capstone exercises",
+                ],
+            },
+            "total_hours": 14,
+        },
+        # ========================================
+        # PATH 7: Platform Administrator
+        # ========================================
+        {
+            "path_id": "platform_admin",
+            "name": "Platform Administrator",
+            "description": "Configure, secure, and monitor the Agent Jumbo platform for production operations",
+            "target_role": "devops",
+            "modules": [
+                {
+                    "module_id": "platform_configuration",
+                    "name": "Platform Configuration",
+                    "description": "Understand platform architecture and configure dashboards and tools",
+                    "skills": ["platform_configuration"],
+                    "lessons": [
+                        {"title": "Platform Architecture Overview", "content": "placeholder"},
+                        {"title": "Dashboard Configuration", "content": "placeholder"},
+                        {"title": "Instrument and Tool Management", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "security_and_monitoring",
+                    "name": "Security & Monitoring",
+                    "description": "Configure security, observability, and backup systems",
+                    "skills": ["security_administration", "observability_ops", "performance_monitoring"],
+                    "lessons": [
+                        {"title": "Security Configuration", "content": "placeholder"},
+                        {"title": "Observability and Health Monitoring", "content": "placeholder"},
+                        {"title": "Backup and Recovery", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+                {
+                    "module_id": "admin_capstone",
+                    "name": "Admin Capstone",
+                    "description": "Apply administration skills in real-world scenarios",
+                    "skills": [
+                        "platform_configuration",
+                        "security_administration",
+                        "observability_ops",
+                        "containerization",
+                    ],
+                    "lessons": [
+                        {"title": "Platform Health Audit", "content": "placeholder"},
+                        {"title": "Onboarding New Operators", "content": "placeholder"},
+                        {"title": "Capacity Planning", "content": "placeholder"},
+                    ],
+                    "estimated_hours": 4,
+                },
+            ],
+            "certification": {
+                "name": "Certified Platform Administrator",
+                "requirements": [
+                    "Complete all modules",
+                    "Achieve Intermediate level in administration skills",
+                    "Complete platform health audit capstone",
+                ],
+            },
+            "total_hours": 12,
+        },
     ]
+
+    # Load rich content from markdown files into lesson definitions
+    print("\n📝 Loading lesson content from training/content/ files...")
+    for path in learning_paths:
+        for module in path.get("modules", []):
+            module_id = module["module_id"]
+            for lesson in module.get("lessons", []):
+                rich_content = load_lesson_content(module_id, lesson["title"])
+                if rich_content != lesson["title"]:
+                    lesson["content"] = rich_content
+                    print(f"  ✓ Loaded: {lesson['title']}")
+                else:
+                    print(f"  - Kept placeholder: {lesson['title']}")
 
     print(f"\n📖 Creating {len(learning_paths)} learning paths...")
     for path in learning_paths:
@@ -440,10 +1036,20 @@ Skill Categories:
   - Implementation: {len(implementation_skills)}
   - Deployment: {len(deployment_skills)}
   - Support & Optimization: {len(support_skills)}
+  - Hospitality: {len(hospitality_skills)}
+  - Knowledge & Content: {len(knowledge_skills)}
+  - Automation & Workflow: {len(automation_skills)}
+  - Business Development: {len(bizdev_skills)}
+  - Platform Administration: {len(admin_skills)}
 
 Learning Paths:
   1. AI Solution Architect (30 hours) - Complete certification path
   2. Quick Start for Operators (6 hours) - Fast-track intro
+  3. Hospitality Operations Manager (18 hours) - Guest comms & property ops
+  4. Knowledge & Content Strategist (16 hours) - Knowledge systems & digests
+  5. Workflow & Automation Engineer (20 hours) - Workflow design & orchestration
+  6. Business Development Operator (14 hours) - Pipeline & account management
+  7. Platform Administrator (12 hours) - Platform config & security
 
 Next Steps:
   1. Start the AI Solutioning workflow:
@@ -459,7 +1065,7 @@ Next Steps:
      Settings → Workflows → Training tab
 """)
 
-    return {"skills": len(all_skills), "paths": len(learning_paths), "categories": 6}
+    return {"skills": len(all_skills), "paths": len(learning_paths), "categories": 11}
 
 
 if __name__ == "__main__":
