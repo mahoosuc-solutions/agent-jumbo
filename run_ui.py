@@ -69,7 +69,7 @@ _LOGIN_WINDOW_SECONDS = 60
 
 
 def _is_laptop_mode() -> bool:
-    return os.getenv("AGENT_ZERO_LAPTOP_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+    return os.getenv("AGENT_JUMBO_LAPTOP_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 # Set up basic authentication for UI and API but not MCP

@@ -414,7 +414,7 @@ def get_default_settings() -> Settings:
     ollama_base_url = get_default_ollama_base_url()
     env_tier = os.getenv("TIER", "free").strip().lower()
     tier = env_tier if env_tier in {"free", "pro"} else "free"
-    laptop_mode = _env_flag("AGENT_ZERO_LAPTOP_MODE", False)
+    laptop_mode = _env_flag("AGENT_JUMBO_LAPTOP_MODE", False)
     env_profile = os.getenv("PERF_SLO_PROFILE", "").strip().lower()
     perf_profile = env_profile if env_profile in {"free", "pro"} else tier
     persona_default = "true" if tier == "pro" else "false"

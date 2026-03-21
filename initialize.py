@@ -9,7 +9,7 @@ _llm_router_bootstrap_started = False
 
 
 def _is_laptop_mode() -> bool:
-    return os.getenv("AGENT_ZERO_LAPTOP_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+    return os.getenv("AGENT_JUMBO_LAPTOP_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def _apply_laptop_runtime_overrides(current_settings: settings.Settings) -> settings.Settings:
