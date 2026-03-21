@@ -159,8 +159,8 @@ async def _execute_task(
 
         # Wait for the task to complete without blocking the event loop
         timeout = payload.get("timeout", 300)
-        if deferred and hasattr(deferred, "result"):
-            result = await asyncio.to_thread(deferred.result, timeout=timeout)
+        if deferred and hasattr(deferred, "result_sync"):
+            result = await asyncio.to_thread(deferred.result_sync, timeout)
         else:
             result = {"status": "dispatched", "note": "Task sent to agent loop"}
 

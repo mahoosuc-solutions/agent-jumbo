@@ -57,7 +57,7 @@ const model = {
         window.open("https://agent-jumbo.ai", "_blank");
         break;
       case "github":
-        window.open("https://github.com/agent0ai/agent-jumbo", "_blank");
+        window.open("https://github.com/mahoosuc-solutions/agent-jumbo", "_blank");
         break;
     }
   },

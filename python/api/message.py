@@ -242,7 +242,7 @@ class Message(ApiHandler):
             # Log the message with message_id and attachments.
             # Temporary fail-open path: disable synchronous log writes when requested
             # to prevent chat stalls in constrained environments.
-            if os.getenv("A0_DISABLE_CHAT_LOG", "1").strip().lower() not in {"1", "true", "yes", "on"}:
+            if os.getenv("A0_DISABLE_CHAT_LOG", "0").strip().lower() not in {"1", "true", "yes", "on"}:
                 context.log.log(
                     type="user",
                     heading="User message",
