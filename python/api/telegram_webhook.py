@@ -72,6 +72,14 @@ class TelegramWebhook(ApiHandler):
             if token:
                 send_message(token, chat_id_str, HELP_TEXT)
             return {"status": "ok"}
+        if cmd in ("status", "sync"):
+            # Auto-sync core projects into portfolio before status/sync commands
+            try:
+                from python.helpers.portfolio_sync import sync_core_projects_to_portfolio
+
+                sync_core_projects_to_portfolio()
+            except Exception as e:
+                PrintStyle.error(f"Portfolio sync failed: {e}")
         if cmd is not None:
             # Translate slash command to natural language for the agent
             raw_text = slash_command_to_prompt(cmd, cmd_args)

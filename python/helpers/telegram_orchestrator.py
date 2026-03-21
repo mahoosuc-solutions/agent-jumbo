@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "help", "digest"}
+ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "help", "digest", "sync"}
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 
@@ -13,6 +13,7 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /project <name> — Project details and lifecycle
 /tasks — Active Linear issues
 /digest — Today's digest
+/sync — Sync projects from platform into portfolio
 /help — This message
 /new — Reset conversation
 
@@ -54,6 +55,12 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
         )
     if cmd == "digest":
         return "Build me a digest of today's activity across all systems."
+    if cmd == "sync":
+        return (
+            "Sync projects from the platform into the portfolio. "
+            "Run the portfolio sync to pull in any new or updated projects, "
+            "then show me the portfolio dashboard."
+        )
     return ""
 
 
