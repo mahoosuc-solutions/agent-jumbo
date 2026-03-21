@@ -1,0 +1,120 @@
+"""Telegram orchestration layer — enriches agent context for platform-wide tool access."""
+
+from __future__ import annotations
+
+import re
+from typing import Any
+
+ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "help", "digest"}
+
+HELP_TEXT = """*Agent Jumbo — Telegram Commands*
+
+/status — Cross-system status (portfolio + tasks + workflows)
+/project <name> — Project details and lifecycle
+/tasks — Active Linear issues
+/digest — Today's digest
+/help — This message
+/new — Reset conversation
+
+Or just chat naturally — I can manage projects, create tasks, run workflows, analyze code, and more."""
+
+
+def parse_slash_command(text: str) -> tuple[str | None, str]:
+    """Parse a Telegram slash command. Returns (command, args) or (None, original_text)."""
+    text = text.strip()
+    if not text.startswith("/"):
+        return None, text
+
+    parts = text[1:].split(None, 1)
+    cmd = parts[0].lower() if parts else ""
+    args = parts[1] if len(parts) > 1 else ""
+
+    if cmd in ORCHESTRATOR_COMMANDS:
+        return cmd, args
+    return None, text
+
+
+def slash_command_to_prompt(cmd: str, args: str) -> str:
+    """Convert a slash command into a natural language prompt for the agent."""
+    if cmd == "status":
+        return (
+            "Give me a cross-system status update. Check the portfolio dashboard, "
+            "Linear dashboard, and any active workflows. Summarize what's in progress, "
+            "what's blocked, and what's been completed recently."
+        )
+    if cmd == "project":
+        return (
+            f"Look up the project '{args}'. Get its portfolio details and project lifecycle status. "
+            f"Tell me its current phase, readiness score, and what needs to happen next."
+        )
+    if cmd == "tasks":
+        return (
+            "Search Linear for my active issues. Show me what's in progress, "
+            "what's upcoming, and anything that's blocked or overdue."
+        )
+    if cmd == "digest":
+        return "Build me a digest of today's activity across all systems."
+    return ""
+
+
+def format_for_telegram(text: str) -> str:
+    """Format tool output for Telegram's limited Markdown support."""
+    if not text:
+        return ""
+
+    # Strip HTML tags
+    text = re.sub(r"<[^>]+>", "", text)
+
+    # Convert ## headers to bold
+    text = re.sub(r"^#{1,3}\s+(.+)$", r"*\1*", text, flags=re.MULTILINE)
+
+    # Truncate tables with many rows (keep header + first 10 data rows)
+    lines = text.split("\n")
+    table_start = None
+    filtered_lines: list[str] = []
+    table_data_count = 0
+
+    for line in lines:
+        if "|" in line and line.strip().startswith("|"):
+            if table_start is None:
+                table_start = True
+                table_data_count = 0
+            elif re.match(r"^\|[-| ]+\|$", line.strip()):
+                pass  # separator row
+            else:
+                table_data_count += 1
+                if table_data_count > 10:
+                    if table_data_count == 11:
+                        filtered_lines.append("| ... | _and more_ |")
+                    continue
+        else:
+            table_start = None
+            table_data_count = 0
+        filtered_lines.append(line)
+
+    return "\n".join(filtered_lines)
+
+
+def build_orchestrator_context(
+    chat_id: str,
+    vision_context: dict[str, Any] | None = None,
+    active_project: str | None = None,
+    last_tool: str | None = None,
+) -> str:
+    """Build additional context string to inject into the agent's conversation."""
+    parts = ["[Telegram Orchestrator Context]"]
+
+    if active_project:
+        parts.append(f"Active project: {active_project}")
+
+    if last_tool:
+        parts.append(f"Last tool used: {last_tool}")
+
+    if vision_context:
+        desc = vision_context.get("description", "")
+        items = vision_context.get("extracted_items", [])
+        parts.append(f"Vision context from image: {desc}")
+        if items:
+            parts.append(f"Extracted items: {', '.join(str(i) for i in items)}")
+
+    return "\n".join(parts)
