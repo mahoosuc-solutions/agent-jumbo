@@ -86,3 +86,24 @@ def build_title(text: str, max_words: int = 8) -> str:
     if len(words) > max_words:
         snippet += "..."
     return f"Telegram: {snippet}"
+
+
+def get_session_meta(chat_id: str, key: str) -> Any:
+    """Get a session metadata value for a chat."""
+    state = load_state()
+    return state.get("session_meta", {}).get(chat_id, {}).get(key)
+
+
+def set_session_meta(chat_id: str, key: str, value: Any) -> None:
+    """Set a session metadata value for a chat."""
+    state = load_state()
+    meta = state.setdefault("session_meta", {}).setdefault(chat_id, {})
+    meta[key] = value
+    save_state(state)
+
+
+def clear_session_meta(chat_id: str) -> None:
+    """Clear all session metadata for a chat."""
+    state = load_state()
+    state.get("session_meta", {}).pop(chat_id, None)
+    save_state(state)
