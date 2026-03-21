@@ -13,5 +13,6 @@ class Reset(ApiHandler):
         persist_chat.remove_msg_files(ctxid)
 
         return {
+            "ok": True,
             "message": "Agent restarted.",
         }

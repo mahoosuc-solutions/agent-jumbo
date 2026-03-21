@@ -147,6 +147,7 @@ class Poll(ApiHandler):
 
             # data from this server
             return {
+                "ok": True,
                 "deselect_chat": ctxid and not context,
                 "context": context.id if context else "",
                 "contexts": ctxs,
@@ -154,7 +155,7 @@ class Poll(ApiHandler):
                 "logs": logs,
                 "log_guid": context.log.guid if context else "",
                 "log_version": len(context.log.updates) if context else 0,
-                "log_progress": context.log.progress if context else 0,
+                "log_progress": context.log.progress if context else "",
                 "log_progress_active": context.log.progress_active if context else False,
                 "paused": context.paused if context else False,
                 "runtime_state": context.get_output_data("runtime_state") if context else "idle",

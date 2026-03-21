@@ -1,16 +1,24 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Card } from '@/components/ui/Card'
 import { ChatView } from '@/components/chat/ChatView'
 import { ModelSelector } from '@/components/chat/ModelSelector'
 import { useRealtime } from '@/hooks/useRealtime'
 import { useSendMessage } from '@/hooks/useChat'
+import { useToast } from '@/components/ui/Toast'
 
 export default function ChatContextPage({ params }: { params: { contextId: string } }) {
   const { contextId } = params
+  const { toast } = useToast()
   const realtime = useRealtime(contextId)
   const sendMutation = useSendMessage(contextId)
+
+  useEffect(() => {
+    if (sendMutation.isError) {
+      toast(sendMutation.error?.message || 'Failed to send message', 'danger')
+    }
+  }, [sendMutation.isError, sendMutation.error, toast])
 
   const handleSend = useCallback(
     (text: string) => {

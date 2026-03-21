@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { Card } from '@/components/ui/Card'
 import { ChatView } from '@/components/chat/ChatView'
 import { ChatSidebar } from '@/components/chat/ChatSidebar'
@@ -8,13 +8,34 @@ import { ModelSelector } from '@/components/chat/ModelSelector'
 import { useRealtime } from '@/hooks/useRealtime'
 import { useSendMessage, useCreateChat } from '@/hooks/useChat'
 import { deleteChat } from '@/lib/api/endpoints/chat'
+import { useToast } from '@/components/ui/Toast'
 
 export default function ChatPage() {
+  const { toast } = useToast()
   const [contextId, setContextId] = useState<string | null>(null)
 
   const realtime = useRealtime(contextId)
   const sendMutation = useSendMessage(contextId)
   const createMutation = useCreateChat()
+
+  // Auto-select most recent context on load
+  useEffect(() => {
+    if (!contextId && realtime.contexts.length > 0) {
+      setContextId(realtime.contexts[0].id)
+    }
+  }, [contextId, realtime.contexts])
+
+  useEffect(() => {
+    if (sendMutation.isError) {
+      toast(sendMutation.error?.message || 'Failed to send message', 'danger')
+    }
+  }, [sendMutation.isError, sendMutation.error, toast])
+
+  useEffect(() => {
+    if (createMutation.isError) {
+      toast(createMutation.error?.message || 'Failed to create chat', 'danger')
+    }
+  }, [createMutation.isError, createMutation.error, toast])
 
   const handleSend = useCallback(
     (text: string) => {

@@ -25,6 +25,6 @@ class CreateChat(ApiHandler):
 
         return {
             "ok": True,
-            "ctxid": new_context.id,
+            "context": new_context.id,
             "message": "Context created.",
         }

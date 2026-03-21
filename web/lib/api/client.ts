@@ -6,7 +6,7 @@ let csrfToken: string | null = null
 
 async function ensureCsrf(): Promise<string> {
   if (csrfToken) return csrfToken
-  const res = await fetch(`${BASE}/csrf_token`, { method: 'POST' })
+  const res = await fetch(`${BASE}/csrf_token`, { method: 'GET' })
   if (res.ok) {
     const data = await res.json()
     csrfToken = data.token || ''

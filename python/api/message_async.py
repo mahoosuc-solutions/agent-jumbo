@@ -26,6 +26,7 @@ class MessageAsync(Message):
 
     async def respond(self, task: DeferredTask, context: AgentContext, timeout_seconds: int):
         return {
+            "ok": True,
             "message": "Message received.",
             "context": context.id,
         }
