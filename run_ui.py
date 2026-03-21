@@ -405,10 +405,14 @@ def run():
 
     # Initialize AgentMesh bridge if AGENTMESH_REDIS_URL is set.
     agentmesh_url = os.environ.get("AGENTMESH_REDIS_URL")
+    _agentmesh_loop = None  # Keep reference for shutdown
+
     if agentmesh_url:
 
         def _start_agentmesh():
             import asyncio
+
+            nonlocal _agentmesh_loop
 
             try:
                 from python.helpers.agentmesh_bridge import AgentMeshBridge, AgentMeshConfig
@@ -419,14 +423,32 @@ def run():
                     await bridge.connect()
                     set_bridge(bridge)
                     register_task_handlers(bridge)
-                    await bridge.start()
+                    try:
+                        await bridge.start()
+                    finally:
+                        await bridge.disconnect()
 
-                asyncio.run(_run())
+                _agentmesh_loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(_agentmesh_loop)
+                _agentmesh_loop.run_until_complete(_run())
             except Exception as e:
                 PrintStyle(font_color="yellow").print(f"[!] AgentMesh bridge failed: {e}")
 
         threading.Thread(target=_start_agentmesh, daemon=True).start()
         PrintStyle(font_color="green").print(f"[✓] AgentMesh bridge starting ({agentmesh_url})")
+
+        # Register graceful shutdown
+        import atexit
+
+        def _shutdown_agentmesh():
+            from python.helpers.agentmesh_task_handler import _get_bridge
+
+            bridge = _get_bridge()
+            if bridge:
+                bridge.stop()
+                PrintStyle(font_color="yellow").print("[!] AgentMesh bridge stopped")
+
+        atexit.register(_shutdown_agentmesh)
     else:
         PrintStyle(font_color="yellow").print("[!] AgentMesh bridge skipped (no AGENTMESH_REDIS_URL)")
 

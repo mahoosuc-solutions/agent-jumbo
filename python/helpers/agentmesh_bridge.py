@@ -32,6 +32,8 @@ STREAM_KEY = "agentmesh:events"
 CONSUMER_GROUP_PREFIX = "agentmesh:cg"
 BLOCK_TIMEOUT_MS = 5000
 BATCH_SIZE = 10
+STREAM_MAXLEN = 10000
+MAX_BACKOFF_SECONDS = 60
 
 
 @dataclass
@@ -95,6 +97,10 @@ class AgentMeshBridge:
         self._handlers: dict[str, list[EventHandlerFn]] = {}
         self._running = False
         self._group_name = f"{CONSUMER_GROUP_PREFIX}:{config.name}"
+        self._events_processed = 0
+        self._last_error: str | None = None
+        self._connected = False
+        self._processed_task_ids: set[str] = set()
 
     # -- Lifecycle -----------------------------------------------------------
 
@@ -106,13 +112,38 @@ class AgentMeshBridge:
         except aioredis.ResponseError as exc:
             if "BUSYGROUP" not in str(exc):
                 raise
+        self._connected = True
+        self._last_error = None
         logger.info("AgentMesh bridge connected (group=%s)", self._group_name)
+
+    async def _reconnect(self) -> None:
+        """Close broken connection and re-establish."""
+        if self._redis:
+            try:
+                await self._redis.aclose()
+            except Exception:
+                pass
+            self._redis = None
+        self._connected = False
+        await self.connect()
 
     async def disconnect(self) -> None:
         self._running = False
+        self._connected = False
         if self._redis:
             await self._redis.aclose()  # type: ignore[union-attr]
             self._redis = None
+
+    # -- Health --------------------------------------------------------------
+
+    def health(self) -> dict[str, Any]:
+        """Return health status for monitoring."""
+        return {
+            "connected": self._connected,
+            "running": self._running,
+            "events_processed": self._events_processed,
+            "last_error": self._last_error,
+        }
 
     # -- Subscribe -----------------------------------------------------------
 
@@ -128,7 +159,8 @@ class AgentMeshBridge:
         payload: dict[str, Any],
         correlation_id: str | None = None,
     ) -> str:
-        assert self._redis, "Call connect() first"
+        if not self._redis:
+            raise RuntimeError("AgentMesh bridge not connected — call connect() first")
         event = AgentMeshEvent(
             id=str(uuid4()),
             type=event_type,
@@ -140,7 +172,12 @@ class AgentMeshBridge:
             payload=payload,
             metadata={"correlationId": correlation_id or str(uuid4())},
         )
-        await self._redis.xadd(STREAM_KEY, {"data": json.dumps(event.to_json())})
+        await self._redis.xadd(
+            STREAM_KEY,
+            {"data": json.dumps(event.to_json())},
+            maxlen=STREAM_MAXLEN,
+            approximate=True,
+        )
         logger.debug("Emitted %s (id=%s)", event_type, event.id)
         return event.id
 
@@ -148,9 +185,12 @@ class AgentMeshBridge:
 
     async def start(self) -> None:
         """Start consuming events.  Blocks until ``stop()`` is called."""
-        assert self._redis, "Call connect() first"
+        if not self._redis:
+            raise RuntimeError("AgentMesh bridge not connected — call connect() first")
         self._running = True
+        consecutive_errors = 0
         logger.info("AgentMesh bridge listening for events")
+
         while self._running:
             try:
                 results = await self._redis.xreadgroup(
@@ -160,6 +200,8 @@ class AgentMeshBridge:
                     count=BATCH_SIZE,
                     block=BLOCK_TIMEOUT_MS,
                 )
+                consecutive_errors = 0  # Reset on successful poll
+
                 if not results:
                     continue
 
@@ -183,15 +225,52 @@ class AgentMeshBridge:
                             await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
                             continue
 
+                        # Idempotency: skip already-processed task IDs
+                        task_id = event.payload.get("taskId", event.aggregate_id)
+                        dedup_key = f"{event.type}:{task_id}"
+                        if dedup_key in self._processed_task_ids:
+                            logger.info("Skipping duplicate event %s", dedup_key)
+                            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+                            continue
+
                         await self._dispatch(event)
+                        self._processed_task_ids.add(dedup_key)
+                        self._events_processed += 1
                         await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+
+                        # Cap dedup set size
+                        if len(self._processed_task_ids) > 5000:
+                            # Remove oldest half
+                            to_remove = list(self._processed_task_ids)[: len(self._processed_task_ids) // 2]
+                            self._processed_task_ids -= set(to_remove)
 
             except asyncio.CancelledError:
                 break
-            except Exception:
-                logger.exception("Error in AgentMesh poll loop")
+            except (ConnectionError, OSError, aioredis.ConnectionError) as exc:
+                consecutive_errors += 1
+                self._connected = False
+                self._last_error = str(exc)
+                backoff = min(2**consecutive_errors, MAX_BACKOFF_SECONDS)
+                logger.warning(
+                    "AgentMesh Redis connection lost (attempt %d), reconnecting in %ds: %s",
+                    consecutive_errors,
+                    backoff,
+                    exc,
+                )
                 if self._running:
-                    await asyncio.sleep(1)
+                    await asyncio.sleep(backoff)
+                    try:
+                        await self._reconnect()
+                    except Exception as reconn_exc:
+                        self._last_error = f"Reconnect failed: {reconn_exc}"
+                        logger.error("AgentMesh reconnect failed: %s", reconn_exc)
+            except Exception:
+                consecutive_errors += 1
+                self._last_error = "Unexpected error in poll loop"
+                backoff = min(2**consecutive_errors, MAX_BACKOFF_SECONDS)
+                logger.exception("Error in AgentMesh poll loop (backoff %ds)", backoff)
+                if self._running:
+                    await asyncio.sleep(backoff)
 
     def stop(self) -> None:
         self._running = False
