@@ -47,7 +47,7 @@ const model = {
 
   async addFolder() {
     try {
-      const selected = await window.openFolderPicker("/a0");
+      const selected = await window.openFolderPicker("/aj");
       if (!selected) return;
       const normalized = selected.replace(/\/+$/, "");
       if (!this.allowedPaths.includes(normalized)) {

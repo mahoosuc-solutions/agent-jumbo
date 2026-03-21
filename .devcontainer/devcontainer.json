@@ -32,13 +32,13 @@
   "postCreateCommand": "bash -c 'source /root/.venv/bin/activate && playwright install chromium'",
   "remoteUser": "root",
   "mounts": [
-    "source=${localWorkspaceFolder}/memory,target=/a0/memory,type=bind",
-    "source=${localWorkspaceFolder}/knowledge,target=/a0/knowledge,type=bind",
-    "source=${localWorkspaceFolder}/logs,target=/a0/logs,type=bind"
+    "source=${localWorkspaceFolder}/memory,target=/aj/memory,type=bind",
+    "source=${localWorkspaceFolder}/knowledge,target=/aj/knowledge,type=bind",
+    "source=${localWorkspaceFolder}/logs,target=/aj/logs,type=bind"
   ],
   "containerEnv": {
     "CODE_EXEC_SSH_ENABLED": "false",
-    "PYTHONPATH": "/a0",
+    "PYTHONPATH": "/aj",
     "PATH": "/root/.venv/bin:${PATH}"
   },
   "remoteEnv": {
