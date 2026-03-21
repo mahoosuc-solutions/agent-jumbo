@@ -75,4 +75,4 @@ python -m pytest tests/test_mcp_security.py
 
 ### Contact
 
-For security concerns, please report to: <security@agent-zero.ai> (or create a private security advisory on GitHub)
+For security concerns, please report to: <security@agent-jumbo.ai> (or create a private security advisory on GitHub)

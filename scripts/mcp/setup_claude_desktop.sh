@@ -7,8 +7,8 @@ SERVER_NAME="${SERVER_NAME:-agent-jumbo-local}"
 A0_BASE_URL="${A0_BASE_URL:-http://localhost:50080}"
 
 if ! docker ps --format '{{.Names}}' | grep -qx "$CONTAINER_NAME"; then
-  if docker ps --format '{{.Names}}' | grep -qx "agent-zero"; then
-    CONTAINER_NAME="agent-zero"
+  if docker ps --format '{{.Names}}' | grep -qx "agent-jumbo"; then
+    CONTAINER_NAME="agent-jumbo"
   else
     echo "Container '$CONTAINER_NAME' is not running."
     exit 1

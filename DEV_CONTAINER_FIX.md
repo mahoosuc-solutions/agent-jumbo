@@ -5,7 +5,7 @@
 The dev container failed to build with the error:
 
 ```text
-ERROR: failed to build: failed to solve: error from sender: open /mnt/wdblack/dev/projects/agent-zero/docker/run/agent-zero/tmp/codex-home/tmp/arg0: permission denied
+ERROR: failed to build: failed to solve: error from sender: open /mnt/wdblack/dev/projects/agent-jumbo/docker/run/agent-jumbo/tmp/codex-home/tmp/arg0: permission denied
 ```
 
 ## Root Cause

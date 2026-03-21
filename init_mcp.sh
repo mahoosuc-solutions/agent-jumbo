@@ -18,8 +18,8 @@ if [ ! -f "$SETTINGS_FILE" ]; then
     echo "⚠️  Settings file not created yet. Checking in Docker container..."
 
     # Try to copy from container if it exists there
-    docker exec agent-jumbo test -f /a0/tmp/settings.json && \
-        docker cp agent-jumbo:/a0/tmp/settings.json "$SETTINGS_FILE" && \
+    docker exec agent-jumbo test -f /aj/tmp/settings.json && \
+        docker cp agent-jumbo:/aj/tmp/settings.json "$SETTINGS_FILE" && \
         echo "✅ Copied settings from container" || \
         echo "❌ Settings file not found in container either"
 fi

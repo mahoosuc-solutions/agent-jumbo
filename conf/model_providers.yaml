@@ -21,7 +21,7 @@ chat:
     name: Agent Jumbo Venice.ai
     litellm_provider: openai
     kwargs:
-      api_base: https://api.agent-zero.ai/venice/v1
+      api_base: https://api.agent-jumbo.ai/venice/v1
       venice_parameters:
         include_venice_system_prompt: false
   anthropic:
@@ -69,7 +69,7 @@ chat:
     litellm_provider: openrouter
     kwargs:
       extra_headers:
-        "HTTP-Referer": "https://agent-zero.ai/"
+        "HTTP-Referer": "https://agent-jumbo.ai/"
         "X-Title": "Agent Jumbo"
   sambanova:
     name: Sambanova
@@ -117,7 +117,7 @@ embedding:
     kwargs:
       api_base: https://openrouter.ai/api/v1
       extra_headers:
-        "HTTP-Referer": "https://agent-zero.ai/"
+        "HTTP-Referer": "https://agent-jumbo.ai/"
         "X-Title": "Agent Jumbo"
   other:
     name: Other OpenAI compatible

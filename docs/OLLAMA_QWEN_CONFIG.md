@@ -235,7 +235,7 @@ docker-compose restart
 
 ```bash
 # Clear settings cache (if exists)
-docker exec agent-jumbo rm -f /a0/data/settings.json
+docker exec agent-jumbo rm -f /aj/data/settings.json
 
 # Restart Agent Jumbo
 docker restart agent-jumbo

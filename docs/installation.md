@@ -66,11 +66,11 @@ The following user guide provides instructions for installing and running Agent 
 
 1. **Run Agent Jumbo:**
 
-- Note: Agent Jumbo also offers a Hacking Edition based on Kali linux with modified prompts for cybersecurity tasks. The setup is the same as the regular version, just use the agent0ai/agent-zero:hacking image instead of agent0ai/agent-zero.
+- Note: Agent Jumbo also offers a Hacking Edition based on Kali linux with modified prompts for cybersecurity tasks. The setup is the same as the regular version, just use the agent0ai/agent-jumbo:hacking image instead of agent0ai/agent-jumbo.
 
 2.1. Pull the Agent Jumbo Docker image:
 
-- Search for `agent0ai/agent-zero` in Docker Desktop
+- Search for `agent0ai/agent-jumbo` in Docker Desktop
 - Click the `Pull` button
 - The image will be downloaded to your machine in a few minutes
 
@@ -80,7 +80,7 @@ The following user guide provides instructions for installing and running Agent 
 > Alternatively, run the following command in your terminal:
 >
 > ```bash
-> docker pull agent0ai/agent-zero
+> docker pull agent0ai/agent-jumbo
 > ```
 
 2.2. OPTIONAL - Create a data directory for persistence:
@@ -108,7 +108,7 @@ The following user guide provides instructions for installing and running Agent 
 2.3. Run the container:
 
 - In Docker Desktop, go back to the "Images" tab
-- Click the `Run` button next to the `agent0ai/agent-zero` image
+- Click the `Run` button next to the `agent0ai/agent-jumbo` image
 - Open the "Optional settings" menu
 - Set the web port (80) to desired host port number in the second "Host port" field or set to `0` for automatic port assignment
 
@@ -119,7 +119,7 @@ Optionally you can map local folders for file persistence:
 
 - OPTIONAL: Under "Volumes", configure your mapped folders, if needed:
   - Example host path: Your chosen directory (e.g., `C:\agent-jumbo\memory`)
-  - Example container path: `/a0/memory`
+  - Example container path: `/aj/memory`
 
 - Click the `Run` button in the "Images" tab.
 
@@ -134,7 +134,7 @@ Optionally you can map local folders for file persistence:
 > Alternatively, run the following command in your terminal:
 >
 > ```bash
-> docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-zero
+> docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-jumbo
 > ```
 >
 > - Replace `$PORT` with the port you want to use (e.g., `50080`)
@@ -150,7 +150,7 @@ Optionally you can map local folders for file persistence:
 - Open `http://localhost:<PORT>` in your browser
 - The Web UI will open. Agent Jumbo is ready for configuration!
 
-![docker ui](res/setup/6-docker-a0-running.png)
+![docker ui](res/setup/6-docker-aj-running.png)
 
 > [!TIP]
 > You can also access the Web UI by clicking the ports right under the container ID in Docker Desktop.
@@ -384,7 +384,7 @@ For developers or users who need to run Agent Jumbo directly on their system, se
 
 - Go to Docker Desktop and stop the container from the "Containers" tab
 - Right-click and select "Remove" to remove the container
-- Go to "Images" tab and remove the `agent0ai/agent-zero` image or click the three dots to pull the difference and update the Docker image.
+- Go to "Images" tab and remove the `agent0ai/agent-jumbo` image or click the three dots to pull the difference and update the Docker image.
 
 ![docker delete image](res/setup/docker-delete-image-1.png)
 
@@ -409,13 +409,13 @@ For developers or users who need to run Agent Jumbo directly on their system, se
 > docker rm agent-jumbo
 >
 > # Remove the old image
-> docker rmi agent0ai/agent-zero
+> docker rmi agent0ai/agent-jumbo
 >
 > # Pull the latest image
-> docker pull agent0ai/agent-zero
+> docker pull agent0ai/agent-jumbo
 >
 > # Run new container with the same volume mount
-> docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-zero
+> docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-jumbo
 > ```
 
 ## Conclusion

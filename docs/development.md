@@ -32,11 +32,11 @@ This guide will show you how to setup a local development environment for Agent 
 
 ## Step 1: Clone or download the repository
 
-- Agent Jumbo is available on GitHub [github.com/agent0ai/agent-zero](https://github.com/agent0ai/agent-zero).
-- You can download the files using a browser and extract or run `git clone https://github.com/agent0ai/agent-zero` in your desired directory.
+- Agent Jumbo is available on GitHub [github.com/agent0ai/agent-jumbo](https://github.com/agent0ai/agent-jumbo).
+- You can download the files using a browser and extract or run `git clone https://github.com/agent0ai/agent-jumbo` in your desired directory.
 
 > [!NOTE]
-> In my case, I used `cd ~/Desktop` and `git clone https://github.com/agent0ai/agent-zero`, so my project folder is `~/Desktop/agent-jumbo`.
+> In my case, I used `cd ~/Desktop` and `git clone https://github.com/agent0ai/agent-jumbo`, so my project folder is `~/Desktop/agent-jumbo`.
 
 ## Step 2: Open project folder in your IDE
 
@@ -114,7 +114,7 @@ After inserting my API key in settings, my Agent Jumbo instance works. I can sen
 - Some parts of A0 require standardized linux environment, additional web services and preinstalled binaries that would be unneccessarily complex to set up in a local environment.
 - To make development easier, we can use existing A0 instance in docker and forward some requests to be executed there using SSH and RFC (Remote Function Call).
 
-1. Pull the docker image `agent0ai/agent-zero` from Docker Hub and run it with a web port (`80`) mapped and SSH port (`22`) mapped.
+1. Pull the docker image `agent0ai/agent-jumbo` from Docker Hub and run it with a web port (`80`) mapped and SSH port (`22`) mapped.
 If you want, you can also map the `/a0` folder to our local project folder as well, this way we can update our local instance and the docker instance at the same time.
 This is how it looks in my example: port `80` is mapped to `8880` on the host and `22` to `8822`, `/a0` folder mapped to `/Users/frdel/Desktop/agent-jumbo`:
 

@@ -4,7 +4,7 @@
 
 **Goal:** Complete the post-stabilization sprint by integrating Docker deployment config from worktrees into main, cleaning up stale worktree directories, and running a full verification pass to confirm all prior work (P1-P4) is solid.
 
-**Architecture:** Copy the Docker runtime config (`Dockerfile`, `docker-compose.yml`, `fs/` tree) from `.worktrees/ai-ops/docker/run/` into `docker/run/` (which currently has a `.gitkeep` and an empty `agent-zero/` subdirectory). Delete all 3 remaining worktree directories plus 10 previously-deleted worktree stubs. Verify E2E tests pass end-to-end.
+**Architecture:** Copy the Docker runtime config (`Dockerfile`, `docker-compose.yml`, `fs/` tree) from `.worktrees/ai-ops/docker/run/` into `docker/run/` (which currently has a `.gitkeep` and an empty `agent-jumbo/` subdirectory). Delete all 3 remaining worktree directories plus 10 previously-deleted worktree stubs. Verify E2E tests pass end-to-end.
 
 **Tech Stack:** Docker, docker-compose, bash, pytest, Playwright
 
@@ -26,7 +26,7 @@
 
 | Action | Path | Responsibility |
 |--------|------|---------------|
-| Create | `docker/run/Dockerfile` | Runtime container build (from `agent0ai/agent-zero-base`) |
+| Create | `docker/run/Dockerfile` | Runtime container build (from `agent0ai/agent-jumbo-base`) |
 | Create | `docker/run/docker-compose.yml` | Ollama + Agent-Zero service definitions |
 | Create | `docker/run/build.txt` | Build command reference |
 | Create | `docker/run/fs/ins/pre_install.sh` | Pre-installation setup |
@@ -62,7 +62,7 @@
 **Files:**
 
 - Source: `.worktrees/ai-ops/docker/run/` (24 files)
-- Target: `docker/run/` (currently has `.gitkeep` + empty `agent-zero/` subdir)
+- Target: `docker/run/` (currently has `.gitkeep` + empty `agent-jumbo/` subdir)
 
 - [ ] **Step 1: Copy all files from ai-ops docker/run/ to main docker/run/**
 
@@ -88,8 +88,8 @@ rm docker/run/.gitkeep
 ```bash
 # Should show 24 files (matching ai-ops source, minus .gitkeep)
 find docker/run/ -type f | wc -l
-# Compare file lists (ignore agent-zero subdir which pre-existed)
-diff <(cd .worktrees/ai-ops/docker/run && find . -type f | sort) <(cd docker/run && find . -type f -not -path './agent-zero/*' | sort)
+# Compare file lists (ignore agent-jumbo subdir which pre-existed)
+diff <(cd .worktrees/ai-ops/docker/run && find . -type f | sort) <(cd docker/run && find . -type f -not -path './agent-jumbo/*' | sort)
 ```
 
 Expected: 24 files, no diff.
@@ -114,7 +114,7 @@ nginx, supervisor, install/run scripts) from .worktrees/ai-ops/docker/run/
 into the main tree. This was the only unique content across all 3 remaining
 worktree directories.
 
-Note: The Dockerfile references the upstream agent0ai/agent-zero-base image
+Note: The Dockerfile references the upstream agent0ai/agent-jumbo-base image
 and uses a BRANCH build arg. Path updates may be needed for the current
 project structure — tracked as future work.
 

@@ -18,7 +18,7 @@ Verify databases are created and accessible:
 
 ```bash
 # Check data directory
-ls -la /a0/data/
+ls -la /aj/data/
 
 # Should see:
 # - portfolio.db (after first use)
@@ -45,7 +45,7 @@ Scan my projects folder at ~/projects for portfolio
 **Verification:**
 
 ```bash
-sqlite3 /a0/data/portfolio.db "SELECT name, language, sale_readiness FROM projects;"
+sqlite3 /aj/data/portfolio.db "SELECT name, language, sale_readiness FROM projects;"
 ```
 
 #### Test 2.2: View Portfolio Dashboard
@@ -95,7 +95,7 @@ Create a product from project ID 1
 **Verification:**
 
 ```bash
-sqlite3 /a0/data/portfolio.db "SELECT id, name, base_price FROM products;"
+sqlite3 /aj/data/portfolio.db "SELECT id, name, base_price FROM products;"
 ```
 
 #### Test 2.5: Manage Sales Pipeline
@@ -138,8 +138,8 @@ Initialize my property portfolio
 **Verification:**
 
 ```bash
-sqlite3 /a0/data/properties.db "SELECT id, name, property_type, city FROM properties;"
-sqlite3 /a0/data/properties.db "SELECT COUNT(*) FROM units WHERE property_id=1;"
+sqlite3 /aj/data/properties.db "SELECT id, name, property_type, city FROM properties;"
+sqlite3 /aj/data/properties.db "SELECT COUNT(*) FROM units WHERE property_id=1;"
 ```
 
 #### Test 3.2: View Property Dashboard
@@ -174,7 +174,7 @@ Add tenant John Smith with email john@email.com and phone 207-555-1234
 **Verification:**
 
 ```bash
-sqlite3 /a0/data/properties.db "SELECT id, first_name, last_name, email FROM tenants;"
+sqlite3 /aj/data/properties.db "SELECT id, first_name, last_name, email FROM tenants;"
 ```
 
 #### Test 3.4: Create Lease
@@ -194,8 +194,8 @@ Create a lease for tenant 1 at property 1 unit 5 starting 2026-02-01 at $89/nigh
 **Verification:**
 
 ```bash
-sqlite3 /a0/data/properties.db "SELECT id, tenant_id, property_id, unit_id, rent_amount, start_date FROM leases;"
-sqlite3 /a0/data/properties.db "SELECT unit_number, status FROM units WHERE id=5;"
+sqlite3 /aj/data/properties.db "SELECT id, tenant_id, property_id, unit_id, rent_amount, start_date FROM leases;"
+sqlite3 /aj/data/properties.db "SELECT unit_number, status FROM units WHERE id=5;"
 ```
 
 #### Test 3.5: Record Rent Payment
@@ -327,7 +327,7 @@ docker-compose exec agent-jumbo ollama list
 ### Portfolio Database
 
 ```bash
-sqlite3 /a0/data/portfolio.db ".schema"
+sqlite3 /aj/data/portfolio.db ".schema"
 ```
 
 Expected tables:
@@ -341,7 +341,7 @@ Expected tables:
 ### Properties Database
 
 ```bash
-sqlite3 /a0/data/properties.db ".schema"
+sqlite3 /aj/data/properties.db ".schema"
 ```
 
 Expected tables:
@@ -413,8 +413,8 @@ rm /tmp/test_portfolio.db
 rm /tmp/test_properties.db
 
 # Optionally reset production databases (BE CAREFUL!)
-# rm /a0/data/portfolio.db
-# rm /a0/data/properties.db
+# rm /aj/data/portfolio.db
+# rm /aj/data/properties.db
 ```
 
 ## Known Limitations
@@ -450,8 +450,8 @@ If database is locked:
 
 ```bash
 # Check for active connections
-lsof /a0/data/portfolio.db
-lsof /a0/data/properties.db
+lsof /aj/data/portfolio.db
+lsof /aj/data/properties.db
 
 # Restart containers
 docker-compose restart

@@ -57,7 +57,7 @@ Record rent payment of $1500 for lease 1
 
 ## Database Location
 
-Property data is stored at `/a0/data/properties.db` (persisted across container restarts).
+Property data is stored at `/aj/data/properties.db` (persisted across container restarts).
 
 ## Property Types
 

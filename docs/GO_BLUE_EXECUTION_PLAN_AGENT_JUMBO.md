@@ -8,7 +8,7 @@ Move from active development to safe, legally clean external collaboration and r
 
 1. Finalize upstream candidate commit map:
 
-- `A`: generic improvements for Agent Zero upstream
+- `A`: generic improvements for Agent Jumbo upstream
 - `B`: Agent Jumbo-specific product features
 
 1. Run validation suite and archive results in `artifacts/validation/`.
@@ -21,7 +21,7 @@ Move from active development to safe, legally clean external collaboration and r
 3. Approve privacy/terms drafts for commercial use.
 4. Approve data retention and deletion policy.
 
-## Phase 3: External coordination with Agent Zero
+## Phase 3: External coordination with Agent Jumbo
 
 1. Send product update memo:
 

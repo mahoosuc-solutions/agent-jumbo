@@ -1,6 +1,6 @@
 # Production Deployment Guide
 
-> Agent Zero — from development to production with confidence.
+> Agent Jumbo — from development to production with confidence.
 
 ---
 
@@ -74,16 +74,16 @@ Full list of 272+ documented variables: `.env.example`
 
 ```bash
 # Build
-docker build -t agent-zero:latest .
+docker build -t agent-jumbo:latest .
 
 # Run
 docker run -d \
-  --name agent-zero \
+  --name agent-jumbo \
   --env-file .env \
   -p 50001:50001 \
   -v $(pwd)/memory:/app/memory \
   -v $(pwd)/knowledge:/app/knowledge \
-  agent-zero:latest
+  agent-jumbo:latest
 
 # Verify
 curl http://localhost:50001/health | python -m json.tool

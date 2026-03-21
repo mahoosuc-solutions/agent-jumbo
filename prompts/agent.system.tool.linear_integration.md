@@ -127,7 +127,7 @@ The **linear_integration** tool manages Linear issues, projects, and sync pipeli
 
 ## Configuration
 
-Set in Agent Zero settings or environment variables:
+Set in Agent Jumbo settings or environment variables:
 
 - `linear_api_key` / `LINEAR_API_KEY`: Linear API key (required)
 - `linear_default_team_id` / `LINEAR_DEFAULT_TEAM_ID`: Default team ID (optional)

@@ -47,17 +47,17 @@ The agent will respond with an inline Mermaid diagram that renders beautifully i
 
 ```bash
 # Mermaid diagram
-python /a0/instruments/custom/diagram_generator/generate_mermaid.py \
+python /aj/instruments/custom/diagram_generator/generate_mermaid.py \
   --output /tmp/my_diagram.png \
   --code "graph TD; A[Start]-->B[End];"
 
 # Excalidraw template
-python /a0/instruments/custom/diagram_generator/generate_excalidraw.py \
+python /aj/instruments/custom/diagram_generator/generate_excalidraw.py \
   --output /tmp/sketch.excalidraw \
   --template flowchart
 
 # Draw.io network diagram
-python /a0/instruments/custom/diagram_generator/generate_drawio.py \
+python /aj/instruments/custom/diagram_generator/generate_drawio.py \
   --output /tmp/network.png \
   --template network
 ```

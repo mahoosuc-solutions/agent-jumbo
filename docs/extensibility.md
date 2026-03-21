@@ -275,14 +275,14 @@ Projects provide isolated workspaces for individual chats, keeping prompts, memo
 
 ### Project Location and Structure
 
-- Projects are located under `/a0/usr/projects/`
+- Projects are located under `/aj/usr/projects/`
 - Each project has its own subdirectory, created by users via the UI
 - A project can be backed up or restored by copying or downloading its entire directory
 
 Each project directory contains a hidden `.a0proj` folder with project metadata and configuration:
 
 ```text
-/a0/usr/projects/{project_name}/
+/aj/usr/projects/{project_name}/
 └── .a0proj/
     ├── project.json          # project metadata and settings
     ├── instructions/         # additional prompt/instruction files

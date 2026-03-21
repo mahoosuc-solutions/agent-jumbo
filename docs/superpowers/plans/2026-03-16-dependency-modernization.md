@@ -17,6 +17,7 @@
 ### Task 0: Commit pending RC3 fixes before starting dependency work
 
 **Files:**
+
 - Modified (already staged): `python/api/sse.py`, `python/helpers/dotenv.py`, `python/helpers/skill_packager.py`, `run_ui.py`, `webui/index.html`
 
 - [ ] **Step 1: Commit RC3 fixes with --no-verify (pip-audit still blocks on old deps)**
@@ -43,6 +44,7 @@ Note: `--no-verify` is needed here because pip-audit blocks on the old dependenc
 ### Task 1: Create Wave 1 branch and reconcile dependencies into pyproject.toml
 
 **Files:**
+
 - Modify: `pyproject.toml` (dependencies section, lines 44-83)
 - Delete: `requirements.txt`
 - Delete: `requirements2.txt`
@@ -97,6 +99,7 @@ Add these missing packages to the `[project] dependencies` list in `pyproject.to
 ```
 
 Also add platform marker for Windows-only dep:
+
 ```python
 "pywinpty>=3.0.2; sys_platform == 'win32'",
 ```
@@ -120,6 +123,7 @@ Expected: `OK`
 ### Task 2: Update DockerfileLocal for pyproject.toml-based installs
 
 **Files:**
+
 - Modify: `DockerfileLocal`
 
 - [ ] **Step 1: Replace requirements.txt COPY/install with pyproject.toml install**
@@ -128,15 +132,15 @@ Replace the dependency manifest COPY block:
 
 ```dockerfile
 # OLD:
-# COPY ./requirements.txt /git/agent-zero/requirements.txt
-# COPY ./requirements2.txt /git/agent-zero/requirements2.txt
-# COPY ./pyproject.toml /git/agent-zero/pyproject.toml
-# COPY ./requirements.lock.txt /git/agent-zero/requirements.lock.txt
-# COPY ./docker/wheelhouse /git/agent-zero/docker/wheelhouse
+# COPY ./requirements.txt /git/agent-jumbo/requirements.txt
+# COPY ./requirements2.txt /git/agent-jumbo/requirements2.txt
+# COPY ./pyproject.toml /git/agent-jumbo/pyproject.toml
+# COPY ./requirements.lock.txt /git/agent-jumbo/requirements.lock.txt
+# COPY ./docker/wheelhouse /git/agent-jumbo/docker/wheelhouse
 
 # NEW:
-COPY ./pyproject.toml /git/agent-zero/pyproject.toml
-COPY ./docker/wheelhouse /git/agent-zero/docker/wheelhouse
+COPY ./pyproject.toml /git/agent-jumbo/pyproject.toml
+COPY ./docker/wheelhouse /git/agent-jumbo/docker/wheelhouse
 ```
 
 Replace the dependency install RUN command:
@@ -147,10 +151,10 @@ Replace the dependency install RUN command:
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=cache,target=/root/.cache/uv \
     bash -lc 'source /ins/setup_venv.sh "$BRANCH" && uv pip install setuptools wheel && \
-    if [ -d /git/agent-zero/docker/wheelhouse ] && [ "$(find /git/agent-zero/docker/wheelhouse -maxdepth 1 -name "*.whl" | wc -l)" -gt 0 ]; then \
-        uv pip install --no-build-isolation --no-index --find-links /git/agent-zero/docker/wheelhouse -e /git/agent-zero; \
+    if [ -d /git/agent-jumbo/docker/wheelhouse ] && [ "$(find /git/agent-jumbo/docker/wheelhouse -maxdepth 1 -name "*.whl" | wc -l)" -gt 0 ]; then \
+        uv pip install --no-build-isolation --no-index --find-links /git/agent-jumbo/docker/wheelhouse -e /git/agent-jumbo; \
     else \
-        uv pip install --no-build-isolation -e /git/agent-zero; \
+        uv pip install --no-build-isolation -e /git/agent-jumbo; \
     fi'
 ```
 
@@ -167,6 +171,7 @@ git rm requirements.lock.txt
 ### Task 3: Generate uv.lock and update pre-commit
 
 **Files:**
+
 - Create: `uv.lock` (generated)
 - Modify: `.pre-commit-config.yaml` (pip-audit hook)
 
@@ -306,6 +311,7 @@ git checkout main && git merge deps/wave-1-safe-bumps
 ### Task 5: Create Wave 2 branch and bump fastmcp
 
 **Files:**
+
 - Modify: `pyproject.toml` (fastmcp version)
 - Modify: `python/helpers/mcp_server.py`
 
@@ -321,7 +327,7 @@ Change `"fastmcp>=2.3.4"` to `"fastmcp>=3.1.1"`.
 
 - [ ] **Step 3: Read the FastMCP upgrade guide**
 
-Fetch and read: https://github.com/jlowin/fastmcp/blob/main/docs/development/upgrade-guide.mdx
+Fetch and read: <https://github.com/jlowin/fastmcp/blob/main/docs/development/upgrade-guide.mdx>
 
 This will provide exact import path changes and API migration details for 2.x → 3.x.
 
@@ -332,6 +338,7 @@ Read `python/helpers/mcp_server.py` fully to understand all fastmcp usage before
 - [ ] **Step 5: Migrate imports in mcp_server.py**
 
 Apply import changes per the upgrade guide. At minimum:
+
 - `from mcp.server.fastmcp import FastMCP` → `from fastmcp import FastMCP`
 - `from fastmcp.server.http import create_sse_app` → verify new path or replacement
 - Check metadata namespace `"_fastmcp"` → `"fastmcp"`
@@ -371,12 +378,13 @@ Expected: Server starts and health endpoint responds. Check terminal output for 
 ### Task 6: Bump unstructured + companions
 
 **Files:**
+
 - Modify: `pyproject.toml` (unstructured, unstructured-client, langchain-unstructured versions)
 - Possibly modify: `python/helpers/knowledge_import.py`, `python/helpers/document_query.py`
 
 - [ ] **Step 1: Bump versions in pyproject.toml**
 
-```
+```text
 "unstructured[all-docs]>=0.21.5",      # was >=0.16.23
 "unstructured-client>=0.31.0",          # bump to latest compatible
 "langchain-unstructured[all-docs]>=0.1.6",  # bump to latest compatible
@@ -445,6 +453,7 @@ git checkout main && git merge deps/wave-2-fastmcp-unstructured
 ### Task 7: Create Wave 3 branch and run langchain-cli migrate
 
 **Files:**
+
 - Modify: `pyproject.toml` (langchain-core, langchain-community versions)
 - Modify: 11 Python files (see spec for full list)
 
@@ -458,7 +467,7 @@ git checkout -b deps/wave-3-langchain-1x main
 
 - [ ] **Step 2: Bump langchain versions in pyproject.toml**
 
-```
+```text
 "langchain-core>=1.2.19",        # was ==0.3.49
 "langchain-community>=0.4.1",    # was ==0.3.19 — community uses 0.4.x to track core 1.x
 ```
@@ -480,6 +489,7 @@ langchain-cli migrate --diff python/ agent.py models.py
 ```
 
 Review the diff. The CLI handles:
+
 - `langchain_core.pydantic_v1` → `pydantic`
 - Some import path renames
 
@@ -502,6 +512,7 @@ Watch for resolution conflicts. If `langchain-unstructured` (from Wave 2) confli
 ### Task 8: Fix legacy imports the CLI misses
 
 **Files:**
+
 - Modify: `python/helpers/memory.py:11-12`
 - Modify: `python/helpers/vector_db.py:7-8`
 - Modify: `python/helpers/document_query.py:23`
@@ -592,6 +603,7 @@ Expected: `All imports OK`
 ### Task 9: Remove langchain meta-package and run full validation
 
 **Files:**
+
 - Modify: `pyproject.toml` (remove `langchain` if present)
 
 - [ ] **Step 1: Check if langchain meta-package is in deps**

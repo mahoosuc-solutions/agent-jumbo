@@ -58,7 +58,7 @@ INSTRUMENTS=(
 INST_PASS=0
 INST_FAIL=0
 for mod in "${INSTRUMENTS[@]}"; do
-    if docker exec $CONTAINER test -d /a0/instruments/custom/$mod 2>/dev/null; then
+    if docker exec $CONTAINER test -d /aj/instruments/custom/$mod 2>/dev/null; then
         pass "$mod"
         ((INST_PASS++))
     else
@@ -95,7 +95,7 @@ TOOLS=(
 TOOL_PASS=0
 TOOL_FAIL=0
 for tool in "${TOOLS[@]}"; do
-    if docker exec $CONTAINER test -f /a0/python/tools/${tool}.py 2>/dev/null; then
+    if docker exec $CONTAINER test -f /aj/python/tools/${tool}.py 2>/dev/null; then
         pass "$tool"
         ((TOOL_PASS++))
     else
@@ -148,7 +148,7 @@ APIS=(
 API_PASS=0
 API_FAIL=0
 for api in "${APIS[@]}"; do
-    if docker exec $CONTAINER test -f /a0/python/api/${api}.py 2>/dev/null; then
+    if docker exec $CONTAINER test -f /aj/python/api/${api}.py 2>/dev/null; then
         pass "$api"
         ((API_PASS++))
     else
@@ -173,7 +173,7 @@ EXTENSIONS=(
 EXT_PASS=0
 EXT_FAIL=0
 for ext in "${EXTENSIONS[@]}"; do
-    if docker exec $CONTAINER test -f /a0/python/extensions/${ext} 2>/dev/null; then
+    if docker exec $CONTAINER test -f /aj/python/extensions/${ext} 2>/dev/null; then
         pass "$(basename $ext)"
         ((EXT_PASS++))
     else
@@ -201,7 +201,7 @@ HELPERS=(
 HELP_PASS=0
 HELP_FAIL=0
 for helper in "${HELPERS[@]}"; do
-    if docker exec $CONTAINER test -f /a0/python/helpers/${helper} 2>/dev/null; then
+    if docker exec $CONTAINER test -f /aj/python/helpers/${helper} 2>/dev/null; then
         pass "$helper"
         ((HELP_PASS++))
     else
@@ -227,7 +227,7 @@ UI_COMPONENTS=(
 UI_PASS=0
 UI_FAIL=0
 for comp in "${UI_COMPONENTS[@]}"; do
-    if docker exec $CONTAINER test -d /a0/webui/components/${comp} 2>/dev/null; then
+    if docker exec $CONTAINER test -d /aj/webui/components/${comp} 2>/dev/null; then
         pass "$comp"
         ((UI_PASS++))
     else

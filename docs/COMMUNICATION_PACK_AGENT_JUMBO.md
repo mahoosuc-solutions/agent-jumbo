@@ -1,12 +1,12 @@
 # Communication Pack: Agent Jumbo
 
-## 1) Agent Zero Team Outreach Email (draft)
+## 1) Agent Jumbo Team Outreach Email (draft)
 
 Subject: Agent Jumbo fork update and proposal to upstream reliability/performance improvements
 
-Hello Agent Zero team,
+Hello Agent Jumbo team,
 
-We are running Agent Jumbo as a specialized AI Architect platform built from an Agent Zero-derived base.
+We are running Agent Jumbo as a specialized AI Architect platform built from an Agent Jumbo-derived base.
 We recently completed a reliability/performance pass focused on constrained environments.
 
 Highlights:

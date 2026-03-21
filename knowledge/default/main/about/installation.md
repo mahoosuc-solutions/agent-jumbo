@@ -60,11 +60,11 @@ The following user guide provides instructions for installing and running Agent 
 
 2. **Run Agent Jumbo:**
 
-- Note: Agent Jumbo also offers a Hacking Edition based on Kali linux with modified prompts for cybersecurity tasks. The setup is the same as the regular version, just use the agent0ai/agent-zero:hacking image instead of agent0ai/agent-zero.
+- Note: Agent Jumbo also offers a Hacking Edition based on Kali linux with modified prompts for cybersecurity tasks. The setup is the same as the regular version, just use the agent0ai/agent-jumbo:hacking image instead of agent0ai/agent-jumbo.
 
 2.1. Pull the Agent Jumbo Docker image:
 
-- Search for `agent0ai/agent-zero` in Docker Desktop
+- Search for `agent0ai/agent-jumbo` in Docker Desktop
 - Click the `Pull` button
 - The image will be downloaded to your machine in a few minutes
 
@@ -74,7 +74,7 @@ The following user guide provides instructions for installing and running Agent 
 > Alternatively, run the following command in your terminal:
 >
 > ```bash
-> docker pull agent0ai/agent-zero
+> docker pull agent0ai/agent-jumbo
 > ```
 
 2.2. Create a data directory for persistence:
@@ -97,7 +97,7 @@ The following user guide provides instructions for installing and running Agent 
 2.3. Run the container:
 
 - In Docker Desktop, go back to the "Images" tab
-- Click the `Run` button next to the `agent0ai/agent-zero` image
+- Click the `Run` button next to the `agent0ai/agent-jumbo` image
 - Open the "Optional settings" menu
 - Set the port to `0` in the second "Host port" field (for automatic port assignment)
 
@@ -118,7 +118,7 @@ Optionally you can map local folders for file persistence:
 > Alternatively, run the following command in your terminal:
 >
 > ```bash
-> docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-zero
+> docker run -p $PORT:80 -v /path/to/your/data:/aj agent0ai/agent-jumbo
 > ```
 >
 > - Replace `$PORT` with the port you want to use (e.g., `50080`)
@@ -351,7 +351,7 @@ For developers or users who need to run Agent Jumbo directly on their system,see
 
 - Go to Docker Desktop and stop the container from the "Containers" tab
 - Right-click and select "Remove" to remove the container
-- Go to "Images" tab and remove the `agent0ai/agent-zero` image or click the three dots to pull the difference and update the Docker image.
+- Go to "Images" tab and remove the `agent0ai/agent-jumbo` image or click the three dots to pull the difference and update the Docker image.
 
 ![docker delete image](res/setup/docker-delete-image-1.png)
 
@@ -374,13 +374,13 @@ For developers or users who need to run Agent Jumbo directly on their system,see
 > docker rm agent-jumbo
 >
 > # Remove the old image
-> docker rmi agent0ai/agent-zero
+> docker rmi agent0ai/agent-jumbo
 >
 > # Pull the latest image
-> docker pull agent0ai/agent-zero
+> docker pull agent0ai/agent-jumbo
 >
 > # Run new container with the same volume mount
-> docker run -p $PORT:80 -v /path/to/your/data:/a0 agent0ai/agent-zero
+> docker run -p $PORT:80 -v /path/to/your/data:/aj agent0ai/agent-jumbo
 > ```
 
 3. **Full Binaries**
@@ -445,9 +445,9 @@ For developers or users who need to run Agent Jumbo directly on their system,see
 
 ## 2. Download Agent Jumbo
 
-- You can clone the Agent Jumbo repository (<https://github.com/agent0ai/agent-zero>) from GitHub if you know how to use Git. In this tutorial I will just show how to download the files.
+- You can clone the Agent Jumbo repository (<https://github.com/agent0ai/agent-jumbo>) from GitHub if you know how to use Git. In this tutorial I will just show how to download the files.
 
-1. Go to the Agent Jumbo releases [here](https://github.com/agent0ai/agent-zero/releases).
+1. Go to the Agent Jumbo releases [here](https://github.com/agent0ai/agent-jumbo/releases).
 2. The latest release is on the top of the list, click the "Source Code (zip)" button under "Assets" to download it.
 
 <img src="res/setup/image-14-u.png" alt="agent zero download" width="500"/>

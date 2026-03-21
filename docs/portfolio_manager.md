@@ -54,7 +54,7 @@ Add Acme Corp as a lead for product 1 with deal value $499
 
 ## Database Location
 
-Portfolio data is stored at `/a0/data/portfolio.db` (persisted across container restarts).
+Portfolio data is stored at `/aj/data/portfolio.db` (persisted across container restarts).
 
 ## Sale Readiness Score
 

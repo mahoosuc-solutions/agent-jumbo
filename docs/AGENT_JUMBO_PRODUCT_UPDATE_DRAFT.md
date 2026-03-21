@@ -1,4 +1,4 @@
-# Agent Jumbo Product Update Draft (for Agent Zero Team)
+# Agent Jumbo Product Update Draft (for Agent Jumbo Team)
 
 ## Subject
 
@@ -6,7 +6,7 @@ Agent Jumbo fork update: reliability + MCP performance improvements and proposed
 
 ## Summary
 
-We are running Agent Jumbo as a specialized platform for AI Architects on top of an Agent Zero-derived codebase.
+We are running Agent Jumbo as a specialized platform for AI Architects on top of an Agent Jumbo-derived codebase.
 Recent work focused on reliability and local performance in constrained laptop/free-tier environments.
 
 ## Recently shipped changes
@@ -41,7 +41,7 @@ These are proposed as separate, reviewable PRs:
 
 ## Collaboration intent
 
-We want to maintain compatibility with Agent Zero while contributing generic improvements upstream and keeping Agent Jumbo-specific product layers in fork-only modules.
+We want to maintain compatibility with Agent Jumbo while contributing generic improvements upstream and keeping Agent Jumbo-specific product layers in fork-only modules.
 
 ## Ask
 

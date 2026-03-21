@@ -106,8 +106,8 @@ Agent Jumbo runs in Docker for code execution isolation. The framework on your m
 
 ```bash
 # Pull and run production image
-docker pull agent0ai/agent-zero
-docker run -p 50001:80 agent0ai/agent-zero
+docker pull agent0ai/agent-jumbo
+docker run -p 50001:80 agent0ai/agent-jumbo
 
 # Build local development image
 docker build -f DockerfileLocal -t agent-jumbo-local .

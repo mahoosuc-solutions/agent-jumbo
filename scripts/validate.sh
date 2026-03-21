@@ -11,7 +11,7 @@ echo ""
 
 # Check Docker containers
 echo "📦 Container Status:"
-docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(agent-jumbo|agent-zero|ollama)" || echo "⚠️  Containers not running"
+docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" | grep -E "(agent-jumbo|agent-jumbo|ollama)" || echo "⚠️  Containers not running"
 echo ""
 
 # Check UI accessibility
@@ -46,9 +46,9 @@ echo ""
 
 # Check databases
 echo "💾 Database Status:"
-if [ -d "${ROOT_DIR}/docker/run/agent-zero/data" ]; then
+if [ -d "${ROOT_DIR}/docker/run/agent-jumbo/data" ]; then
     echo "Database directory exists"
-    ls -lh "${ROOT_DIR}"/docker/run/agent-zero/data/*.db 2>/dev/null | awk '{print "  - " $9 " (" $5 ")"}' || echo "  No databases created yet (will be created on first use)"
+    ls -lh "${ROOT_DIR}"/docker/run/agent-jumbo/data/*.db 2>/dev/null | awk '{print "  - " $9 " (" $5 ")"}' || echo "  No databases created yet (will be created on first use)"
 else
     echo "  Database directory will be created on first use"
 fi

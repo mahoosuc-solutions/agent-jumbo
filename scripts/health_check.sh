@@ -6,8 +6,8 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AGENT_CONTAINER=""
 if docker ps --format '{{.Names}}' | grep -q "^agent-jumbo$"; then
     AGENT_CONTAINER="agent-jumbo"
-elif docker ps --format '{{.Names}}' | grep -q "^agent-zero$"; then
-    AGENT_CONTAINER="agent-zero"
+elif docker ps --format '{{.Names}}' | grep -q "^agent-jumbo$"; then
+    AGENT_CONTAINER="agent-jumbo"
 fi
 
 echo "🏥 Agent Jumbo Health Check"

@@ -99,15 +99,15 @@ def _get_default_patterns(self) -> str:
 
 ```python
 # Docker container environment
-/a0/knowledge/**
-!/a0/knowledge/default/**
+/aj/knowledge/**
+!/aj/knowledge/default/**
 /root/**
 !/root/.*/**
 !/root/.*
 
 # Host environment
-/home/rafael/a0/data/knowledge/**
-!/home/rafael/a0/data/knowledge/default/**
+/home/rafael/aj/data/knowledge/**
+!/home/rafael/aj/data/knowledge/default/**
 /home/rafael/**
 !/home/rafael/.*/**
 !/home/rafael/.*
@@ -1410,16 +1410,16 @@ The backup archive includes a comprehensive `metadata.json` file with the follow
   "include_hidden": boolean,
 
   "include_patterns": [
-    "/a0/knowledge/**",
-    "/a0/instruments/**",
-    "/a0/memory/**",
-    "/a0/.env",
-    "/a0/tmp/settings.json"
+    "/aj/knowledge/**",
+    "/aj/instruments/**",
+    "/aj/memory/**",
+    "/aj/.env",
+    "/aj/tmp/settings.json"
   ],
   "exclude_patterns": [
-    "/a0/knowledge/default/**",
-    "/a0/instruments/default/**",
-    "/a0/memory/embeddings/**"
+    "/aj/knowledge/default/**",
+    "/aj/instruments/default/**",
+    "/aj/memory/embeddings/**"
   ],
 
   "system_info": { /* platform, architecture, etc. */ },
@@ -1592,12 +1592,12 @@ if not include_hidden and file.startswith('.'):
 
 ### **Critical Issue Fixed: Hidden Files**
 
-**Problem:** When `include_hidden=false`, the system was excluding ALL hidden files, even when they were explicitly specified in patterns like `/a0/.env`.
+**Problem:** When `include_hidden=false`, the system was excluding ALL hidden files, even when they were explicitly specified in patterns like `/aj/.env`.
 
 **Solution:** Implemented explicit pattern detection that distinguishes between:
 
-- **Explicit patterns** (like `/a0/.env`) - Always included regardless of `include_hidden` setting
-- **Wildcard discoveries** (like `/a0/*`) - Respect the `include_hidden` setting
+- **Explicit patterns** (like `/aj/.env`) - Always included regardless of `include_hidden` setting
+- **Wildcard discoveries** (like `/aj/*`) - Respect the `include_hidden` setting
 
 **Result:** Critical files like `.env` are now properly backed up when explicitly specified, ensuring Agent Jumbo configurations are preserved.
 

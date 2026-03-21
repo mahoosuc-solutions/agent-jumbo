@@ -339,7 +339,7 @@ import { createStore } from "/js/AlpineStore.js";
 
 // ⚠️ CRITICAL: The .env file contains API keys and essential configuration.
 // This file is REQUIRED for Agent Jumbo to function and must be backed up.
-// Note: Patterns now use resolved absolute paths (e.g., /home/user/a0/data/.env)
+// Note: Patterns now use resolved absolute paths (e.g., /home/user/aj/data/.env)
 
 const model = {
   // State
