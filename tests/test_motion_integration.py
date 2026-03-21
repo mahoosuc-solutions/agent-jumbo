@@ -122,12 +122,11 @@ class TestMotionManager:
                 mock_motion.create_task = AsyncMock(return_value=motion_task)
                 mock_get.return_value = mock_motion
 
-                with patch("asyncio.sleep", new_callable=AsyncMock):
-                    result = await self.manager.sync_from_linear(
-                        workspace_id="ws-1",
-                        linear_api_key="test-linear-key",  # pragma: allowlist secret
-                    )
+                result = await self.manager.sync_from_linear(
+                    workspace_id="ws-1",
+                    linear_api_key="test-linear-key",  # pragma: allowlist secret
+                )
 
-                    assert result["success"] is True
-                    assert result["created"] == 1
-                    assert self.manager.db.get_motion_id_for_linear("li-1") == "mt-1"
+                assert result["success"] is True
+                assert result["created"] == 1
+                assert self.manager.db.get_motion_id_for_linear("li-1") == "mt-1"

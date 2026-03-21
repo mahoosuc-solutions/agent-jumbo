@@ -357,17 +357,15 @@ class WorkQueueManager:
         This catches items whose workflow execution died without reporting back.
         Returns the number of items reset.
         """
-        conn = self.db.get_connection()
-        cursor = conn.execute(
-            "UPDATE work_items SET status = 'queued', execution_status = 'stale', "
-            "updated_at = CURRENT_TIMESTAMP "
-            "WHERE status = 'in_progress' "
-            "AND started_at < datetime('now', ?)",
-            (f"-{stale_hours} hours",),
-        )
-        count = cursor.rowcount
-        conn.commit()
-        conn.close()
+        with self.db.db.transaction() as conn:
+            cursor = conn.execute(
+                "UPDATE work_items SET status = 'queued', execution_status = 'stale', "
+                "updated_at = CURRENT_TIMESTAMP "
+                "WHERE status = 'in_progress' "
+                "AND started_at < datetime('now', ?)",
+                (f"-{stale_hours} hours",),
+            )
+            count = cursor.rowcount
         return count
 
     # ── Settings ──────────────────────────────────────────────────────

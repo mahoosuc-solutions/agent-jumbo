@@ -5,29 +5,22 @@ Mirrors Linear state for fast dashboard queries and offline resilience.
 """
 
 import json
-import sqlite3
-from pathlib import Path
 from typing import Any
 
+from python.helpers.db_connection import DatabaseConnection, SyncLogMixin
 
-class LinearDatabase:
+
+class LinearDatabase(SyncLogMixin):
     """Local cache for Linear issues, projects, and sync state."""
 
     def __init__(self, db_path: str = "data/linear_integration.db"):
-        self.db_path = Path(db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.db = DatabaseConnection(db_path)
         self.init_database()
 
-    def get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path)
-        conn.execute("PRAGMA journal_mode=WAL")
-        return conn
-
     def init_database(self) -> None:
-        conn = self.get_connection()
-        cursor = conn.cursor()
+        conn = self.db.conn
 
-        cursor.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS issues (
                 id TEXT PRIMARY KEY,
                 identifier TEXT NOT NULL,
@@ -48,7 +41,7 @@ class LinearDatabase:
             )
         """)
 
-        cursor.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS projects (
                 id TEXT PRIMARY KEY,
                 name TEXT NOT NULL,
@@ -59,7 +52,7 @@ class LinearDatabase:
             )
         """)
 
-        cursor.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS sync_log (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 sync_type TEXT NOT NULL,
@@ -72,48 +65,45 @@ class LinearDatabase:
         """)
 
         # Indexes for commonly-queried columns
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_project_id ON issues(project_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_state_name ON issues(state_name)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_team_id ON issues(team_id)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_issues_updated_at ON issues(updated_at)")
-        cursor.execute("CREATE INDEX IF NOT EXISTS idx_projects_team_id ON projects(team_id)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_issues_project_id ON issues(project_id)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_issues_state_name ON issues(state_name)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_issues_team_id ON issues(team_id)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_issues_updated_at ON issues(updated_at)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_projects_team_id ON projects(team_id)")
 
         conn.commit()
-        conn.close()
 
     # ── Issue operations ─────────────────────────────────────────────
 
     def upsert_issue(self, issue: dict[str, Any]) -> None:
-        conn = self.get_connection()
         labels_json = json.dumps([lbl.get("name", "") for lbl in (issue.get("labels", {}).get("nodes", []))])
-        conn.execute(
-            """
-            INSERT OR REPLACE INTO issues
-                (id, identifier, title, description, url, priority,
-                 state_id, state_name, project_id, project_name,
-                 team_id, assignee_name, labels, created_at, updated_at, synced_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            """,
-            (
-                issue["id"],
-                issue.get("identifier", ""),
-                issue.get("title", ""),
-                issue.get("description", ""),
-                issue.get("url", ""),
-                issue.get("priority", 0),
-                (issue.get("state") or {}).get("id", ""),
-                (issue.get("state") or {}).get("name", ""),
-                (issue.get("project") or {}).get("id", ""),
-                (issue.get("project") or {}).get("name", ""),
-                issue.get("team_id", ""),
-                (issue.get("assignee") or {}).get("name", ""),
-                labels_json,
-                issue.get("createdAt", ""),
-                issue.get("updatedAt", ""),
-            ),
-        )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO issues
+                    (id, identifier, title, description, url, priority,
+                     state_id, state_name, project_id, project_name,
+                     team_id, assignee_name, labels, created_at, updated_at, synced_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    issue["id"],
+                    issue.get("identifier", ""),
+                    issue.get("title", ""),
+                    issue.get("description", ""),
+                    issue.get("url", ""),
+                    issue.get("priority", 0),
+                    (issue.get("state") or {}).get("id", ""),
+                    (issue.get("state") or {}).get("name", ""),
+                    (issue.get("project") or {}).get("id", ""),
+                    (issue.get("project") or {}).get("name", ""),
+                    issue.get("team_id", ""),
+                    (issue.get("assignee") or {}).get("name", ""),
+                    labels_json,
+                    issue.get("createdAt", ""),
+                    issue.get("updatedAt", ""),
+                ),
+            )
 
     def upsert_issues(self, issues: list[dict[str, Any]]) -> int:
         for issue in issues:
@@ -126,7 +116,6 @@ class LinearDatabase:
         state_name: str | None = None,
         limit: int = 50,
     ) -> list[dict[str, Any]]:
-        conn = self.get_connection()
         query = "SELECT * FROM issues WHERE 1=1"
         params: list[Any] = []
 
@@ -140,15 +129,10 @@ class LinearDatabase:
         query += " ORDER BY updated_at DESC LIMIT ?"
         params.append(limit)
 
-        cursor = conn.execute(query, params)
-        cols = [d[0] for d in cursor.description]
-        rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
-        conn.close()
-        return rows
+        return self.db.query_rows(query, params)
 
     def search_issues_cached(self, query: str, limit: int = 25) -> list[dict[str, Any]]:
-        conn = self.get_connection()
-        cursor = conn.execute(
+        return self.db.query_rows(
             """
             SELECT * FROM issues
             WHERE title LIKE ? OR description LIKE ? OR identifier LIKE ?
@@ -156,85 +140,32 @@ class LinearDatabase:
             """,
             (f"%{query}%", f"%{query}%", f"%{query}%", limit),
         )
-        cols = [d[0] for d in cursor.description]
-        rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
-        conn.close()
-        return rows
 
     # ── Project operations ───────────────────────────────────────────
 
     def upsert_project(self, project: dict[str, Any]) -> None:
-        conn = self.get_connection()
-        conn.execute(
-            """
-            INSERT OR REPLACE INTO projects (id, name, state, slug_id, team_id, synced_at)
-            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
-            """,
-            (
-                project["id"],
-                project.get("name", ""),
-                project.get("state", ""),
-                project.get("slugId", ""),
-                project.get("team_id", ""),
-            ),
-        )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            conn.execute(
+                """
+                INSERT OR REPLACE INTO projects (id, name, state, slug_id, team_id, synced_at)
+                VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+                """,
+                (
+                    project["id"],
+                    project.get("name", ""),
+                    project.get("state", ""),
+                    project.get("slugId", ""),
+                    project.get("team_id", ""),
+                ),
+            )
 
     def get_projects(self) -> list[dict[str, Any]]:
-        conn = self.get_connection()
-        cursor = conn.execute("SELECT * FROM projects ORDER BY name")
-        cols = [d[0] for d in cursor.description]
-        rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
-        conn.close()
-        return rows
-
-    # ── Sync log ─────────────────────────────────────────────────────
-
-    def start_sync(self, sync_type: str) -> int:
-        conn = self.get_connection()
-        cursor = conn.execute("INSERT INTO sync_log (sync_type) VALUES (?)", (sync_type,))
-        sync_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        return sync_id  # type: ignore[return-value]
-
-    def complete_sync(self, sync_id: int, items_synced: int, error: str | None = None) -> None:
-        conn = self.get_connection()
-        status = "error" if error else "completed"
-        conn.execute(
-            """
-            UPDATE sync_log
-            SET completed_at = CURRENT_TIMESTAMP, status = ?, items_synced = ?, error = ?
-            WHERE id = ?
-            """,
-            (status, items_synced, error, sync_id),
-        )
-        conn.commit()
-        conn.close()
-
-    def get_last_sync(self, sync_type: str | None = None) -> dict[str, Any] | None:
-        conn = self.get_connection()
-        if sync_type:
-            cursor = conn.execute(
-                "SELECT * FROM sync_log WHERE sync_type = ? ORDER BY id DESC LIMIT 1",
-                (sync_type,),
-            )
-        else:
-            cursor = conn.execute("SELECT * FROM sync_log ORDER BY id DESC LIMIT 1")
-        row = cursor.fetchone()
-        if not row:
-            conn.close()
-            return None
-        cols = [d[0] for d in cursor.description]
-        result = dict(zip(cols, row))
-        conn.close()
-        return result
+        return self.db.query_rows("SELECT * FROM projects ORDER BY name")
 
     # ── Dashboard aggregation ────────────────────────────────────────
 
     def get_dashboard_data(self) -> dict[str, Any]:
-        conn = self.get_connection()
+        conn = self.db.conn
 
         # Issues by state
         cursor = conn.execute("SELECT state_name, COUNT(*) FROM issues GROUP BY state_name ORDER BY COUNT(*) DESC")
@@ -255,8 +186,6 @@ class LinearDatabase:
 
         # Last sync
         last_sync = self.get_last_sync()
-
-        conn.close()
 
         return {
             "total_issues": total_issues,

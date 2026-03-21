@@ -122,4 +122,9 @@ class MotionIntegration(Tool):
             return f"**{title}**: No data"
         if "error" in result:
             return f"**{title} - Error**: {result['error']}"
+        # Truncate large lists to keep tool output manageable
+        for key in ("issues", "tasks", "schedule"):
+            if key in result and isinstance(result[key], list) and len(result[key]) > 10:
+                total = len(result[key])
+                result = {**result, key: result[key][:10], f"{key}_truncated": f"Showing 10 of {total}"}
         return f"**{title}**:\n```json\n{json.dumps(result, indent=2, default=str)}\n```"

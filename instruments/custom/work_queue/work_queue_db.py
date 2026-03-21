@@ -1,34 +1,27 @@
 """
 Work Queue Database — SQLite store for discovered work items.
 
-Follows the LinearDatabase pattern: WAL journal, upsert semantics,
-paginated queries, and dashboard aggregation.
+Uses DatabaseConnection for safe connection management with WAL
+and transaction safety.
 """
 
 import json
-import sqlite3
-from pathlib import Path
 from typing import Any
+
+from python.helpers.db_connection import DatabaseConnection
 
 
 class WorkQueueDatabase:
     """Local store for work queue items, scan history, and settings."""
 
     def __init__(self, db_path: str = "data/work_queue.db"):
-        self.db_path = Path(db_path)
-        self.db_path.parent.mkdir(parents=True, exist_ok=True)
+        self.db = DatabaseConnection(db_path)
         self.init_database()
 
-    def get_connection(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(self.db_path)
-        conn.execute("PRAGMA journal_mode=WAL")
-        return conn
-
     def init_database(self) -> None:
-        conn = self.get_connection()
-        c = conn.cursor()
+        conn = self.db.conn
 
-        c.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS projects (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 path TEXT NOT NULL UNIQUE,
@@ -37,7 +30,7 @@ class WorkQueueDatabase:
             )
         """)
 
-        c.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS work_items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 external_id TEXT NOT NULL,
@@ -68,15 +61,15 @@ class WorkQueueDatabase:
             )
         """)
 
-        c.execute("""
+        conn.execute("""
             CREATE UNIQUE INDEX IF NOT EXISTS idx_work_items_dedup
             ON work_items(source, external_id, project_path)
         """)
-        c.execute("CREATE INDEX IF NOT EXISTS idx_work_items_status ON work_items(status)")
-        c.execute("CREATE INDEX IF NOT EXISTS idx_work_items_project ON work_items(project_path)")
-        c.execute("CREATE INDEX IF NOT EXISTS idx_work_items_priority ON work_items(priority_score DESC)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_work_items_status ON work_items(status)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_work_items_project ON work_items(project_path)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_work_items_priority ON work_items(priority_score DESC)")
 
-        c.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS scan_log (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 scan_type TEXT NOT NULL,
@@ -89,7 +82,7 @@ class WorkQueueDatabase:
             )
         """)
 
-        c.execute("""
+        conn.execute("""
             CREATE TABLE IF NOT EXISTS settings (
                 key TEXT PRIMARY KEY,
                 value TEXT NOT NULL,
@@ -98,89 +91,76 @@ class WorkQueueDatabase:
         """)
 
         conn.commit()
-        conn.close()
 
     # ── Project operations ────────────────────────────────────────────
 
     def register_project(self, path: str, name: str) -> dict[str, Any]:
-        conn = self.get_connection()
-        conn.execute(
-            "INSERT OR REPLACE INTO projects (path, name) VALUES (?, ?)",
-            (path, name),
-        )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO projects (path, name) VALUES (?, ?)",
+                (path, name),
+            )
         return {"path": path, "name": name}
 
     def get_projects(self) -> list[dict[str, Any]]:
-        conn = self.get_connection()
-        cursor = conn.execute("SELECT * FROM projects ORDER BY name")
-        cols = [d[0] for d in cursor.description]
-        rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
-        conn.close()
-        return rows
+        return self.db.query_rows("SELECT * FROM projects ORDER BY name")
 
     def remove_project(self, path: str) -> bool:
-        conn = self.get_connection()
-        cursor = conn.execute("DELETE FROM projects WHERE path = ?", (path,))
-        conn.commit()
-        deleted = cursor.rowcount > 0
-        conn.close()
-        return deleted
+        with self.db.transaction() as conn:
+            cursor = conn.execute("DELETE FROM projects WHERE path = ?", (path,))
+            return cursor.rowcount > 0
 
     # ── Work item operations ──────────────────────────────────────────
 
     def upsert_item(self, item: dict[str, Any]) -> None:
-        conn = self.get_connection()
-        conn.execute(
-            """
-            INSERT INTO work_items
-                (external_id, source, source_type, title, description,
-                 file_path, line_number, url, status, priority_score, priority_raw,
-                 effort_estimate, effort_minutes, project_path,
-                 linear_priority, linear_state, linear_assignee, linear_labels,
-                 discovered_at, updated_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
-            ON CONFLICT(source, external_id, project_path)
-            DO UPDATE SET
-                title = excluded.title,
-                description = excluded.description,
-                file_path = excluded.file_path,
-                line_number = excluded.line_number,
-                url = excluded.url,
-                priority_score = excluded.priority_score,
-                priority_raw = excluded.priority_raw,
-                effort_estimate = excluded.effort_estimate,
-                effort_minutes = excluded.effort_minutes,
-                linear_priority = excluded.linear_priority,
-                linear_state = excluded.linear_state,
-                linear_assignee = excluded.linear_assignee,
-                linear_labels = excluded.linear_labels,
-                updated_at = CURRENT_TIMESTAMP
-            """,
-            (
-                item["external_id"],
-                item["source"],
-                item["source_type"],
-                item["title"],
-                item.get("description", ""),
-                item.get("file_path"),
-                item.get("line_number"),
-                item.get("url"),
-                item.get("status", "discovered"),
-                item.get("priority_score", 0),
-                json.dumps(item.get("priority_raw", {})),
-                item.get("effort_estimate"),
-                item.get("effort_minutes"),
-                item["project_path"],
-                item.get("linear_priority"),
-                item.get("linear_state"),
-                item.get("linear_assignee"),
-                json.dumps(item.get("linear_labels", [])) if item.get("linear_labels") else None,
-            ),
-        )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            conn.execute(
+                """
+                INSERT INTO work_items
+                    (external_id, source, source_type, title, description,
+                     file_path, line_number, url, status, priority_score, priority_raw,
+                     effort_estimate, effort_minutes, project_path,
+                     linear_priority, linear_state, linear_assignee, linear_labels,
+                     discovered_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                ON CONFLICT(source, external_id, project_path)
+                DO UPDATE SET
+                    title = excluded.title,
+                    description = excluded.description,
+                    file_path = excluded.file_path,
+                    line_number = excluded.line_number,
+                    url = excluded.url,
+                    priority_score = excluded.priority_score,
+                    priority_raw = excluded.priority_raw,
+                    effort_estimate = excluded.effort_estimate,
+                    effort_minutes = excluded.effort_minutes,
+                    linear_priority = excluded.linear_priority,
+                    linear_state = excluded.linear_state,
+                    linear_assignee = excluded.linear_assignee,
+                    linear_labels = excluded.linear_labels,
+                    updated_at = CURRENT_TIMESTAMP
+                """,
+                (
+                    item["external_id"],
+                    item["source"],
+                    item["source_type"],
+                    item["title"],
+                    item.get("description", ""),
+                    item.get("file_path"),
+                    item.get("line_number"),
+                    item.get("url"),
+                    item.get("status", "discovered"),
+                    item.get("priority_score", 0),
+                    json.dumps(item.get("priority_raw", {})),
+                    item.get("effort_estimate"),
+                    item.get("effort_minutes"),
+                    item["project_path"],
+                    item.get("linear_priority"),
+                    item.get("linear_state"),
+                    item.get("linear_assignee"),
+                    json.dumps(item.get("linear_labels", [])) if item.get("linear_labels") else None,
+                ),
+            )
 
     def upsert_items(self, items: list[dict[str, Any]]) -> int:
         for item in items:
@@ -188,16 +168,7 @@ class WorkQueueDatabase:
         return len(items)
 
     def get_item(self, item_id: int) -> dict[str, Any] | None:
-        conn = self.get_connection()
-        cursor = conn.execute("SELECT * FROM work_items WHERE id = ?", (item_id,))
-        row = cursor.fetchone()
-        if not row:
-            conn.close()
-            return None
-        cols = [d[0] for d in cursor.description]
-        result = dict(zip(cols, row))
-        conn.close()
-        return result
+        return self.db.query_one("SELECT * FROM work_items WHERE id = ?", (item_id,))
 
     def get_items(
         self,
@@ -210,7 +181,6 @@ class WorkQueueDatabase:
         page: int = 1,
         page_size: int = 50,
     ) -> tuple[list[dict[str, Any]], int]:
-        conn = self.get_connection()
         where_clauses = ["1=1"]
         params: list[Any] = []
 
@@ -230,7 +200,7 @@ class WorkQueueDatabase:
         where = " AND ".join(where_clauses)
 
         # Count total
-        cursor = conn.execute(f"SELECT COUNT(*) FROM work_items WHERE {where}", params)
+        cursor = self.db.conn.execute(f"SELECT COUNT(*) FROM work_items WHERE {where}", params)
         total = cursor.fetchone()[0]
 
         # Validate sort column
@@ -241,17 +211,15 @@ class WorkQueueDatabase:
             sort_dir = "DESC"
 
         offset = (page - 1) * page_size
-        cursor = conn.execute(
+        cursor = self.db.conn.execute(
             f"SELECT * FROM work_items WHERE {where} ORDER BY {sort_by} {sort_dir} LIMIT ? OFFSET ?",
             [*params, page_size, offset],
         )
         cols = [d[0] for d in cursor.description]
         rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
-        conn.close()
         return rows, total
 
     def search_items(self, query: str, project_path: str | None = None, limit: int = 25) -> list[dict[str, Any]]:
-        conn = self.get_connection()
         q = f"%{query}%"
         params: list[Any] = [q, q, q]
         extra = ""
@@ -260,7 +228,7 @@ class WorkQueueDatabase:
             params.append(project_path)
         params.append(limit)
 
-        cursor = conn.execute(
+        return self.db.query_rows(
             f"""
             SELECT * FROM work_items
             WHERE (title LIKE ? OR description LIKE ? OR file_path LIKE ?){extra}
@@ -268,31 +236,25 @@ class WorkQueueDatabase:
             """,
             params,
         )
-        cols = [d[0] for d in cursor.description]
-        rows = [dict(zip(cols, row)) for row in cursor.fetchall()]
-        conn.close()
-        return rows
 
     def update_item_status(self, item_id: int, status: str) -> bool:
-        conn = self.get_connection()
         ts_col = {
             "queued": "queued_at",
             "in_progress": "started_at",
             "done": "completed_at",
         }.get(status)
 
-        if ts_col:
-            conn.execute(
-                f"UPDATE work_items SET status = ?, {ts_col} = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                (status, item_id),
-            )
-        else:
-            conn.execute(
-                "UPDATE work_items SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
-                (status, item_id),
-            )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            if ts_col:
+                conn.execute(
+                    f"UPDATE work_items SET status = ?, {ts_col} = CURRENT_TIMESTAMP, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (status, item_id),
+                )
+            else:
+                conn.execute(
+                    "UPDATE work_items SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?",
+                    (status, item_id),
+                )
         return True
 
     def update_item(self, item_id: int, updates: dict[str, Any]) -> bool:
@@ -308,30 +270,25 @@ class WorkQueueDatabase:
         sets.append("updated_at = CURRENT_TIMESTAMP")
         params.append(item_id)
 
-        conn = self.get_connection()
-        conn.execute(f"UPDATE work_items SET {', '.join(sets)} WHERE id = ?", params)
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            conn.execute(f"UPDATE work_items SET {', '.join(sets)} WHERE id = ?", params)
         return True
 
     def bulk_update_status(self, item_ids: list[int], status: str) -> int:
         if not item_ids:
             return 0
-        conn = self.get_connection()
         placeholders = ",".join("?" * len(item_ids))
-        conn.execute(
-            f"UPDATE work_items SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id IN ({placeholders})",
-            [status, *item_ids],
-        )
-        conn.commit()
-        count = len(item_ids)
-        conn.close()
-        return count
+        with self.db.transaction() as conn:
+            conn.execute(
+                f"UPDATE work_items SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id IN ({placeholders})",
+                [status, *item_ids],
+            )
+        return len(item_ids)
 
     # ── Dashboard aggregation ─────────────────────────────────────────
 
     def get_dashboard_data(self, project_path: str | None = None) -> dict[str, Any]:
-        conn = self.get_connection()
+        conn = self.db.conn
         where = "WHERE project_path = ?" if project_path else ""
         params: list[Any] = [project_path] if project_path else []
 
@@ -364,7 +321,6 @@ class WorkQueueDatabase:
         )
         done_this_week = cursor.fetchone()[0]
 
-        conn.close()
         return {
             "total": total,
             "by_status": by_status,
@@ -376,28 +332,22 @@ class WorkQueueDatabase:
     # ── Scan log ──────────────────────────────────────────────────────
 
     def start_scan(self, scan_type: str, project_path: str) -> int:
-        conn = self.get_connection()
-        cursor = conn.execute(
-            "INSERT INTO scan_log (scan_type, project_path) VALUES (?, ?)",
-            (scan_type, project_path),
-        )
-        scan_id = cursor.lastrowid
-        conn.commit()
-        conn.close()
-        return scan_id  # type: ignore[return-value]
+        with self.db.transaction() as conn:
+            cursor = conn.execute(
+                "INSERT INTO scan_log (scan_type, project_path) VALUES (?, ?)",
+                (scan_type, project_path),
+            )
+            return cursor.lastrowid  # type: ignore[return-value]
 
     def complete_scan(self, scan_id: int, items_found: int, error: str | None = None) -> None:
-        conn = self.get_connection()
-        status = "error" if error else "completed"
-        conn.execute(
-            "UPDATE scan_log SET completed_at = CURRENT_TIMESTAMP, status = ?, items_found = ?, error = ? WHERE id = ?",
-            (status, items_found, error, scan_id),
-        )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            status = "error" if error else "completed"
+            conn.execute(
+                "UPDATE scan_log SET completed_at = CURRENT_TIMESTAMP, status = ?, items_found = ?, error = ? WHERE id = ?",
+                (status, items_found, error, scan_id),
+            )
 
     def get_last_scan(self, scan_type: str | None = None, project_path: str | None = None) -> dict[str, Any] | None:
-        conn = self.get_connection()
         where_parts = []
         params: list[Any] = []
         if scan_type:
@@ -408,37 +358,21 @@ class WorkQueueDatabase:
             params.append(project_path)
         where = f"WHERE {' AND '.join(where_parts)}" if where_parts else ""
 
-        cursor = conn.execute(f"SELECT * FROM scan_log {where} ORDER BY id DESC LIMIT 1", params)
-        row = cursor.fetchone()
-        if not row:
-            conn.close()
-            return None
-        cols = [d[0] for d in cursor.description]
-        result = dict(zip(cols, row))
-        conn.close()
-        return result
+        return self.db.query_one(f"SELECT * FROM scan_log {where} ORDER BY id DESC LIMIT 1", params)
 
     # ── Settings ──────────────────────────────────────────────────────
 
     def get_setting(self, key: str, default: str = "") -> str:
-        conn = self.get_connection()
-        cursor = conn.execute("SELECT value FROM settings WHERE key = ?", (key,))
-        row = cursor.fetchone()
-        conn.close()
-        return row[0] if row else default
+        row = self.db.query_one("SELECT value FROM settings WHERE key = ?", (key,))
+        return row["value"] if row else default
 
     def set_setting(self, key: str, value: str) -> None:
-        conn = self.get_connection()
-        conn.execute(
-            "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
-            (key, value),
-        )
-        conn.commit()
-        conn.close()
+        with self.db.transaction() as conn:
+            conn.execute(
+                "INSERT OR REPLACE INTO settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)",
+                (key, value),
+            )
 
     def get_all_settings(self) -> dict[str, str]:
-        conn = self.get_connection()
-        cursor = conn.execute("SELECT key, value FROM settings")
-        result = {row[0]: row[1] for row in cursor.fetchall()}
-        conn.close()
-        return result
+        rows = self.db.query_rows("SELECT key, value FROM settings")
+        return {row["key"]: row["value"] for row in rows}

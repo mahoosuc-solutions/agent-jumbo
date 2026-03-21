@@ -390,13 +390,11 @@ class TestWorkQueueManager:
         self.manager.db.update_item_status(item_id, "in_progress")
 
         # Manually backdate the started_at to 48 hours ago
-        conn = self.manager.db.get_connection()
-        conn.execute(
-            "UPDATE work_items SET started_at = datetime('now', '-48 hours') WHERE id = ?",
-            (item_id,),
-        )
-        conn.commit()
-        conn.close()
+        with self.manager.db.db.transaction() as conn:
+            conn.execute(
+                "UPDATE work_items SET started_at = datetime('now', '-48 hours') WHERE id = ?",
+                (item_id,),
+            )
 
         count = self.manager.cleanup_stale_items(stale_hours=24)
         assert count == 1

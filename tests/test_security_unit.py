@@ -314,10 +314,8 @@ class TestDatabaseIndexes:
             from instruments.custom.linear_integration.linear_db import LinearDatabase
 
             db = LinearDatabase(db_path=os.path.join(tmpdir, "test.db"))
-            conn = db.get_connection()
-            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
+            cursor = db.db.conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
             indexes = {row[0] for row in cursor.fetchall()}
-            conn.close()
             assert "idx_issues_project_id" in indexes
             assert "idx_issues_state_name" in indexes
             assert "idx_issues_team_id" in indexes
@@ -327,10 +325,8 @@ class TestDatabaseIndexes:
             from instruments.custom.motion_integration.motion_db import MotionDatabase
 
             db = MotionDatabase(db_path=os.path.join(tmpdir, "test.db"))
-            conn = db.get_connection()
-            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
+            cursor = db.db.conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
             indexes = {row[0] for row in cursor.fetchall()}
-            conn.close()
             assert "idx_tasks_workspace_id" in indexes
             assert "idx_tasks_status" in indexes
 
@@ -339,9 +335,7 @@ class TestDatabaseIndexes:
             from instruments.custom.notion_integration.notion_db import NotionDatabase
 
             db = NotionDatabase(db_path=os.path.join(tmpdir, "test.db"))
-            conn = db.get_connection()
-            cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
+            cursor = db.db.conn.execute("SELECT name FROM sqlite_master WHERE type='index'")
             indexes = {row[0] for row in cursor.fetchall()}
-            conn.close()
             assert "idx_pages_database_id" in indexes
             assert "idx_notion_linear_map_linear_id" in indexes

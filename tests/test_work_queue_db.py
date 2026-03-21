@@ -41,20 +41,16 @@ class TestWorkQueueDatabase:
     # ── init_database ────────────────────────────────────────────────
 
     def test_init_database_creates_tables(self):
-        conn = self.db.get_connection()
-        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
+        cursor = self.db.db.conn.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
         tables = {row[0] for row in cursor.fetchall()}
-        conn.close()
         assert "projects" in tables
         assert "work_items" in tables
         assert "scan_log" in tables
         assert "settings" in tables
 
     def test_init_database_creates_indexes(self):
-        conn = self.db.get_connection()
-        cursor = conn.execute("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name")
+        cursor = self.db.db.conn.execute("SELECT name FROM sqlite_master WHERE type='index' ORDER BY name")
         indexes = {row[0] for row in cursor.fetchall()}
-        conn.close()
         assert "idx_work_items_dedup" in indexes
         assert "idx_work_items_status" in indexes
         assert "idx_work_items_project" in indexes

@@ -2,7 +2,6 @@
 Motion Integration Manager — business logic for Motion tasks and Linear sync.
 """
 
-import asyncio
 from typing import Any
 
 from .motion_db import MotionDatabase
@@ -144,9 +143,6 @@ class MotionManager:
                     linear_identifier=issue.get("identifier", ""),
                 )
                 created += 1
-
-                # Rate limit: 2s between calls
-                await asyncio.sleep(2)
 
             self.db.complete_sync(sync_id, created)
             return {
