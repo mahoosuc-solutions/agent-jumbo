@@ -183,6 +183,70 @@ class AgentMeshBridge:
 
     # -- Poll loop -----------------------------------------------------------
 
+    async def _process_message(self, msg_id: str, fields: dict[str, Any]) -> None:
+        """Parse, filter, dispatch, and ACK a single stream message."""
+        if not self._redis:
+            return
+
+        raw = fields.get("data")
+        if not raw:
+            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+            return
+
+        try:
+            data = json.loads(raw)
+            event = AgentMeshEvent.from_json(data)
+        except (json.JSONDecodeError, KeyError):
+            logger.warning("Malformed event, skipping %s", msg_id)
+            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+            return
+
+        # Skip self-produced events
+        if event.produced_by == self.config.name:
+            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+            return
+
+        # Idempotency: skip already-processed task IDs
+        task_id = event.payload.get("taskId", event.aggregate_id)
+        dedup_key = f"{event.type}:{task_id}"
+        if dedup_key in self._processed_task_ids:
+            logger.info("Skipping duplicate event %s", dedup_key)
+            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+            return
+
+        await self._dispatch(event)
+        self._processed_task_ids.add(dedup_key)
+        self._events_processed += 1
+        await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
+
+        # Cap dedup set size
+        if len(self._processed_task_ids) > 5000:
+            # Remove oldest half
+            to_remove = list(self._processed_task_ids)[: len(self._processed_task_ids) // 2]
+            self._processed_task_ids -= set(to_remove)
+
+    async def _reclaim_pending(self) -> None:
+        """Drain pending entries (claimed but not ACK'd) from a previous crash."""
+        if not self._redis:
+            return
+        last_id = "0"
+        while self._running:
+            results = await self._redis.xreadgroup(
+                groupname=self._group_name,
+                consumername=self.config.name,
+                streams={STREAM_KEY: last_id},
+                count=BATCH_SIZE,
+            )
+            if not results:
+                break
+            _stream, messages = results[0]
+            if not messages:
+                break
+            for msg_id, fields in messages:
+                last_id = msg_id
+                await self._process_message(msg_id, fields)
+        logger.info("Pending reclaim complete")
+
     async def start(self) -> None:
         """Start consuming events.  Blocks until ``stop()`` is called."""
         if not self._redis:
@@ -190,6 +254,8 @@ class AgentMeshBridge:
         self._running = True
         consecutive_errors = 0
         logger.info("AgentMesh bridge listening for events")
+
+        await self._reclaim_pending()
 
         while self._running:
             try:
@@ -207,42 +273,7 @@ class AgentMeshBridge:
 
                 for _stream, messages in results:
                     for msg_id, fields in messages:
-                        raw = fields.get("data")
-                        if not raw:
-                            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
-                            continue
-
-                        try:
-                            data = json.loads(raw)
-                            event = AgentMeshEvent.from_json(data)
-                        except (json.JSONDecodeError, KeyError):
-                            logger.warning("Malformed event, skipping %s", msg_id)
-                            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
-                            continue
-
-                        # Skip self-produced events
-                        if event.produced_by == self.config.name:
-                            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
-                            continue
-
-                        # Idempotency: skip already-processed task IDs
-                        task_id = event.payload.get("taskId", event.aggregate_id)
-                        dedup_key = f"{event.type}:{task_id}"
-                        if dedup_key in self._processed_task_ids:
-                            logger.info("Skipping duplicate event %s", dedup_key)
-                            await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
-                            continue
-
-                        await self._dispatch(event)
-                        self._processed_task_ids.add(dedup_key)
-                        self._events_processed += 1
-                        await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
-
-                        # Cap dedup set size
-                        if len(self._processed_task_ids) > 5000:
-                            # Remove oldest half
-                            to_remove = list(self._processed_task_ids)[: len(self._processed_task_ids) // 2]
-                            self._processed_task_ids -= set(to_remove)
+                        await self._process_message(msg_id, fields)
 
             except asyncio.CancelledError:
                 break
