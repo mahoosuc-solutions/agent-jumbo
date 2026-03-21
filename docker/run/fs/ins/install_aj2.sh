@@ -5,11 +5,11 @@ set -e
 
 # remove repo (if not local branch)
 if [ "$1" != "local" ]; then
-    rm -rf /git/agent-zero
+    rm -rf /git/agent-jumbo
 fi
 
 # run the original install script again
-bash /ins/install_A0.sh "$@"
+bash /ins/install_aj.sh "$@"
 
 # remove python packages cache
 . "/ins/setup_venv.sh" "$@"

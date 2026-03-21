@@ -9,8 +9,8 @@ CACHE_DIR="${CACHE_DIR:-.buildx-cache}"
 BUILDER_NAME="${BUILDER_NAME:-agent-jumbo-builder}"
 if [[ -n "${BASE_IMAGE:-}" ]]; then
   BASE_IMAGE="${BASE_IMAGE}"
-elif docker image inspect agent-zero-base:local >/dev/null 2>&1; then
-  BASE_IMAGE="agent-zero-base:local"
+elif docker image inspect agent-jumbo-base:local >/dev/null 2>&1; then
+  BASE_IMAGE="agent-jumbo-base:local"
 else
   BASE_IMAGE="agent0ai/agent-zero-base:latest"
 fi

@@ -22,12 +22,12 @@ services:
               count: all
               capabilities: [gpu]
 
-  agent-zero:
-    container_name: agent-zero
-    image: agent-zero-local:latest
+  agent-jumbo:
+    container_name: agent-jumbo
+    image: agent-jumbo:latest
     volumes:
-      - ./agent-zero:/a0
-      - agent_zero_data:/a0/data
+      - ./agent-jumbo:/aj
+      - agent_jumbo_data:/aj/data
       - /mnt/wdblack:/mnt/wdblack
     ports:
       - "50080:80"
@@ -40,5 +40,5 @@ services:
         condition: service_healthy
 
 volumes:
-  agent_zero_data:
-    name: agent_zero_data
+  agent_jumbo_data:
+    name: agent_jumbo_data
