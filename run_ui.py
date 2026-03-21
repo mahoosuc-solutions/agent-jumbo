@@ -403,6 +403,33 @@ def run():
         except Exception as e:
             PrintStyle(font_color="yellow").print(f"[!] Gateway init skipped: {e}")
 
+    # Initialize AgentMesh bridge if AGENTMESH_REDIS_URL is set.
+    agentmesh_url = os.environ.get("AGENTMESH_REDIS_URL")
+    if agentmesh_url:
+
+        def _start_agentmesh():
+            import asyncio
+
+            try:
+                from python.helpers.agentmesh_bridge import AgentMeshBridge, AgentMeshConfig
+                from python.helpers.agentmesh_task_handler import register_task_handlers, set_bridge
+
+                async def _run():
+                    bridge = AgentMeshBridge(AgentMeshConfig(redis_url=agentmesh_url))
+                    await bridge.connect()
+                    set_bridge(bridge)
+                    register_task_handlers(bridge)
+                    await bridge.start()
+
+                asyncio.run(_run())
+            except Exception as e:
+                PrintStyle(font_color="yellow").print(f"[!] AgentMesh bridge failed: {e}")
+
+        threading.Thread(target=_start_agentmesh, daemon=True).start()
+        PrintStyle(font_color="green").print(f"[✓] AgentMesh bridge starting ({agentmesh_url})")
+    else:
+        PrintStyle(font_color="yellow").print("[!] AgentMesh bridge skipped (no AGENTMESH_REDIS_URL)")
+
     # Add the webapp, mcp, and a2a to the app.
     # Protect startup from blocking proxy initialization.
     middleware_routes = {}
