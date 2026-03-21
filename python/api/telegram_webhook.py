@@ -11,11 +11,20 @@ from python.helpers.telegram_bridge import (
     clear_context_for_chat,
     extract_tags,
     get_context_for_chat,
+    get_session_meta,
     set_context_for_chat,
+    set_session_meta,
     should_ignore_update,
 )
-from python.helpers.telegram_client import send_message
+from python.helpers.telegram_client import send_long_message, send_message
 from python.helpers.telegram_media import TelegramMedia, cleanup_stale_uploads, extract_media
+from python.helpers.telegram_orchestrator import (
+    HELP_TEXT,
+    build_orchestrator_context,
+    format_for_telegram,
+    parse_slash_command,
+    slash_command_to_prompt,
+)
 
 
 class TelegramWebhook(ApiHandler):
@@ -56,6 +65,17 @@ class TelegramWebhook(ApiHandler):
                 send_message(token, chat_id_str, "Context reset. Start a new thread.")
             return {"status": "reset"}
 
+        # Handle orchestrator slash commands
+        cmd, cmd_args = parse_slash_command(raw_text)
+        if cmd == "help":
+            token = os.getenv("TELEGRAM_BOT_TOKEN")
+            if token:
+                send_message(token, chat_id_str, HELP_TEXT)
+            return {"status": "ok"}
+        if cmd is not None:
+            # Translate slash command to natural language for the agent
+            raw_text = slash_command_to_prompt(cmd, cmd_args)
+
         # Extract media (photos, video, voice, audio, documents)
         token = os.getenv("TELEGRAM_BOT_TOKEN", "")
         if not token:
@@ -66,6 +86,17 @@ class TelegramWebhook(ApiHandler):
         except Exception as e:
             PrintStyle.error(f"Media extraction failed: {e}")
             media = TelegramMedia(text=raw_text)
+
+        # Persist vision context for follow-up messages
+        if media and media.attachment_paths:
+            vision_summary = {
+                "description": f"Image received with message: {(media.text or 'no caption')[:200]}",
+                "attachment_count": len(media.attachment_paths),
+                "has_image": any(
+                    p.endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")) for p in media.attachment_paths
+                ),
+            }
+            set_session_meta(chat_id_str, "vision_context", vision_summary)
 
         text = media.text
         attachment_paths = media.attachment_paths
@@ -97,11 +128,22 @@ class TelegramWebhook(ApiHandler):
         await self._store_telegram_message(text, title, tags)
 
         try:
+            # Inject orchestrator context
+            orch_context = build_orchestrator_context(
+                chat_id=chat_id_str,
+                vision_context=get_session_meta(chat_id_str, "vision_context"),
+                active_project=get_session_meta(chat_id_str, "active_project"),
+                last_tool=get_session_meta(chat_id_str, "last_tool"),
+            )
+            if orch_context:
+                text = f"{orch_context}\n\n{text}"
+
             task = context.communicate(UserMessage(message=text, attachments=attachment_paths))
             result = await task.result()  # type: ignore
 
             if token:
-                send_message(token, chat_id_str, result)
+                formatted = format_for_telegram(result)
+                send_long_message(token, chat_id_str, formatted)
         finally:
             if media:
                 media.cleanup()
