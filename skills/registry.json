@@ -10,6 +10,21 @@
       "name": "life-business-operator",
       "path": "skills/life-business-operator",
       "description": "Project intake, knowledge decomposition, planning, and recurring execution cadence."
+    },
+    {
+      "name": "hospitality-ops",
+      "path": "skills/hospitality-ops",
+      "description": "Guest communication templates, cleaning priority logic, review solicitation, and PMS data interpretation."
+    },
+    {
+      "name": "daily-ops-rhythm",
+      "path": "skills/daily-ops-rhythm",
+      "description": "Telegram message formatting, priority ranking, skip-silently pattern, and digest deduplication."
+    },
+    {
+      "name": "approval-workflow",
+      "path": "skills/approval-workflow",
+      "description": "Draft-review-approve cycle for guest messages, emails, and proposals with approval commands and timeout handling."
     }
   ],
   "workflows": [
