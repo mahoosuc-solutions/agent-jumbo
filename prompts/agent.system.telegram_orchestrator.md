@@ -51,7 +51,10 @@ Telegram supports a limited Markdown subset. Follow these rules:
 - Use `code` for inline code (surround with `)
 - Use ``` for code blocks
 - Use bullet lists with - prefix
+- Always display times in US Eastern time (ET), not UTC
 - Keep responses concise — Telegram is a mobile-first interface
+- Use section headers with emoji to visually separate different tools' output (e.g., "📊 Portfolio", "📋 Linear", "⚙️ Workflows")
+- Use bullet points, not tables, for status summaries — tables render poorly in Telegram
 - For complex outputs (dashboards, tables), summarize key metrics first, then offer "Want the full details?"
 - When a tool produces a long result, extract the 3-5 most important points
 - Never send raw JSON — always format for human readability

@@ -98,7 +98,7 @@ class LinearClient:
     ) -> dict[str, Any]:
         """Update an existing issue."""
         mutation = """
-        mutation UpdateIssue($id: String!, $input: IssueUpdateInput!) {
+        mutation UpdateIssue($id: ID!, $input: IssueUpdateInput!) {
             issueUpdate(id: $id, input: $input) {
                 success
                 issue {
@@ -172,7 +172,7 @@ class LinearClient:
     ) -> list[dict[str, Any]]:
         """Get all issues for a Linear project."""
         gql = """
-        query ProjectIssues($projectId: String!, $first: Int) {
+        query ProjectIssues($projectId: ID!, $first: Int) {
             issues(filter: { project: { id: { eq: $projectId } } }, first: $first) {
                 nodes {
                     id
@@ -203,7 +203,7 @@ class LinearClient:
         """List projects, optionally filtered by team."""
         if team_id:
             gql = """
-            query Projects($teamId: String!) {
+            query Projects($teamId: ID!) {
                 projects(filter: { accessibleTeams: { id: { eq: $teamId } } }) {
                     nodes { id name state slugId }
                 }
@@ -221,7 +221,7 @@ class LinearClient:
         """List labels, optionally filtered by team."""
         if team_id:
             gql = """
-            query Labels($teamId: String!) {
+            query Labels($teamId: ID!) {
                 issueLabels(filter: { team: { id: { eq: $teamId } } }) {
                     nodes { id name color }
                 }
@@ -238,7 +238,7 @@ class LinearClient:
     async def get_workflow_states(self, team_id: str) -> list[dict[str, Any]]:
         """Get workflow states for a team."""
         gql = """
-        query States($teamId: String!) {
+        query States($teamId: ID!) {
             workflowStates(filter: { team: { id: { eq: $teamId } } }) {
                 nodes { id name type position }
             }
