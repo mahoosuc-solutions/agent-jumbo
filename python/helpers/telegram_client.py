@@ -7,6 +7,47 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+MAX_TELEGRAM_LENGTH = 4096
+
+
+def chunk_message(text: str, max_len: int = MAX_TELEGRAM_LENGTH, add_part_numbers: bool = False) -> list[str]:
+    """Split text into Telegram-safe chunks, preferring newline boundaries."""
+    if not text:
+        return []
+    if len(text) <= max_len:
+        return [text]
+
+    chunks: list[str] = []
+    remaining = text
+
+    while remaining:
+        if len(remaining) <= max_len:
+            chunks.append(remaining)
+            break
+
+        # Find best split point: last newline within limit
+        split_at = remaining.rfind("\n", 0, max_len)
+        if split_at <= 0:
+            split_at = max_len
+
+        chunks.append(remaining[:split_at])
+        remaining = remaining[split_at:].lstrip("\n")
+
+    if add_part_numbers and len(chunks) > 1:
+        total = len(chunks)
+        chunks = [f"{c}\n({i + 1}/{total})" for i, c in enumerate(chunks)]
+
+    return chunks
+
+
+def send_long_message(token: str, chat_id: str, text: str, parse_mode: str = "Markdown") -> list[dict[str, Any]]:
+    """Send a message, automatically chunking if it exceeds Telegram's limit."""
+    chunks = chunk_message(text, add_part_numbers=True)
+    results = []
+    for chunk in chunks:
+        results.append(send_message(token, chat_id, chunk, parse_mode))
+    return results
+
 
 def get_file_path(token: str, file_id: str) -> str | None:
     endpoint = f"https://api.telegram.org/bot{token}/getFile"
