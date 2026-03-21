@@ -1,4 +1,5 @@
 import asyncio
+import json
 import random
 import string
 import threading
@@ -894,10 +895,65 @@ class Agent:
         if isinstance(content, dict):
             content = {k: v for k, v in content.items() if v}
 
+        # Convert image attachments to multimodal vision content
+        content = self._inject_vision_content(content, message.attachments)
+
         # add to history
         msg = self.hist_add_message(False, content=content)  # type: ignore
         self.last_user_message = msg
         return msg
+
+    @staticmethod
+    def _inject_vision_content(
+        content: history.MessageContent,
+        attachments: list[str],
+    ) -> history.MessageContent:
+        """If attachments contain images, build a multimodal RawMessage so the
+        LLM receives base64 image_url content blocks alongside the text."""
+        import base64 as b64
+        import mimetypes
+        import os
+
+        IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
+        image_paths: list[str] = []
+
+        for path in attachments:
+            ext = os.path.splitext(path)[1].lower()
+            if ext in IMAGE_EXTENSIONS:
+                # Resolve container-internal path (/a0/...) to host path
+                resolved = path
+                if path.startswith("/a0/"):
+                    from python.helpers import files as _files
+
+                    resolved = _files.get_abs_path(path[4:])  # strip /a0/
+                if os.path.isfile(resolved):
+                    image_paths.append(resolved)
+
+        if not image_paths:
+            return content
+
+        # Build text portion from the original content
+        if isinstance(content, str):
+            text_str = content
+        elif isinstance(content, dict):
+            text_str = json.dumps(content, ensure_ascii=False)
+        else:
+            text_str = str(content)
+
+        parts: list[dict] = [{"type": "text", "text": text_str}]
+
+        for img_path in image_paths:
+            mime = mimetypes.guess_type(img_path)[0] or "image/jpeg"
+            with open(img_path, "rb") as f:
+                data = b64.b64encode(f.read()).decode("ascii")
+            parts.append(
+                {
+                    "type": "image_url",
+                    "image_url": {"url": f"data:{mime};base64,{data}"},
+                }
+            )
+
+        return history.RawMessage(raw_content=parts, preview=text_str[:200])
 
     def hist_add_ai_response(self, message: str):
         # Guard for external backends (codex/claude_code) that skip message_loop()

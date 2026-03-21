@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import urllib.error
 import urllib.request
 from typing import Any
 
@@ -42,19 +43,30 @@ def download_file(token: str, file_id: str, max_bytes: int = 20 * 1024 * 1024) -
 
 
 def send_message(token: str, chat_id: str, text: str, parse_mode: str = "Markdown") -> dict[str, Any]:
-    payload = {
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": parse_mode,
-        "disable_web_page_preview": True,
-    }
     endpoint = f"https://api.telegram.org/bot{token}/sendMessage"
-    data = json.dumps(payload).encode("utf-8")
-    request = urllib.request.Request(
-        endpoint,
-        data=data,
-        headers={"Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(request, timeout=20) as response:  # nosec B310 - configured Telegram API URL
-        raw = response.read().decode("utf-8", errors="ignore")
-    return {"raw": raw}
+
+    def _send(mode: str | None) -> dict[str, Any]:
+        payload: dict[str, Any] = {
+            "chat_id": chat_id,
+            "text": text,
+            "disable_web_page_preview": True,
+        }
+        if mode:
+            payload["parse_mode"] = mode
+        data = json.dumps(payload).encode("utf-8")
+        request = urllib.request.Request(
+            endpoint,
+            data=data,
+            headers={"Content-Type": "application/json"},
+        )
+        with urllib.request.urlopen(request, timeout=20) as response:  # nosec B310 - configured Telegram API URL
+            raw = response.read().decode("utf-8", errors="ignore")
+        return {"raw": raw}
+
+    # Try with requested parse_mode; fall back to plain text on 400
+    try:
+        return _send(parse_mode)
+    except urllib.error.HTTPError as e:
+        if e.code == 400 and parse_mode:
+            return _send(None)
+        raise

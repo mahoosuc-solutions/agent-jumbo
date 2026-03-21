@@ -53,17 +53,26 @@ class TunnelWatchdog:
     def _run(self) -> None:
         while not self._stop_event.is_set():
             try:
-                from python.helpers import tunnel_manager
+                from python.helpers import dotenv as dotenv_helper
 
-                manager = tunnel_manager.TunnelManager.get_instance()
-                if not manager.is_running or not manager.get_tunnel_url():
-                    manager.start_tunnel(provider=self._provider)
+                static_url = dotenv_helper.get_dotenv_value("TELEGRAM_WEBHOOK_URL", "")
+                if static_url.startswith("https://"):
+                    # Static reverse proxy mode — no tunnel needed
+                    if static_url != self._last_registered_url:
+                        self._register_telegram_webhook(static_url)
+                else:
+                    # Dynamic tunnel mode (existing behavior)
+                    from python.helpers import tunnel_manager
 
-                tunnel_url = manager.get_tunnel_url()
-                if tunnel_url and self._auto_wire_telegram:
-                    webhook_url = f"{tunnel_url}/telegram_webhook"
-                    if webhook_url != self._last_registered_url:
-                        self._register_telegram_webhook(webhook_url)
+                    manager = tunnel_manager.TunnelManager.get_instance()
+                    if not manager.is_running or not manager.get_tunnel_url():
+                        manager.start_tunnel(provider=self._provider)
+
+                    tunnel_url = manager.get_tunnel_url()
+                    if tunnel_url and self._auto_wire_telegram:
+                        webhook_url = f"{tunnel_url}/telegram_webhook"
+                        if webhook_url != self._last_registered_url:
+                            self._register_telegram_webhook(webhook_url)
             except Exception as e:
                 log.debug("Watchdog cycle error: %s", e)
             self._stop_event.wait(self._interval)
