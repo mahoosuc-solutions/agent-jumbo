@@ -28,6 +28,7 @@ services:
     volumes:
       - ./agent-zero:/a0
       - agent_zero_data:/a0/data
+      - /mnt/wdblack:/mnt/wdblack
     ports:
       - "50080:80"
     cpus: "12.0"
