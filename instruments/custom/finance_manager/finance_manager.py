@@ -39,7 +39,11 @@ class FinanceManager:
         return self.db.list_accounts()
 
     def sync_transactions(self, account_id: int, start: str, end: str) -> list[dict[str, Any]]:
-        provider = self._get_provider("mock")
+        account = self.db.get_account(account_id)
+        if account and account["status"] == "connected":
+            provider = self._get_provider(account["provider"])
+        else:
+            provider = self._get_provider("mock")
         transactions = provider.sync_transactions({"id": account_id}, start, end)
         for txn in transactions:
             self.db.add_transaction(

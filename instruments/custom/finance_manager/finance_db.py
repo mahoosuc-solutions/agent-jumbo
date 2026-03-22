@@ -115,6 +115,25 @@ class FinanceDatabase:
                 (status, account_id),
             )
 
+    def get_account(self, account_id: int) -> dict[str, Any] | None:
+        with self._connect() as conn:
+            row = conn.execute(
+                """
+                SELECT id, provider, status, created_at
+                FROM accounts
+                WHERE id = ?
+                """,
+                (account_id,),
+            ).fetchone()
+        if row is None:
+            return None
+        return {
+            "id": row[0],
+            "provider": row[1],
+            "status": row[2],
+            "created_at": row[3],
+        }
+
     def list_accounts(self) -> list[dict[str, Any]]:
         with self._connect() as conn:
             rows = conn.execute(
