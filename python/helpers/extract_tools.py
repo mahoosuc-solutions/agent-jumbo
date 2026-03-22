@@ -45,7 +45,7 @@ def json_parse_all_dirty(msg: str) -> list[dict[str, Any]]:
             data = DirtyJson.parse_string(match)
             if isinstance(data, dict) and "tool_name" in data:
                 results.append(data)
-        except:
+        except Exception:
             continue
     return results
 

@@ -3,7 +3,7 @@ import threading
 from abc import abstractmethod
 from typing import Any, TypedDict, Union
 
-from flask import Flask, Request, Response, send_file, session
+from flask import Flask, Request, Response
 
 from agent import AgentContext
 from initialize import initialize_agent
@@ -47,6 +47,11 @@ class ApiHandler:
 
     async def handle_request(self, request: Request) -> Response:
         try:
+            # M3: Generate request_id once at the start for end-to-end tracing
+            import uuid as _uuid
+
+            request_id = request.headers.get("X-Request-ID") or _uuid.uuid4().hex[:12]
+
             # input data from request based on type
             input_data: Input = {}
             if request.is_json:
@@ -62,16 +67,18 @@ class ApiHandler:
                 # input_data = {"data": request.get_data(as_text=True)}
                 input_data = {}
 
+            # M3: Attach request_id to the request so downstream handlers can access it
+            request.request_id = request_id  # type: ignore[attr-defined]
+
             # process via handler
             output = await self.process(input_data, request)
 
             # return output based on type
             if isinstance(output, Response):
+                if not output.headers.get("X-Request-ID"):
+                    output.headers["X-Request-ID"] = request_id
                 return output
             else:
-                import uuid as _uuid
-
-                request_id = _uuid.uuid4().hex[:12]
                 response_json = json.dumps(output)
                 resp = Response(response=response_json, status=200, mimetype="application/json")
                 resp.headers["X-Request-ID"] = request_id
@@ -79,9 +86,6 @@ class ApiHandler:
 
             # return exceptions with 500
         except Exception as e:
-            import uuid as _uuid
-
-            request_id = _uuid.uuid4().hex[:12]
             error = format_error(e)
             PrintStyle.error(f"API error [{request_id}]: {error}")
             response = Response(

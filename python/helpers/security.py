@@ -173,7 +173,7 @@ class SecurityManager:
         return cls._storage_key
 
     @classmethod
-    def encrypt_data(cls, plaintext: str) -> str:
+    def encrypt_data(cls, plaintext: str) -> str | None:
         """Encrypts data using AES-256-GCM with the hardware-bound storage key."""
         try:
             key = cls.get_storage_key()
@@ -183,7 +183,7 @@ class SecurityManager:
             return (nonce + ciphertext).hex()
         except Exception as e:
             cls.log_event("encryption_error", "fail", details={"error": str(e)})
-            return plaintext  # Fallback to plain if encryption fails
+            return None  # Never fall back to plaintext — callers must handle None
 
     @classmethod
     def decrypt_data(cls, hex_ciphertext: str) -> str:
@@ -195,7 +195,7 @@ class SecurityManager:
             nonce = data[:12]
             ciphertext = data[12:]
             return aesgcm.decrypt(nonce, ciphertext, None).decode()
-        except:
+        except Exception:
             return hex_ciphertext  # Return as-is if decryption fails
 
     @classmethod
@@ -227,7 +227,7 @@ class SecurityManager:
                     body=f"Agent activity spike detected ({len(cls._action_history)} actions/min). Security lock engaged.",
                     url="/logs",
                 )
-            except:
+            except Exception:
                 pass
 
             return False
@@ -348,7 +348,7 @@ class SecurityVaultManager:
             with open(abs_path) as f:
                 vault = json.load(f)
             return vault.get(key_name, default)
-        except:
+        except Exception:
             return default
 
     @classmethod
@@ -362,7 +362,7 @@ class SecurityVaultManager:
             try:
                 with open(abs_path) as f:
                     vault = json.load(f)
-            except:
+            except Exception:
                 pass
 
         vault[key_name] = value

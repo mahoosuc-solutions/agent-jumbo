@@ -560,7 +560,8 @@ class Agent:
             if time.time() - monologue_start_time > MAX_MONOLOGUE_SECONDS:
                 msg = f"Monologue exceeded {MAX_MONOLOGUE_SECONDS}s wall-clock limit — forcing termination."
                 PrintStyle(font_color="red", padding=True).print(msg)
-                self.context.log.log(type="error", content=msg)
+                _rid = getattr(self.context, "request_id", None)
+                self.context.log.log(type="error", content=msg, kvps={"request_id": _rid} if _rid else None)
                 return msg
             try:
                 # Proactive nudge check (Graceful fail)
@@ -569,6 +570,8 @@ class Agent:
 
                 # loop data dictionary to pass to extensions
                 self.loop_data = LoopData(user_message=self.last_user_message)
+                # M3: Propagate request_id for end-to-end tracing
+                self.loop_data.request_id = getattr(self.context, "request_id", None)  # type: ignore[attr-defined]
                 # call monologue_start extensions
                 await self.call_extensions("monologue_start", loop_data=self.loop_data)
 
@@ -584,7 +587,8 @@ class Agent:
                     if self.loop_data.iteration > MAX_MONOLOGUE_ITERATIONS:
                         msg = f"Monologue reached {MAX_MONOLOGUE_ITERATIONS} iterations — forcing termination to prevent runaway costs."
                         PrintStyle(font_color="red", padding=True).print(msg)
-                        self.context.log.log(type="error", content=msg)
+                        _rid = getattr(self.loop_data, "request_id", None)
+                        self.context.log.log(type="error", content=msg, kvps={"request_id": _rid} if _rid else None)
                         return msg
 
                     # call message_loop_start extensions
@@ -791,11 +795,15 @@ class Agent:
 
             # Mask secrets in error messages
             PrintStyle(font_color="red", padding=True).print(error_message)
+            _rid = getattr(self.context, "request_id", None)
+            _kvps: dict = {"text": error_text}
+            if _rid:
+                _kvps["request_id"] = _rid
             self.context.log.log(
                 type="error",
                 heading="Error",
                 content=error_message,
-                kvps={"text": error_text},
+                kvps=_kvps,
             )
             PrintStyle(font_color="red", padding=True).print(f"{self.agent_name}: {error_text}")
 
@@ -838,6 +846,19 @@ class Agent:
                 content=(f"system_prompt extensions exceeded {extension_timeout}s. Continuing with core prompt only."),
                 temp=True,
             )
+        # M2: System prompt token budget warning (once per monologue)
+        if not getattr(loop_data, "_sysprompt_budget_warned", False):
+            joined = "\n".join(system_prompt)
+            token_estimate = len(joined) // 4
+            if token_estimate > 30_000:
+                self.context.log.log(
+                    type="warning",
+                    content=f"System prompt is ~{token_estimate} tokens ({len(joined)} chars). "
+                    "This exceeds 30 000 tokens — roughly 30% of a 100K context window. "
+                    "Consider trimming extensions or knowledge to leave room for conversation history.",
+                )
+                loop_data._sysprompt_budget_warned = True
+
         return system_prompt
 
     async def _load_default_user_profile(self) -> dict | None:
@@ -1482,8 +1503,8 @@ class Agent:
                         try:
                             nt_temp = self.get_tool(name=next_name, method=None, args={}, message="", loop_data=None)
                             next_safe = getattr(nt_temp, "parallel_safe", False)
-                        except:
-                            pass
+                        except Exception:
+                            pass  # parallel safety check is best-effort
 
                     if next_safe:
                         batch.append(next_req)

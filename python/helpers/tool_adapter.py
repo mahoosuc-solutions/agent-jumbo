@@ -98,7 +98,7 @@ class ToolAdapter:
                         "tool": action_match.group(1).strip(),
                         "parameters": json.loads(input_match.group(1).strip()),
                     }
-                except:
+                except Exception:
                     pass
 
             return None

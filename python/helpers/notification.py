@@ -122,7 +122,7 @@ class NotificationManager:
                 ProactiveManager.send_push(
                     user_id="default_user", title=f"🚨 {title or type.value.upper()}", body=message, url="/"
                 )
-            except:
+            except Exception:
                 pass
 
         return item

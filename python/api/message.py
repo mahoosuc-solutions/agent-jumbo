@@ -221,6 +221,9 @@ class Message(ApiHandler):
             # Obtain agent context
             context = self.use_context(ctxid)
 
+            # M3: Propagate request_id for end-to-end tracing
+            context.request_id = getattr(request, "request_id", None)  # type: ignore[attr-defined]
+
             # call extension point, alow it to modify data
             data = {"message": message, "attachment_paths": attachment_paths}
             await extension.call_extensions("user_message_ui", agent=context.get_agent(), data=data)

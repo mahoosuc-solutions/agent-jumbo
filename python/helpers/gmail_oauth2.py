@@ -272,7 +272,7 @@ class GmailOAuth2Handler:
             service = self.get_gmail_service(account_name)
             profile = service.users().getProfile(userId="me").execute()
             return profile.get("emailAddress")
-        except:
+        except Exception:
             return None
 
     def get_gmail_service(self, account_name: str):
