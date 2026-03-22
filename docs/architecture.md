@@ -276,6 +276,11 @@ The `prompts` directory contains various Markdown files that control agent behav
 > The behavior system allows for dynamic adjustments without modifying the base prompt files.
 > Changes made through behavior rules persist across sessions while maintaining the core functionality.
 
+> [!NOTE]
+> For a detailed trace of how requests flow through the system end-to-end — entry points,
+> context assembly, tool execution, and response delivery — see
+> [Request to Delivery Flow](REQUEST_TO_DELIVERY_FLOW.md).
+
 ### 5. Knowledge
 
 Knowledge refers to the user-provided information and data that agents can leverage:

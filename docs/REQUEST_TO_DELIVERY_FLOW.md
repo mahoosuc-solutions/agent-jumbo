@@ -1,0 +1,680 @@
+<!-- markdownlint-disable MD013 -->
+
+# Request-to-Delivery Flow
+
+Agent Jumbo is an agentic platform that receives requests from multiple channels (Telegram, Web UI, AgentMesh, webhooks), routes them through a context-aware agent loop with 72 tools and 33 instruments, and delivers responses back to the originating channel. This document traces that flow end-to-end.
+
+**Audience:** Developers debugging, extending, or onboarding to Agent Jumbo.
+
+## Master Pipeline
+
+```mermaid
+flowchart LR
+    subgraph Entry["1. Entry Points"]
+        TG[Telegram Webhook]
+        WEB[Web UI]
+        MESH[AgentMesh Bridge]
+        WH[Webhook Router]
+    end
+
+    subgraph Route["2. Routing"]
+        CTX[Get/Create AgentContext]
+        POL[Message Queue Policy]
+    end
+
+    subgraph Prompt["3. Context Assembly"]
+        SYS[System Prompt Extensions]
+        LOOP[Message Loop Extensions]
+    end
+
+    subgraph Agent["4. Agent Loop"]
+        MON[Monologue: LLM Call]
+        TOOL[Tool Execution]
+        MON -->|tool call| TOOL
+        TOOL -->|result| MON
+    end
+
+    subgraph Deliver["5. Response Delivery"]
+        TG_OUT[Telegram: chunk + send]
+        WEB_OUT[Web UI: SSE/HTTP]
+        MESH_OUT[AgentMesh: Redis event]
+        WH_OUT[Webhook: adapter send]
+    end
+
+    Entry --> Route --> Prompt --> Agent --> Deliver
+```
+
+---
+
+## Table of Contents
+
+<!-- markdownlint-disable MD007 -->
+
+1. [Request Entry Points](#1-request-entry-points)
+2. [Context Assembly and System Prompt](#2-context-assembly-and-system-prompt)
+3. [Agent Processing Loop](#3-agent-processing-loop)
+4. [Tool Catalog](#4-tool-catalog)
+5. [Instrument Layer](#5-instrument-layer)
+6. [The Five Project Systems](#6-the-five-project-systems)
+7. [Knowledge Ingest Pipeline](#7-knowledge-ingest-pipeline)
+8. [Response Delivery](#8-response-delivery)
+9. [Extension Hooks Reference](#9-extension-hooks-reference)
+10. [Debugging Guide](#10-debugging-guide)
+
+<!-- markdownlint-enable MD007 -->
+
+---
+
+## 1. Request Entry Points
+
+Four channels can send requests to the agent. All converge on `AgentContext.communicate()`.
+
+```mermaid
+flowchart TD
+    REQ[Inbound HTTP Request] --> IS_TG{Path?}
+    IS_TG -->|/telegram_webhook| TG[TelegramWebhook]
+    IS_TG -->|/message or /message_async| WEB[Message API]
+    IS_TG -->|/webhook/channel| WH[WebhookRouter]
+    IS_TG -->|Redis Stream event| MESH[AgentMesh Bridge]
+
+    TG --> PARSE[Parse slash command]
+    PARSE --> XLATE[Translate to NL prompt]
+    XLATE --> CTX_TG[use_context telegram-chat_id]
+
+    WEB --> CTX_WEB[use_context from request]
+
+    WH --> ADAPT[Channel adapter normalize]
+    ADAPT --> GW[Gateway message queue]
+    GW --> CTX_WH[use_context per channel]
+
+    MESH --> RISK[Risk classification]
+    RISK --> CTX_MESH[use_context agentmesh-worker]
+
+    CTX_TG --> COMM[context.communicate]
+    CTX_WEB --> COMM
+    CTX_WH --> COMM
+    CTX_MESH --> COMM
+```
+
+### Telegram Webhook
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `python/api/telegram_webhook.py` |
+| **Auth** | `X-Telegram-Bot-Api-Secret-Token` header vs `TELEGRAM_WEBHOOK_SECRET` env |
+| **Context** | `telegram-{chat_id}` or `TELEGRAM_AGENT_CONTEXT` env override |
+| **Slash commands** | Parsed by `telegram_orchestrator.parse_slash_command()` |
+| **Media** | Photos, voice, video, documents extracted via `TelegramMedia` |
+| **Orchestrator** | `telegram_orchestrator.py` translates `/status`, `/project`, `/tasks`, `/newtask`, `/digest`, `/sync`, `/help` to agent prompts |
+
+### Web UI
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `python/api/message.py`, `python/api/message_async.py` |
+| **Auth** | Session-based + CSRF token |
+| **Context** | Context ID from request JSON, creates if missing |
+| **Queue policy** | `queue_strict`, `interrupt`, `queue_drop` — configurable per chat |
+| **Attachments** | Saved to `tmp/uploads/`, paths passed to agent |
+
+### AgentMesh Bridge
+
+| Aspect | Detail |
+|--------|--------|
+| **Files** | `python/helpers/agentmesh_bridge.py`, `python/helpers/agentmesh_task_handler.py` |
+| **Transport** | Redis Streams (`agentmesh:events`, consumer group `agentmesh:cg:agent-jumbo`) |
+| **Init** | Daemon thread started in `run_ui.py` when `AGENTMESH_REDIS_URL` is set |
+| **Risk classification** | HIGH/CRITICAL tasks emit `task.approval_required`; LOW tasks execute directly |
+| **Profile mapping** | Category maps to agent profile: `deployment` → `actor-ops`, `security_scan` → `hacker`, etc. |
+
+### Webhook Router
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `python/api/webhook_router.py` |
+| **Route** | `/webhook/<channel>` dispatches to channel adapter |
+| **Adapters** | 17 channels in `python/helpers/channels/`: Discord, Email, Google Chat, IRC, LINE, Mastodon, Matrix, Mattermost, Rocket.Chat, Signal, Slack, Teams, Telegram, Twilio SMS, Viber, WhatsApp |
+| **Flow** | `adapter.verify_webhook()` → `adapter.normalize()` → `gateway.process_now()` |
+| **Gateway** | `python/helpers/gateway.py` — async queue with retry + dead-letter |
+
+---
+
+## 2. Context Assembly and System Prompt
+
+Before each LLM call, the agent builds a system prompt by executing extensions in filename-sort order.
+
+```mermaid
+sequenceDiagram
+    participant A as Agent.prepare_prompt()
+    participant SP as System Prompt Extensions
+    participant ML as Message Loop Extensions
+    participant LLM as LLM
+
+    A->>SP: call_extensions("system_prompt")
+    SP->>SP: _10_system_prompt (core + tools + MCP + secrets + projects)
+    SP->>SP: _20_behaviour_prompt (personality rules)
+    SP->>SP: _30_cowork_prompt (if cowork mode)
+    SP->>SP: _85_telegram_orchestrator (if telegram context)
+    SP->>SP: adr_context (latest 3 ADRs)
+    SP-->>A: system_prompt[]
+
+    A->>ML: call_extensions("message_loop_prompts_after")
+    ML->>ML: _50_recall_memories
+    ML->>ML: _60_include_current_datetime
+    ML->>ML: _70_include_agent_info
+    ML->>ML: _75_include_project_extras
+    ML->>ML: _80_prompt_enhancer
+    ML->>ML: _91_recall_wait
+    ML-->>A: additional context messages
+
+    A->>LLM: system_prompt + history + context
+```
+
+### System Prompt Extensions (`python/extensions/system_prompt/`)
+
+| File | Purpose | Conditional |
+|------|---------|-------------|
+| `_10_system_prompt.py` | Core prompts: main role, tools, MCP tools, secrets, project context | Always |
+| `_20_behaviour_prompt.py` | Dynamic behavior rules from `behaviour.md` | Always (inserts at position 0) |
+| `_30_cowork_prompt.py` | Cowork mode settings | Only when cowork enabled |
+| `_85_telegram_orchestrator.py` | Telegram tool catalog + orchestration rules | Only for `telegram-*` contexts |
+| `adr_context.py` | Latest 3 Architecture Decision Records | For architect/developer/solutioning profiles |
+
+### Message Loop Extensions (`python/extensions/message_loop_prompts_after/`)
+
+| File | Purpose |
+|------|---------|
+| `_50_recall_memories.py` | Recall relevant memories from vector store |
+| `_60_include_current_datetime.py` | Inject current date/time |
+| `_70_include_agent_info.py` | Agent hierarchy info (depth, parent) |
+| `_75_include_project_extras.py` | Project file structure context |
+| `_80_prompt_enhancer.py` | Dynamic prompt enhancement |
+| `_91_recall_wait.py` | Wait/timer completion state |
+
+---
+
+## 3. Agent Processing Loop
+
+The agent's core loop is `monologue()` in `agent.py` (line 555). It iterates: prompt → LLM call → tool execution → repeat until the `response` tool signals completion.
+
+```mermaid
+stateDiagram-v2
+    [*] --> MonologueStart: monologue_start extensions
+    MonologueStart --> LoopStart: message_loop_start
+
+    LoopStart --> PreparePrompt: prepare_prompt()
+    PreparePrompt --> BeforeLLM: before_main_llm_call
+    BeforeLLM --> LLMCall: Call LLM with streaming
+    LLMCall --> ProcessTools: Extract tool calls from response
+
+    ProcessTools --> ToolExec: Execute tool
+    ToolExec --> CheckBreak: break_loop?
+
+    CheckBreak --> LoopEnd: yes
+    CheckBreak --> LoopStart: no (continue loop)
+
+    LoopEnd --> MonologueEnd: monologue_end extensions
+    MonologueEnd --> [*]: Return response
+```
+
+### Key Methods
+
+| Method | Line | Purpose |
+|--------|------|---------|
+| `monologue()` | 555 | Outer loop — manages extensions, error handling |
+| `prepare_prompt()` | 681 | Assembles system prompt + history + extensions |
+| `get_system_prompt()` | 789 | Loads and merges system prompt extensions |
+| `process_tools()` | 1342 | Parses tool calls from LLM response, executes them |
+
+### Message Queue Policy
+
+When a new message arrives while the agent is processing:
+
+| Policy | Behavior |
+|--------|----------|
+| `interrupt` | Sets `agent.intervention` — agent picks up new message |
+| `queue_strict` | Enqueues in `_message_queue`, processes FIFO after current task |
+| `queue_drop` | Drops the new message |
+
+### Agent Hierarchy
+
+Agent 0 can delegate via the `call_subordinate` tool, creating child agents. Each child:
+
+- Has its own conversation history
+- Can access all tools
+- Shares the same `AgentContext`
+- Reports results back to the parent agent
+
+---
+
+## 4. Tool Catalog
+
+72 tools in `python/tools/`. Each inherits from `python.helpers.tool.Tool` and implements `async execute() -> Response`.
+
+Tools are resolved dynamically: first checks `agents/{profile}/tools/{name}.py`, then `python/tools/{name}.py`.
+
+### Communication (7)
+
+| Tool | Purpose |
+|------|---------|
+| `telegram_send` | Send message via Telegram Bot API |
+| `email` | Send/read/archive email via SMTP |
+| `email_advanced` | Bulk send, templates |
+| `google_voice_sms` | Send SMS via Google Voice |
+| `twilio_voice_call` | Make voice calls via Twilio |
+| `notify_user` | Internal user notifications |
+| `a2a_chat` | Agent-to-Agent communication |
+
+### Project Management (9)
+
+| Tool | Purpose |
+|------|---------|
+| `portfolio_manager` | Portfolio scan, list, analyze, export, pipeline |
+| `portfolio_manager_tool` | Portfolio CRUD with dashboard and pricing |
+| `project_lifecycle` | Phase tracking: design → dev → testing → validation |
+| `project_scaffold` | Generate project scaffolds |
+| `workflow_engine` | Workflow definition, execution, stages, tasks, cleanup |
+| `workflow_training` | Training workflow management |
+| `linear_integration` | Linear issues: create, update, search, sync pipeline |
+| `motion_integration` | Motion calendar/task sync |
+| `notion_integration` | Notion page/database operations |
+
+### Knowledge and Memory (7)
+
+| Tool | Purpose |
+|------|---------|
+| `knowledge_ingest` | Register sources, ingest RSS/URL/MCP/text |
+| `memory_save` | Save to agent memory |
+| `memory_load` | Load from agent memory |
+| `memory_delete` | Delete memory entry |
+| `memory_forget` | Forget memory entry |
+| `document_query` | Query document store |
+| `research_organize` | Research organization |
+
+### Sales and Business (7)
+
+| Tool | Purpose |
+|------|---------|
+| `sales_generator` | Proposals, demos, ROI, case studies, business cases |
+| `demo_request_create` | Create demo request |
+| `demo_request_list` | List demo requests |
+| `customer_lifecycle` | CRM lifecycle: lead → prospect → customer |
+| `brand_voice` | Brand voice content generation |
+| `business_xray_tool` | Business analysis and metrics |
+| `analytics_roi_calculator` | ROI calculations |
+
+### Development (12)
+
+| Tool | Purpose |
+|------|---------|
+| `code_execution_tool` | Execute Python/Node.js/Shell code |
+| `code_review` | Code review operations |
+| `security_audit` | Security scanning (code/infra/full) |
+| `api_design` | API design assistance |
+| `auth_test` | Authentication testing |
+| `deployment_orchestrator` | Generate CI/CD, Docker, K8s configs |
+| `deployment_config` | Deployment configuration |
+| `deployment_execute` | Execute deployment |
+| `deployment_run_checks` | Run deployment checks |
+| `deployment_validate_env` | Validate deployment environment |
+| `deployment_record_result` | Record deployment result |
+| `devops_deploy` | Cloud deployment operations |
+| `devops_monitor` | Monitoring and observability |
+
+### Automation (6)
+
+| Tool | Purpose |
+|------|---------|
+| `scheduler` | Task scheduling (cron) |
+| `ralph_loop` | Reinforcement learning loop |
+| `swarm_batch` | Batch agent operations |
+| `wait` | Delay execution |
+| `behaviour_adjustment` | Modify agent behavior at runtime |
+| `visual_validation` | Visual regression testing |
+
+### Content and Diagrams (3)
+
+| Tool | Purpose |
+|------|---------|
+| `diagram_tool` | Mermaid/SVG diagram generation |
+| `diagram_architect` | Architecture diagram generation |
+| `digest_builder` | Build content digests |
+
+### Agents and Integration (7)
+
+| Tool | Purpose |
+|------|---------|
+| `call_subordinate` | Delegate to subordinate agents |
+| `virtual_team` | Multi-agent task routing and coordination |
+| `claude_sdk_bridge` | Claude API bridge |
+| `opencode_bridge` | OpenCode integration |
+| `browser_agent` | Web automation via Playwright |
+| `skill_importer` | Import/register agent skills |
+| `plugin_marketplace` | Plugin discovery and installation |
+
+### Domain-Specific (7)
+
+| Tool | Purpose |
+|------|---------|
+| `property_manager_tool` | Rental property management |
+| `pms_hub_tool` | Multi-PMS sync (AirBnB, Hostaway, Lodgify) |
+| `calendar_hub` | Google Calendar integration |
+| `finance_manager` | Plaid finance: transactions, reports, tax |
+| `mahoosuc_finance_report` | Mahoosuc-specific finance reporting |
+| `life_os` | Personal operating system |
+| `ai_migration` | AI migration planning |
+
+### System (6)
+
+| Tool | Purpose |
+|------|---------|
+| `response` | Return response and break monologue loop |
+| `input` | Get user keyboard input |
+| `search_engine` | Full-text search (SearXNG) |
+| `vision_load` | Load and process images |
+| `observability_usage_estimator` | Usage estimation and metrics |
+| `unknown` | Fallback for unrecognized tool calls |
+
+---
+
+## 5. Instrument Layer
+
+33 instruments in `instruments/custom/` (plus `_TEMPLATE`). Each instrument follows the pattern:
+
+```text
+instruments/custom/{name}/
+  ├── __init__.py
+  ├── {name}_manager.py      # Business logic
+  ├── {name}_db.py            # SQLite database operations
+  └── data/
+      └── {name}.db           # SQLite database file
+```
+
+Tools instantiate their instrument manager at construction time:
+
+```python
+from instruments.custom.{name}.{name}_manager import Manager
+db_path = files.get_abs_path("./instruments/custom/{name}/data/{name}.db")
+self.manager = Manager(db_path)
+```
+
+### Instrument Directory
+
+| Instrument | Database | Purpose |
+|------------|----------|---------|
+| `ai_migration` | `ai_migration.db` | Migration planning and assessment |
+| `ai_ops_agent` | own DB | AI operations automation |
+| `business_xray` | `business_xray.db` | Business analysis and metrics |
+| `calendar_hub` | `calendar_hub.db` | Google Calendar integration |
+| `claude_sdk` | none | Claude API bridge (stateless) |
+| `customer_lifecycle` | `customer_lifecycle.db` | CRM lifecycle management |
+| `deployment_orchestrator` | `deployment_orchestrator.db` | CI/CD pipeline generation |
+| `diagram_architect` | `diagram_architect.db` | Architecture diagrams |
+| `diagram_generator` | `diagram_generator.db` | Mermaid/SVG generation |
+| `digest_builder` | `digest_builder.db` | Content digest creation |
+| `finance_manager` | `finance_manager.db` | Plaid integration, transactions |
+| `google_voice` | `google_voice.db` | SMS via Google Voice |
+| `knowledge_ingest` | `knowledge_ingest.db` | RSS/URL/MCP source ingestion |
+| `learning_improvement_system` | `learning_improvement.db` | Agent learning loop |
+| `life_os` | `life_os.db` | Personal operating system |
+| `linear_integration` | `linear_integration.db` | Linear issues, projects, sync |
+| `motion_integration` | `motion_integration.db` | Motion calendar/task sync |
+| `notion_integration` | `notion_integration.db` | Notion page/database ops |
+| `plugin_marketplace` | `plugin_marketplace.db` | Plugin discovery/installation |
+| `pms_hub` | `pms_hub.db` | Multi-PMS sync |
+| `portfolio_manager` | `portfolio_manager.db` | Code project portfolio |
+| `project_scaffold` | `project_scaffold.db` | Project template generation |
+| `property_manager` | `property_manager.db` | Rental properties |
+| `ralph_loop` | `ralph_loop.db` | Reinforcement learning loop |
+| `reasoning_planning_engine` | framework | Task planning and reasoning |
+| `sales_generator` | `sales_generator.db` | Proposals, demos, case studies |
+| `security_monitor` | `security_monitor.db` | Security audit and monitoring |
+| `skill_importer` | `skill_db.db` | Skill registration and tracking |
+| `specialist_agent_framework` | framework | Role-based agent specialization |
+| `twilio_voice` | `twilio_voice.db` | Voice call management |
+| `virtual_team` | `virtual_team.db` | Multi-agent coordination |
+| `work_queue` | `work_queue.db` | Work item discovery, scoring, execution |
+| `workflow_engine` | `workflow.db` | Workflow definition and execution |
+
+---
+
+## 6. The Five Project Systems
+
+Agent Jumbo has five overlapping data stores for "projects." Understanding which owns what is critical.
+
+```mermaid
+flowchart TD
+    subgraph FS["Core Projects (filesystem)"]
+        CP[usr/projects/each-project/]
+        META[.a0proj/project.json]
+    end
+
+    subgraph PM["Portfolio Manager (SQLite)"]
+        PMDB[(portfolio_manager.db)]
+        SCAN[Scan, analyze, pricing, pipeline]
+    end
+
+    subgraph WQ["Work Queue (SQLite)"]
+        WQDB[(work_queue.db)]
+        ITEMS[Discovered items + priority scoring]
+    end
+
+    subgraph PL["Project Lifecycle (JSON)"]
+        PLJSON[.a0proj/lifecycle/lifecycle.json]
+        PHASES[design → dev → testing → validation]
+    end
+
+    subgraph WE["Workflow Engine (SQLite)"]
+        WEDB[(workflow.db)]
+        EXEC[Executions, stages, tasks, skills]
+    end
+
+    CP -->|portfolio_sync.py| PMDB
+    CP -->|codebase_scanner| WQDB
+    WQDB -->|execute_item| WEDB
+    CP ---|per-project JSON| PLJSON
+    PMDB -.->|read-only reference| WQDB
+```
+
+### Core Projects (filesystem)
+
+- **Location:** `usr/projects/` — each project is a directory
+- **Metadata:** `.a0proj/project.json` (title, description, color, memory, file_structure)
+- **Helper:** `python/helpers/projects.py`
+- **API:** `python/api/projects.py`
+- **Role:** Source of truth for what projects exist
+
+### Portfolio Manager (SQLite)
+
+- **Database:** `instruments/custom/portfolio_manager/data/portfolio.db`
+- **Tool:** `python/tools/portfolio_manager_tool.py`
+- **Actions:** scan, list, get, add, update, analyze, export, search, pipeline, dashboard, pricing
+- **Sync:** `python/helpers/portfolio_sync.py` — Core Projects → Portfolio Manager (runs on `/sync` and `/status` commands)
+- **Role:** Business view — sale-readiness scores, products, pricing tiers, sales pipeline
+
+### Work Queue (SQLite)
+
+- **Database:** `instruments/custom/work_queue/data/work_queue.db`
+- **Manager:** `instruments/custom/work_queue/work_queue_manager.py`
+- **Scanner:** `instruments/custom/work_queue/codebase_scanner.py` — discovers TODOs, skipped tests, coverage gaps
+- **Scorer:** `instruments/custom/work_queue/priority_scorer.py` — calculates priority from type, severity, age
+- **APIs:** `python/api/work_queue_dashboard.py`, `work_queue_item_*.py`, `work_queue_scan.py`
+- **Status flow:** `discovered` → `queued` → `in_progress` → `done` / `dismissed`
+- **Role:** Task backlog — what needs to be worked on
+
+### Project Lifecycle (JSON per-project)
+
+- **Storage:** `.a0proj/lifecycle/lifecycle.json` inside each project directory
+- **Tool:** `python/tools/project_lifecycle.py`
+- **Helper:** `python/helpers/project_lifecycle.py`
+- **Phases:** design, development, testing, validation, agent-eval
+- **Role:** Phase tracking for individual projects
+
+### Workflow Engine (SQLite)
+
+- **Database:** `instruments/custom/workflow_engine/data/workflow.db`
+- **Tool:** `python/tools/workflow_engine.py`
+- **Manager:** `instruments/custom/workflow_engine/workflow_manager.py`
+- **Stages:** design → poc → mvp → production → support → upgrade
+- **Features:** Gates, criteria, deliverables, skill tracking, learning paths
+- **Cleanup:** `cleanup_executions` action marks stale (>24h) running executions as failed
+- **Role:** Structured multi-stage execution with gates and approvals
+
+### How They Connect
+
+1. **Core Projects → Portfolio Manager:** `portfolio_sync.py` scans `usr/projects/`, reads `.a0proj/project.json`, upserts into `portfolio.db`
+2. **Core Projects → Work Queue:** `codebase_scanner.py` scans project directories for TODOs, issues → creates `work_items`
+3. **Work Queue → Workflow Engine:** `execute_item()` loads a workflow template, creates an execution in `workflow.db`, updates item status to `in_progress`
+4. **Linear → Work Queue:** `sync_linear_issues()` imports Linear issues into `work_queue.db` with priority scoring
+
+---
+
+## 7. Knowledge Ingest Pipeline
+
+```text
+Source Registration → Ingestion → Deduplication → Dual Storage
+```
+
+### Source Types
+
+| Type | Method | Confidence |
+|------|--------|------------|
+| `rss` | Fetch RSS feed, extract title/link/description | 0.6 |
+| `url` | Fetch web page, scrape paragraphs | 0.5 |
+| `mcp` | Accept structured JSON payload | 0.4–0.5 |
+| `text` | Manual inline text entry | 0.7 |
+
+### Storage
+
+**Database:** `instruments/custom/knowledge_ingest/data/knowledge_ingest.db`
+
+- `sources` — registered feeds/URLs with cadence config
+- `items` — individual content pieces with `content_hash` for dedup
+- `ingestions` — fetch history with status and item counts
+- `digests` — generated summaries with time windows
+
+**Filesystem:** Markdown files at `knowledge/custom/ingest/{source_name}/{YYYYMMDD}-{hash}.md`
+
+```markdown
+# Title
+source: uri
+tags: tag1, tag2
+confidence: 0.7
+
+Content here...
+```
+
+### Deduplication
+
+Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, first 16 chars. The database has a UNIQUE constraint that silently skips duplicates on INSERT.
+
+---
+
+## 8. Response Delivery
+
+### Telegram
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `python/helpers/telegram_client.py` |
+| **Chunking** | `chunk_message()` splits at 4096 chars, prefers newline boundaries |
+| **Formatting** | `format_for_telegram()` strips HTML, converts `##` to bold, truncates tables to 10 rows |
+| **Send** | POST to `https://api.telegram.org/bot{token}/sendMessage` with `parse_mode: Markdown` |
+| **Fallback** | On 400 error, retries without Markdown formatting |
+
+### Web UI
+
+| Aspect | Detail |
+|--------|--------|
+| **SSE** | `/mcp/t-{token}/sse` for streaming responses |
+| **HTTP** | `/mcp/t-{token}/http/` for streamable HTTP |
+| **Polling** | Frontend polls for task completion |
+| **Response** | `{"message": result, "context": context_id}` |
+| **Timeout** | Default 90s, returns `timed_out: true` on expiry |
+
+### AgentMesh
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `python/helpers/agentmesh_bridge.py` |
+| **Transport** | Redis Streams |
+| **Events** | `task.completed`, `task.failed`, `task.escalated`, `task.status_update` |
+| **Payload** | Result text + execution metadata |
+
+### Webhook Channels
+
+| Aspect | Detail |
+|--------|--------|
+| **File** | `python/helpers/gateway.py` |
+| **Mechanism** | Per-adapter `send_message()` via channel factory |
+| **Queue** | Async message queue with retry and dead-letter semantics |
+
+---
+
+## 9. Extension Hooks Reference
+
+22 hook points across the agent lifecycle. Extensions are Python files in `python/extensions/{hook_name}/`, executed in filename-sort order.
+
+| Hook | Timing | Files |
+|------|--------|-------|
+| `agent_init` | Agent creation | `_10_initial_message`, `_15_load_profile_settings` |
+| `system_prompt` | Before each LLM call (system) | `_10_system_prompt`, `_20_behaviour`, `_30_cowork`, `_85_telegram`, `adr_context` |
+| `message_loop_prompts_before` | Before history assembly | `_90_organize_history_wait` |
+| `message_loop_prompts_after` | After history assembly | `_50_recall_memories`, `_60_datetime`, `_70_agent_info`, `_75_project_extras`, `_80_enhancer`, `_91_wait` |
+| `monologue_start` | Monologue begins | `_10_memory_init`, `_60_rename_chat` |
+| `message_loop_start` | Each loop iteration starts | `_10_iteration_no` |
+| `before_main_llm_call` | Just before LLM call | `_10_log_for_stream` |
+| `reasoning_stream` | During reasoning stream | `_10_log_from_stream` |
+| `reasoning_stream_chunk` | Each reasoning chunk | `_10_mask_stream` |
+| `reasoning_stream_end` | Reasoning stream ends | `_10_mask_end` |
+| `response_stream` | During response stream | `_10_log_from_stream`, `_15_replace_include_alias`, `_20_live_response` |
+| `response_stream_chunk` | Each response chunk | `_10_mask_stream` |
+| `response_stream_end` | Response stream ends | `_10_mask_end` |
+| `tool_execute_before` | Before tool execution | `_10_replace_last_tool_output`, `_10_unmask_secrets`, `_20_cowork_approvals`, `_30_telemetry_start` |
+| `tool_execute_after` | After tool execution | `_10_mask_secrets`, `_30_telemetry_end` |
+| `tool_execute_error` | Tool execution error | `_30_telemetry_error` |
+| `hist_add_before` | Before adding to history | `_10_mask_content` |
+| `hist_add_tool_result` | After tool result added | `_90_save_tool_call_file` |
+| `message_loop_end` | Each loop iteration ends | `_10_organize_history`, `_85_ralph_loop_check`, `_90_save_chat` |
+| `monologue_end` | Monologue complete | `_50_memorize_fragments`, `_51_memorize_solutions`, `_90_waiting_for_input_msg`, `adr_generator` |
+| `user_message_ui` | UI message received | `_10_update_check` |
+| `error_format` | Error formatting | `_10_mask_errors` |
+| `util_model_call_before` | Before utility model call | `_10_mask_secrets` |
+
+---
+
+## 10. Debugging Guide
+
+### Trace a Telegram Message
+
+1. **Webhook receipt:** Check `python/api/telegram_webhook.py` — look for dedup check and secret token validation
+2. **Command parsing:** `telegram_orchestrator.parse_slash_command()` — is the command recognized?
+3. **Context creation:** `use_context()` in `python/helpers/api.py` — is the context ID correct?
+4. **System prompt:** Check `_85_telegram_orchestrator.py` — is the tool catalog injected?
+5. **Agent loop:** `agent.py:monologue()` — check `process_tools()` for tool call errors
+6. **Response:** `telegram_client.send_long_message()` — check for Markdown formatting errors (400 from Telegram API)
+
+### Trace a Web UI Message
+
+1. **API entry:** `python/api/message.py` — check CSRF token, context ID
+2. **Queue policy:** Is another task running? Check `communicate_with_policy()` behavior
+3. **Agent loop:** Same as Telegram from step 5
+4. **Response:** Check SSE endpoint `/mcp/t-{token}/sse` — is the frontend receiving?
+
+### Log Locations
+
+| Log | Location |
+|-----|----------|
+| Chat logs | `logs/` (HTML format) |
+| Tool call files | Saved by `_90_save_tool_call_file.py` extension |
+| Supervisord | `/dev/stdout` (container stdout) |
+
+### Common Failure Points
+
+| Symptom | Check |
+|---------|-------|
+| Telegram bot not responding | Webhook secret mismatch, or bot token invalid |
+| Tool call returns error | Check tool's `execute()` method, instrument DB permissions |
+| Agent loops without responding | `response` tool not being called — check system prompt |
+| Stale workflow executions | Run `cleanup_executions` action (marks >24h as failed) |
+| Knowledge files owned by root | `FILE_OWNER_UID`/`FILE_OWNER_GID` env vars not set in container |
