@@ -136,7 +136,7 @@ def generate_excalidraw_diagram(elements: list[dict], output_path: str, format: 
     finally:
         try:
             os.unlink(temp_file)
-        except:
+        except Exception:
             pass
 
 

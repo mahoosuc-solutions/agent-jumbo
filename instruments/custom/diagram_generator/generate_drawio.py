@@ -123,7 +123,7 @@ def generate_drawio_diagram(xml_content: str, output_path: str, format: str = "p
     finally:
         try:
             os.unlink(temp_file)
-        except:
+        except Exception:
             pass
 
 

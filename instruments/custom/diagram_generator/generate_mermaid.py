@@ -86,7 +86,7 @@ def generate_mermaid_diagram(
         # Clean up temp file
         try:
             os.unlink(temp_input)
-        except:
+        except Exception:
             pass
 
 

@@ -182,7 +182,7 @@ class ProjectScanner:
                         else project.get("license")
                     )
                     info["dependencies"] = project.get("dependencies", [])
-                except:
+                except Exception:
                     pass
 
             requirements = path / "requirements.txt"
@@ -190,7 +190,7 @@ class ProjectScanner:
                 try:
                     with open(requirements) as f:
                         info["dependencies"] = [line.strip() for line in f if line.strip() and not line.startswith("#")]
-                except:
+                except Exception:
                     pass
 
         # JavaScript/TypeScript - package.json
@@ -212,7 +212,7 @@ class ProjectScanner:
                             if marker in deps:
                                 info["framework"] = framework
                                 break
-                except:
+                except Exception:
                     pass
 
         # Check for LICENSE file
@@ -257,7 +257,7 @@ class ProjectScanner:
         try:
             with open(readme_path, encoding="utf-8", errors="ignore") as f:
                 content = f.read()
-        except:
+        except Exception:
             return 0
 
         score = 0
@@ -353,7 +353,7 @@ class ProjectScanner:
                 try:
                     with open(file, encoding="utf-8", errors="ignore") as f:
                         line_count += sum(1 for _ in f)
-                except:
+                except Exception:
                     pass
 
         return file_count, line_count

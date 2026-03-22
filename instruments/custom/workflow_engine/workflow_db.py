@@ -1109,7 +1109,7 @@ class WorkflowEngineDatabase:
             if r.get("data"):
                 try:
                     r["data"] = json.loads(r["data"])
-                except:
+                except Exception:
                     pass
             results.append(r)
         return results

@@ -756,7 +756,7 @@ class WorkflowEngineManager:
             try:
                 with open(secrets_file) as f:
                     saved_secrets = json.load(f)
-            except:
+            except Exception:
                 pass
 
         for secret in required_secrets:
