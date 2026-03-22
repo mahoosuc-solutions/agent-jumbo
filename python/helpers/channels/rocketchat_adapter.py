@@ -53,12 +53,14 @@ class RocketChatAdapter(ChannelBridge):
         if not all([base_url, auth_token, user_id]):
             return {"ok": False, "error": "missing rocketchat_url, rocketchat_auth_token, or rocketchat_user_id"}
         url = f"{base_url}/api/v1/chat.sendMessage"
-        payload = json.dumps({
-            "message": {
-                "rid": target_id,
-                "msg": text,
-            },
-        }).encode()
+        payload = json.dumps(
+            {
+                "message": {
+                    "rid": target_id,
+                    "msg": text,
+                },
+            }
+        ).encode()
         req = urllib.request.Request(
             url,
             data=payload,
@@ -79,7 +81,7 @@ class RocketChatAdapter(ChannelBridge):
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         token = self.config.get("rocketchat_webhook_token", "")
         if not token:
-            return True
+            return False  # fail-closed: require rocketchat_webhook_token
         header_token = headers.get("X-Rocketchat-Token", "")
         return hmac.compare_digest(token, header_token)
 

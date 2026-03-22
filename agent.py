@@ -567,10 +567,17 @@ class Agent:
                 printer = PrintStyle(italic=True, font_color="#b3ffd9", padding=False)
 
                 # let the agent run message loop until he stops it with a response tool
+                MAX_MONOLOGUE_ITERATIONS = 25
                 while True:
                     self.context.streaming_agent = self  # mark self as current streamer
                     self.loop_data.iteration += 1
                     self.loop_data.params_temporary = {}  # clear temporary params
+
+                    if self.loop_data.iteration > MAX_MONOLOGUE_ITERATIONS:
+                        msg = f"Monologue reached {MAX_MONOLOGUE_ITERATIONS} iterations — forcing termination to prevent runaway costs."
+                        PrintStyle(font_color="red", padding=True).print(msg)
+                        self.context.log.log(type="error", content=msg)
+                        return msg
 
                     # call message_loop_start extensions
                     await self.call_extensions("message_loop_start", loop_data=self.loop_data)
@@ -1364,8 +1371,8 @@ class Agent:
                 mcp_tool_candidate = mcp_helper.MCPConfig.get_instance().get_tool(self, tool_name)
                 if mcp_tool_candidate:
                     tool = mcp_tool_candidate
-            except:
-                pass
+            except Exception:
+                pass  # MCP tool lookup is optional — fall through to local tools
 
             if not tool:
                 tool = self.get_tool(
@@ -1437,8 +1444,8 @@ class Agent:
                     # Deep check
                     tool_temp = self.get_tool(name=t_name, method=None, args={}, message="", loop_data=None)
                     is_safe = getattr(tool_temp, "parallel_safe", False)
-            except:
-                pass
+            except Exception:
+                pass  # parallel safety check is best-effort
 
             # Identify a batch of parallel-safe tools
             batch = [req]

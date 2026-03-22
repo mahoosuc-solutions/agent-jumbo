@@ -9,8 +9,10 @@ Follows the existing ``ApiHandler`` pattern from ``python.helpers.api``.
 from __future__ import annotations
 
 import asyncio
+import hmac
 import json
 import logging
+import os
 import threading  # noqa: TC003
 
 from flask import Flask, Request, Response
@@ -99,11 +101,14 @@ class WebhookRouter(ApiHandler):
     @staticmethod
     def _handle_verification(channel: str, request: Request) -> Response:
         """Handle platform verification challenges (e.g. WhatsApp, Slack)."""
-        # WhatsApp / Meta verification
+        # WhatsApp / Meta verification — validate token before echoing challenge
         mode = request.args.get("hub.mode")
-        _token = request.args.get("hub.verify_token")
+        token = request.args.get("hub.verify_token")
         challenge = request.args.get("hub.challenge")
+        expected_token = os.environ.get("META_VERIFY_TOKEN", "")
         if mode == "subscribe" and challenge:
+            if not expected_token or not hmac.compare_digest(expected_token, token or ""):
+                return Response("Forbidden", status=403, mimetype="text/plain")
             return Response(challenge, status=200, mimetype="text/plain")
 
         # Slack URL verification comes as POST with type=url_verification,

@@ -24,8 +24,8 @@ class SecurityManager:
     _log_queue = queue.Queue()
     _log_thread = None
 
-    # Toggle for feature rollout
-    ENFORCE_PASSKEY = False
+    # Toggle for feature rollout — default to enforced, disable via env var for dev
+    ENFORCE_PASSKEY = os.environ.get("SECURITY_ENFORCE_PASSKEY", "true").lower() != "false"
     STRICT_HARDWARE_ONLY = True  # Require hardware TPM/Secure Enclave
 
     HIGH_RISK_TOOLS = [

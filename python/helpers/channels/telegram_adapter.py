@@ -50,8 +50,7 @@ class TelegramAdapter(ChannelBridge):
         secret_token = self.config.get("secret_token", "")
         header_token = headers.get("X-Telegram-Bot-Api-Secret-Token", "")
         if not secret_token:
-            # No secret configured -- accept all (development mode)
-            return True
+            return False  # fail-closed: require secret_token
         return hmac.compare_digest(secret_token, header_token)
 
     async def connect(self) -> None:

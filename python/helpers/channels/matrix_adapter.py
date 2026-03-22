@@ -53,10 +53,12 @@ class MatrixAdapter(ChannelBridge):
         room_id = urllib.request.quote(target_id, safe="")
         url = f"{homeserver}/_matrix/client/v3/rooms/{room_id}/send/m.room.message/{txn_id}"
         msgtype = kwargs.get("msgtype", "m.text")
-        payload = json.dumps({
-            "msgtype": msgtype,
-            "body": text,
-        }).encode()
+        payload = json.dumps(
+            {
+                "msgtype": msgtype,
+                "body": text,
+            }
+        ).encode()
         req = urllib.request.Request(
             url,
             data=payload,
@@ -77,7 +79,7 @@ class MatrixAdapter(ChannelBridge):
         # Matrix Application Services use hs_token for authentication
         hs_token = self.config.get("matrix_hs_token", "")
         if not hs_token:
-            return True
+            return False  # fail-closed: require matrix_hs_token
         auth = headers.get("Authorization", "")
         if auth.startswith("Bearer "):
             return hmac.compare_digest(hs_token, auth[7:])

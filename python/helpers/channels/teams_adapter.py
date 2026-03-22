@@ -6,8 +6,8 @@ import hashlib
 import hmac
 import json
 import time
-import urllib.request
 import urllib.parse
+import urllib.request
 from typing import Any
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
@@ -78,16 +78,15 @@ class TeamsAdapter(ChannelBridge):
             if not signature:
                 return False
             try:
-                computed = hmac.new(
-                    shared_secret.encode(), body, hashlib.sha256
-                ).hexdigest()
+                computed = hmac.new(shared_secret.encode(), body, hashlib.sha256).hexdigest()
                 return hmac.compare_digest(computed, signature)
             except Exception:
                 return False
 
-        # Basic Bearer token presence check (JWT validation against Microsoft
-        # OpenID metadata should be done in production with a dedicated library)
-        return True
+        # fail-closed: require teams_shared_secret for HMAC verification
+        # JWT validation against Microsoft OpenID metadata should be done
+        # in production with a dedicated library
+        return False
 
     async def connect(self) -> None:
         app_id = self.config.get("teams_app_id", "")
@@ -96,14 +95,18 @@ class TeamsAdapter(ChannelBridge):
             self.status = ChannelStatus.ERROR
             return
 
-        form_data = urllib.parse.urlencode({
-            "grant_type": "client_credentials",
-            "client_id": app_id,
-            "client_secret": app_password,
-            "scope": "https://api.botframework.com/.default",
-        }).encode()
+        form_data = urllib.parse.urlencode(
+            {
+                "grant_type": "client_credentials",
+                "client_id": app_id,
+                "client_secret": app_password,
+                "scope": "https://api.botframework.com/.default",
+            }
+        ).encode()
         req = urllib.request.Request(
-            _TOKEN_URL, data=form_data, method="POST",
+            _TOKEN_URL,
+            data=form_data,
+            method="POST",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
         try:

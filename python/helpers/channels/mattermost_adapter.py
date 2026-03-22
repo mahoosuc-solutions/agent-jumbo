@@ -56,10 +56,12 @@ class MattermostAdapter(ChannelBridge):
         if not base_url or not token:
             return {"ok": False, "error": "missing mattermost_url or mattermost_token"}
         url = f"{base_url}/api/v4/posts"
-        payload = json.dumps({
-            "channel_id": target_id,
-            "message": text,
-        }).encode()
+        payload = json.dumps(
+            {
+                "channel_id": target_id,
+                "message": text,
+            }
+        ).encode()
         req = urllib.request.Request(
             url,
             data=payload,
@@ -79,7 +81,7 @@ class MattermostAdapter(ChannelBridge):
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         token = self.config.get("mattermost_webhook_token", "")
         if not token:
-            return True
+            return False  # fail-closed: require mattermost_webhook_token
         # Mattermost outgoing webhooks include a token field in the payload
         try:
             payload = json.loads(body)

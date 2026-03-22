@@ -53,11 +53,13 @@ class MastodonAdapter(ChannelBridge):
             return {"ok": False, "error": "missing mastodon_instance_url or mastodon_access_token"}
         url = f"{instance_url}/api/v1/statuses"
         visibility = kwargs.get("visibility", "direct")
-        form_data = urllib.parse.urlencode({
-            "status": text,
-            "visibility": visibility,
-            "in_reply_to_id": target_id or "",
-        }).encode()
+        form_data = urllib.parse.urlencode(
+            {
+                "status": text,
+                "visibility": visibility,
+                "in_reply_to_id": target_id or "",
+            }
+        ).encode()
         req = urllib.request.Request(
             url,
             data=form_data,
@@ -78,7 +80,7 @@ class MastodonAdapter(ChannelBridge):
         # Mastodon streaming uses WebSockets; webhook verification is optional.
         secret = self.config.get("mastodon_webhook_secret", "")
         if not secret:
-            return True
+            return False  # fail-closed: require mastodon_webhook_secret
         signature = headers.get("X-Hub-Signature", "")
         if not signature:
             return False

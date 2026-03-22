@@ -49,11 +49,13 @@ class SignalAdapter(ChannelBridge):
         if not api_url or not sender_number:
             return {"ok": False, "error": "missing signal_api_url or signal_sender_number"}
         url = f"{api_url}/v2/send"
-        payload = json.dumps({
-            "message": text,
-            "number": sender_number,
-            "recipients": [target_id],
-        }).encode()
+        payload = json.dumps(
+            {
+                "message": text,
+                "number": sender_number,
+                "recipients": [target_id],
+            }
+        ).encode()
         req = urllib.request.Request(
             url,
             data=payload,
@@ -72,7 +74,7 @@ class SignalAdapter(ChannelBridge):
         # rely on network-level auth or a shared token header.
         secret = self.config.get("signal_webhook_secret", "")
         if not secret:
-            return True
+            return False  # fail-closed: require signal_webhook_secret
         header_token = headers.get("X-Signal-Secret", "")
         return hmac.compare_digest(secret, header_token)
 
