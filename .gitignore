@@ -146,3 +146,4 @@ tests/e2e/screenshots/
 
 # Git worktrees
 .worktrees/
+data/identity.db
