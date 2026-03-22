@@ -1,58 +1,40 @@
-# Local development Dockerfile — requires agent0ai/agent-zero-base image
-# with /ins/ and /exe/ scripts pre-installed.
-# CI Docker build test is disabled until base image alignment is verified.
+# Local development Dockerfile for Agent Jumbo
+# Builds a runtime image with all dependencies installed.
+# The actual project code is mounted via docker-compose volumes.
 ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
 FROM ${BASE_IMAGE}
 
-# Set BRANCH to "local" if not provided
 ARG BRANCH=local
 ENV BRANCH=$BRANCH
 
-# Copy filesystem files to root (install scripts, supervisord config, etc.)
+# Copy AJ-specific install scripts and configs
 COPY ./docker/run/fs/ /
 
-# pre installation steps
+# pre installation steps (apt packages, system config)
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
     bash /ins/pre_install.sh $BRANCH
 
-# Copy only dependency manifests first to maximize layer reuse.
-COPY ./pyproject.toml /git/agent-zero/pyproject.toml
-COPY ./docker/wheelhouse /git/agent-zero/docker/wheelhouse
+# Copy full project for dependency installation
+COPY . /git/agent-jumbo
 
-# Dependency layer (cached unless manifests change).
+# Refresh apt index (base image may be stale vs Kali rolling repos)
+RUN apt-get update
+
+# Install AJ dependencies into the venv
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=cache,target=/root/.cache/uv \
-    bash -lc 'source /ins/setup_venv.sh "$BRANCH" && uv pip install setuptools wheel && \
-    if [ -d /git/agent-zero/docker/wheelhouse ] && [ "$(find /git/agent-zero/docker/wheelhouse -maxdepth 1 -name "*.whl" | wc -l)" -gt 0 ]; then \
-        uv pip install --no-build-isolation --no-index --find-links /git/agent-zero/docker/wheelhouse -e /git/agent-zero; \
-    else \
-        uv pip install --no-build-isolation -e /git/agent-zero; \
-    fi'
+    bash /ins/install_aj.sh $BRANCH
 
-# Copy current development files after deps, so code changes don't invalidate deps.
-COPY ./ /git/agent-zero
-
-# install A0
-ENV SKIP_A0_DEPS=1
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=cache,target=/root/.cache/uv \
-    bash /ins/install_A0.sh $BRANCH
-
-# install additional software
+# Install additional software (playwright, etc.)
 RUN bash /ins/install_additional.sh $BRANCH
 
-# Optional cache-buster only when explicitly set.
-ARG CACHE_BUSTER=
-RUN if [ -n "$CACHE_BUSTER" ]; then echo "cache buster $CACHE_BUSTER"; fi && bash /ins/install_A02.sh $BRANCH
-
-# post installation steps
+# Post-install cleanup and config
+RUN bash /ins/install_aj2.sh $BRANCH
 RUN bash /ins/post_install.sh $BRANCH
 
-# Expose ports
 EXPOSE 22 80 9000-9009
 
-RUN chmod +x /exe/initialize.sh /exe/run_A0.sh /exe/run_searxng.sh /exe/run_tunnel_api.sh
+RUN chmod +x /exe/initialize.sh /exe/run_aj.sh /exe/run_searxng.sh /exe/run_tunnel_api.sh
 
-# initialize runtime and switch to supervisord
-CMD ["/exe/initialize.sh", "$BRANCH"]
+CMD ["/exe/initialize.sh", "local"]
