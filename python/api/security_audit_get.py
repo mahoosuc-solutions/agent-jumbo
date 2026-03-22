@@ -1,9 +1,7 @@
 import builtins
 import contextlib
 import json
-import sqlite3
 
-from python.helpers import files
 from python.helpers.api import ApiHandler, Request, Response
 
 
@@ -12,9 +10,10 @@ class security_audit_get(ApiHandler):
 
     async def process(self, input: dict, request: Request) -> dict | Response:
         try:
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-            conn = sqlite3.connect(db_path)
-            conn.row_factory = sqlite3.Row
+            from python.helpers.identity_db import get_identity_db
+
+            db = get_identity_db()
+            conn = db._get_conn()
             cursor = conn.cursor()
 
             # Get latest 100 logs

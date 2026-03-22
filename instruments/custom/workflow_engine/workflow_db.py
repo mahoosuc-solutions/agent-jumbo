@@ -209,48 +209,6 @@ class WorkflowEngineDatabase:
             )
         """)
 
-        # Passkeys for WebAuthn
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_passkeys (
-                passkey_id TEXT PRIMARY KEY,
-                user_id TEXT NOT NULL,
-                public_key BLOB NOT NULL,
-                sign_count INTEGER DEFAULT 0,
-                transports TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                last_used TEXT
-            )
-        """)
-
-        # User Profile linked to phone/passkeys
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS user_profiles (
-                user_id TEXT PRIMARY KEY,
-                full_name TEXT,
-                email TEXT,
-                phone_number TEXT,
-                avatar_url TEXT,
-                device_info TEXT, -- JSON string of device capabilities
-                timezone TEXT,
-                locale TEXT,
-                last_synced TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
-        # Security Audit Log
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS security_audit_log (
-                event_id INTEGER PRIMARY KEY AUTOINCREMENT,
-                event_type TEXT NOT NULL, -- 'auth_attempt', 'profile_sync', 'passkey_reg', 'vault_access'
-                status TEXT NOT NULL, -- 'success', 'failure', 'warning'
-                user_id TEXT,
-                ip_address TEXT,
-                device_info TEXT,
-                details TEXT,
-                timestamp TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
-
         conn.commit()
         conn.close()
 

@@ -332,21 +332,28 @@ class WorkQueueManager:
                 "source_type": item.get("source_type", ""),
             }
 
+            # Ensure the workflow definition exists (load from template on first use)
+            workflow_name = "work_item_implementation"
+            wf = wf_manager.get_workflow(name=workflow_name)
+            if not wf or "error" in wf:
+                template_path = files.get_abs_path(
+                    "./instruments/custom/workflow_engine/templates/work_item_implementation.json"
+                )
+                created = wf_manager.create_from_template(template_path, workflow_name)
+                if "error" in created:
+                    import logging
+
+                    logging.getLogger(__name__).warning(
+                        "Could not load work_item_implementation template: %s", created["error"]
+                    )
+                    self.db.update_item(item_id, {"status": "in_progress"})
+                    self.db.update_item_status(item_id, "in_progress")
+                    return {"success": True, "item_id": item_id, "workflow": False}
+
             execution = wf_manager.start_workflow(
-                workflow_name="work_item_implementation",
+                workflow_name=workflow_name,
                 context=context,
             )
-
-            if "error" in execution:
-                # Workflow doesn't exist yet — proceed without it
-                import logging
-
-                logging.getLogger(__name__).warning(
-                    "Workflow 'work_item_implementation' not found, executing without workflow tracking"
-                )
-                self.db.update_item(item_id, {"status": "in_progress"})
-                self.db.update_item_status(item_id, "in_progress")
-                return {"success": True, "item_id": item_id, "workflow": False}
 
             execution_id = execution.get("id") or execution.get("execution_id")
             self.db.update_item(

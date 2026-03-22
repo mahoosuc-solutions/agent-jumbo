@@ -11,9 +11,13 @@ class TestPerformanceSecurity(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Ensure we have a clean test environment."""
-        cls.db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
+        cls.db_path = files.get_abs_path("./data/identity.db")
         # Ensure directory exists
         os.makedirs(os.path.dirname(cls.db_path), exist_ok=True)
+        # Ensure identity DB tables exist
+        from python.helpers.identity_db import get_identity_db
+
+        get_identity_db()
 
     def test_async_logging_speed(self):
         """Validates that log_event returns nearly instantaneously (asynchronous)."""
@@ -54,9 +58,9 @@ class TestPerformanceSecurity(unittest.TestCase):
 
     def test_wal_mode_enabled(self):
         """Checks if the database is running in WAL mode for concurrency."""
-        from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+        from python.helpers.identity_db import IdentityDatabase
 
-        db = WorkflowEngineDatabase(self.db_path)
+        db = IdentityDatabase(self.db_path)
         conn = db._get_conn()
         cursor = conn.cursor()
         cursor.execute("PRAGMA journal_mode;")

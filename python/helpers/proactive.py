@@ -1,12 +1,10 @@
 import json
 import os
 
-from python.helpers import files
-
 try:
-    from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+    from python.helpers.identity_db import IdentityDatabase
 except Exception:
-    WorkflowEngineDatabase = None
+    IdentityDatabase = None
 
 # Optional: pywebpush for push notifications
 try:
@@ -57,10 +55,11 @@ class ProactiveManager:
             return False
 
         try:
-            if WorkflowEngineDatabase is None:
+            if IdentityDatabase is None:
                 return False
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-            db = WorkflowEngineDatabase(db_path)
+            from python.helpers.identity_db import get_identity_db
+
+            db = get_identity_db()
             conn = db._get_conn()
             cursor = conn.cursor()
             cursor.execute("SELECT push_subscription FROM user_profiles WHERE user_id = ?", (user_id,))
@@ -97,11 +96,10 @@ class ProactiveManager:
     def check_and_nudge(cls, user_id="default_user"):
         """Analyzes synced context and sends nudges if necessary."""
         try:
-            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
             from python.api.profile_sync import ProfileSync
+            from python.helpers.identity_db import get_identity_db
 
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-            db = WorkflowEngineDatabase(db_path)
+            db = get_identity_db()
 
             resp = ProfileSync()._get_profile(db, user_id)
             if not resp.get("success") or not resp.get("profile"):

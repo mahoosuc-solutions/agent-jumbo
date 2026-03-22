@@ -15,11 +15,11 @@ class PasskeyAuth(ApiHandler):
             return {"success": False, "error": "Rate limit exceeded. Try again in a few minutes."}
 
         try:
-            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+            from python.helpers.identity_db import get_identity_db
             from python.helpers.passkey_vault import PasskeyVaultManager
 
-            # Initialize the passkey manager with database
-            db = WorkflowEngineDatabase()
+            # Initialize the passkey manager with identity database
+            db = get_identity_db()
             manager = PasskeyVaultManager(db)
 
             # Get host and origin from request headers for WebAuthn

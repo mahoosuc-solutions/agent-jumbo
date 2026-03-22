@@ -17,9 +17,9 @@ class ProfileSync(ApiHandler):
             return {"success": False, "error": "Rate limit exceeded."}
 
         try:
-            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+            from python.helpers.identity_db import get_identity_db
 
-            db = WorkflowEngineDatabase()
+            db = get_identity_db()
 
             if action == "update_profile":
                 valid, err = SecurityManager.validate_input(input, ["profile"])

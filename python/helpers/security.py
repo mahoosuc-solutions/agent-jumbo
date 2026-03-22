@@ -48,10 +48,9 @@ class SecurityManager:
             return
 
         def worker():
-            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+            from python.helpers.identity_db import get_identity_db
 
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-            db = WorkflowEngineDatabase(db_path)
+            db = get_identity_db()
 
             while True:
                 item = cls._log_queue.get()
@@ -61,8 +60,6 @@ class SecurityManager:
                 try:
                     event_type, status, user_id, ip, ua, details = item
                     conn = db._get_conn()
-                    # Enable WAL mode for better performance
-                    conn.execute("PRAGMA journal_mode=WAL;")
                     cursor = conn.cursor()
                     cursor.execute(
                         """
@@ -274,10 +271,9 @@ class SecurityManager:
     def get_audit_logs(limit=50):
         """Retrieves recent security events from the audit log."""
         try:
-            from instruments.custom.workflow_engine.workflow_db import WorkflowEngineDatabase
+            from python.helpers.identity_db import get_identity_db
 
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-            db = WorkflowEngineDatabase(db_path)
+            db = get_identity_db()
             conn = db._get_conn()
             cursor = conn.cursor()
 

@@ -92,14 +92,16 @@ class TestSecurityIdentity:
             assert SecurityVaultManager.get_secret("missing_key") is None
 
     @patch("python.helpers.proactive.webpush")
-    @patch("python.helpers.proactive.WorkflowEngineDatabase")
-    def test_proactive_push_trigger(self, mock_db, mock_webpush):
+    @patch("python.helpers.identity_db.get_identity_db")
+    def test_proactive_push_trigger(self, mock_get_db, mock_webpush):
         """Test that proactive notifications trigger the webpush library."""
         ProactiveManager.ENABLED = True
 
         # Mock database response for subscription
+        mock_db = MagicMock()
+        mock_get_db.return_value = mock_db
         mock_conn = MagicMock()
-        mock_db.return_value._get_conn.return_value = mock_conn
+        mock_db._get_conn.return_value = mock_conn
         mock_cursor = mock_conn.cursor.return_value
         mock_cursor.fetchone.return_value = ['{"endpoint": "test"}']
 
