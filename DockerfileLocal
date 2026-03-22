@@ -8,9 +8,8 @@ FROM ${BASE_IMAGE}
 ARG BRANCH=local
 ENV BRANCH=$BRANCH
 
-# Copy filesystem files to root (if they exist)
-# RUN test -d ./docker/run/fs && cp -r ./docker/run/fs/* / || true
-# Skipping docker/run/fs as it's a runtime-only directory
+# Copy filesystem files to root (install scripts, supervisord config, etc.)
+COPY ./docker/run/fs/ /
 
 # pre installation steps
 RUN --mount=type=cache,target=/var/cache/apt \

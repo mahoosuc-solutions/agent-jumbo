@@ -34,7 +34,7 @@ source "/usr/local/searxng/searx-pyenv/bin/activate"
 echo "====================SEARXNG2 INST===================="
 
 # update pip's boilerplate and preinstall runtime import deps needed by setup metadata
-pip install --no-cache-dir -U pip setuptools wheel pyyaml lxml msgspec
+pip install --no-cache-dir -U pip setuptools wheel pyyaml lxml msgspec typing_extensions
 
 # jump to SearXNG's working tree and install SearXNG into virtualenv
 cd "/usr/local/searxng/searxng-src"
