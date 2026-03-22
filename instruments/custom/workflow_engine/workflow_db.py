@@ -553,6 +553,53 @@ class WorkflowEngineDatabase:
             results.append(r)
         return results
 
+    def cleanup_stale_executions(self, max_age_hours: int = 24) -> dict:
+        """Mark stale 'running' executions as 'failed' if older than max_age_hours"""
+        conn = self._get_conn()
+        cursor = conn.cursor()
+
+        cutoff = datetime.now().timestamp() - (max_age_hours * 3600)
+
+        cursor.execute(
+            """
+            SELECT execution_id, name, started_at
+            FROM workflow_executions
+            WHERE status = 'running'
+            AND started_at IS NOT NULL
+            """,
+        )
+        rows = cursor.fetchall()
+
+        cleaned = []
+        for row in rows:
+            try:
+                started = datetime.fromisoformat(row["started_at"]).timestamp()
+                if started < cutoff:
+                    cursor.execute(
+                        """
+                        UPDATE workflow_executions
+                        SET status = 'failed',
+                            completed_at = ?,
+                            error = ?
+                        WHERE execution_id = ?
+                        """,
+                        (
+                            datetime.now().isoformat(),
+                            f"Marked as failed by cleanup: stale for >{max_age_hours}h",
+                            row["execution_id"],
+                        ),
+                    )
+                    cleaned.append(
+                        {"execution_id": row["execution_id"], "name": row["name"], "started_at": row["started_at"]}
+                    )
+            except (ValueError, TypeError):
+                continue
+
+        conn.commit()
+        conn.close()
+
+        return {"cleaned": len(cleaned), "executions": cleaned}
+
     # ========== Stage Progress Operations ==========
 
     def update_stage_progress(

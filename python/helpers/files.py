@@ -282,12 +282,26 @@ def is_full_json_template(text):
     return bool(match)
 
 
+def _chown_to_host_user(path: str):
+    """Chown file to host user UID/GID if running as root in container"""
+    if os.getuid() != 0:
+        return
+    uid = os.environ.get("FILE_OWNER_UID")
+    gid = os.environ.get("FILE_OWNER_GID")
+    if uid and gid:
+        try:
+            os.chown(path, int(uid), int(gid))
+        except OSError:
+            pass
+
+
 def write_file(relative_path: str, content: str, encoding: str = "utf-8"):
     abs_path = get_abs_path(relative_path)
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
     content = sanitize_string(content, encoding)
     with open(abs_path, "w", encoding=encoding) as f:
         f.write(content)
+    _chown_to_host_user(abs_path)
 
 
 def write_file_bin(relative_path: str, content: bytes):
@@ -295,6 +309,7 @@ def write_file_bin(relative_path: str, content: bytes):
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
     with open(abs_path, "wb") as f:
         f.write(content)
+    _chown_to_host_user(abs_path)
 
 
 def write_file_base64(relative_path: str, content: str):

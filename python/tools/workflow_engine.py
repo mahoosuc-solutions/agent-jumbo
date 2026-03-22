@@ -63,6 +63,8 @@ class WorkflowEngine(Tool):
             "create_learning_path": self._create_learning_path,
             "get_learning_path": self._get_learning_path,
             "list_learning_paths": self._list_learning_paths,
+            # Cleanup
+            "cleanup_executions": self._cleanup_executions,
             # History & Stats
             "get_execution_history": self._get_history,
             "get_events": self._get_events,
@@ -235,6 +237,22 @@ class WorkflowEngine(Tool):
         """Get next task to execute"""
         result = self.manager.get_next_task(execution_id=self.args.get("execution_id"))
         return Response(message=self._format_result(result, "Next Task"), break_loop=False)
+
+    # ========== Cleanup ==========
+
+    async def _cleanup_executions(self):
+        """Clean up stale running executions"""
+        max_age_hours = self.args.get("max_age_hours", 24)
+        result = self.manager.cleanup_stale_executions(max_age_hours=max_age_hours)
+
+        if result["cleaned"] == 0:
+            return Response(message="## Cleanup Executions\n\nNo stale executions found.", break_loop=False)
+
+        lines = ["## Cleanup Executions\n", f"**Cleaned:** {result['cleaned']} stale executions\n"]
+        for ex in result["executions"]:
+            lines.append(f"- **{ex['name']}** (ID: {ex['execution_id']}) — started {ex['started_at']}")
+
+        return Response(message="\n".join(lines), break_loop=False)
 
     # ========== Templates ==========
 
@@ -567,6 +585,9 @@ Orchestrate structured workflows with stages, gates, and training paths.
 - `create_learning_path` - Create a learning path
 - `get_learning_path` - Get learning path details
 - `list_learning_paths` - List all learning paths
+
+### Cleanup
+- `cleanup_executions` - Mark stale running executions as failed (default: >24h)
 
 ### History & Stats
 - `get_execution_history` - Get execution history

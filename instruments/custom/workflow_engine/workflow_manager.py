@@ -687,6 +687,12 @@ class WorkflowEngineManager:
         """List learning paths"""
         return self.db.list_learning_paths(target_role)
 
+    # ========== Cleanup ==========
+
+    def cleanup_stale_executions(self, max_age_hours: int = 24) -> dict:
+        """Clean up stale running executions older than max_age_hours"""
+        return self.db.cleanup_stale_executions(max_age_hours)
+
     # ========== Execution History ==========
 
     def get_execution_history(self, workflow_id: int | None = None, status: str | None = None, limit: int = 50) -> list:
