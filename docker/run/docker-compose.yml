@@ -40,8 +40,8 @@ services:
     container_name: agent-jumbo
     image: agent-jumbo:latest
     volumes:
-      - /mnt/wdblack/dev/projects/agent-jumbo:/a0     # Mount live project over /a0
-      - agent_jumbo_data:/a0/data
+      - /mnt/wdblack/dev/projects/agent-jumbo:/aj      # Mount live project over /aj (app root)
+      - agent_jumbo_data:/aj/data
       - agent_jumbo_venv:/opt/venv-a0                  # Persist venv across restarts
       - /mnt/wdblack:/mnt/wdblack
     ports:
