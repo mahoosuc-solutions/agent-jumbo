@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-import hashlib
-import hmac
 import time
 from typing import Any
+
+from nacl.exceptions import BadSignatureError
+from nacl.signing import VerifyKey
 
 from python.helpers.channel_bridge import ChannelBridge, ChannelStatus, NormalizedMessage
 
@@ -44,16 +45,17 @@ class DiscordAdapter(ChannelBridge):
         return {"channel_id": target_id, "content": text, "sent": True}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
-        public_key = self.config.get("public_key", "")
-        signature = headers.get("X-Signature-Ed25519", "")
+        public_key_hex = self.config.get("public_key", "")
+        signature_hex = headers.get("X-Signature-Ed25519", "")
         timestamp = headers.get("X-Signature-Timestamp", "")
-        if not all([public_key, signature, timestamp]):
+        if not all([public_key_hex, signature_hex, timestamp]):
             return False
         try:
+            verify_key = VerifyKey(bytes.fromhex(public_key_hex))
             message = timestamp.encode() + body
-            expected = hmac.new(public_key.encode(), message, hashlib.sha256).hexdigest()
-            return hmac.compare_digest(expected, signature)
-        except Exception:
+            verify_key.verify(message, bytes.fromhex(signature_hex))
+            return True
+        except (BadSignatureError, Exception):
             return False
 
     async def connect(self) -> None:
