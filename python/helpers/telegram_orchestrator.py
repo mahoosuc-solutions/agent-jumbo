@@ -5,7 +5,19 @@ from __future__ import annotations
 import re
 from typing import Any
 
-ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "newtask", "help", "digest", "sync", "deadletters"}
+ORCHESTRATOR_COMMANDS = {
+    "status",
+    "project",
+    "tasks",
+    "newtask",
+    "help",
+    "digest",
+    "sync",
+    "deadletters",
+    "payments",
+    "revenue",
+    "invoices",
+}
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 
@@ -16,6 +28,9 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /digest — Today's digest
 /sync — Sync projects from platform into portfolio
 /deadletters — Dead-letter queue summary
+/payments — Stripe payments dashboard
+/revenue — Revenue report (MRR, ARR, growth)
+/invoices — Recent Stripe invoices
 /help — This message
 /new — Reset conversation
 
@@ -78,6 +93,18 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
             "and which channels are affected. If the file doesn't exist or is empty, "
             "report that the queue is clear."
         )
+    if cmd == "payments":
+        return (
+            "Check the Stripe payments dashboard. Show MRR, recent payments, "
+            "active subscriptions count, and any failed payments."
+        )
+    if cmd == "revenue":
+        return (
+            "Generate a revenue report from Stripe. Show MRR, ARR, total revenue "
+            "for the last 30 days, customer count, and growth trend."
+        )
+    if cmd == "invoices":
+        return "List recent Stripe invoices. Show status (draft, open, paid, void), amounts, and customer names."
     return ""
 
 
