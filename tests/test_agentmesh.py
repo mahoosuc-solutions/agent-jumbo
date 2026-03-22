@@ -165,7 +165,7 @@ class TestAgentMeshBridge:
     def test_idempotency_tracking(self):
         bridge = AgentMeshBridge(AgentMeshConfig())
         assert len(bridge._processed_task_ids) == 0
-        bridge._processed_task_ids.add("task.assigned:task-1")
+        bridge._processed_task_ids["task.assigned:task-1"] = True
         assert "task.assigned:task-1" in bridge._processed_task_ids
 
 

@@ -189,8 +189,10 @@ async def test_process_skips_empty_data(bridge, fake_redis):
 
 async def test_dedup_set_caps_at_5000(bridge, fake_redis):
     """Dedup set is capped at 5000 entries."""
-    # Pre-fill with 5001 entries
-    bridge._processed_task_ids = {f"task.assigned:task-{i}" for i in range(5001)}
+    # Pre-fill with 5001 entries (OrderedDict, not set)
+    import collections
+
+    bridge._processed_task_ids = collections.OrderedDict((f"task.assigned:task-{i}", True) for i in range(5001))
 
     handler = AsyncMock()
     bridge.on("task.assigned", handler)
