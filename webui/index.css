@@ -1113,7 +1113,7 @@ a:active {
   background-color: var(--color-panel);
   color: var(--color-text);
   width: 100%;
-  max-width: 800px;
+  max-width: min(1400px, 90vw);
   height: auto;
   max-height: 90vh;
   border-radius: 8px;

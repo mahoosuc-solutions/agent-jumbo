@@ -20,6 +20,11 @@ const settingsModalProxy = {
 
     // Switch tab method
     switchTab(tabName) {
+        // Stop scheduler polling when switching away from scheduler tab
+        if (this.activeTab === 'scheduler' && tabName !== 'scheduler') {
+            this.stopSchedulerPolling();
+        }
+
         // Update our component state
         this.activeTab = tabName;
 

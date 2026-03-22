@@ -228,13 +228,12 @@ const fullComponentImplementation = function() {
 
         // Start polling for task updates
         startPolling() {
-            // Don't start if already polling
+            // Clear any leaked interval before starting
             if (this.pollingInterval) {
-                console.log('Polling already active, not starting again');
-                return;
+                clearInterval(this.pollingInterval);
+                this.pollingInterval = null;
             }
 
-            console.log('Starting task polling');
             this.pollingActive = true;
 
             // Fetch immediately, then set up interval for every 2 seconds
@@ -243,7 +242,7 @@ const fullComponentImplementation = function() {
                 if (this.pollingActive) {
                     this.fetchTasks();
                 }
-            }, 2000); // Poll every 2 seconds as requested
+            }, 15000); // Poll every 15 seconds
         },
 
         // Stop polling when tab is inactive
