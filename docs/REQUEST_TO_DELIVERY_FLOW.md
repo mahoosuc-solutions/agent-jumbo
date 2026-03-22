@@ -58,8 +58,9 @@ flowchart LR
 6. [The Five Project Systems](#6-the-five-project-systems)
 7. [Knowledge Ingest Pipeline](#7-knowledge-ingest-pipeline)
 8. [Response Delivery](#8-response-delivery)
-9. [Extension Hooks Reference](#9-extension-hooks-reference)
-10. [Debugging Guide](#10-debugging-guide)
+9. [Security Model](#9-security-model)
+10. [Extension Hooks Reference](#10-extension-hooks-reference)
+11. [Debugging Guide](#11-debugging-guide)
 
 <!-- markdownlint-enable MD007 -->
 
@@ -106,6 +107,7 @@ flowchart TD
 | **Slash commands** | Parsed by `telegram_orchestrator.parse_slash_command()` |
 | **Media** | Photos, voice, video, documents extracted via `TelegramMedia` |
 | **Orchestrator** | `telegram_orchestrator.py` translates `/status`, `/project`, `/tasks`, `/newtask`, `/digest`, `/sync`, `/help` to agent prompts |
+| **Dispatch** | Non-blocking — returns 200 immediately, delivers response via background `asyncio.create_task` |
 
 ### Web UI
 
@@ -135,7 +137,8 @@ flowchart TD
 | **Route** | `/webhook/<channel>` dispatches to channel adapter |
 | **Adapters** | 17 channels in `python/helpers/channels/`: Discord, Email, Google Chat, IRC, LINE, Mastodon, Matrix, Mattermost, Rocket.Chat, Signal, Slack, Teams, Telegram, Twilio SMS, Viber, WhatsApp |
 | **Flow** | `adapter.verify_webhook()` → `adapter.normalize()` → `gateway.process_now()` |
-| **Gateway** | `python/helpers/gateway.py` — async queue with retry + dead-letter |
+| **Verification** | All adapters are **fail-closed** — return `False` when secrets are not configured. Meta/WhatsApp verification validates `hub.verify_token` against `META_VERIFY_TOKEN` env var. |
+| **Gateway** | `python/helpers/gateway.py` — async queue with retry + dead-letter (persisted to `logs/dead_letters.jsonl`) |
 
 ---
 
@@ -217,14 +220,33 @@ stateDiagram-v2
     MonologueEnd --> [*]: Return response
 ```
 
+### Loop Guards
+
+The monologue has two termination safeguards:
+
+| Guard | Limit | Configurable | Behavior |
+|-------|-------|-------------|----------|
+| **Iteration limit** | 25 iterations (inner loop) | Hardcoded `MAX_MONOLOGUE_ITERATIONS` | Force-returns error message, logs event |
+| **Wall-clock timeout** | 30 minutes (outer loop) | `AGENT_MAX_MONOLOGUE_SECONDS` env var | Force-returns error message, logs event |
+
+Both guards prevent unbounded API cost from stuck agents.
+
+### Security Gate
+
+Before tool execution, `process_tools()` calls `SecurityManager.is_tool_authorized(tool_name)`. High-risk tools (`code_execution_tool`, `email`, `email_advanced`, `memory_delete`, `memory_forget`, `workflow_engine`, `run_in_terminal`, `cowork_approval`) require passkey authentication within the last 3600 seconds. Controlled by `SECURITY_ENFORCE_PASSKEY` env var (default: `true`).
+
+### Token Budget Warning
+
+`get_system_prompt()` estimates token count after assembly. If the system prompt exceeds ~30,000 tokens (~30% of a 100K context window), a warning is logged. Fires once per monologue.
+
 ### Key Methods
 
 | Method | Line | Purpose |
 |--------|------|---------|
-| `monologue()` | 555 | Outer loop — manages extensions, error handling |
+| `monologue()` | 555 | Outer loop — manages extensions, error handling, wall-clock timeout |
 | `prepare_prompt()` | 681 | Assembles system prompt + history + extensions |
-| `get_system_prompt()` | 789 | Loads and merges system prompt extensions |
-| `process_tools()` | 1342 | Parses tool calls from LLM response, executes them |
+| `get_system_prompt()` | 789 | Loads and merges system prompt extensions, token budget warning |
+| `process_tools()` | 1342 | Security gate + tool execution |
 
 ### Message Queue Policy
 
@@ -581,6 +603,7 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 | **Formatting** | `format_for_telegram()` strips HTML, converts `##` to bold, truncates tables to 10 rows |
 | **Send** | POST to `https://api.telegram.org/bot{token}/sendMessage` with `parse_mode: Markdown` |
 | **Fallback** | On 400 error, retries without Markdown formatting |
+| **Dispatch** | Async — webhook returns 200 immediately, response delivered via background `_deliver_response` task |
 
 ### Web UI
 
@@ -600,6 +623,7 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 | **Transport** | Redis Streams |
 | **Events** | `task.completed`, `task.failed`, `task.escalated`, `task.status_update` |
 | **Payload** | Result text + execution metadata |
+| **Dedup** | `OrderedDict`-based FIFO eviction (cap: 5000 entries, evicts oldest half) |
 
 ### Webhook Channels
 
@@ -608,10 +632,55 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 | **File** | `python/helpers/gateway.py` |
 | **Mechanism** | Per-adapter `send_message()` via channel factory |
 | **Queue** | Async message queue with retry and dead-letter semantics |
+| **Dead letters** | Persisted to `logs/dead_letters.jsonl` (timestamp, message_id, channel, error, payload) |
 
 ---
 
-## 9. Extension Hooks Reference
+## 9. Security Model
+
+### Passkey Enforcement
+
+High-risk tools require passkey authentication before execution. The gate is in `agent.py:process_tools()` via `SecurityManager.is_tool_authorized()`.
+
+| Setting | Default | Override |
+|---------|---------|----------|
+| `SECURITY_ENFORCE_PASSKEY` | `true` | Set to `false` in env for development |
+| `AUTH_WINDOW_SECONDS` | 3600 (1 hour) | Hardcoded in `security.py` |
+
+**HIGH_RISK_TOOLS:** `code_execution_tool`, `email`, `email_advanced`, `memory_delete`, `memory_forget`, `workflow_engine`, `run_in_terminal`, `cowork_approval`
+
+### Webhook Verification
+
+All channel adapters are **fail-closed** — they return `False` when their respective webhook secrets are not configured. This prevents unauthenticated message injection.
+
+| Adapter | Required Secret |
+|---------|----------------|
+| Telegram | `secret_token` |
+| Signal | `signal_webhook_secret` |
+| Mattermost | `mattermost_webhook_token` |
+| Matrix | `matrix_hs_token` |
+| Mastodon | `mastodon_webhook_secret` |
+| Rocket.Chat | `rocketchat_webhook_token` |
+| Teams | `teams_shared_secret` |
+| Google Chat | `google_chat_verification_token` |
+| Email | N/A (returns `False` — uses IMAP polling, not webhooks) |
+| IRC | N/A (returns `False` — uses socket, not webhooks) |
+| Meta/WhatsApp | `META_VERIFY_TOKEN` env var (validated via `hmac.compare_digest`) |
+
+### Monologue Loop Guards
+
+| Guard | Limit | Purpose |
+|-------|-------|---------|
+| Inner loop iteration cap | 25 | Prevents stuck tool-calling loops |
+| Outer loop wall-clock timeout | 30 min (`AGENT_MAX_MONOLOGUE_SECONDS`) | Prevents runaway cost from restarts |
+
+### Database Security
+
+All instrument SQLite databases use WAL mode + `busy_timeout=5000ms` to prevent lock contention. Encryption uses AES-256-GCM via `SecurityManager.encrypt_data()` — never falls back to plaintext on failure (returns `None`).
+
+---
+
+## 10. Extension Hooks Reference
 
 22 hook points across the agent lifecycle. Extensions are Python files in `python/extensions/{hook_name}/`, executed in filename-sort order.
 
@@ -643,7 +712,7 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 
 ---
 
-## 10. Debugging Guide
+## 11. Debugging Guide
 
 ### Trace a Telegram Message
 
@@ -667,7 +736,28 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 |-----|----------|
 | Chat logs | `logs/` (HTML format) |
 | Tool call files | Saved by `_90_save_tool_call_file.py` extension |
+| Dead-letter queue | `logs/dead_letters.jsonl` (one JSON object per line) |
 | Supervisord | `/dev/stdout` (container stdout) |
+
+### Health Check Endpoint
+
+`GET /health_check` returns structured JSON with per-subsystem status:
+
+```json
+{
+  "status": "healthy | degraded | unhealthy",
+  "checks": {
+    "llm": {"status": "ok"},
+    "databases": {"status": "ok", "detail": "workflow.db, work_queue.db accessible"},
+    "redis": {"status": "ok | not_configured"},
+    "disk": {"status": "ok | warning", "free_mb": 1234}
+  }
+}
+```
+
+### Request Tracing
+
+Every request gets a `request_id` (from `X-Request-ID` header or auto-generated UUID). This ID propagates: API handler → `AgentContext.request_id` → `LoopData.request_id` → structured log calls. Use it to correlate logs across the pipeline.
 
 ### Common Failure Points
 
@@ -675,6 +765,11 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 |---------|-------|
 | Telegram bot not responding | Webhook secret mismatch, or bot token invalid |
 | Tool call returns error | Check tool's `execute()` method, instrument DB permissions |
+| Tool blocked by passkey | `SECURITY_ENFORCE_PASSKEY=true` — set to `false` for dev, or authenticate via passkey |
 | Agent loops without responding | `response` tool not being called — check system prompt |
-| Stale workflow executions | Run `cleanup_executions` action (marks >24h as failed) |
+| Agent terminates after 25 iterations | Legitimate complex task hit `MAX_MONOLOGUE_ITERATIONS` — review prompt |
+| Agent terminates after 30 min | Hit `AGENT_MAX_MONOLOGUE_SECONDS` wall-clock limit |
+| Stale workflow executions | Auto-cleaned on `get_stats` call (>24h marked as failed) |
 | Knowledge files owned by root | `FILE_OWNER_UID`/`FILE_OWNER_GID` env vars not set in container |
+| Channel webhook returns 403 | Adapter secret not configured — check env vars per § Security Model |
+| Dead letters accumulating | Check `logs/dead_letters.jsonl` for error details |
