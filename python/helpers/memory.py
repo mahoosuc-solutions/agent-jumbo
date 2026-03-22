@@ -23,8 +23,6 @@ from simpleeval import simple_eval
 
 import models
 from agent import Agent, AgentContext
-
-# faiss needs to be patched for python 3.12 on arm #TODO remove once not needed
 from python.helpers import guids, knowledge_import
 from python.helpers.log import LogItem
 from python.helpers.print_style import PrintStyle

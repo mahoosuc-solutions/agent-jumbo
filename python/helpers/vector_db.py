@@ -2,7 +2,6 @@ import uuid
 from collections.abc import Sequence
 from typing import Any
 
-# faiss needs to be patched for python 3.12 on arm #TODO remove once not needed
 import faiss
 from langchain_classic.embeddings import CacheBackedEmbeddings
 from langchain_community.docstore.in_memory import InMemoryDocstore
