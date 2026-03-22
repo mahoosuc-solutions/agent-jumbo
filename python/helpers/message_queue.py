@@ -8,10 +8,13 @@ exceed the maximum retry count.
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
+from pathlib import Path
 from typing import Any
 
 from python.helpers.channel_bridge import NormalizedMessage
@@ -136,6 +139,7 @@ class MessageQueue:
             logger.error("No handler set -- moving message %s to dead-letter", entry.message.id)
             entry.last_error = "No handler configured"
             self._dead_letters.append(entry)
+            self._persist_dead_letter(entry)
             return
 
         try:
@@ -154,10 +158,38 @@ class MessageQueue:
             if entry.retries >= self.max_retries:
                 logger.error("Message %s moved to dead-letter after %d retries", entry.message.id, entry.retries)
                 self._dead_letters.append(entry)
+                self._persist_dead_letter(entry)
             else:
                 delay = self.retry_delay * (2 ** (entry.retries - 1))
                 await asyncio.sleep(delay)
                 await self._queue.put(entry)
+
+    # ------------------------------------------------------------------
+    # dead-letter persistence
+    # ------------------------------------------------------------------
+
+    _DEAD_LETTER_LOG = Path("logs/dead_letters.jsonl")
+
+    def _persist_dead_letter(self, entry: QueueEntry) -> None:
+        """Append a dead-letter entry to the JSONL log file.
+
+        Failures are logged but never propagate — persistence must not
+        break queue processing.
+        """
+        try:
+            self._DEAD_LETTER_LOG.parent.mkdir(parents=True, exist_ok=True)
+            record = {
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "message_id": entry.message.id,
+                "channel": entry.message.channel,
+                "error": entry.last_error,
+                "retries": entry.retries,
+                "payload": entry.message.to_dict(),
+            }
+            with self._DEAD_LETTER_LOG.open("a") as fh:
+                fh.write(json.dumps(record) + "\n")
+        except Exception:
+            logger.exception("Failed to persist dead-letter for message %s", entry.message.id)
 
     # ------------------------------------------------------------------
     # introspection helpers

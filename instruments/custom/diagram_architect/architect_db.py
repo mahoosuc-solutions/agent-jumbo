@@ -18,9 +18,16 @@ class DiagramArchitectDatabase:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        """Get a connection with WAL mode and busy timeout"""
+        conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _init_db(self):
         """Initialize database schema"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.executescript("""
                 -- Architecture analyses
                 CREATE TABLE IF NOT EXISTS analyses (
@@ -123,7 +130,7 @@ class DiagramArchitectDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create a new architecture analysis"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO analyses (project_path, project_name, analysis_type, metadata)
@@ -135,7 +142,7 @@ class DiagramArchitectDatabase:
 
     def get_analysis(self, analysis_id: int) -> dict:
         """Get analysis by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM analyses WHERE analysis_id = ?", (analysis_id,)).fetchone()
 
@@ -159,7 +166,7 @@ class DiagramArchitectDatabase:
 
     def list_analyses(self, project_path: str | None = None) -> list:
         """List all analyses"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if project_path:
                 rows = conn.execute(
@@ -171,7 +178,7 @@ class DiagramArchitectDatabase:
 
     def update_analysis_status(self, analysis_id: int, status: str):
         """Update analysis status"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             completed_at = isoformat_z(utc_now()) if status == "completed" else None
             conn.execute(
                 """
@@ -193,7 +200,7 @@ class DiagramArchitectDatabase:
         properties: dict | None = None,
     ) -> int:
         """Add a detected component"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO components (analysis_id, name, component_type, file_path, description, properties)
@@ -205,7 +212,7 @@ class DiagramArchitectDatabase:
 
     def get_components(self, analysis_id: int, component_type: str | None = None) -> list:
         """Get components for an analysis"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if component_type:
                 rows = conn.execute(
@@ -245,7 +252,7 @@ class DiagramArchitectDatabase:
         properties: dict | None = None,
     ) -> int:
         """Add a component relationship"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO relationships
@@ -258,7 +265,7 @@ class DiagramArchitectDatabase:
 
     def get_relationships(self, analysis_id: int) -> list:
         """Get relationships for an analysis with component names"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(
                 """
@@ -293,7 +300,7 @@ class DiagramArchitectDatabase:
         properties: dict | None = None,
     ) -> int:
         """Add a detected external integration"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO integrations
@@ -306,7 +313,7 @@ class DiagramArchitectDatabase:
 
     def get_integrations(self, analysis_id: int) -> list:
         """Get integrations for an analysis"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute("SELECT * FROM integrations WHERE analysis_id = ?", (analysis_id,)).fetchall()
 
@@ -331,7 +338,7 @@ class DiagramArchitectDatabase:
         properties: dict | None = None,
     ) -> int:
         """Add a data flow"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO data_flows
@@ -353,7 +360,7 @@ class DiagramArchitectDatabase:
 
     def get_data_flows(self, analysis_id: int) -> list:
         """Get data flows for an analysis"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute("SELECT * FROM data_flows WHERE analysis_id = ?", (analysis_id,)).fetchall()
 
@@ -377,7 +384,7 @@ class DiagramArchitectDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Save a generated diagram"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO diagrams
@@ -390,7 +397,7 @@ class DiagramArchitectDatabase:
 
     def get_diagram(self, diagram_id: int) -> dict:
         """Get a diagram by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM diagrams WHERE diagram_id = ?", (diagram_id,)).fetchone()
 
@@ -402,7 +409,7 @@ class DiagramArchitectDatabase:
 
     def get_diagrams(self, analysis_id: int | None = None, diagram_type: str | None = None) -> list:
         """Get diagrams with optional filters"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
 
             query = "SELECT * FROM diagrams WHERE 1=1"

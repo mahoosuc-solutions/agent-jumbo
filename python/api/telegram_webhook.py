@@ -1,3 +1,4 @@
+import asyncio
 import os
 import random
 import uuid
@@ -137,30 +138,46 @@ class TelegramWebhook(ApiHandler):
 
         await self._store_telegram_message(text, title, tags)
 
+        # Inject orchestrator context
+        orch_context = build_orchestrator_context(
+            chat_id=chat_id_str,
+            vision_context=get_session_meta(chat_id_str, "vision_context"),
+            active_project=get_session_meta(chat_id_str, "active_project"),
+            last_tool=get_session_meta(chat_id_str, "last_tool"),
+        )
+        if orch_context:
+            text = f"{orch_context}\n\n{text}"
+
+        task = context.communicate(UserMessage(message=text, attachments=attachment_paths))
+
+        # Fire-and-forget: deliver the agent response in the background so we
+        # can return 200 to Telegram immediately (prevents retries on long runs).
+        asyncio.create_task(self._deliver_response(task, token, chat_id_str, media))
+
+        return {"status": "ok"}
+
+    async def _deliver_response(
+        self,
+        task,
+        token: str,
+        chat_id_str: str,
+        media: TelegramMedia | None,
+    ) -> None:
+        """Background task: wait for the agent to finish, then send the reply."""
         try:
-            # Inject orchestrator context
-            orch_context = build_orchestrator_context(
-                chat_id=chat_id_str,
-                vision_context=get_session_meta(chat_id_str, "vision_context"),
-                active_project=get_session_meta(chat_id_str, "active_project"),
-                last_tool=get_session_meta(chat_id_str, "last_tool"),
-            )
-            if orch_context:
-                text = f"{orch_context}\n\n{text}"
-
-            task = context.communicate(UserMessage(message=text, attachments=attachment_paths))
             result = await task.result()  # type: ignore
-
             if token:
                 formatted = format_for_telegram(result)
                 send_long_message(token, chat_id_str, formatted)
+        except Exception as exc:
+            PrintStyle.error(f"[TelegramWebhook] background delivery failed: {exc}")
+            if token:
+                send_message(token, chat_id_str, "Sorry, something went wrong processing your message.")
         finally:
             if media:
                 media.cleanup()
             if random.random() < 0.05:
                 cleanup_stale_uploads()
-
-        return {"status": "ok"}
 
     async def _store_telegram_message(self, text: str, title: str, tags: list[str]) -> None:
         try:

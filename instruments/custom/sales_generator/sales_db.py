@@ -19,9 +19,16 @@ class SalesGeneratorDatabase:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        """Get a connection with WAL mode and busy timeout"""
+        conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _init_db(self):
         """Initialize database schema"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.executescript("""
                 -- Proposals
                 CREATE TABLE IF NOT EXISTS proposals (
@@ -166,7 +173,7 @@ class SalesGeneratorDatabase:
         """Create a new proposal"""
         valid_until = (datetime.now().replace(day=datetime.now().day + valid_days)).isoformat()
 
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO proposals
@@ -188,7 +195,7 @@ class SalesGeneratorDatabase:
     ) -> int:
         """Add line item to proposal"""
         total_price = quantity * unit_price
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO proposal_items
@@ -212,7 +219,7 @@ class SalesGeneratorDatabase:
 
     def get_proposal(self, proposal_id: int) -> dict:
         """Get proposal with line items"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM proposals WHERE proposal_id = ?", (proposal_id,)).fetchone()
 
@@ -231,7 +238,7 @@ class SalesGeneratorDatabase:
 
     def list_proposals(self, customer_id: int | None = None, status: str | None = None) -> list:
         """List proposals with optional filters"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             query = "SELECT * FROM proposals WHERE 1=1"
             params = []
@@ -249,7 +256,7 @@ class SalesGeneratorDatabase:
 
     def update_proposal_status(self, proposal_id: int, status: str):
         """Update proposal status"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE proposals SET status = ?, updated_at = ?
@@ -260,7 +267,7 @@ class SalesGeneratorDatabase:
 
     def update_proposal_content(self, proposal_id: int, content: str):
         """Update proposal content"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE proposals SET content = ?, updated_at = ?
@@ -281,7 +288,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create a new demo"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO demos
@@ -294,7 +301,7 @@ class SalesGeneratorDatabase:
 
     def get_demo(self, demo_id: int) -> dict:
         """Get demo by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM demos WHERE demo_id = ?", (demo_id,)).fetchone()
 
@@ -307,12 +314,12 @@ class SalesGeneratorDatabase:
 
     def update_demo_content(self, demo_id: int, content: str):
         """Update demo content"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("UPDATE demos SET content = ? WHERE demo_id = ?", (content, demo_id))
 
     def list_demos(self, customer_id: int | None = None) -> list:
         """List demos"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if customer_id:
                 rows = conn.execute(
@@ -341,7 +348,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create ROI calculation"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO roi_calculations
@@ -365,7 +372,7 @@ class SalesGeneratorDatabase:
         self, roi_id: int, payback_months: int, roi_percentage: float, npv: float, projections: dict
     ):
         """Update ROI calculation results"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE roi_calculations SET
@@ -377,7 +384,7 @@ class SalesGeneratorDatabase:
 
     def get_roi_calculation(self, roi_id: int) -> dict:
         """Get ROI calculation"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM roi_calculations WHERE roi_id = ?", (roi_id,)).fetchone()
 
@@ -393,7 +400,7 @@ class SalesGeneratorDatabase:
 
     def list_roi_calculations(self, customer_id: int | None = None) -> list:
         """List ROI calculations"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if customer_id:
                 rows = conn.execute(
@@ -419,7 +426,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create case study"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO case_studies
@@ -444,7 +451,7 @@ class SalesGeneratorDatabase:
 
     def get_case_study(self, case_study_id: int) -> dict:
         """Get case study"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM case_studies WHERE case_study_id = ?", (case_study_id,)).fetchone()
 
@@ -457,7 +464,7 @@ class SalesGeneratorDatabase:
 
     def list_case_studies(self, industry: str | None = None, status: str | None = None) -> list:
         """List case studies"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             query = "SELECT * FROM case_studies WHERE 1=1"
             params = []
@@ -497,7 +504,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create business case"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO business_cases
@@ -525,7 +532,7 @@ class SalesGeneratorDatabase:
 
     def get_business_case(self, case_id: int) -> dict:
         """Get business case"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM business_cases WHERE case_id = ?", (case_id,)).fetchone()
 
@@ -540,7 +547,7 @@ class SalesGeneratorDatabase:
 
     def list_business_cases(self, customer_id: int | None = None) -> list:
         """List business cases"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if customer_id:
                 rows = conn.execute(
@@ -561,7 +568,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create portfolio showcase"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO showcases
@@ -574,7 +581,7 @@ class SalesGeneratorDatabase:
 
     def get_showcase(self, showcase_id: int) -> dict:
         """Get showcase"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM showcases WHERE showcase_id = ?", (showcase_id,)).fetchone()
 
@@ -587,12 +594,12 @@ class SalesGeneratorDatabase:
 
     def update_showcase_content(self, showcase_id: int, content: str):
         """Update showcase content"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("UPDATE showcases SET content = ? WHERE showcase_id = ?", (content, showcase_id))
 
     def list_showcases(self, target_industry: str | None = None) -> list:
         """List showcases"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if target_industry:
                 rows = conn.execute(
@@ -619,7 +626,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create competitive comparison"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO comparisons
@@ -638,12 +645,12 @@ class SalesGeneratorDatabase:
 
     def update_comparison_analysis(self, comparison_id: int, analysis: str):
         """Update comparison analysis"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("UPDATE comparisons SET analysis = ? WHERE comparison_id = ?", (analysis, comparison_id))
 
     def get_comparison(self, comparison_id: int) -> dict:
         """Get comparison"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM comparisons WHERE comparison_id = ?", (comparison_id,)).fetchone()
 
@@ -657,7 +664,7 @@ class SalesGeneratorDatabase:
 
     def list_comparisons(self) -> list:
         """List comparisons"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute("SELECT * FROM comparisons ORDER BY created_at DESC").fetchall()
 

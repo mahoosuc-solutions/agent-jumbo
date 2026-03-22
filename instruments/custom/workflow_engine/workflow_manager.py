@@ -706,7 +706,16 @@ class WorkflowEngineManager:
     # ========== Statistics ==========
 
     def get_stats(self) -> dict:
-        """Get workflow engine statistics"""
+        """Get workflow engine statistics.
+
+        Also performs opportunistic cleanup of stale executions
+        (older than 24h) so the system stays tidy without needing
+        a separate scheduled task.
+        """
+        try:
+            self.cleanup_stale_executions()
+        except Exception:
+            pass  # never let cleanup failure break stats retrieval
         return self.db.get_stats()
 
     def get_recent_executions(self, limit: int = 5) -> list:

@@ -18,9 +18,16 @@ class ScaffoldDatabase:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        """Get a connection with WAL mode and busy timeout"""
+        conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _init_db(self):
         """Initialize database schema"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         # Templates table - stores project template definitions
@@ -175,7 +182,7 @@ class ScaffoldDatabase:
             },
         ]
 
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         for template in builtin_templates:
@@ -214,7 +221,7 @@ class ScaffoldDatabase:
         source_path: str | None = None,
     ) -> int:
         """Add a new template"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -244,7 +251,7 @@ class ScaffoldDatabase:
 
     def get_template(self, name: str | None = None, template_id: int | None = None) -> dict:
         """Get template by name or ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -270,7 +277,7 @@ class ScaffoldDatabase:
         builtin_only: bool = False,
     ) -> list:
         """List templates with optional filters"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -298,7 +305,7 @@ class ScaffoldDatabase:
 
     def delete_template(self, template_id: int) -> bool:
         """Delete a template (only non-builtin)"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute("DELETE FROM templates WHERE template_id = ? AND builtin = 0", (template_id,))
@@ -320,7 +327,7 @@ class ScaffoldDatabase:
         app_spec_path: str | None = None,
     ) -> int:
         """Record a generated project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -339,7 +346,7 @@ class ScaffoldDatabase:
 
     def get_project(self, project_id: int) -> dict:
         """Get project by ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -353,7 +360,7 @@ class ScaffoldDatabase:
 
     def list_projects(self, customer_id: int | None = None, template_id: int | None = None) -> list:
         """List generated projects"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -376,7 +383,7 @@ class ScaffoldDatabase:
 
     def update_project_status(self, project_id: int, status: str) -> bool:
         """Update project status"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute("UPDATE generated_projects SET status = ? WHERE project_id = ?", (status, project_id))
@@ -392,7 +399,7 @@ class ScaffoldDatabase:
         self, project_id: int, file_path: str, file_type: str | None = None, template_source: str | None = None
     ) -> int:
         """Record a generated file"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -410,7 +417,7 @@ class ScaffoldDatabase:
 
     def get_project_files(self, project_id: int) -> list:
         """Get all files for a project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -424,7 +431,7 @@ class ScaffoldDatabase:
 
     def add_component(self, name: str, component_type: str, content: str, variables: dict | None = None) -> int:
         """Add a reusable component"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -443,7 +450,7 @@ class ScaffoldDatabase:
 
     def get_component(self, name: str) -> dict:
         """Get component by name"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -457,7 +464,7 @@ class ScaffoldDatabase:
 
     def list_components(self, component_type: str | None = None) -> list:
         """List components"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 

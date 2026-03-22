@@ -16,6 +16,7 @@ Usage::
 from __future__ import annotations
 
 import asyncio
+import collections
 import json
 import logging
 from collections.abc import Awaitable, Callable
@@ -100,7 +101,7 @@ class AgentMeshBridge:
         self._events_processed = 0
         self._last_error: str | None = None
         self._connected = False
-        self._processed_task_ids: set[str] = set()
+        self._processed_task_ids: collections.OrderedDict[str, bool] = collections.OrderedDict()
 
     # -- Lifecycle -----------------------------------------------------------
 
@@ -215,15 +216,15 @@ class AgentMeshBridge:
             return
 
         await self._dispatch(event)
-        self._processed_task_ids.add(dedup_key)
+        self._processed_task_ids[dedup_key] = True
         self._events_processed += 1
         await self._redis.xack(STREAM_KEY, self._group_name, msg_id)
 
-        # Cap dedup set size
+        # Cap dedup set size — FIFO eviction of oldest half
         if len(self._processed_task_ids) > 5000:
-            # Remove oldest half
-            to_remove = list(self._processed_task_ids)[: len(self._processed_task_ids) // 2]
-            self._processed_task_ids -= set(to_remove)
+            to_remove = len(self._processed_task_ids) // 2
+            for _ in range(to_remove):
+                self._processed_task_ids.popitem(last=False)
 
     async def _reclaim_pending(self) -> None:
         """Drain pending entries (claimed but not ACK'd) from a previous crash."""

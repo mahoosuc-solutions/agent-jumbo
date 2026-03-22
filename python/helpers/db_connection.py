@@ -33,6 +33,7 @@ class DatabaseConnection:
         if self._conn is None:
             self._conn = sqlite3.connect(self.db_path)
             self._conn.execute("PRAGMA journal_mode=WAL")
+            self._conn.execute("PRAGMA busy_timeout=5000")
         return self._conn
 
     @contextmanager
