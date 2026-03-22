@@ -78,8 +78,6 @@ class GoogleChatAdapter(ChannelBridge):
             return {"ok": False, "error": str(exc)}
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
-        auth_header = headers.get("Authorization", "")
-
         # Check for verification token (simple shared-secret approach)
         verification_token = self.config.get("google_chat_verification_token", "")
         if verification_token:
@@ -91,11 +89,9 @@ class GoogleChatAdapter(ChannelBridge):
             except (json.JSONDecodeError, AttributeError):
                 pass
 
-        # Bearer token presence check (full JWT verification against Google's
-        # public keys should be done in production with a dedicated library)
-        if not auth_header.startswith("Bearer "):
-            return False
-        return True
+        # fail-closed: require google_chat_verification_token or full JWT
+        # verification against Google's public keys (not implemented)
+        return False
 
     async def connect(self) -> None:
         creds_config = self.config.get("google_chat_credentials_json", "")
@@ -113,7 +109,6 @@ class GoogleChatAdapter(ChannelBridge):
 
             # Build JWT assertion for service account
             import hashlib
-            import hmac as _hmac  # noqa: F811
 
             now = int(time.time())
             header = _base64url(json.dumps({"alg": "RS256", "typ": "JWT"}).encode())
@@ -150,12 +145,16 @@ class GoogleChatAdapter(ChannelBridge):
                 return
 
             # Exchange JWT for access token
-            form_data = urllib.parse.urlencode({
-                "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
-                "assertion": jwt_token,
-            }).encode()
+            form_data = urllib.parse.urlencode(
+                {
+                    "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                    "assertion": jwt_token,
+                }
+            ).encode()
             req = urllib.request.Request(
-                _GOOGLE_TOKEN_URL, data=form_data, method="POST",
+                _GOOGLE_TOKEN_URL,
+                data=form_data,
+                method="POST",
                 headers={"Content-Type": "application/x-www-form-urlencoded"},
             )
             with urllib.request.urlopen(req, timeout=20) as resp:  # nosec B310 - Google OAuth endpoint

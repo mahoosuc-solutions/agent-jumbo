@@ -70,7 +70,8 @@ class EmailAdapter(ChannelBridge):
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         # Email does not use webhooks; IMAP polling is used instead.
-        return True
+        # Return False to block webhook route — email messages arrive via polling.
+        return False
 
     async def connect(self) -> None:
         smtp_host = self.config.get("email_smtp_host", "")

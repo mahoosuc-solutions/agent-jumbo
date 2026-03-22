@@ -1,5 +1,6 @@
 import asyncio
 import json
+import os
 import random
 import string
 import threading
@@ -553,7 +554,14 @@ class Agent:
         asyncio.run(self.call_extensions("agent_init"))
 
     async def monologue(self):
+        MAX_MONOLOGUE_SECONDS = int(os.environ.get("AGENT_MAX_MONOLOGUE_SECONDS", "1800"))  # 30 min default
+        monologue_start_time = time.time()
         while True:
+            if time.time() - monologue_start_time > MAX_MONOLOGUE_SECONDS:
+                msg = f"Monologue exceeded {MAX_MONOLOGUE_SECONDS}s wall-clock limit — forcing termination."
+                PrintStyle(font_color="red", padding=True).print(msg)
+                self.context.log.log(type="error", content=msg)
+                return msg
             try:
                 # Proactive nudge check (Graceful fail)
                 with contextlib.suppress(Exception):
@@ -1385,6 +1393,17 @@ class Agent:
                 tool_status = "success"
                 perf_metrics.increment("runtime.tool_execution.requests")
                 try:
+                    # Security gate: check passkey authorization for high-risk tools
+                    from python.helpers.security import SecurityManager
+
+                    if not SecurityManager.is_tool_authorized(tool_name):
+                        from python.helpers.tool import Response
+
+                        return Response(
+                            message=f"Tool '{tool_name}' requires authorization. Use passkey authentication first.",
+                            break_loop=False,
+                        )
+
                     await self.handle_intervention()
                     await tool.before_execution(**tool_args)
                     await self.call_extensions("tool_execute_before", tool_args=tool_args or {}, tool_name=tool_name)

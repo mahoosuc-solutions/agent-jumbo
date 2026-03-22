@@ -37,7 +37,6 @@ class SecurityManager:
         "workflow_engine",
         "run_in_terminal",
         "cowork_approval",
-        "memory_access",
     ]
     AUTH_WINDOW_SECONDS = 3600
 

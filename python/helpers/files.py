@@ -319,6 +319,7 @@ def write_file_base64(relative_path: str, content: str):
     os.makedirs(os.path.dirname(abs_path), exist_ok=True)
     with open(abs_path, "wb") as f:
         f.write(data)
+    _chown_to_host_user(abs_path)
 
 
 def delete_dir(relative_path: str):

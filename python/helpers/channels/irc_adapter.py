@@ -44,7 +44,7 @@ class IrcAdapter(ChannelBridge):
     def _send_raw(self, line: str) -> None:
         """Send a raw IRC line over the socket."""
         if hasattr(self, "_sock") and self._sock:
-            self._sock.sendall(f"{line}\r\n".encode("utf-8"))
+            self._sock.sendall(f"{line}\r\n".encode())
 
     async def send(self, target_id: str, text: str, **kwargs: Any) -> dict[str, Any]:
         if not hasattr(self, "_sock") or not self._sock:
@@ -59,7 +59,8 @@ class IrcAdapter(ChannelBridge):
 
     async def verify_webhook(self, headers: dict[str, str], body: bytes) -> bool:
         # IRC does not use webhooks; messages arrive via persistent socket.
-        return True
+        # Return False to block webhook route — IRC messages arrive via socket.
+        return False
 
     async def connect(self) -> None:
         server = self.config.get("irc_server", "")
@@ -89,7 +90,7 @@ class IrcAdapter(ChannelBridge):
                 for line in data.split("\r\n"):
                     if line.startswith("PING"):
                         self._send_raw(f"PONG {line[5:]}")
-            except socket.timeout:
+            except TimeoutError:
                 pass
             # Join configured channels
             if isinstance(channels, str):
