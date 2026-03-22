@@ -5,13 +5,14 @@ from __future__ import annotations
 import re
 from typing import Any
 
-ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "help", "digest", "sync"}
+ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "newtask", "help", "digest", "sync"}
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 
 /status — Cross-system status (portfolio + tasks + workflows)
 /project <name> — Project details and lifecycle
 /tasks — Active Linear issues
+/newtask <title> — Create a new task in Linear
 /digest — Today's digest
 /sync — Sync projects from platform into portfolio
 /help — This message
@@ -52,6 +53,14 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
         return (
             "Search Linear for my active issues. Show me what's in progress, "
             "what's upcoming, and anything that's blocked or overdue."
+        )
+    if cmd == "newtask":
+        if not args.strip():
+            return "I need a title for the new task. Ask me what I'd like to create."
+        return (
+            f"Create a new issue in Linear with the title: '{args.strip()}'. "
+            f"Use the default team. Set priority to medium unless the title suggests urgency. "
+            f"After creating it, confirm the issue ID and title."
         )
     if cmd == "digest":
         return "Build me a digest of today's activity across all systems."
