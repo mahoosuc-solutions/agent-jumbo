@@ -70,7 +70,23 @@ class MotionDatabase(SyncLogMixin):
 
     # ── Task cache ───────────────────────────────────────────────────
 
+    @staticmethod
+    def _str_field(value: Any) -> str:
+        """Coerce a field to a string safe for SQLite binding.
+
+        Motion API sometimes returns dicts/lists for fields like ``status``
+        (e.g. ``{"name": "Auto-Scheduled", "isDefaultStatus": true}``).
+        SQLite parameterised queries reject non-scalar types, so we
+        serialise anything that isn't already a str/int/float/None.
+        """
+        if value is None:
+            return ""
+        if isinstance(value, (dict, list)):
+            return json.dumps(value)
+        return str(value)
+
     def upsert_task(self, task: dict[str, Any]) -> None:
+        sf = self._str_field
         with self.db.transaction() as conn:
             conn.execute(
                 """
@@ -81,20 +97,20 @@ class MotionDatabase(SyncLogMixin):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
                 """,
                 (
-                    task.get("id", ""),
-                    task.get("name", ""),
-                    task.get("description", ""),
-                    task.get("priority", "MEDIUM"),
-                    task.get("status", ""),
+                    sf(task.get("id", "")),
+                    sf(task.get("name", "")),
+                    sf(task.get("description", "")),
+                    sf(task.get("priority", "MEDIUM")),
+                    sf(task.get("status", "")),
                     task.get("duration"),
-                    task.get("dueDate", ""),
-                    task.get("workspaceId", task.get("workspace_id", "")),
-                    task.get("projectId", task.get("project_id", "")),
-                    task.get("scheduledStart", ""),
-                    task.get("scheduledEnd", ""),
+                    sf(task.get("dueDate", "")),
+                    sf(task.get("workspaceId", task.get("workspace_id", ""))),
+                    sf(task.get("projectId", task.get("project_id", ""))),
+                    sf(task.get("scheduledStart", "")),
+                    sf(task.get("scheduledEnd", "")),
                     json.dumps(task.get("labels", [])),
-                    task.get("createdAt", task.get("created_at", "")),
-                    task.get("updatedAt", task.get("updated_at", "")),
+                    sf(task.get("createdAt", task.get("created_at", ""))),
+                    sf(task.get("updatedAt", task.get("updated_at", ""))),
                 ),
             )
 

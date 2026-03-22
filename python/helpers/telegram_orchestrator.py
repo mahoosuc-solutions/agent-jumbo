@@ -5,7 +5,7 @@ from __future__ import annotations
 import re
 from typing import Any
 
-ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "newtask", "help", "digest", "sync"}
+ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "newtask", "help", "digest", "sync", "deadletters"}
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 
@@ -15,6 +15,7 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /newtask <title> — Create a new task in Linear
 /digest — Today's digest
 /sync — Sync projects from platform into portfolio
+/deadletters — Dead-letter queue summary
 /help — This message
 /new — Reset conversation
 
@@ -69,6 +70,13 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
             "Sync projects from the platform into the portfolio. "
             "Run the portfolio sync to pull in any new or updated projects, "
             "then show me the portfolio dashboard."
+        )
+    if cmd == "deadletters":
+        return (
+            "Check the dead-letter queue at logs/dead_letters.jsonl. "
+            "Read the file and summarize: how many dead letters, most recent errors, "
+            "and which channels are affected. If the file doesn't exist or is empty, "
+            "report that the queue is clear."
         )
     return ""
 

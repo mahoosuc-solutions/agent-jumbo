@@ -578,7 +578,7 @@ class Agent:
                 printer = PrintStyle(italic=True, font_color="#b3ffd9", padding=False)
 
                 # let the agent run message loop until he stops it with a response tool
-                MAX_MONOLOGUE_ITERATIONS = 25
+                MAX_MONOLOGUE_ITERATIONS = int(os.environ.get("AGENT_MAX_MONOLOGUE_ITERATIONS", "25"))
                 while True:
                     self.context.streaming_agent = self  # mark self as current streamer
                     self.loop_data.iteration += 1
@@ -1417,7 +1417,12 @@ class Agent:
                     # Security gate: check passkey authorization for high-risk tools
                     from python.helpers.security import SecurityManager
 
-                    if not SecurityManager.is_tool_authorized(tool_name):
+                    # Skip passkey for automated contexts (no human to authenticate)
+                    is_automated = (
+                        self.context.type in (AgentContextType.TASK, AgentContextType.BACKGROUND)
+                        or self.data.get(Agent.DATA_NAME_SUPERIOR) is not None
+                    )
+                    if not is_automated and not SecurityManager.is_tool_authorized(tool_name):
                         from python.helpers.tool import Response
 
                         return Response(

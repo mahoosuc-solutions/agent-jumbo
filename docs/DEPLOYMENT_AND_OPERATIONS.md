@@ -286,6 +286,31 @@ vault kv put secret/agent-jumbo/prod \
 export $(vault kv get -format=env secret/agent-jumbo/prod)
 ```
 
+### Docker File Ownership
+
+When running Agent Jumbo inside Docker, files created by the container (logs, SQLite databases, knowledge base artifacts) default to `root:root` ownership. This makes them difficult to manage from the host and can cause permission errors when bind-mounting volumes.
+
+Set `FILE_OWNER_UID` and `FILE_OWNER_GID` in your `.env` to match your host user:
+
+```bash
+# Find your host UID/GID
+id -u   # e.g. 1000
+id -g   # e.g. 1000
+
+# Add to .env
+FILE_OWNER_UID=1000
+FILE_OWNER_GID=1000
+```
+
+The entrypoint script calls `chown` on critical directories (`logs/`, `memory/`, `knowledge/`, `instruments/*/data/`) at startup, ensuring the container process and your host user can both read and write the same files.
+
+**When to set these variables**:
+
+- **Docker Compose / bind mounts**: Always set them to your host UID/GID.
+- **Rootless Docker / Podman**: Set to the UID/GID inside the user namespace (usually `0` or `1000`).
+- **Kubernetes**: Prefer `securityContext.runAsUser` / `fsGroup` in the pod spec instead; leave `FILE_OWNER_UID`/`FILE_OWNER_GID` unset.
+- **Bare-metal (no Docker)**: Not needed — the process already runs as your user.
+
 ---
 
 ## Monitoring & Observability

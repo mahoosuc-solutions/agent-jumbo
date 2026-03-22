@@ -76,6 +76,25 @@ def _check_disk() -> dict:
         return {"status": "error", "free_mb": 0, "detail": f"Disk check failed: {e!s}"}
 
 
+def _check_dead_letters() -> dict:
+    """Count entries in the dead-letter log."""
+    try:
+        dl_path = get_abs_path("logs/dead_letters.jsonl")
+        if not os.path.isfile(dl_path):
+            return {"status": "ok", "count": 0}
+        with open(dl_path, encoding="utf-8") as fh:
+            count = sum(1 for line in fh if line.strip())
+        if count > 0:
+            return {
+                "status": "warning",
+                "count": count,
+                "detail": f"{count} dead letter(s) pending review",
+            }
+        return {"status": "ok", "count": 0}
+    except Exception as e:
+        return {"status": "error", "count": 0, "detail": f"Dead-letter check failed: {e!s}"}
+
+
 def _overall_status(checks: dict) -> str:
     """Derive overall status from individual check results."""
     statuses = {c.get("status") for c in checks.values()}
@@ -103,6 +122,7 @@ class HealthCheck(ApiHandler):
                 databases: SQLite connectivity
                 redis:     Redis connectivity (or not_configured)
                 disk:      Free disk space
+                dead_letters: Dead-letter queue count
         """
         router = get_router()
         providers = input.get("providers")
@@ -124,6 +144,9 @@ class HealthCheck(ApiHandler):
 
         # 4. Disk space
         checks["disk"] = _check_disk()
+
+        # 5. Dead-letter queue
+        checks["dead_letters"] = _check_dead_letters()
 
         return {
             "status": _overall_status(checks),
