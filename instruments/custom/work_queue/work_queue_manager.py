@@ -316,21 +316,38 @@ class WorkQueueManager:
 
         try:
             from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
+            from python.helpers import files
 
-            wf_manager = WorkflowEngineManager()
+            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
+            wf_manager = WorkflowEngineManager(db_path)
+
+            context = {
+                "work_item_id": item_id,
+                "title": item["title"],
+                "description": item.get("description", ""),
+                "file_path": item.get("file_path", ""),
+                "line_number": item.get("line_number"),
+                "project_path": item.get("project_path", ""),
+                "source": item.get("source", ""),
+                "source_type": item.get("source_type", ""),
+            }
+
             execution = wf_manager.start_workflow(
-                template_name="work_item_implementation",
-                context={
-                    "work_item_id": item_id,
-                    "title": item["title"],
-                    "description": item.get("description", ""),
-                    "file_path": item.get("file_path", ""),
-                    "line_number": item.get("line_number"),
-                    "project_path": item.get("project_path", ""),
-                    "source": item.get("source", ""),
-                    "source_type": item.get("source_type", ""),
-                },
+                workflow_name="work_item_implementation",
+                context=context,
             )
+
+            if "error" in execution:
+                # Workflow doesn't exist yet — proceed without it
+                import logging
+
+                logging.getLogger(__name__).warning(
+                    "Workflow 'work_item_implementation' not found, executing without workflow tracking"
+                )
+                self.db.update_item(item_id, {"status": "in_progress"})
+                self.db.update_item_status(item_id, "in_progress")
+                return {"success": True, "item_id": item_id, "workflow": False}
+
             execution_id = execution.get("id") or execution.get("execution_id")
             self.db.update_item(
                 item_id,

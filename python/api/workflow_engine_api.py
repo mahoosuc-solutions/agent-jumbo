@@ -90,18 +90,6 @@ class WorkflowEngineApi(ApiHandler):
                     "status": status,
                 }
 
-            elif action == "visualize_gantt":
-                workflow_id = input.get("workflow_id")
-                name = input.get("name")
-                start_date = input.get("start_date")
-
-                workflow = manager.get_workflow(workflow_id=workflow_id, name=name)
-                if not workflow:
-                    return {"success": False, "error": "Workflow not found"}
-
-                gantt = visualizer.generate_gantt(workflow, start_date)
-                return {"success": True, "diagram": gantt}
-
             elif action == "visualize_tasks":
                 workflow_id = input.get("workflow_id")
                 stage_id = input.get("stage_id")
@@ -129,12 +117,6 @@ class WorkflowEngineApi(ApiHandler):
 
                 diagram = visualizer.generate_task_diagram(stage, task_status)
                 return {"success": True, "diagram": diagram}
-
-            elif action == "get_dashboard":
-                stats = manager.get_stats()
-                recent = manager.get_recent_executions(limit=5)
-                dashboard = visualizer.generate_dashboard(stats, recent)
-                return {"success": True, "dashboard": dashboard}
 
             else:
                 return {"success": False, "error": f"Unknown action: {action}"}

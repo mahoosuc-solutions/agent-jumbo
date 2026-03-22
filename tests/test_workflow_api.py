@@ -315,29 +315,6 @@ class TestWorkflowEngineApi:
         assert "required" in result["error"].lower()
 
     @pytest.mark.asyncio
-    async def test_visualize_gantt(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
-        """Test Gantt chart visualization"""
-        from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
-        from python.api.workflow_engine_api import WorkflowEngineApi
-
-        manager = WorkflowEngineManager(temp_db_path)
-        wf = manager.create_workflow(
-            name="Gantt Test",
-            stages=[
-                {"id": "phase1", "name": "Phase 1", "duration_days": 7},
-                {"id": "phase2", "name": "Phase 2", "duration_days": 14},
-            ],
-        )
-
-        handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({"action": "visualize_gantt", "workflow_id": wf["workflow_id"]}, MockRequest())
-
-        assert result["success"] is True
-        assert "diagram" in result
-        assert "gantt" in result["diagram"]
-        assert "Phase 1" in result["diagram"]
-
-    @pytest.mark.asyncio
     async def test_visualize_tasks(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
         """Test task diagram visualization"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
@@ -386,22 +363,6 @@ class TestWorkflowEngineApi:
 
         assert result["success"] is False
         assert "not found" in result["error"].lower()
-
-    @pytest.mark.asyncio
-    async def test_get_dashboard(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
-        """Test get_dashboard action"""
-        from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
-        from python.api.workflow_engine_api import WorkflowEngineApi
-
-        manager = WorkflowEngineManager(temp_db_path)
-        manager.create_workflow(name="Dashboard WF", stages=[{"id": "s1", "name": "S1"}])
-
-        handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
-        result = await handler.process({"action": "get_dashboard"}, MockRequest())
-
-        assert result["success"] is True
-        assert "dashboard" in result
-        assert "WORKFLOW ENGINE DASHBOARD" in result["dashboard"]
 
     @pytest.mark.asyncio
     async def test_unknown_action(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):
@@ -693,8 +654,8 @@ class TestWorkflowTrainingApi:
         result = await handler.process({"action": "training_dashboard"}, MockRequest())
 
         assert result["success"] is True
-        assert "dashboard" in result
-        assert "WORKFLOW ENGINE DASHBOARD" in result["dashboard"]
+        assert "stats" in result
+        assert "top_skills" in result
 
     @pytest.mark.asyncio
     async def test_unknown_action(self, mock_files_get_abs_path, mock_flask_app, mock_thread_lock):

@@ -107,8 +107,7 @@ class WorkflowTrainingApi(ApiHandler):
             elif action == "training_dashboard":
                 stats = manager.get_stats()
                 skills = manager.get_top_skills(limit=5)
-                dashboard = visualizer.generate_dashboard(stats, skills=skills)
-                return {"success": True, "dashboard": dashboard}
+                return {"success": True, "stats": stats, "top_skills": skills}
 
             else:
                 return {"success": False, "error": f"Unknown action: {action}"}

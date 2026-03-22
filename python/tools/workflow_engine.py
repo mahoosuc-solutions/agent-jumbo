@@ -71,9 +71,6 @@ class WorkflowEngine(Tool):
             "visualize_workflow": self._visualize_workflow,
             "visualize_progress": self._visualize_progress,
             "visualize_tasks": self._visualize_tasks,
-            "visualize_timeline": self._visualize_timeline,
-            "visualize_gantt": self._visualize_gantt,
-            "dashboard": self._dashboard,
         }
 
         handler = action_map.get(action)
@@ -432,52 +429,6 @@ class WorkflowEngine(Tool):
 
         return Response(message=f"## Tasks: {stage['name']}\n\n{diagram}", break_loop=False)
 
-    async def _visualize_timeline(self):
-        """Visualize execution timeline"""
-        from instruments.custom.workflow_engine.workflow_visualizer import WorkflowVisualizer
-
-        visualizer = WorkflowVisualizer()
-
-        execution_id = self.args.get("execution_id")
-        execution = self.manager.db.get_execution(execution_id)
-
-        if not execution:
-            return Response(message="**Error:** Execution not found", break_loop=False)
-
-        events = self.manager.get_execution_events(execution_id)
-        timeline = visualizer.generate_timeline(execution, events)
-
-        return Response(message=f"## Execution Timeline\n\n{timeline}", break_loop=False)
-
-    async def _visualize_gantt(self):
-        """Generate Gantt chart for workflow"""
-        from instruments.custom.workflow_engine.workflow_visualizer import WorkflowVisualizer
-
-        visualizer = WorkflowVisualizer()
-
-        workflow = self.manager.get_workflow(workflow_id=self.args.get("workflow_id"), name=self.args.get("name"))
-
-        if "error" in workflow:
-            return Response(message=f"**Error:** {workflow['error']}", break_loop=False)
-
-        gantt = visualizer.generate_gantt(workflow, start_date=self.args.get("start_date"))
-
-        return Response(message=f"## Gantt Chart: {workflow['name']}\n\n{gantt}", break_loop=False)
-
-    async def _dashboard(self):
-        """Generate comprehensive dashboard"""
-        from instruments.custom.workflow_engine.workflow_visualizer import WorkflowVisualizer
-
-        visualizer = WorkflowVisualizer()
-
-        stats = self.manager.get_stats()
-        recent = self.manager.get_execution_history(limit=5)
-        skills = self.manager.get_agent_skills(agent_id=self.args.get("agent_id", "default"))
-
-        dashboard = visualizer.generate_dashboard(stats, recent, skills)
-
-        return Response(message=dashboard, break_loop=False)
-
     # ========== Formatting Helpers ==========
 
     def _format_result(self, result: dict, title: str) -> str:
@@ -626,7 +577,4 @@ Orchestrate structured workflows with stages, gates, and training paths.
 - `visualize_workflow` - Generate workflow diagram (Mermaid)
 - `visualize_progress` - Visualize stage progress
 - `visualize_tasks` - Visualize task dependencies
-- `visualize_timeline` - Execution timeline
-- `visualize_gantt` - Generate Gantt chart
-- `dashboard` - Comprehensive dashboard view
 """

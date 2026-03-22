@@ -3,8 +3,6 @@ Workflow Visualizer - Generate visual representations of workflows and progress
 Creates Mermaid diagrams, ASCII art, and progress visualizations
 """
 
-from datetime import datetime
-
 
 class WorkflowVisualizer:
     """Generate visual representations of workflows and progress"""
@@ -208,35 +206,6 @@ class WorkflowVisualizer:
 
         return "\n".join(lines)
 
-    def generate_timeline(self, execution: dict, events: list) -> str:
-        """Generate execution timeline visualization"""
-        lines = ["```", "Timeline"]
-        lines.append("─" * 50)
-
-        for event in events:
-            ts = event.get("timestamp", "")[:19]
-            event_type = event.get("event_type", "unknown")
-            stage = event.get("stage_id", "")
-            task = event.get("task_id", "")
-
-            icon = {
-                "execution_started": "🚀",
-                "stage_updated": "📍",
-                "task_updated": "✏️",
-                "execution_completed": "🏁",
-            }.get(event_type, "•")
-
-            location = stage
-            if task:
-                location = f"{stage}/{task}"
-
-            lines.append(f"  {ts}  {icon}  {event_type}")
-            if location:
-                lines.append(f"                  └─ {location}")
-
-        lines.append("```")
-        return "\n".join(lines)
-
     # ========== Skill Visualization ==========
 
     def generate_skill_chart(self, skills: list) -> str:
@@ -262,136 +231,6 @@ class WorkflowVisualizer:
 
                 bar = "★" * level + "☆" * (5 - level)
                 lines.append(f"  {name[:20]:<20} {bar} ({completions})")
-
-        lines.append("```")
-        return "\n".join(lines)
-
-    def generate_learning_path_map(self, path: dict, progress: dict | None = None) -> str:
-        """Generate learning path visualization"""
-        modules = path.get("modules", [])
-        completed = progress.get("modules_completed", []) if progress else []
-
-        lines = ["```mermaid", "flowchart TD"]
-
-        # Define module nodes
-        for mod in modules:
-            mod_id = mod.get("module_id", mod.get("id"))
-            required = "🔒" if mod.get("required", True) else "📖"
-            status = "✓" if mod_id in completed else ""
-
-            style = "completed" if mod_id in completed else "pending"
-            lines.append(f"    {mod_id}[{required} {mod_id} {status}]:::{style}")
-
-        lines.append("")
-
-        # Build prerequisite graph
-        start_modules = []
-        for mod in modules:
-            mod_id = mod.get("module_id", mod.get("id"))
-            prereqs = mod.get("prerequisites", [])
-
-            if not prereqs:
-                start_modules.append(mod_id)
-            else:
-                for prereq in prereqs:
-                    lines.append(f"    {prereq} --> {mod_id}")
-
-        # Certification node
-        if path.get("certification"):
-            cert_name = path["certification"].get("name", "Certification")
-            lines.append(f"    cert{{🏆 {cert_name}}}")
-            for mod in modules:
-                if mod.get("required", True):
-                    lines.append(f"    {mod.get('module_id', mod.get('id'))} -.-> cert")
-
-        # Styling
-        lines.append("")
-        lines.append("    classDef completed fill:#4CAF50,stroke:#2E7D32,color:#fff")
-        lines.append("    classDef pending fill:#E0E0E0,stroke:#9E9E9E")
-
-        lines.append("```")
-        return "\n".join(lines)
-
-    # ========== Dashboard Visualization ==========
-
-    def generate_dashboard(self, stats: dict, recent_executions: list | None = None, skills: list | None = None) -> str:
-        """Generate comprehensive dashboard visualization"""
-        lines = ["```"]
-        lines.append("╔══════════════════════════════════════════════════════════════╗")
-        lines.append("║            WORKFLOW ENGINE DASHBOARD                         ║")
-        lines.append("╠══════════════════════════════════════════════════════════════╣")
-
-        # Stats section
-        workflows = stats.get("total_workflows", 0)
-        templates = stats.get("workflow_templates", 0)
-        executions = stats.get("total_executions", 0)
-        skills_count = stats.get("total_skills", 0)
-        paths = stats.get("total_learning_paths", 0)
-
-        lines.append(f"║  Workflows: {workflows:<8}  Templates: {templates:<8}  Executions: {executions:<8}  ║")
-        lines.append(f"║  Skills: {skills_count:<10}  Learning Paths: {paths:<22}     ║")
-
-        # Execution status breakdown
-        by_status = stats.get("executions_by_status", {})
-        if by_status:
-            lines.append("╠══════════════════════════════════════════════════════════════╣")
-            lines.append("║  Execution Status                                            ║")
-            status_str = "  ".join([f"{s}: {c}" for s, c in by_status.items()])
-            lines.append(f"║  {status_str:<60} ║")
-
-        # Recent executions
-        if recent_executions:
-            lines.append("╠══════════════════════════════════════════════════════════════╣")
-            lines.append("║  Recent Executions                                           ║")
-            for exec in recent_executions[:3]:
-                name = exec.get("name", exec.get("workflow_name", "Unknown"))[:30]
-                status = exec.get("status", "unknown")
-                icon = {"completed": "✓", "running": "▶", "failed": "✗"}.get(status, "○")
-                lines.append(f"║  {icon} {name:<56} ║")
-
-        # Top skills
-        if skills:
-            lines.append("╠══════════════════════════════════════════════════════════════╣")
-            lines.append("║  Top Skills                                                  ║")
-            for skill in sorted(skills, key=lambda x: -(x.get("current_level") or 0))[:3]:
-                name = skill.get("name", skill.get("skill_id", "Unknown"))[:25]
-                level = skill.get("current_level") or 1
-                bar = "★" * level + "☆" * (5 - level)
-                lines.append(f"║  {name:<25} {bar}                          ║")
-
-        lines.append("╚══════════════════════════════════════════════════════════════╝")
-        lines.append("```")
-        return "\n".join(lines)
-
-    # ========== Gantt Chart ==========
-
-    def generate_gantt(self, workflow: dict, start_date: str | None = None) -> str:
-        """Generate Mermaid Gantt chart for workflow"""
-        definition = workflow.get("definition", workflow)
-        stages = definition.get("stages", [])
-
-        if not start_date:
-            start_date = datetime.now().strftime("%Y-%m-%d")
-
-        lines = ["```mermaid", "gantt"]
-        lines.append(f"    title {definition.get('name', 'Workflow')} Timeline")
-        lines.append("    dateFormat YYYY-MM-DD")
-        lines.append("")
-
-        for stage in stages:
-            stage_name = stage["name"]
-            stage.get("type", "custom")
-            duration = stage.get("duration_days", 7)
-
-            lines.append(f"    section {stage_name}")
-
-            tasks = stage.get("tasks", [])
-            if tasks:
-                for task in tasks:
-                    task_name = task["name"]
-                    lines.append(f"    {task_name} :a{task['id']}, {duration}d")
-            else:
-                lines.append(f"    {stage_name} work :s{stage['id']}, {duration}d")
 
         lines.append("```")
         return "\n".join(lines)

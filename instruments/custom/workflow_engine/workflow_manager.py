@@ -10,8 +10,6 @@ from pathlib import Path
 
 import jsonschema
 
-from python.helpers.datetime_utils import isoformat_z, utc_now
-
 from .workflow_db import WorkflowEngineDatabase
 
 
@@ -444,41 +442,21 @@ class WorkflowEngineManager:
             execution_id=execution_id, stage_id=stage_id, task_id=task_id, status="completed", output_data=output_data
         )
 
-        # Check for audit metadata in task config
+        # Record audit event in DB if task has auditing enabled
         task_config = self._get_task_config(execution_id, stage_id, task_id)
         if task_config and task_config.get("metadata", {}).get("auditing") == "enabled":
-            self._record_task_audit(execution_id, stage_id, task_id, task_config, output_data)
+            self.db.save_event(
+                execution_id=execution_id,
+                event_type="audit",
+                stage_id=stage_id,
+                task_id=task_id,
+                data={
+                    "action": task_config.get("action", "manual_task"),
+                    "output_summary": output_data,
+                },
+            )
 
         return {"status": "completed", "task_id": task_id, "output": output_data}
-
-    def _record_task_audit(self, execution_id: int, stage_id: str, task_id: str, task_config: dict, output_data: dict):
-        """Record a business-level audit event for a task"""
-        metadata = task_config.get("metadata", {})
-        audit_file = metadata.get("audit_log", "logs/workflow_audit.csv")
-
-        # Ensure log directory exists
-        os.makedirs(os.path.dirname(audit_file), exist_ok=True)
-
-        timestamp = isoformat_z(utc_now())
-        action = task_config.get("action", "manual_task")
-
-        # Simple CSV logging for auditing
-        file_exists = os.path.isfile(audit_file)
-        with open(audit_file, "a") as f:
-            if not file_exists:
-                f.write("timestamp,execution_id,stage_id,task_id,action,summary\n")
-
-            summary = str(output_data).replace('"', '""').replace("\n", " ")
-            f.write(f'"{timestamp}","{execution_id}","{stage_id}","{task_id}","{action}","{summary}"\n')
-
-        # Also store in workflow_events DB
-        self.db.save_event(
-            execution_id=execution_id,
-            event_type="audit",
-            stage_id=stage_id,
-            task_id=task_id,
-            data={"action": action, "metadata": metadata, "output_summary": output_data},
-        )
 
     def fail_task(self, execution_id: int, stage_id: str, task_id: str, error: str, retry: bool = False) -> dict:
         """Mark a task as failed"""
@@ -597,19 +575,6 @@ class WorkflowEngineManager:
                         )
                 except Exception:
                     pass
-
-        # Also list DB templates
-        db_templates = self.db.list_workflows(templates_only=True)
-        for t in db_templates:
-            templates.append(
-                {
-                    "id": t["name"],
-                    "name": t["name"],
-                    "description": t["description"],
-                    "workflow_id": t["workflow_id"],
-                    "source": "database",
-                }
-            )
 
         return templates
 
