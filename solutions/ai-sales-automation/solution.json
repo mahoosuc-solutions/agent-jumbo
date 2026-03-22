@@ -1,0 +1,46 @@
+{
+  "name": "AI Sales Automation",
+  "slug": "ai-sales-automation",
+  "version": "1.0.0",
+  "category": "revenue",
+  "tier": "enterprise",
+  "tagline": "Accelerate your pipeline from lead to close with AI-driven sales ops",
+  "description": "Full-cycle sales automation platform with four AI agents managing lead qualification, proposal generation, pipeline tracking, and follow-up sequencing. Integrates with your CRM, project management, email, and payment systems to create a seamless revenue engine. Scores leads in real-time, generates tailored proposals, and automates multi-touch follow-up campaigns.",
+  "pricing": {
+    "one_time_setup": 4000,
+    "monthly": 900,
+    "annual_discount_pct": 10
+  },
+  "instruments_required": [
+    "customer_lifecycle",
+    "sales_generator"
+  ],
+  "tools_required": [
+    "linear_integration",
+    "email",
+    "stripe_payments"
+  ],
+  "integrations": [
+    "crm_sync",
+    "linear_project_management",
+    "email_sequences",
+    "stripe_invoicing",
+    "calendar_booking"
+  ],
+  "complexity": "high",
+  "deployment_time_days": 10,
+  "ai_agents_included": 4,
+  "prerequisites": [
+    "CRM with API access (or customer spreadsheet for migration)",
+    "Email domain with sending capabilities",
+    "Linear workspace (or willingness to adopt)",
+    "Stripe account for payment processing",
+    "Historical sales data for lead scoring model training"
+  ],
+  "demo_url": null,
+  "stripe_product_id": null,
+  "stripe_price_id": null,
+  "status": "draft",
+  "created_at": "2026-03-22T00:00:00Z",
+  "updated_at": "2026-03-22T00:00:00Z"
+}

@@ -1,0 +1,45 @@
+{
+  "name": "AI Customer Support",
+  "slug": "ai-customer-support",
+  "version": "1.0.0",
+  "category": "customer-experience",
+  "tier": "professional",
+  "tagline": "24/7 intelligent customer support across every channel",
+  "description": "AI-powered customer support platform with multi-channel routing across email, Telegram, and web chat. Three specialized AI agents handle triage, resolution, and escalation, ensuring fast response times and consistent service quality. Integrates with your existing knowledge base and CRM for context-aware responses.",
+  "pricing": {
+    "one_time_setup": 3500,
+    "monthly": 750,
+    "annual_discount_pct": 10
+  },
+  "instruments_required": [
+    "customer_lifecycle",
+    "knowledge_ingest"
+  ],
+  "tools_required": [
+    "email",
+    "telegram_send",
+    "virtual_team"
+  ],
+  "integrations": [
+    "email_inbox",
+    "telegram_bot",
+    "web_chat_widget",
+    "knowledge_base",
+    "crm_sync"
+  ],
+  "complexity": "high",
+  "deployment_time_days": 7,
+  "ai_agents_included": 3,
+  "prerequisites": [
+    "Active email domain with IMAP/SMTP access",
+    "Telegram Bot Token (via @BotFather)",
+    "Knowledge base content (FAQs, docs, or wiki)",
+    "Customer data source (CRM or database)"
+  ],
+  "demo_url": null,
+  "stripe_product_id": null,
+  "stripe_price_id": null,
+  "status": "draft",
+  "created_at": "2026-03-22T00:00:00Z",
+  "updated_at": "2026-03-22T00:00:00Z"
+}

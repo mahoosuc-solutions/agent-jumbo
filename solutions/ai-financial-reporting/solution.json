@@ -1,0 +1,43 @@
+{
+  "name": "AI Financial Reporting",
+  "slug": "ai-financial-reporting",
+  "version": "1.0.0",
+  "category": "finance",
+  "tier": "professional",
+  "tagline": "Automated financial insights, reporting, and tax-ready categorization",
+  "description": "AI-powered financial reporting solution that automates transaction categorization, generates periodic financial reports with visualizations, estimates tax liabilities, and performs ROI analysis across business units. A single specialized financial analyst agent processes raw transaction data and produces executive-ready reports delivered via email on a configurable schedule.",
+  "pricing": {
+    "one_time_setup": 3000,
+    "monthly": 600,
+    "annual_discount_pct": 10
+  },
+  "instruments_required": [
+    "finance_manager"
+  ],
+  "tools_required": [
+    "diagram_architect",
+    "code_execution_tool",
+    "email"
+  ],
+  "integrations": [
+    "bank_feed_api",
+    "accounting_software_sync",
+    "email_report_delivery",
+    "dashboard_embed"
+  ],
+  "complexity": "medium",
+  "deployment_time_days": 5,
+  "ai_agents_included": 1,
+  "prerequisites": [
+    "Bank account or payment processor with transaction export (CSV, OFX, or API)",
+    "Chart of accounts or category taxonomy",
+    "Email distribution list for report recipients",
+    "Historical transaction data (minimum 3 months recommended)"
+  ],
+  "demo_url": null,
+  "stripe_product_id": null,
+  "stripe_price_id": null,
+  "status": "draft",
+  "created_at": "2026-03-22T00:00:00Z",
+  "updated_at": "2026-03-22T00:00:00Z"
+}

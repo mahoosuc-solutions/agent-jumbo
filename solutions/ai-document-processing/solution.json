@@ -1,0 +1,44 @@
+{
+  "name": "AI Document Processing",
+  "slug": "ai-document-processing",
+  "version": "1.0.0",
+  "category": "operations",
+  "tier": "professional",
+  "tagline": "Transform unstructured documents into structured, actionable data",
+  "description": "End-to-end document processing pipeline that ingests documents from multiple sources, classifies them by type and priority, extracts structured data using AI, and triggers downstream workflows. Handles invoices, contracts, forms, correspondence, and custom document types with configurable extraction schemas.",
+  "pricing": {
+    "one_time_setup": 5000,
+    "monthly": 1200,
+    "annual_discount_pct": 10
+  },
+  "instruments_required": [
+    "knowledge_ingest",
+    "workflow_engine"
+  ],
+  "tools_required": [
+    "code_execution_tool",
+    "document_query"
+  ],
+  "integrations": [
+    "file_upload_api",
+    "email_attachment_ingestion",
+    "cloud_storage_sync",
+    "webhook_output",
+    "database_export"
+  ],
+  "complexity": "high",
+  "deployment_time_days": 10,
+  "ai_agents_included": 2,
+  "prerequisites": [
+    "Sample documents for each document type (minimum 20 per type)",
+    "Extraction schema definitions (fields to extract per document type)",
+    "Output destination (database, API, or webhook endpoint)",
+    "Cloud storage bucket for document archival"
+  ],
+  "demo_url": null,
+  "stripe_product_id": null,
+  "stripe_price_id": null,
+  "status": "draft",
+  "created_at": "2026-03-22T00:00:00Z",
+  "updated_at": "2026-03-22T00:00:00Z"
+}

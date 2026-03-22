@@ -17,6 +17,8 @@ ORCHESTRATOR_COMMANDS = {
     "payments",
     "revenue",
     "invoices",
+    "solutions",
+    "solution",
 }
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
@@ -31,6 +33,8 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /payments — Stripe payments dashboard
 /revenue — Revenue report (MRR, ARR, growth)
 /invoices — Recent Stripe invoices
+/solutions — List available AI solutions with pricing
+/solution <name> — Solution details and architecture
 /help — This message
 /new — Reset conversation
 
@@ -105,6 +109,16 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
         )
     if cmd == "invoices":
         return "List recent Stripe invoices. Show status (draft, open, paid, void), amounts, and customer names."
+    if cmd == "solutions":
+        return (
+            "List all AI infrastructure solutions from the solution catalog. "
+            "Show name, category, pricing, and status for each."
+        )
+    if cmd == "solution":
+        return (
+            f"Get details for the AI solution '{args}'. Show the architecture, "
+            f"pricing, included agents, integrations, and deployment timeline."
+        )
     return ""
 
 

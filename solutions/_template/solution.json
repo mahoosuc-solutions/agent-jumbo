@@ -1,0 +1,27 @@
+{
+  "name": "",
+  "slug": "",
+  "version": "1.0.0",
+  "category": "",
+  "tier": "professional",
+  "tagline": "",
+  "description": "",
+  "pricing": {
+    "one_time_setup": 0,
+    "monthly": 0,
+    "annual_discount_pct": 10
+  },
+  "instruments_required": [],
+  "tools_required": [],
+  "integrations": [],
+  "complexity": "medium",
+  "deployment_time_days": 5,
+  "ai_agents_included": 1,
+  "prerequisites": [],
+  "demo_url": null,
+  "stripe_product_id": null,
+  "stripe_price_id": null,
+  "status": "draft",
+  "created_at": "",
+  "updated_at": ""
+}

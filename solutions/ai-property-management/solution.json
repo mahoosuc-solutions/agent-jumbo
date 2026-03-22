@@ -1,0 +1,46 @@
+{
+  "name": "AI Property Management",
+  "slug": "ai-property-management",
+  "version": "1.0.0",
+  "category": "real-estate",
+  "tier": "professional",
+  "tagline": "Automate tenant communications, maintenance, and financials for your rental portfolio",
+  "description": "Purpose-built AI solution for rental property operators. Two AI agents handle tenant communications (inquiries, lease reminders, rent collection) and maintenance coordination (work order creation, vendor dispatch, scheduling). Integrates with property management systems, calendars, and financial tools to provide a unified operations hub.",
+  "pricing": {
+    "one_time_setup": 2500,
+    "monthly": 500,
+    "annual_discount_pct": 10
+  },
+  "instruments_required": [
+    "property_manager",
+    "pms_hub",
+    "finance_manager"
+  ],
+  "tools_required": [
+    "calendar_hub",
+    "email"
+  ],
+  "integrations": [
+    "property_management_system",
+    "maintenance_vendor_api",
+    "tenant_portal",
+    "accounting_sync",
+    "calendar_scheduling"
+  ],
+  "complexity": "medium",
+  "deployment_time_days": 5,
+  "ai_agents_included": 2,
+  "prerequisites": [
+    "Property management system with API access (or property data export)",
+    "Tenant contact list with email addresses",
+    "Vendor/contractor contact list",
+    "Financial accounts for rent tracking",
+    "Calendar system for maintenance scheduling"
+  ],
+  "demo_url": null,
+  "stripe_product_id": null,
+  "stripe_price_id": null,
+  "status": "draft",
+  "created_at": "2026-03-22T00:00:00Z",
+  "updated_at": "2026-03-22T00:00:00Z"
+}
