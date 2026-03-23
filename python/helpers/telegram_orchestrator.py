@@ -19,6 +19,9 @@ ORCHESTRATOR_COMMANDS = {
     "invoices",
     "solutions",
     "solution",
+    "coordinate",
+    "providers",
+    "routing",
 }
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
@@ -35,6 +38,9 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /invoices — Recent Stripe invoices
 /solutions — List available AI solutions with pricing
 /solution <name> — Solution details and architecture
+/coordinate <task> — Multi-LLM coordinated execution
+/providers — Show LLM provider health and availability
+/routing — Show active LLM routing configuration
 /help — This message
 /new — Reset conversation
 
@@ -118,6 +124,23 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
         return (
             f"Get details for the AI solution '{args}'. Show the architecture, "
             f"pricing, included agents, integrations, and deployment timeline."
+        )
+    if cmd == "coordinate":
+        if not args.strip():
+            return "I need a task description to coordinate. Ask me what I'd like to run."
+        return (
+            f"Use the coordinator tool with action 'dispatch' to execute this task "
+            f"with multi-LLM coordination: {args.strip()}"
+        )
+    if cmd == "providers":
+        return (
+            "Use the coordinator tool with action 'provider_health' to show the "
+            "current status of all available LLM providers."
+        )
+    if cmd == "routing":
+        return (
+            "Show the current LLM routing configuration. Which models are configured "
+            "for chat, utility, browser, and embedding roles? What routing rules are active?"
         )
     return ""
 
