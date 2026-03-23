@@ -414,9 +414,45 @@
         "task.completed"
       ],
       "icon_suggestion": "Compass with daily planner pages and habit tracker rings"
+    },
+    {
+      "slug": "outreach-ai",
+      "name": "OutReachAI",
+      "tagline": "Intelligent voice agents that qualify leads, handle objections, and close deals.",
+      "description": "OutReachAI automates outbound calls with intelligent voice agents that understand your products, handle objections, qualify leads using BANT methodology, and close deals — across SaaS, insurance, hospitality, and any industry vertical you configure.",
+      "audience": "business",
+      "instruments": [
+        "twilio_voice",
+        "google_voice",
+        "customer_lifecycle",
+        "sales_generator"
+      ],
+      "tools": [
+        "twilio_voice_call",
+        "google_voice_sms",
+        "customer_lifecycle",
+        "sales_generator",
+        "brand_voice"
+      ],
+      "repos": [
+        "remotemotel",
+        "front-desk"
+      ],
+      "integrations": [
+        "Twilio",
+        "Google Voice",
+        "Stripe",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.approval_required",
+        "task.completed"
+      ],
+      "icon_suggestion": "Phone handset with sound waves and a checkmark, representing automated voice conversations that convert"
     }
   ],
-  "naming_rationale": "Products follow three naming patterns: *Flow for process/workflow-oriented products (DevFlow, ArchitectFlow, OpsFlow, SalesFlow, HealthFlow), *Studio for creative/analysis tools (ContentStudio, PortfolioStudio), and *Bridge for integration hubs connecting external services (FinanceBridge, CommsBridge). Two products break the pattern intentionally: SecurityShield (evokes protection rather than process), AgentFoundry (evokes creation/forging of agents), PropertyHub (evokes a central property management hub), and LifeOS (mirrors the personal operating system metaphor). The 13 products cover all 36 instruments, 84+ tools, and 26 repos while staying within a digestible range.",
+  "naming_rationale": "Products follow three naming patterns: *Flow for process/workflow-oriented products (DevFlow, ArchitectFlow, OpsFlow, SalesFlow, HealthFlow), *Studio for creative/analysis tools (ContentStudio, PortfolioStudio), and *Bridge for integration hubs connecting external services (FinanceBridge, CommsBridge). Products that break the pattern do so intentionally: SecurityShield (evokes protection), AgentFoundry (evokes creation/forging), PropertyHub (evokes a central hub), LifeOS (mirrors the personal OS metaphor), and OutReachAI (evokes AI-powered outreach as a distinct product category). The 14 products cover all 36 instruments, 84+ tools, and 26 repos.",
   "interconnections": [
     {
       "from": "architect-flow",
@@ -489,6 +525,24 @@
       "to": "comms-bridge",
       "event": "task.assigned",
       "description": "Daily plan reminders and life event notifications are delivered through CommsBridge channels."
+    },
+    {
+      "from": "sales-flow",
+      "to": "outreach-ai",
+      "event": "task.assigned",
+      "description": "Qualified leads from SalesFlow are handed to OutReachAI for automated outbound voice campaigns."
+    },
+    {
+      "from": "outreach-ai",
+      "to": "comms-bridge",
+      "event": "task.assigned",
+      "description": "OutReachAI routes calls through CommsBridge voice infrastructure (Twilio, Google Voice)."
+    },
+    {
+      "from": "outreach-ai",
+      "to": "finance-bridge",
+      "event": "task.completed",
+      "description": "Closed deals from OutReachAI trigger payment setup and invoicing in FinanceBridge."
     }
   ]
 }

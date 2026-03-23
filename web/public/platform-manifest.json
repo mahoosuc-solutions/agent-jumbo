@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-23T03:37:52.717846+00:00",
+  "generated_at": "2026-03-23T06:14:53.874579+00:00",
   "platform": {
     "commands": {
       "total": 414,
@@ -27,17 +27,11 @@
       "telegram_orchestrator",
       "twilio_voice"
     ],
-    "helper_modules": 148
+    "helper_modules": 151
   },
   "github": {
-    "repos": 26,
-    "verticals": [
-      "ai-ops",
-      "communications",
-      "devops",
-      "hospitality",
-      "productivity"
-    ]
+    "repos": 0,
+    "verticals": []
   },
   "ag_mesh": {
     "event_types": [
@@ -472,6 +466,42 @@
         "task.completed"
       ],
       "icon_suggestion": "Compass with daily planner pages and habit tracker rings"
+    },
+    {
+      "slug": "outreach-ai",
+      "name": "OutReachAI",
+      "tagline": "Intelligent voice agents that qualify leads, handle objections, and close deals.",
+      "description": "OutReachAI automates outbound calls with intelligent voice agents that understand your products, handle objections, qualify leads using BANT methodology, and close deals \u2014 across SaaS, insurance, hospitality, and any industry vertical you configure.",
+      "audience": "business",
+      "instruments": [
+        "twilio_voice",
+        "google_voice",
+        "customer_lifecycle",
+        "sales_generator"
+      ],
+      "tools": [
+        "twilio_voice_call",
+        "google_voice_sms",
+        "customer_lifecycle",
+        "sales_generator",
+        "brand_voice"
+      ],
+      "repos": [
+        "remotemotel",
+        "front-desk"
+      ],
+      "integrations": [
+        "Twilio",
+        "Google Voice",
+        "Stripe",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.approval_required",
+        "task.completed"
+      ],
+      "icon_suggestion": "Phone handset with sound waves and a checkmark, representing automated voice conversations that convert"
     }
   ],
   "pricing": {
