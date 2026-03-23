@@ -35,9 +35,12 @@ export const FEATURES = [
 
 export const PUBLIC_NAVIGATION = [
   { label: 'Home', href: '/' },
+  { label: 'Platform', href: '/platform' },
+  { label: 'Solutions', href: '/solutions' },
+  { label: 'Portfolio', href: '/portfolio' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'Documentation', href: '/documentation' },
-  { label: 'Dashboard', href: '/overview' },
-  { label: 'GitHub', href: GITHUB_URL },
+  { label: 'Demo', href: '/demo' },
 ]
 
 export interface NavItem {
