@@ -55,6 +55,23 @@ class PromptEnhancer(Extension):
         "roi": "business_xray_tool",
         "business case": "business_xray_tool",
         "cost benefit": "business_xray_tool",
+        # Coordination keywords -> coordinator
+        "coordinate": "coordinator",
+        "parallel": "coordinator",
+        "multiple steps": "coordinator",
+        "concurrently": "coordinator",
+        "first then": "coordinator",
+        "research and write": "coordinator",
+        # Solution catalog keywords -> solution_catalog
+        "solution": "solution_catalog",
+        "solutions": "solution_catalog",
+        # Stripe/payment keywords -> stripe_payments
+        "payment": "stripe_payments",
+        "invoice": "stripe_payments",
+        "subscription": "stripe_payments",
+        "checkout": "stripe_payments",
+        "revenue": "stripe_payments",
+        "mrr": "stripe_payments",
     }
 
     async def execute(self, loop_data: LoopData = LoopData(), **kwargs):
