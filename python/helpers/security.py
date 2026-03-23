@@ -28,16 +28,26 @@ class SecurityManager:
     ENFORCE_PASSKEY = os.environ.get("SECURITY_ENFORCE_PASSKEY", "true").lower() != "false"
     STRICT_HARDWARE_ONLY = True  # Require hardware TPM/Secure Enclave
 
-    HIGH_RISK_TOOLS = [
-        "code_execution_tool",
-        "email",
-        "email_advanced",
-        "memory_delete",
-        "memory_forget",
-        "workflow_engine",
-        "run_in_terminal",
-        "cowork_approval",
-    ]
+    # HIGH_RISK_TOOLS unified with trust_system.TOOL_RISK_REGISTRY
+    @staticmethod
+    def _build_high_risk_tools() -> list[str]:
+        try:
+            from python.helpers.trust_system import TOOL_RISK_REGISTRY, ToolRisk
+
+            return [name for name, risk in TOOL_RISK_REGISTRY.items() if risk >= ToolRisk.HIGH]
+        except ImportError:
+            return [
+                "code_execution_tool",
+                "email",
+                "email_advanced",
+                "memory_delete",
+                "memory_forget",
+                "workflow_engine",
+                "run_in_terminal",
+                "cowork_approval",
+            ]
+
+    HIGH_RISK_TOOLS = _build_high_risk_tools()
     AUTH_WINDOW_SECONDS = 3600
 
     @classmethod

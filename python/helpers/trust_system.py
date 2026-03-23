@@ -83,6 +83,8 @@ TOOL_RISK_REGISTRY: dict[str, ToolRisk] = {
     "notify_user": ToolRisk.HIGH,
     "a2a_chat": ToolRisk.HIGH,
     "code_execution_tool": ToolRisk.HIGH,
+    "run_in_terminal": ToolRisk.HIGH,
+    "cowork_approval": ToolRisk.HIGH,
     "browser_agent": ToolRisk.HIGH,
     "visual_validation": ToolRisk.HIGH,
     "call_subordinate": ToolRisk.HIGH,

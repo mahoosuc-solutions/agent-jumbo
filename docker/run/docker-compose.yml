@@ -39,11 +39,23 @@ services:
   agent-jumbo:
     container_name: agent-jumbo
     image: agent-jumbo:latest
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
     volumes:
       - /mnt/wdblack/dev/projects/agent-jumbo:/aj      # Mount live project over /aj (app root)
       - agent_jumbo_data:/aj/data
       - agent_jumbo_venv:/opt/venv-a0                  # Persist venv across restarts
-      - /mnt/wdblack:/mnt/wdblack
+      - /mnt/wdblack:/mnt/wdblack:ro                   # Read-only host filesystem access
     ports:
       - "50080:80"
     cpus: "12.0"
