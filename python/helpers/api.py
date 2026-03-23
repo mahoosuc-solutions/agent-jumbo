@@ -3,7 +3,13 @@ import threading
 from abc import abstractmethod
 from typing import Any, TypedDict, Union
 
-from flask import Flask, Request, Response
+from flask import (  # noqa: F401 — re-exported for csrf_token.py, backup_create.py, image_get.py
+    Flask,
+    Request,
+    Response,
+    send_file,
+    session,
+)
 
 from agent import AgentContext
 from initialize import initialize_agent
