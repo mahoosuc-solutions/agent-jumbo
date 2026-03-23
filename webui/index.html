@@ -433,6 +433,37 @@
                                         </div>
                                     </div>
 
+                                    <!-- Task Templates -->
+                                    <div class="task-template-selector" x-show="isCreating">
+                                        <label class="scheduler-form-label">Start from template</label>
+                                        <div class="template-cards">
+                                            <div class="template-card" @click="applyTaskTemplate('blank')">
+                                                <div class="template-icon">&#x1F4DD;</div>
+                                                <div class="template-name">Blank Task</div>
+                                            </div>
+                                            <div class="template-card" @click="applyTaskTemplate('daily_digest')">
+                                                <div class="template-icon">&#x1F4CA;</div>
+                                                <div class="template-name">Daily Digest</div>
+                                            </div>
+                                            <div class="template-card" @click="applyTaskTemplate('status_check')">
+                                                <div class="template-icon">&#x1F50D;</div>
+                                                <div class="template-name">Status Check</div>
+                                            </div>
+                                            <div class="template-card" @click="applyTaskTemplate('portfolio_sync')">
+                                                <div class="template-icon">&#x1F504;</div>
+                                                <div class="template-name">Portfolio Sync</div>
+                                            </div>
+                                            <div class="template-card" @click="applyTaskTemplate('cleanup')">
+                                                <div class="template-icon">&#x1F9F9;</div>
+                                                <div class="template-name">Cleanup</div>
+                                            </div>
+                                            <div class="template-card" @click="applyTaskTemplate('report')">
+                                                <div class="template-icon">&#x1F4C8;</div>
+                                                <div class="template-name">Weekly Report</div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     <div class="scheduler-form-grid">
                                         <!-- Task Name -->
                                         <div class="scheduler-form-field">
@@ -531,7 +562,20 @@
                                                 <div class="scheduler-form-help">Cron schedule for automated execution
                                                     (minute hour day month weekday)</div>
                                             </div>
-                                            <div class="scheduler-schedule-builder">
+                                            <div class="scheduler-preset-selector">
+                                                <label class="scheduler-form-label">Quick Schedule</label>
+                                                <div class="scheduler-presets">
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('every_5min')" :class="{'active': isPresetActive('every_5min')}">Every 5 min</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('every_hour')" :class="{'active': isPresetActive('every_hour')}">Hourly</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('every_6hours')" :class="{'active': isPresetActive('every_6hours')}">Every 6h</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('daily_9am')" :class="{'active': isPresetActive('daily_9am')}">Daily 9am</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('daily_midnight')" :class="{'active': isPresetActive('daily_midnight')}">Daily midnight</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('weekdays_9am')" :class="{'active': isPresetActive('weekdays_9am')}">Weekdays 9am</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('weekly_monday')" :class="{'active': isPresetActive('weekly_monday')}">Weekly Mon</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('custom')" :class="{'active': isPresetActive('custom')}">Custom</button>
+                                                </div>
+                                            </div>
+                                            <div class="scheduler-schedule-builder" x-show="isPresetActive('custom')">
                                                 <div class="scheduler-schedule-field">
                                                     <span class="scheduler-schedule-label">Minute</span>
                                                     <input type="text" x-model="editingTask.schedule.minute"
@@ -557,6 +601,10 @@
                                                     <input type="text" x-model="editingTask.schedule.weekday"
                                                         placeholder="*" maxlength="9">
                                                 </div>
+                                            </div>
+                                            <div class="schedule-preview">
+                                                <span class="schedule-preview-label">Next run:</span>
+                                                <span class="schedule-preview-text" x-text="getScheduleDescription()"></span>
                                             </div>
                                         </div>
 
@@ -810,7 +858,20 @@
                                                 <div class="scheduler-form-help">Format: minute hour day month weekday
                                                     (e.g., "* * * * *" for every minute)</div>
                                             </div>
-                                            <div class="scheduler-schedule-builder">
+                                            <div class="scheduler-preset-selector">
+                                                <label class="scheduler-form-label">Quick Schedule</label>
+                                                <div class="scheduler-presets">
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('every_5min')" :class="{'active': isPresetActive('every_5min')}">Every 5 min</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('every_hour')" :class="{'active': isPresetActive('every_hour')}">Hourly</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('every_6hours')" :class="{'active': isPresetActive('every_6hours')}">Every 6h</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('daily_9am')" :class="{'active': isPresetActive('daily_9am')}">Daily 9am</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('daily_midnight')" :class="{'active': isPresetActive('daily_midnight')}">Daily midnight</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('weekdays_9am')" :class="{'active': isPresetActive('weekdays_9am')}">Weekdays 9am</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('weekly_monday')" :class="{'active': isPresetActive('weekly_monday')}">Weekly Mon</button>
+                                                    <button type="button" class="preset-btn" @click="applySchedulePreset('custom')" :class="{'active': isPresetActive('custom')}">Custom</button>
+                                                </div>
+                                            </div>
+                                            <div class="scheduler-schedule-builder" x-show="isPresetActive('custom')">
                                                 <div class="scheduler-schedule-field">
                                                     <span class="scheduler-schedule-label">Minute</span>
                                                     <input type="text" x-model="editingTask.schedule.minute"
@@ -836,6 +897,10 @@
                                                     <input type="text" x-model="editingTask.schedule.weekday"
                                                         placeholder="*" maxlength="9">
                                                 </div>
+                                            </div>
+                                            <div class="schedule-preview">
+                                                <span class="schedule-preview-label">Next run:</span>
+                                                <span class="schedule-preview-text" x-text="getScheduleDescription()"></span>
                                             </div>
                                         </div>
 

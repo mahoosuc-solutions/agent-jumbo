@@ -122,6 +122,7 @@ const fullComponentImplementation = function() {
         attachmentsText: '',
         filteredTasks: [],
         hasNoTasks: true, // Add explicit reactive property
+        selectedPreset: 'custom',
 
         // Initialize the component
         init() {
@@ -1163,6 +1164,94 @@ const fullComponentImplementation = function() {
                 token += characters.charAt(Math.floor(Math.random() * characters.length));
             }
             return token;
+        },
+
+        applySchedulePreset(preset) {
+            const presets = {
+                'every_5min': { minute: '*/5', hour: '*', day: '*', month: '*', weekday: '*' },
+                'every_hour': { minute: '0', hour: '*', day: '*', month: '*', weekday: '*' },
+                'every_6hours': { minute: '0', hour: '*/6', day: '*', month: '*', weekday: '*' },
+                'daily_9am': { minute: '0', hour: '9', day: '*', month: '*', weekday: '*' },
+                'daily_midnight': { minute: '0', hour: '0', day: '*', month: '*', weekday: '*' },
+                'weekdays_9am': { minute: '0', hour: '9', day: '*', month: '*', weekday: '1-5' },
+                'weekly_monday': { minute: '0', hour: '9', day: '*', month: '*', weekday: '1' },
+                'custom': null
+            };
+            const schedule = presets[preset];
+            if (schedule) {
+                this.editingTask.schedule = { ...schedule, timezone: getUserTimezone() };
+            }
+            this.selectedPreset = preset;
+        },
+
+        isPresetActive(preset) {
+            const s = this.editingTask.schedule;
+            const checks = {
+                'every_5min': s.minute === '*/5' && s.hour === '*',
+                'every_hour': s.minute === '0' && s.hour === '*' && s.weekday === '*',
+                'every_6hours': s.minute === '0' && s.hour === '*/6',
+                'daily_9am': s.minute === '0' && s.hour === '9' && s.weekday === '*',
+                'daily_midnight': s.minute === '0' && s.hour === '0' && s.weekday === '*',
+                'weekdays_9am': s.minute === '0' && s.hour === '9' && s.weekday === '1-5',
+                'weekly_monday': s.minute === '0' && s.hour === '9' && s.weekday === '1',
+            };
+            if (preset === 'custom') return !Object.values(checks).some(Boolean);
+            return checks[preset] || false;
+        },
+
+        getScheduleDescription() {
+            const s = this.editingTask.schedule;
+            if (s.minute === '*/5') return 'Every 5 minutes';
+            if (s.minute === '0' && s.hour === '*') return 'Every hour at :00';
+            if (s.minute === '0' && s.hour === '*/6') return 'Every 6 hours';
+            if (s.minute === '0' && s.hour === '9' && s.weekday === '1-5') return 'Weekdays at 9:00 AM';
+            if (s.minute === '0' && s.hour === '9' && s.weekday === '1') return 'Every Monday at 9:00 AM';
+            if (s.minute === '0' && s.hour === '9') return 'Daily at 9:00 AM';
+            if (s.minute === '0' && s.hour === '0') return 'Daily at midnight';
+            return `${s.minute} ${s.hour} ${s.day} ${s.month} ${s.weekday}`;
+        },
+
+        applyTaskTemplate(template) {
+            const templates = {
+                'blank': {
+                    name: '', type: 'scheduled', prompt: '', system_prompt: '',
+                    schedule: { minute: '0', hour: '9', day: '*', month: '*', weekday: '*', timezone: getUserTimezone() }
+                },
+                'daily_digest': {
+                    name: 'Daily Digest', type: 'scheduled',
+                    prompt: 'Build me a digest of today\'s activity across all systems. Include portfolio updates, Linear issues, workflow completions, and any errors or alerts.',
+                    system_prompt: 'You are a daily operations summarizer. Be concise and highlight actionable items.',
+                    schedule: { minute: '0', hour: '8', day: '*', month: '*', weekday: '1-5', timezone: getUserTimezone() }
+                },
+                'status_check': {
+                    name: 'System Status Check', type: 'scheduled',
+                    prompt: 'Give me a cross-system status update. Check the portfolio dashboard, Linear dashboard, and any active workflows. Summarize what\'s in progress, what\'s blocked, and what\'s been completed recently.',
+                    system_prompt: 'You are a system health monitor. Report issues clearly with severity levels.',
+                    schedule: { minute: '0', hour: '*/6', day: '*', month: '*', weekday: '*', timezone: getUserTimezone() }
+                },
+                'portfolio_sync': {
+                    name: 'Portfolio Sync', type: 'scheduled',
+                    prompt: 'Sync projects from the platform into the portfolio. Run the portfolio sync to pull in any new or updated projects, then show me the portfolio dashboard.',
+                    system_prompt: '',
+                    schedule: { minute: '0', hour: '*/12', day: '*', month: '*', weekday: '*', timezone: getUserTimezone() }
+                },
+                'cleanup': {
+                    name: 'System Cleanup', type: 'scheduled',
+                    prompt: 'Run system cleanup: clean up stale workflow executions, check for orphaned work queue items, and report any issues found.',
+                    system_prompt: 'You are a system maintenance agent. Be thorough but only take safe cleanup actions.',
+                    schedule: { minute: '0', hour: '2', day: '*', month: '*', weekday: '*', timezone: getUserTimezone() }
+                },
+                'report': {
+                    name: 'Weekly Report', type: 'scheduled',
+                    prompt: 'Generate a weekly report covering: portfolio status and readiness scores, Linear issue velocity, completed and in-progress workflows, revenue metrics if available, and recommendations for next week.',
+                    system_prompt: 'You are a business analyst. Structure the report with clear sections and metrics.',
+                    schedule: { minute: '0', hour: '9', day: '*', month: '*', weekday: '1', timezone: getUserTimezone() }
+                }
+            };
+            const t = templates[template];
+            if (t) {
+                this.editingTask = { ...this.editingTask, ...t };
+            }
         },
 
         // Getter for filtered tasks
