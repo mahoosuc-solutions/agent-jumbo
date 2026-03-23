@@ -181,6 +181,9 @@
                 <!-- top section with time, status etc. -->
                 <x-component path="chat/top-section/chat-top.html"></x-component>
 
+                <!-- LLM Activity Indicator - live model/tool/performance bar -->
+                <x-component path="llm-activity/llm-activity-bar.html"></x-component>
+
                 <!-- Welcome Screen Component -->
                 <div x-data x-show="$store.welcomeStore && $store.welcomeStore.isVisible">
                     <x-component path="welcome/welcome-screen.html"></x-component>
