@@ -8,7 +8,7 @@
 The operating system for AI-native businesses.
 
 **Subtitle:**
-Mahoosuc OS orchestrates 414+ commands across 36 integrated solutions, connecting design, development, and operations through a single event-driven backbone. From architecture to deployment, every workflow runs through one governed platform you own and control.
+Mahoosuc OS orchestrates 414+ commands across 36 integrated solutions with multi-LLM coordination, Stripe-integrated payment processing, and a marketplace of deployable AI infrastructure solutions. From architecture to deployment to revenue — every workflow runs through one governed platform you own and control.
 
 **CTA Labels:**
 
@@ -28,10 +28,11 @@ You have evaluated the agent frameworks. You know the tradeoffs between flexibil
 
 **Feature Tags:**
 
-1. 414+ structured commands
-2. AG Mesh event-driven orchestration
+1. 414+ structured commands with multi-LLM orchestration
+2. AG Mesh event-driven orchestration + coordinator engine
 3. Multi-cloud deployment (K8s, AWS, GCP, Docker)
-4. Local-first governance with full audit logging
+4. Fail-closed security with passkey enforcement and Ed25519 verification
+5. Stripe payment pipeline with subscription management
 
 ### Business Owner Card
 
@@ -42,10 +43,11 @@ You manage properties, coordinate teams, handle finances, and respond to custome
 
 **Feature Tags:**
 
-1. 10+ live integrations (Stripe, Google Voice, Gmail, Telegram)
+1. 15+ live integrations (Stripe, Google Voice, Gmail, Telegram, Linear, Plaid, Google Calendar)
 2. AI voice operator with speech-to-text and telephony
-3. Risk-based approval workflows
-4. Scheduling, finance, and property management
+3. Risk-based approval workflows with passkey-gated high-risk tools
+4. Scheduling with quick templates, finance, and property management
+5. Solutions marketplace with 5 deployable AI packages
 
 ---
 
@@ -53,9 +55,9 @@ You manage properties, coordinate teams, handle finances, and respond to custome
 
 Mahoosuc OS began as a practical answer to a simple question: what would it take to run an entire business on AI agents — not as a demo, but in production, every day, across multiple verticals? The answer was not another chatbot framework or drag-and-drop workflow builder. It was an operating system — one that treats agents as first-class processes, events as the universal communication layer, and governance as a non-negotiable requirement.
 
-At the core sits Agent Jumbo, the orchestration engine that coordinates agent execution across 95 command categories. Agent Jumbo does not simply dispatch tasks; it manages lifecycles, enforces risk-based approval gates, tracks correlation across distributed workflows, and provides the fault tolerance required for production workloads. It is the runtime that makes everything else possible.
+At the core sits Agent Jumbo, the meta-orchestration engine that coordinates agent execution across 95 command categories and multiple LLM providers simultaneously. Agent Jumbo does not simply dispatch tasks — it decomposes complex work into subtasks, routes each to the optimal AI model (Claude for reasoning, Gemini for speed, local models for privacy), executes them concurrently, and synthesizes unified results. It manages lifecycles, enforces fail-closed security with passkey-gated high-risk tools, tracks correlation across distributed workflows, and provides the fault tolerance required for production workloads. It is the runtime that makes everything else possible.
 
-Connecting every component is AG Mesh, the event-driven backbone built on Redis Streams. AG Mesh routes events between agents, solutions, and external systems with full correlation tracking and configurable approval workflows. On top of this foundation, named solutions like DevFlow, ArchitectFlow, and ContentStudio deliver vertical capabilities — from AI-powered software delivery to requirements generation to content marketing. Each solution is a product in its own right, but together they form a coherent operating system that compounds in value with every integration added.
+Connecting every component is AG Mesh, the event-driven backbone built on Redis Streams. AG Mesh routes events between agents, solutions, and external systems with full correlation tracking, FIFO dedup, dead-letter persistence, and configurable approval workflows. On top of this foundation, named solutions like DevFlow, ArchitectFlow, and ContentStudio deliver vertical capabilities — from AI-powered software delivery to requirements generation to content marketing. Each solution is a product in its own right, and the Solutions Platform packages them for sale through integrated Stripe payment processing — from checkout to subscription management to revenue reporting. Together they form a coherent operating system that compounds in value with every integration added.
 
 ---
 
@@ -73,11 +75,17 @@ Strategic content generation that maintains brand voice across channels, campaig
 **CommandBridge**
 Multi-business operations management with unified dashboards and cross-property intelligence.
 
-**VoiceOps** *(placeholder)*
-AI-powered voice and telephony automation for customer-facing operations.
+**VoiceOps**
+AI-powered voice and telephony automation for customer-facing operations — Twilio voice calls, Google Voice SMS, speech-to-text processing, and intelligent call routing.
 
-**FinanceFlow** *(placeholder)*
-Automated financial operations with Stripe integration, cost tracking, and revenue intelligence.
+**FinanceFlow**
+Automated financial operations with Plaid bank sync, Stripe payment processing, transaction categorization, tax estimation, and revenue intelligence. End-to-end from invoice to MRR reporting.
+
+**AI Solutions Marketplace**
+Five deployable AI infrastructure solutions — customer support, document processing, sales automation, property management, and financial reporting — each with architecture docs, pricing, and one-click Stripe checkout.
+
+**CoordinatorEngine**
+Multi-LLM orchestration that decomposes complex tasks, dispatches subtasks concurrently to Claude, Gemini, and local models, and synthesizes unified results. Provider-aware context budgeting ensures each model gets optimal input within its window limits.
 
 ---
 
@@ -86,11 +94,13 @@ Automated financial operations with Stripe integration, cost tracking, and reven
 | Metric | Caption |
 |--------|---------|
 | 414+ | Structured commands spanning 95 categories of agent capability |
-| 36 | Integrated solutions powering verticals from healthcare to hospitality |
-| 84+ | Native tools for deployment, business operations, voice, and automation |
-| 173 | API endpoints — the most comprehensive surface of any agent platform |
-| 10+ | Live integrations with Linear, Stripe, Telegram, Google Voice, Gmail, and more |
-| 13 | Specialized agent profiles tuned for distinct operational roles |
+| 75 | Native tools — from code execution to Stripe payments to multi-LLM coordination |
+| 35 | Instruments with dedicated SQLite databases (WAL mode, concurrent-safe) |
+| 170 | API endpoints across webhooks, health checks, and dashboard services |
+| 16 | Channel adapters with fail-closed webhook verification (Telegram, Slack, Discord, Teams, and 12 more) |
+| 5 | Deployable AI solutions with architecture docs, pricing, and Stripe integration |
+| 4 | LLM providers orchestrated concurrently (Claude, Gemini, GPT, Ollama) |
+| 0 | Bare except clauses — every error path is explicitly handled |
 
 ---
 
@@ -132,6 +142,14 @@ DevFlow receives the architecture contract and orchestrates AI agents to produce
 ### Step 3: Orchestrate with AG Mesh
 
 Once built, AG Mesh takes over. The event-driven backbone routes operational events between agents, external integrations, and approval workflows in real time. Every event is correlated, every action is logged, and risk-based gates ensure that high-impact operations require explicit approval before execution. AG Mesh is what makes Mahoosuc OS an operating system rather than a collection of scripts — it provides the persistent, observable, governable runtime that production workloads demand.
+
+### Step 4: Coordinate with Multi-LLM Orchestration
+
+Complex tasks are automatically decomposed by the Coordinator Engine and dispatched to the optimal AI model for each subtask. Research goes to fast models. Deep analysis goes to strong reasoning models. Code generation goes to code-specialized models. Everything runs concurrently, and the Shared Context Store ensures each model receives exactly the right context within its window limits — from 8K tokens for local models to 1M tokens for Gemini. Results are synthesized into a unified response with full execution metrics.
+
+### Step 5: Monetize with Solutions Platform
+
+Completed products are scored for sale-readiness, packaged as AI infrastructure solutions with architecture docs and pricing, and synced to Stripe as products with checkout URLs. Customer lifecycle management tracks leads from capture through proposal to payment, with webhooks updating the sales pipeline in real time. MRR, churn, and revenue reporting are built in. The entire arc from code to cash runs through the platform.
 
 ---
 
