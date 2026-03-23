@@ -6,7 +6,7 @@ payments, subscriptions, invoices, and webhook events.
 import json
 import os
 import sqlite3
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 
@@ -720,3 +720,373 @@ class StripePaymentsDatabase:
         ).fetchall()
         conn.close()
         return [dict(r) for r in rows]
+
+
+# ---------------------------------------------------------------------------
+# Lightweight DB used by StripePaymentManager (moved from stripe_manager.py)
+# ---------------------------------------------------------------------------
+
+
+class StripePaymentDatabase:
+    """SQLite backend for local Stripe payment records.
+
+    Simpler schema than StripePaymentsDatabase -- used by
+    StripePaymentManager for cross-system sync bookkeeping.
+    """
+
+    def __init__(self, db_path: str):
+        self.db_path = db_path
+        self._ensure_schema()
+
+    def _connect(self) -> sqlite3.Connection:
+        conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
+    def _ensure_schema(self) -> None:
+        with self._connect() as conn:
+            conn.executescript(
+                """
+                CREATE TABLE IF NOT EXISTS customers (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    stripe_customer_id TEXT UNIQUE,
+                    email TEXT,
+                    name TEXT,
+                    metadata TEXT,
+                    lifecycle_customer_id INTEGER,
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS products (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    stripe_product_id TEXT UNIQUE,
+                    stripe_price_id TEXT,
+                    name TEXT NOT NULL,
+                    description TEXT,
+                    amount_cents INTEGER,
+                    currency TEXT DEFAULT 'usd',
+                    price_model TEXT DEFAULT 'one-time',
+                    recurring_interval TEXT,
+                    portfolio_product_id INTEGER,
+                    metadata TEXT,
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS invoices (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    stripe_invoice_id TEXT UNIQUE,
+                    stripe_customer_id TEXT,
+                    status TEXT DEFAULT 'draft',
+                    amount_due INTEGER DEFAULT 0,
+                    currency TEXT DEFAULT 'usd',
+                    hosted_url TEXT,
+                    pdf_url TEXT,
+                    proposal_id INTEGER,
+                    metadata TEXT,
+                    created_at TEXT NOT NULL,
+                    finalized_at TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS subscriptions (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    stripe_subscription_id TEXT UNIQUE,
+                    stripe_customer_id TEXT,
+                    stripe_price_id TEXT,
+                    status TEXT DEFAULT 'active',
+                    current_period_start TEXT,
+                    current_period_end TEXT,
+                    cancel_at_period_end INTEGER DEFAULT 0,
+                    canceled_at TEXT,
+                    amount_cents INTEGER DEFAULT 0,
+                    currency TEXT DEFAULT 'usd',
+                    recurring_interval TEXT DEFAULT 'month',
+                    metadata TEXT,
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_customers_email ON customers(email);
+                CREATE INDEX IF NOT EXISTS idx_customers_lifecycle ON customers(lifecycle_customer_id);
+                CREATE INDEX IF NOT EXISTS idx_products_portfolio ON products(portfolio_product_id);
+                CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+                """
+            )
+
+    # -- helpers -------------------------------------------------------------
+
+    @staticmethod
+    def _now() -> str:
+        return datetime.now(timezone.utc).isoformat()
+
+    # -- customers -----------------------------------------------------------
+
+    def add_customer(
+        self,
+        stripe_customer_id: str,
+        email: str,
+        name: str,
+        metadata: dict | None = None,
+        lifecycle_customer_id: int | None = None,
+    ) -> int:
+        with self._connect() as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO customers
+                    (stripe_customer_id, email, name, metadata, lifecycle_customer_id, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    stripe_customer_id,
+                    email,
+                    name,
+                    json.dumps(metadata) if metadata else None,
+                    lifecycle_customer_id,
+                    self._now(),
+                ),
+            )
+            return int(cur.lastrowid)
+
+    def get_customer(self, customer_id: int | None = None, email: str | None = None) -> dict | None:
+        with self._connect() as conn:
+            if customer_id is not None:
+                cur = conn.execute("SELECT * FROM customers WHERE id = ?", (customer_id,))
+            elif email is not None:
+                cur = conn.execute("SELECT * FROM customers WHERE email = ?", (email,))
+            else:
+                return None
+            cols = [d[0] for d in cur.description]
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip(cols, row))
+
+    def get_customer_by_lifecycle_id(self, lifecycle_customer_id: int) -> dict | None:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM customers WHERE lifecycle_customer_id = ?",
+                (lifecycle_customer_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip(cols, row))
+
+    def list_customers(self) -> list[dict]:
+        with self._connect() as conn:
+            cur = conn.execute("SELECT * FROM customers ORDER BY id ASC")
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    # -- products ------------------------------------------------------------
+
+    def add_product(
+        self,
+        stripe_product_id: str,
+        name: str,
+        description: str | None = None,
+        stripe_price_id: str | None = None,
+        amount_cents: int | None = None,
+        currency: str = "usd",
+        price_model: str = "one-time",
+        recurring_interval: str | None = None,
+        portfolio_product_id: int | None = None,
+        metadata: dict | None = None,
+    ) -> int:
+        with self._connect() as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO products
+                    (stripe_product_id, name, description, stripe_price_id,
+                     amount_cents, currency, price_model, recurring_interval,
+                     portfolio_product_id, metadata, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    stripe_product_id,
+                    name,
+                    description,
+                    stripe_price_id,
+                    amount_cents,
+                    currency,
+                    price_model,
+                    recurring_interval,
+                    portfolio_product_id,
+                    json.dumps(metadata) if metadata else None,
+                    self._now(),
+                ),
+            )
+            return int(cur.lastrowid)
+
+    def get_product(self, product_id: int | None = None, stripe_product_id: str | None = None) -> dict | None:
+        with self._connect() as conn:
+            if product_id is not None:
+                cur = conn.execute("SELECT * FROM products WHERE id = ?", (product_id,))
+            elif stripe_product_id is not None:
+                cur = conn.execute("SELECT * FROM products WHERE stripe_product_id = ?", (stripe_product_id,))
+            else:
+                return None
+            cols = [d[0] for d in cur.description]
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip(cols, row))
+
+    def get_product_by_portfolio_id(self, portfolio_product_id: int) -> dict | None:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM products WHERE portfolio_product_id = ?",
+                (portfolio_product_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip(cols, row))
+
+    def update_product(self, product_id: int, **kwargs: Any) -> None:
+        if not kwargs:
+            return
+        columns = ", ".join(f"{k} = ?" for k in kwargs)
+        params = [*list(kwargs.values()), product_id]
+        with self._connect() as conn:
+            conn.execute(f"UPDATE products SET {columns} WHERE id = ?", params)  # nosec B608
+
+    def list_products(self) -> list[dict]:
+        with self._connect() as conn:
+            cur = conn.execute("SELECT * FROM products ORDER BY id ASC")
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    # -- invoices ------------------------------------------------------------
+
+    def add_invoice(
+        self,
+        stripe_invoice_id: str,
+        stripe_customer_id: str,
+        status: str = "draft",
+        amount_due: int = 0,
+        currency: str = "usd",
+        hosted_url: str | None = None,
+        pdf_url: str | None = None,
+        proposal_id: int | None = None,
+        metadata: dict | None = None,
+    ) -> int:
+        with self._connect() as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO invoices
+                    (stripe_invoice_id, stripe_customer_id, status, amount_due,
+                     currency, hosted_url, pdf_url, proposal_id, metadata, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    stripe_invoice_id,
+                    stripe_customer_id,
+                    status,
+                    amount_due,
+                    currency,
+                    hosted_url,
+                    pdf_url,
+                    proposal_id,
+                    json.dumps(metadata) if metadata else None,
+                    self._now(),
+                ),
+            )
+            return int(cur.lastrowid)
+
+    def update_invoice(self, stripe_invoice_id: str, **kwargs: Any) -> None:
+        if not kwargs:
+            return
+        columns = ", ".join(f"{k} = ?" for k in kwargs)
+        params = [*list(kwargs.values()), stripe_invoice_id]
+        with self._connect() as conn:
+            conn.execute(f"UPDATE invoices SET {columns} WHERE stripe_invoice_id = ?", params)  # nosec B608
+
+    # -- subscriptions -------------------------------------------------------
+
+    def add_subscription(
+        self,
+        stripe_subscription_id: str,
+        stripe_customer_id: str,
+        stripe_price_id: str,
+        status: str = "active",
+        current_period_start: str | None = None,
+        current_period_end: str | None = None,
+        amount_cents: int = 0,
+        currency: str = "usd",
+        recurring_interval: str = "month",
+        metadata: dict | None = None,
+    ) -> int:
+        with self._connect() as conn:
+            cur = conn.execute(
+                """
+                INSERT INTO subscriptions
+                    (stripe_subscription_id, stripe_customer_id, stripe_price_id,
+                     status, current_period_start, current_period_end,
+                     amount_cents, currency, recurring_interval, metadata, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    stripe_subscription_id,
+                    stripe_customer_id,
+                    stripe_price_id,
+                    status,
+                    current_period_start,
+                    current_period_end,
+                    amount_cents,
+                    currency,
+                    recurring_interval,
+                    json.dumps(metadata) if metadata else None,
+                    self._now(),
+                ),
+            )
+            return int(cur.lastrowid)
+
+    def update_subscription(self, stripe_subscription_id: str, **kwargs: Any) -> None:
+        if not kwargs:
+            return
+        columns = ", ".join(f"{k} = ?" for k in kwargs)
+        params = [*list(kwargs.values()), stripe_subscription_id]
+        with self._connect() as conn:
+            conn.execute(
+                f"UPDATE subscriptions SET {columns} WHERE stripe_subscription_id = ?",  # nosec B608
+                params,
+            )
+
+    def list_subscriptions(self, status: str | None = None) -> list[dict]:
+        with self._connect() as conn:
+            if status:
+                cur = conn.execute(
+                    "SELECT * FROM subscriptions WHERE status = ? ORDER BY id ASC",
+                    (status,),
+                )
+            else:
+                cur = conn.execute("SELECT * FROM subscriptions ORDER BY id ASC")
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def list_subscriptions_by_period(self, days: int = 30) -> list[dict]:
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM subscriptions WHERE created_at >= ? ORDER BY id ASC",
+                (cutoff,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def list_canceled_subscriptions(self, days: int = 30) -> list[dict]:
+        cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()
+        with self._connect() as conn:
+            cur = conn.execute(
+                """
+                SELECT * FROM subscriptions
+                WHERE status IN ('canceled', 'cancelled')
+                  AND canceled_at >= ?
+                ORDER BY id ASC
+                """,
+                (cutoff,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]

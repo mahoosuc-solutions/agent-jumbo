@@ -21,7 +21,7 @@ from dataclasses import dataclass
 
 logger = logging.getLogger(__name__)
 
-# Rough token estimation: 1 token ≈ 4 chars
+# Default chars-per-token ratio for prose (used as fallback)
 CHARS_PER_TOKEN = 4
 
 # Default context budgets per provider (in tokens)
@@ -109,13 +109,27 @@ class ContextPackage:
 
 
 def _estimate_tokens(text: str) -> int:
-    """Rough token estimate from text length."""
-    return len(text) // CHARS_PER_TOKEN
+    """Content-aware token estimation."""
+    if not text:
+        return 0
+    # Detect content type and adjust ratio
+    code_indicators = text.count("{") + text.count("}") + text.count("def ") + text.count("class ")
+    json_indicators = text.count('":') + text.count('","')
+
+    chars = len(text)
+    if json_indicators > 5:
+        return chars // 3  # JSON: ~3 chars/token
+    if code_indicators > 5:
+        return int(chars / 3.5)  # Code: ~3.5 chars/token
+    return chars // 4  # Prose: ~4 chars/token
 
 
 def _truncate_to_tokens(text: str, max_tokens: int) -> str:
     """Truncate text to fit within a token budget."""
-    max_chars = max_tokens * CHARS_PER_TOKEN
+    # Reserve 5 tokens for the truncation marker
+    marker = "\n[...truncated]"
+    effective_tokens = max(max_tokens - 5, 0)
+    max_chars = effective_tokens * CHARS_PER_TOKEN
     if len(text) <= max_chars:
         return text
     # Truncate at a sentence or newline boundary
@@ -125,7 +139,7 @@ def _truncate_to_tokens(text: str, max_tokens: int) -> str:
     cut_at = max(last_nl, last_period)
     if cut_at > max_chars * 0.5:
         truncated = truncated[: cut_at + 1]
-    return truncated + "\n[...truncated]"
+    return truncated + marker
 
 
 class SharedContextStore:

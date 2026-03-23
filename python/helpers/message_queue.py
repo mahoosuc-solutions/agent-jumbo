@@ -139,6 +139,8 @@ class MessageQueue:
             logger.error("No handler set -- moving message %s to dead-letter", entry.message.id)
             entry.last_error = "No handler configured"
             self._dead_letters.append(entry)
+            if len(self._dead_letters) > 100:
+                self._dead_letters = self._dead_letters[-100:]
             self._persist_dead_letter(entry)
             return
 
@@ -158,6 +160,8 @@ class MessageQueue:
             if entry.retries >= self.max_retries:
                 logger.error("Message %s moved to dead-letter after %d retries", entry.message.id, entry.retries)
                 self._dead_letters.append(entry)
+                if len(self._dead_letters) > 100:
+                    self._dead_letters = self._dead_letters[-100:]
                 self._persist_dead_letter(entry)
             else:
                 delay = self.retry_delay * (2 ** (entry.retries - 1))
