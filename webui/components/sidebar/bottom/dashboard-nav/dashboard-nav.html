@@ -52,6 +52,19 @@
             <span>MOS</span>
           </button>
 
+          <!-- Tasks Dashboard Button -->
+          <button
+            class="dashboard-nav-btn"
+            :class="{ 'active': $store.dashboardRouter && $store.dashboardRouter.isDashboardActive('tasks') }"
+            @click="$store.dashboardRouter && $store.dashboardRouter.showDashboard('tasks')"
+            title="Task Scheduler Dashboard">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+            </svg>
+            <span>Tasks</span>
+          </button>
+
           <!-- Work Queue Dashboard Button -->
           <button
             class="dashboard-nav-btn"

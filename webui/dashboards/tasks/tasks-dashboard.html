@@ -1,0 +1,558 @@
+<html>
+
+<head>
+  <title>Task Dashboard</title>
+  <script type="module">
+    import { store } from "/dashboards/tasks/tasks-store.js";
+  </script>
+</head>
+
+<body>
+  <div x-data>
+    <template x-if="$store.tasksDashboard">
+      <div class="tasks-dashboard dashboard-page"
+           data-testid="tasks-dashboard"
+           x-create="$store.tasksDashboard.onOpen()"
+           x-destroy="$store.tasksDashboard.cleanup()">
+
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+          <div class="dashboard-title-section">
+            <button class="dashboard-back-btn" @click="$store.dashboardRouter?.closeDashboard()" title="Back to Chat">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h1 class="dashboard-title">Task Dashboard</h1>
+          </div>
+          <div class="dashboard-actions">
+            <button class="btn"
+                    data-testid="refresh-button"
+                    @click="$store.tasksDashboard.refresh()"
+                    :disabled="$store.tasksDashboard.loading">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6M1 20v-6h6"/>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Error display -->
+        <div class="td-error" data-testid="td-error" x-show="$store.tasksDashboard.error"
+             x-text="$store.tasksDashboard.error"></div>
+
+        <!-- Loading indicator -->
+        <div class="td-loading" data-testid="td-loading" x-show="$store.tasksDashboard.loading">
+          Loading tasks...
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-cards" data-testid="stats-cards">
+          <div class="stat-card">
+            <div class="stat-label">Total</div>
+            <div class="stat-value" x-text="$store.tasksDashboard.stats.total"></div>
+            <div class="stat-sub">configured tasks</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Running</div>
+            <div class="stat-value text-green" x-text="$store.tasksDashboard.stats.running"></div>
+            <div class="stat-sub">executing now</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Scheduled</div>
+            <div class="stat-value text-blue" x-text="$store.tasksDashboard.stats.scheduled"></div>
+            <div class="stat-sub">cron-driven</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Ad-hoc</div>
+            <div class="stat-value text-amber" x-text="$store.tasksDashboard.stats.adhoc"></div>
+            <div class="stat-sub">manual trigger</div>
+          </div>
+        </div>
+
+        <!-- Filter Buttons -->
+        <div class="td-filters" data-testid="td-filters">
+          <template x-for="f in ['all','scheduled','adhoc','running','idle','error']" :key="f">
+            <button class="filter-btn"
+                    :class="{ 'active': $store.tasksDashboard.filter === f }"
+                    @click="$store.tasksDashboard.setFilter(f)"
+                    x-text="f.charAt(0).toUpperCase() + f.slice(1)">
+            </button>
+          </template>
+        </div>
+
+        <!-- Task Cards Grid -->
+        <div class="td-cards-grid" data-testid="td-cards-grid"
+             x-show="!$store.tasksDashboard.loading && $store.tasksDashboard.filteredTasks.length > 0">
+          <template x-for="task in $store.tasksDashboard.filteredTasks" :key="task.name">
+            <div class="td-card" :class="'td-card-' + task.state">
+
+              <!-- Row 1: Name -->
+              <div class="td-card-name" x-text="task.name"></div>
+
+              <!-- Row 2: Badges -->
+              <div class="td-card-badges">
+                <span class="td-type-badge" :class="'td-type-' + task.type" x-text="task.type"></span>
+                <span class="td-state-badge" :class="'td-state-' + task.state" x-text="task.state"></span>
+              </div>
+
+              <!-- Row 3: Schedule -->
+              <div class="td-card-schedule">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+                <span x-text="$store.tasksDashboard.formatCron(task)"></span>
+              </div>
+
+              <!-- Row 4: Prompt / Description (full text) -->
+              <div class="td-card-prompt" x-show="task.prompt" x-text="task.prompt"></div>
+
+              <!-- Row 5: Project + Last run -->
+              <div class="td-card-info">
+                <span class="td-card-project" x-show="task.project">
+                  <span class="td-project-dot" :style="'background:' + (task.project_color || '#4a9eff')"></span>
+                  <span x-text="task.project"></span>
+                </span>
+                <span class="td-card-lastrun" x-show="task.last_run">
+                  Last run: <span x-text="$store.tasksDashboard.formatLastRun(task.last_run)"></span>
+                </span>
+              </div>
+
+              <!-- Row 6: Actions -->
+              <div class="td-card-actions">
+                <button class="td-btn td-btn-run"
+                        @click="$store.tasksDashboard.runTask(task.name)"
+                        :disabled="task.state === 'running'"
+                        title="Run now">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                  Run Now
+                </button>
+                <button class="td-btn td-btn-toggle"
+                        @click="$store.tasksDashboard.toggleTask(task)"
+                        :disabled="task.state === 'running'"
+                        :title="task.state === 'paused' || task.state === 'disabled' ? 'Resume' : 'Pause'">
+                  <template x-if="task.state === 'paused' || task.state === 'disabled'">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                  </template>
+                  <template x-if="task.state !== 'paused' && task.state !== 'disabled'">
+                    <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                  </template>
+                  <span x-text="task.state === 'paused' || task.state === 'disabled' ? 'Resume' : 'Pause'"></span>
+                </button>
+                <button class="td-btn td-btn-chat"
+                        @click="$store.tasksDashboard.openChat()"
+                        title="Open Chat">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                  </svg>
+                  Open Chat
+                </button>
+                <button class="td-btn td-btn-edit"
+                        @click="$store.tasksDashboard.openSettings('scheduler')"
+                        title="Edit in Settings">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
+                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                  </svg>
+                  Edit
+                </button>
+              </div>
+            </div>
+          </template>
+        </div>
+
+        <!-- Empty State -->
+        <div class="td-empty" x-show="!$store.tasksDashboard.loading && $store.tasksDashboard.filteredTasks.length === 0">
+          <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+          </svg>
+          <p>No tasks match the current filter</p>
+          <p>Try selecting a different filter or create tasks in Settings</p>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  <style>
+    /* ── Dashboard Page Layout ── */
+    .tasks-dashboard.dashboard-page {
+      padding: var(--spacing-lg, 2rem);
+      height: 100%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: var(--color-background);
+      max-width: 1200px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    /* ── Header ── */
+    .dashboard-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .dashboard-title-section {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .dashboard-back-btn {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      color: var(--color-text);
+      padding: 6px 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: all 0.2s;
+    }
+
+    .dashboard-back-btn:hover {
+      background: var(--color-message-bg);
+      border-color: var(--color-primary);
+    }
+
+    .dashboard-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+      color: var(--color-text);
+    }
+
+    .dashboard-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      background: var(--color-message-bg);
+      color: var(--color-text);
+      font-family: var(--font-family-main);
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--color-primary);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── Error / Loading ── */
+    .td-error {
+      background: #3b1f1f;
+      color: #f7c9c9;
+      padding: 12px 16px;
+      border-radius: 8px;
+    }
+
+    .td-loading {
+      color: var(--color-primary);
+      font-style: italic;
+      padding: 20px;
+      text-align: center;
+      font-size: var(--font-size-small);
+    }
+
+    /* ── Stats Cards ── */
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .stat-card {
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .stat-card .stat-label {
+      font-size: var(--font-size-small);
+      color: var(--color-primary);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+      color: var(--color-text);
+    }
+
+    .stat-card .stat-sub {
+      font-size: var(--font-size-small);
+      color: var(--color-secondary);
+      margin-top: 4px;
+    }
+
+    .stat-value.text-blue { color: #5b9bd5; }
+    .stat-value.text-amber { color: #e5a54b; }
+    .stat-value.text-green { color: #5cb85c; }
+
+    /* ── Filter Buttons ── */
+    .td-filters {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-btn {
+      padding: 6px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--color-border);
+      background: var(--color-panel);
+      color: var(--color-text);
+      font-size: 0.82rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      opacity: 0.8;
+    }
+
+    .filter-btn:hover {
+      border-color: var(--color-primary);
+      opacity: 1;
+    }
+
+    .filter-btn.active {
+      background: var(--color-highlight, #4a9eff);
+      border-color: var(--color-highlight, #4a9eff);
+      color: #fff;
+      opacity: 1;
+    }
+
+    /* ── Task Cards Grid ── */
+    .td-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    /* ── Task Card ── */
+    .td-card {
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 20px;
+      border-left: 4px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .td-card:hover {
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .td-card-running { border-left-color: #5cb85c; }
+    .td-card-active  { border-left-color: #5b9bd5; }
+    .td-card-idle    { border-left-color: var(--color-secondary); }
+    .td-card-paused,
+    .td-card-disabled { border-left-color: #e5a54b; }
+    .td-card-error   { border-left-color: #e74c3c; }
+
+    /* Card name */
+    .td-card-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--color-text);
+      line-height: 1.3;
+    }
+
+    /* Badges row */
+    .td-card-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .td-type-badge,
+    .td-state-badge {
+      font-size: 0.7rem;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .td-type-scheduled { background: #1a365d; color: #90cdf4; }
+    .td-type-adhoc     { background: #744210; color: #fbd38d; }
+    .td-type-planned   { background: #553c9a; color: #d6bcfa; }
+
+    .td-state-running  { background: #276749; color: #9ae6b4; }
+    .td-state-active   { background: #2c5282; color: #90cdf4; }
+    .td-state-idle     { background: #2d3748; color: #a0aec0; }
+    .td-state-paused   { background: #744210; color: #fbd38d; }
+    .td-state-disabled { background: #4a5568; color: #a0aec0; }
+    .td-state-error    { background: #742a2a; color: #feb2b2; }
+
+    /* Schedule line */
+    .td-card-schedule {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--color-primary);
+    }
+
+    .td-card-schedule svg {
+      flex-shrink: 0;
+      opacity: 0.7;
+    }
+
+    /* Prompt / description (full text) */
+    .td-card-prompt {
+      font-size: 0.85rem;
+      color: var(--color-secondary);
+      line-height: 1.6;
+      padding: 10px 12px;
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+      font-family: var(--font-family-code);
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    /* Project + Last run */
+    .td-card-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.8rem;
+      color: var(--color-secondary);
+    }
+
+    .td-card-project {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .td-project-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+
+    .td-card-lastrun {
+      font-family: var(--font-family-code);
+      font-size: 0.78rem;
+    }
+
+    /* Actions row */
+    .td-card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding-top: 10px;
+      border-top: 1px solid var(--color-border);
+    }
+
+    .td-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 12px;
+      border-radius: 5px;
+      border: 1px solid var(--color-border);
+      background: transparent;
+      color: var(--color-secondary);
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .td-btn:hover:not(:disabled) {
+      color: var(--color-text);
+      background: var(--color-message-bg);
+    }
+
+    .td-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .td-btn-run:hover:not(:disabled) {
+      border-color: #5cb85c;
+      color: #5cb85c;
+    }
+
+    .td-btn-toggle:hover:not(:disabled) {
+      border-color: #e5a54b;
+      color: #e5a54b;
+    }
+
+    .td-btn-chat:hover:not(:disabled) {
+      border-color: #5b9bd5;
+      color: #5b9bd5;
+    }
+
+    .td-btn-edit:hover:not(:disabled) {
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+    }
+
+    /* ── Empty State ── */
+    .td-empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--color-primary);
+    }
+
+    .td-empty svg {
+      margin-bottom: 12px;
+      opacity: 0.5;
+    }
+
+    .td-empty p {
+      margin: 4px 0;
+      font-size: 0.9rem;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .stats-cards { grid-template-columns: repeat(2, 1fr); }
+      .td-cards-grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-cards { grid-template-columns: 1fr 1fr; }
+      .td-filters { flex-direction: column; }
+      .td-card-actions { flex-direction: column; }
+    }
+  </style>
+</body>
+
+</html>

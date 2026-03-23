@@ -29,6 +29,12 @@ const dashboardRouterModel = {
             icon: 'mos',
             component: 'dashboards/mos/mos-dashboard.html'
         },
+        tasks: {
+            id: 'tasks',
+            label: 'Tasks',
+            icon: 'tasks',
+            component: 'dashboards/tasks/tasks-dashboard.html'
+        },
         workQueue: {
             id: 'workQueue',
             label: 'Work Queue',
@@ -59,6 +65,7 @@ const dashboardRouterModel = {
                 portfolio: () => import('/dashboards/portfolio/portfolio-store.js'),
                 workflows: () => import('/dashboards/workflows/workflow-store.js'),
                 mos: () => import('/dashboards/mos/mos-store.js'),
+                tasks: () => import('/dashboards/tasks/tasks-store.js'),
                 workQueue: () => import('/dashboards/work-queue/work-queue-store.js')
             }[dashboardId];
             if (storeLoader) {
@@ -95,6 +102,7 @@ const dashboardRouterModel = {
     initFromUrl() {
         const path = window.location.pathname.replace(/^\//, '');
         const urlMap = {
+            'tasks': 'tasks',
             'work-queue': 'workQueue',
             'workflows': 'workflows',
             'portfolio': 'portfolio',
@@ -123,6 +131,10 @@ const dashboardRouterModel = {
                 <path d="M2 17l10 5 10-5"/>
                 <path d="M2 12l10 5 10-5"/>
             </svg>`,
+            tasks: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M9 11l3 3L22 4"/>
+    <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+</svg>`,
             workQueue: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
     <rect x="3" y="3" width="18" height="18" rx="2"/>
     <path d="M9 7h6M9 11h6M9 15h4"/>
