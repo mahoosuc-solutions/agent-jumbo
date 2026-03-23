@@ -554,7 +554,16 @@ class Agent:
         asyncio.run(self.call_extensions("agent_init"))
 
     async def monologue(self):
-        MAX_MONOLOGUE_SECONDS = int(os.environ.get("AGENT_MAX_MONOLOGUE_SECONDS", "1800"))  # 30 min default
+        # Read limits from performance profile (settings), fallback to env var, then default
+        try:
+            from python.helpers import settings as _settings_mod
+
+            _s = _settings_mod.get_settings()
+            MAX_MONOLOGUE_SECONDS = int(_s.get("max_monologue_seconds", 0)) or int(
+                os.environ.get("AGENT_MAX_MONOLOGUE_SECONDS", "1800")
+            )
+        except Exception:
+            MAX_MONOLOGUE_SECONDS = int(os.environ.get("AGENT_MAX_MONOLOGUE_SECONDS", "1800"))
         monologue_start_time = time.time()
         while True:
             if time.time() - monologue_start_time > MAX_MONOLOGUE_SECONDS:
@@ -578,7 +587,12 @@ class Agent:
                 printer = PrintStyle(italic=True, font_color="#b3ffd9", padding=False)
 
                 # let the agent run message loop until he stops it with a response tool
-                MAX_MONOLOGUE_ITERATIONS = int(os.environ.get("AGENT_MAX_MONOLOGUE_ITERATIONS", "25"))
+                try:
+                    MAX_MONOLOGUE_ITERATIONS = int(_s.get("max_monologue_iterations", 0)) or int(
+                        os.environ.get("AGENT_MAX_MONOLOGUE_ITERATIONS", "25")
+                    )
+                except Exception:
+                    MAX_MONOLOGUE_ITERATIONS = int(os.environ.get("AGENT_MAX_MONOLOGUE_ITERATIONS", "25"))
                 while True:
                     self.context.streaming_agent = self  # mark self as current streamer
                     self.loop_data.iteration += 1
