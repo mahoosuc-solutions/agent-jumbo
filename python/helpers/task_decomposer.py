@@ -65,7 +65,7 @@ class TaskClassifier:
             "google",
             "Fast extraction",
         ),
-        # Validation → any fast model
+        # Validation → local model (Qwen 7B can handle this)
         r"\b(verify|validate|check|test|confirm|audit)\b": (
             SubTaskType.VALIDATE,
             "google",

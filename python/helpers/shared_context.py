@@ -29,7 +29,7 @@ PROVIDER_CONTEXT_LIMITS = {
     "anthropic": 200_000,  # Claude: 200K
     "google": 1_000_000,  # Gemini 1.5 Pro: 1M, Flash: 1M
     "openai": 128_000,  # GPT-4o: 128K
-    "ollama": 8_000,  # Local models: varies, assume small
+    "ollama": 32_000,  # Qwen 2.5 7B: 32K context
 }
 
 # Reserve tokens for the model's response
