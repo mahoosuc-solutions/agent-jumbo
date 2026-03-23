@@ -198,6 +198,15 @@ class Settings(TypedDict):
     motion_workspace_id: str
     notion_api_key: str
     notion_default_database_id: str
+    # Trust & Performance
+    trust_level: int
+    performance_profile: str
+    max_monologue_iterations: int
+    max_monologue_seconds: int
+    response_style: str
+    validation_level: str
+    explanation_depth: str
+    llm_routing_priority: str
 
 
 class PartialSettings(Settings, total=False):
@@ -573,4 +582,13 @@ def get_default_settings() -> Settings:
         motion_workspace_id=dotenv.get_dotenv_value("MOTION_WORKSPACE_ID", ""),
         notion_api_key=dotenv.get_dotenv_value("NOTION_API_KEY", ""),
         notion_default_database_id=dotenv.get_dotenv_value("NOTION_DEFAULT_DATABASE_ID", ""),
+        # Trust & Performance
+        trust_level=3,  # Collaborative
+        performance_profile="efficient",
+        max_monologue_iterations=25,
+        max_monologue_seconds=1200,
+        response_style="concise",
+        validation_level="minimal",
+        explanation_depth="none",
+        llm_routing_priority="speed",
     )
