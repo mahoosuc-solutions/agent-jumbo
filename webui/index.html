@@ -1047,6 +1047,7 @@
                                     </div>
 
                                     <!-- Task List Table -->
+                                    <div style="overflow-x: auto; width: 100%;">
                                     <table class="scheduler-task-list" x-show="!isLoading && filteredTasks.length > 0"
                                         x-effect="$el.style.display = (!isLoading && filteredTasks.length > 0) ? '' : 'none'">
                                         <thead>
@@ -1143,6 +1144,7 @@
                                             </template>
                                         </tbody>
                                     </table>
+                                    </div><!-- scroll wrapper -->
                                 </div>
 
                                 <!-- Task Detail View -->
