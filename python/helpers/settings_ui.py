@@ -1943,6 +1943,64 @@ def convert_out(settings: Settings) -> SettingsOutput:
         "tab": "developer",
     }
 
+    # Trust & Security section
+    trust_fields: list[SettingsField] = [
+        {
+            "id": "trust_level",
+            "title": "Trust Level",
+            "description": "Controls agent autonomy: 1=Observer (asks everything), 2=Guided, 3=Collaborative, 4=Autonomous",
+            "type": "select",
+            "value": settings.get("trust_level", 3),
+            "options": [
+                {"value": 1, "label": "1 - Observer (maximum oversight)"},
+                {"value": 2, "label": "2 - Guided (asks for medium+ risk)"},
+                {"value": 3, "label": "3 - Collaborative (asks for high risk)"},
+                {"value": 4, "label": "4 - Autonomous (asks for critical only)"},
+            ],
+        },
+        {
+            "id": "performance_profile",
+            "title": "Performance Profile",
+            "description": "Auto-set by trust level: careful, balanced, efficient, turbo",
+            "type": "text",
+            "value": settings.get("performance_profile", "efficient"),
+            "readonly": True,
+        },
+        {
+            "id": "max_monologue_iterations",
+            "title": "Max Monologue Iterations",
+            "description": "Maximum agent reasoning loops before forced termination",
+            "type": "number",
+            "value": settings.get("max_monologue_iterations", 25),
+        },
+        {
+            "id": "max_monologue_seconds",
+            "title": "Max Monologue Seconds",
+            "description": "Wall-clock timeout for agent processing",
+            "type": "number",
+            "value": settings.get("max_monologue_seconds", 1200),
+        },
+        {
+            "id": "response_style",
+            "title": "Response Style",
+            "description": "How verbose the agent's responses are",
+            "type": "select",
+            "value": settings.get("response_style", "concise"),
+            "options": [
+                {"value": "verbose", "label": "Verbose (detailed explanations)"},
+                {"value": "balanced", "label": "Balanced"},
+                {"value": "concise", "label": "Concise"},
+                {"value": "minimal", "label": "Minimal"},
+            ],
+        },
+    ]
+    trust_section: SettingsSection = {
+        "title": "Trust & Security",
+        "description": "Progressive trust levels and performance profiles.",
+        "fields": trust_fields,
+        "tab": "developer",
+    }
+
     # Add the section to the result
     result: SettingsOutput = {
         "sections": [
@@ -1974,6 +2032,7 @@ def convert_out(settings: Settings) -> SettingsOutput:
             dev_section,
             tier_perf_section,
             observability_section,
+            trust_section,
             # code_exec_section,
         ]
     }
