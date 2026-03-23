@@ -1,0 +1,556 @@
+<html>
+
+<head>
+  <title>Trust &amp; Security Dashboard</title>
+  <script type="module">
+    import { store } from "/dashboards/trust/trust-store.js";
+  </script>
+</head>
+
+<body>
+  <div x-data>
+    <template x-if="$store.trustDashboard">
+      <div class="trust-dashboard dashboard-page"
+           data-testid="trust-dashboard"
+           x-init="$store.trustDashboard.init()">
+
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+          <div class="dashboard-title-section">
+            <button class="dashboard-back-btn" @click="$store.dashboardRouter?.closeDashboard()" title="Back to Chat">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 19l-7-7 7-7"/>
+              </svg>
+            </button>
+            <h1 class="dashboard-title">Trust &amp; Security</h1>
+          </div>
+          <div class="dashboard-actions">
+            <button class="btn"
+                    @click="$store.trustDashboard.loadTrustLevel()"
+                    :disabled="$store.trustDashboard.loading">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M23 4v6h-6M1 20v-6h6"/>
+                <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+              </svg>
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Error display -->
+        <div class="td-error" x-show="$store.trustDashboard.error"
+             x-text="$store.trustDashboard.error"></div>
+
+        <!-- Loading indicator -->
+        <div class="td-loading" x-show="$store.trustDashboard.loading">
+          Loading trust settings...
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- Section 1: Current Trust Level Selector     -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="tr-section" x-show="!$store.trustDashboard.loading">
+          <h2 class="tr-section-title">Current Trust Level</h2>
+          <div class="tr-level-cards">
+            <template x-for="level in [1, 2, 3, 4]" :key="level">
+              <button class="tr-level-card"
+                      :class="{
+                        'tr-level-active': $store.trustDashboard.trustLevel === level,
+                        'tr-level-1': level === 1,
+                        'tr-level-2': level === 2,
+                        'tr-level-3': level === 3,
+                        'tr-level-4': level === 4
+                      }"
+                      :disabled="$store.trustDashboard.saving"
+                      @click="$store.trustDashboard.setTrustLevel(level)">
+                <div class="tr-level-number" x-text="level"></div>
+                <div class="tr-level-icon">
+                  <template x-if="level === 1">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </template>
+                  <template x-if="level === 2">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M18 8h1a4 4 0 010 8h-1M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/>
+                      <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+                    </svg>
+                  </template>
+                  <template x-if="level === 3">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/>
+                    </svg>
+                  </template>
+                  <template x-if="level === 4">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 00-2.91-.09z"/>
+                      <path d="M12 15l-3-3a22 22 0 012-3.95A12.88 12.88 0 0122 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 01-4 2z"/>
+                      <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/>
+                    </svg>
+                  </template>
+                </div>
+                <div class="tr-level-name" x-text="$store.trustDashboard.TRUST_LEVELS[level].name"></div>
+                <div class="tr-level-desc" x-text="$store.trustDashboard.TRUST_LEVELS[level].description"></div>
+              </button>
+            </template>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- Section 2: Auto vs Requires Approval        -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="tr-section" x-show="!$store.trustDashboard.loading">
+          <h2 class="tr-section-title">What's Automatic vs Requires Approval</h2>
+          <div class="tr-tools-columns">
+            <!-- Auto-approved column -->
+            <div class="tr-tools-col">
+              <div class="tr-col-header tr-col-auto">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Auto-approved</span>
+                <span class="tr-col-count" x-text="$store.trustDashboard.getAutoTools().length"></span>
+              </div>
+              <div class="tr-tools-list">
+                <template x-for="tool in $store.trustDashboard.getAutoTools()" :key="tool.name">
+                  <div class="tr-tool-item">
+                    <span class="tr-tool-name" x-text="tool.name"></span>
+                    <span class="tr-risk-badge" :class="'tr-risk-' + tool.riskLabel.toLowerCase()" x-text="tool.riskLabel"></span>
+                  </div>
+                </template>
+                <div class="tr-tools-empty" x-show="$store.trustDashboard.getAutoTools().length === 0">
+                  No tools auto-approved at this level
+                </div>
+              </div>
+            </div>
+
+            <!-- Requires approval column -->
+            <div class="tr-tools-col">
+              <div class="tr-col-header tr-col-gated">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Requires Approval</span>
+                <span class="tr-col-count" x-text="$store.trustDashboard.getGatedTools().length"></span>
+              </div>
+              <div class="tr-tools-list">
+                <template x-for="tool in $store.trustDashboard.getGatedTools()" :key="tool.name">
+                  <div class="tr-tool-item">
+                    <span class="tr-tool-name" x-text="tool.name"></span>
+                    <span class="tr-risk-badge" :class="'tr-risk-' + tool.riskLabel.toLowerCase()" x-text="tool.riskLabel"></span>
+                  </div>
+                </template>
+                <div class="tr-tools-empty" x-show="$store.trustDashboard.getGatedTools().length === 0">
+                  All tools auto-approved at this level
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- Section 3: Risk Overview                     -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="tr-section" x-show="!$store.trustDashboard.loading">
+          <h2 class="tr-section-title">Risk Overview</h2>
+          <div class="stats-cards">
+            <div class="stat-card">
+              <div class="stat-label" style="color: #48bb78;">LOW</div>
+              <div class="stat-value" style="color: #48bb78;" x-text="$store.trustDashboard.riskCounts[1]"></div>
+              <div class="stat-sub">read-only tools</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label" style="color: #ecc94b;">MEDIUM</div>
+              <div class="stat-value" style="color: #ecc94b;" x-text="$store.trustDashboard.riskCounts[2]"></div>
+              <div class="stat-sub">data modification</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label" style="color: #ed8936;">HIGH</div>
+              <div class="stat-value" style="color: #ed8936;" x-text="$store.trustDashboard.riskCounts[3]"></div>
+              <div class="stat-sub">external / code exec</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label" style="color: #fc8181;">CRITICAL</div>
+              <div class="stat-value" style="color: #fc8181;" x-text="$store.trustDashboard.riskCounts[4]"></div>
+              <div class="stat-sub">deploy / delete / pay</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════ -->
+        <!-- Section 4: Security Posture Summary          -->
+        <!-- ═══════════════════════════════════════════ -->
+        <div class="tr-section" x-show="!$store.trustDashboard.loading">
+          <h2 class="tr-section-title">Security Posture Summary</h2>
+          <div class="tr-posture-grid">
+            <div class="tr-posture-item">
+              <div class="tr-posture-icon tr-posture-ok">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="tr-posture-text">
+                <div class="tr-posture-label">Kali Linux Foundation</div>
+                <div class="tr-posture-desc">Hardened base image with security tooling</div>
+              </div>
+            </div>
+            <div class="tr-posture-item">
+              <div class="tr-posture-icon tr-posture-ok">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="tr-posture-text">
+                <div class="tr-posture-label">Fail-closed Webhooks</div>
+                <div class="tr-posture-desc">16 adapters with signature verification</div>
+              </div>
+            </div>
+            <div class="tr-posture-item">
+              <div class="tr-posture-icon tr-posture-ok">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="tr-posture-text">
+                <div class="tr-posture-label">Passkey Enforcement</div>
+                <div class="tr-posture-desc">WebAuthn passkeys required for all sessions</div>
+              </div>
+            </div>
+            <div class="tr-posture-item">
+              <div class="tr-posture-icon tr-posture-ok">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="tr-posture-text">
+                <div class="tr-posture-label">Monologue Guards</div>
+                <div class="tr-posture-desc">25 iteration / 30 minute circuit breakers</div>
+              </div>
+            </div>
+            <div class="tr-posture-item">
+              <div class="tr-posture-icon tr-posture-ok">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="tr-posture-text">
+                <div class="tr-posture-label">WAL Mode Databases</div>
+                <div class="tr-posture-desc">All SQLite databases use write-ahead logging</div>
+              </div>
+            </div>
+            <div class="tr-posture-item">
+              <div class="tr-posture-icon tr-posture-ok">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="tr-posture-text">
+                <div class="tr-posture-label">Zero Bare Excepts</div>
+                <div class="tr-posture-desc">All exceptions are typed and logged</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </template>
+  </div>
+
+  <style>
+    /* ── Dashboard Page Layout ── */
+    .trust-dashboard.dashboard-page {
+      padding: var(--spacing-lg, 2rem);
+      height: 100%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      background: var(--color-background);
+      max-width: 1200px;
+      margin: 0 auto;
+      box-sizing: border-box;
+    }
+
+    /* ── Sections ── */
+    .tr-section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .tr-section-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--color-text);
+      margin: 0;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* ── Trust Level Selector Cards ── */
+    .tr-level-cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+
+    .tr-level-card {
+      background: var(--color-panel);
+      border: 2px solid var(--color-border);
+      border-radius: 12px;
+      padding: 20px 16px;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      text-align: center;
+      color: var(--color-text);
+      font-family: var(--font-family-main);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tr-level-card:hover:not(:disabled) {
+      border-color: var(--color-primary);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .tr-level-card:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .tr-level-card.tr-level-active {
+      border-color: var(--color-primary, #4a9eff);
+      background: linear-gradient(180deg, rgba(74, 158, 255, 0.08) 0%, var(--color-panel) 100%);
+      box-shadow: 0 0 0 1px var(--color-primary, #4a9eff), 0 4px 20px rgba(74, 158, 255, 0.15);
+    }
+
+    .tr-level-card.tr-level-active::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--color-primary, #4a9eff);
+      border-radius: 12px 12px 0 0;
+    }
+
+    .tr-level-number {
+      font-size: 1.6rem;
+      font-weight: 800;
+      opacity: 0.3;
+      line-height: 1;
+    }
+
+    .tr-level-active .tr-level-number {
+      opacity: 1;
+      color: var(--color-primary, #4a9eff);
+    }
+
+    .tr-level-icon {
+      opacity: 0.6;
+    }
+
+    .tr-level-active .tr-level-icon {
+      opacity: 1;
+      color: var(--color-primary, #4a9eff);
+    }
+
+    .tr-level-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .tr-level-desc {
+      font-size: 0.75rem;
+      color: var(--color-secondary);
+      line-height: 1.5;
+    }
+
+    /* Color accents per level */
+    .tr-level-1.tr-level-active { border-color: #90cdf4; box-shadow: 0 0 0 1px #90cdf4, 0 4px 20px rgba(144, 205, 244, 0.15); }
+    .tr-level-1.tr-level-active::before { background: #90cdf4; }
+    .tr-level-1.tr-level-active .tr-level-number,
+    .tr-level-1.tr-level-active .tr-level-icon { color: #90cdf4; }
+
+    .tr-level-2.tr-level-active { border-color: #48bb78; box-shadow: 0 0 0 1px #48bb78, 0 4px 20px rgba(72, 187, 120, 0.15); }
+    .tr-level-2.tr-level-active::before { background: #48bb78; }
+    .tr-level-2.tr-level-active .tr-level-number,
+    .tr-level-2.tr-level-active .tr-level-icon { color: #48bb78; }
+
+    .tr-level-3.tr-level-active { border-color: #ed8936; box-shadow: 0 0 0 1px #ed8936, 0 4px 20px rgba(237, 137, 54, 0.15); }
+    .tr-level-3.tr-level-active::before { background: #ed8936; }
+    .tr-level-3.tr-level-active .tr-level-number,
+    .tr-level-3.tr-level-active .tr-level-icon { color: #ed8936; }
+
+    .tr-level-4.tr-level-active { border-color: #fc8181; box-shadow: 0 0 0 1px #fc8181, 0 4px 20px rgba(252, 129, 129, 0.15); }
+    .tr-level-4.tr-level-active::before { background: #fc8181; }
+    .tr-level-4.tr-level-active .tr-level-number,
+    .tr-level-4.tr-level-active .tr-level-icon { color: #fc8181; }
+
+    /* ── Tools Two-Column Layout ── */
+    .tr-tools-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .tr-tools-col {
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .tr-col-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .tr-col-auto { color: #48bb78; background: rgba(72, 187, 120, 0.06); }
+    .tr-col-gated { color: #ed8936; background: rgba(237, 137, 54, 0.06); }
+
+    .tr-col-count {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .tr-tools-list {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 4px 0;
+    }
+
+    .tr-tool-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 7px 16px;
+      font-size: 0.82rem;
+      transition: background 0.15s;
+    }
+
+    .tr-tool-item:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .tr-tool-name {
+      color: var(--color-text);
+      font-family: var(--font-family-code);
+      font-size: 0.8rem;
+    }
+
+    .tr-risk-badge {
+      font-size: 0.65rem;
+      padding: 2px 7px;
+      border-radius: 4px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+
+    .tr-risk-low      { background: #276749; color: #9ae6b4; }
+    .tr-risk-medium   { background: #744210; color: #fbd38d; }
+    .tr-risk-high     { background: #7b341e; color: #fbd38d; }
+    .tr-risk-critical { background: #742a2a; color: #feb2b2; }
+
+    .tr-tools-empty {
+      padding: 24px 16px;
+      text-align: center;
+      color: var(--color-secondary);
+      font-size: 0.82rem;
+      font-style: italic;
+    }
+
+    /* ── Security Posture Grid ── */
+    .tr-posture-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .tr-posture-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: var(--color-panel);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .tr-posture-icon {
+      flex-shrink: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+    }
+
+    .tr-posture-ok {
+      background: rgba(72, 187, 120, 0.12);
+      color: #48bb78;
+    }
+
+    .tr-posture-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tr-posture-label {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+
+    .tr-posture-desc {
+      font-size: 0.78rem;
+      color: var(--color-secondary);
+      line-height: 1.4;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .tr-level-cards { grid-template-columns: repeat(2, 1fr); }
+      .tr-tools-columns { grid-template-columns: 1fr; }
+      .tr-posture-grid { grid-template-columns: 1fr; }
+      .stats-cards { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .tr-level-cards { grid-template-columns: 1fr; }
+      .stats-cards { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</body>
+
+</html>
