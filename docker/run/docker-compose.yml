@@ -55,7 +55,7 @@ services:
       - /mnt/wdblack/dev/projects/agent-jumbo:/aj      # Mount live project over /aj (app root)
       - agent_jumbo_data:/aj/data
       - agent_jumbo_venv:/opt/venv-a0                  # Persist venv across restarts
-      - /mnt/wdblack:/mnt/wdblack:ro                   # Read-only host filesystem access
+      - /mnt/wdblack:/mnt/wdblack                        # Host filesystem (projects need write access)
     ports:
       - "50080:80"
     cpus: "12.0"
