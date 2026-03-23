@@ -7,7 +7,9 @@ export default function PricingTier({ tier, featured = false }: { tier: PricingT
       <p className="text-sm text-slate-400 mb-4">{tier.tagline}</p>
       <div className="mb-6">
         <span className="text-4xl font-bold font-mono text-white">
-          {tier.price_monthly === 0 ? 'Free' : `$${tier.price_monthly}`}
+          {tier.price_monthly === 0
+            ? (tier.name.toLowerCase().includes('custom') ? 'Contact Sales' : 'Free')
+            : `$${tier.price_monthly}`}
         </span>
         {tier.price_monthly > 0 && <span className="text-slate-400 text-sm">/month</span>}
       </div>
