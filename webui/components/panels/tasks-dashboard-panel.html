@@ -1,0 +1,531 @@
+<!-- Tasks Dashboard Panel - Full task overview for tile row -->
+<div class="tasks-dashboard-panel" x-data="tasksDashboardData()" x-init="init()">
+    <div class="panel-header">
+        <h3>Task Dashboard</h3>
+        <div class="panel-actions">
+            <button class="btn-sm" @click="refresh()" :disabled="loading">
+                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 4v6h-6M1 20v-6h6"/>
+                    <path d="M3.51 9a9 9 0 0114.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0020.49 15"/>
+                </svg>
+                Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-value" x-text="stats.total"></div>
+            <div class="stat-label">Total</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value running-value" x-text="stats.running"></div>
+            <div class="stat-label">Running</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value scheduled-value" x-text="stats.scheduled"></div>
+            <div class="stat-label">Scheduled</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value adhoc-value" x-text="stats.adhoc"></div>
+            <div class="stat-label">Ad-hoc</div>
+        </div>
+    </div>
+
+    <!-- Loading state -->
+    <div class="empty-state" x-show="loading">
+        Loading tasks...
+    </div>
+
+    <!-- Task Cards -->
+    <div class="task-cards-section" x-show="!loading && tasks.length > 0">
+        <template x-for="task in tasks" :key="task.name">
+            <div class="task-card-full" :class="'task-' + task.state">
+                <!-- Row 1: Name + Badges -->
+                <div class="task-card-header">
+                    <span class="task-card-name" x-text="task.name"></span>
+                    <div class="task-card-badges">
+                        <span class="type-badge" :class="'type-' + task.type" x-text="task.type"></span>
+                        <span class="state-badge" :class="'state-' + task.state" x-text="task.state"></span>
+                    </div>
+                </div>
+
+                <!-- Row 2: Schedule -->
+                <div class="task-card-meta" x-show="task.type === 'scheduled' || task.type === 'planned'">
+                    <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span x-text="formatCron(task)"></span>
+                </div>
+
+                <!-- Row 3: Prompt preview -->
+                <div class="task-card-prompt" x-show="task.prompt" x-text="truncatePrompt(task.prompt)"></div>
+
+                <!-- Row 4: Project + Last run -->
+                <div class="task-card-info">
+                    <span class="task-card-project" x-show="task.project">
+                        <svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+                        </svg>
+                        <span x-text="task.project"></span>
+                    </span>
+                    <span class="task-card-lastrun" x-show="task.last_run">
+                        Last: <span x-text="formatLastRun(task.last_run)"></span>
+                    </span>
+                </div>
+
+                <!-- Row 5: Actions -->
+                <div class="task-card-actions">
+                    <button class="btn-xs btn-run" @click="runTask(task.name)" :disabled="task.state === 'running'" title="Run now">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                        Run Now
+                    </button>
+                    <button class="btn-xs btn-toggle" @click="toggleTask(task)" :disabled="task.state === 'running'"
+                            :title="task.state === 'paused' || task.state === 'disabled' ? 'Resume' : 'Pause'">
+                        <template x-if="task.state === 'paused' || task.state === 'disabled'">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><polygon points="5,3 19,12 5,21"/></svg>
+                        </template>
+                        <template x-if="task.state !== 'paused' && task.state !== 'disabled'">
+                            <svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+                        </template>
+                        <span x-text="task.state === 'paused' || task.state === 'disabled' ? 'Resume' : 'Pause'"></span>
+                    </button>
+                    <button class="btn-xs btn-details" @click="viewDetails(task.name)" title="View details">
+                        <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                        </svg>
+                        Details
+                    </button>
+                </div>
+            </div>
+        </template>
+    </div>
+
+    <!-- Empty state -->
+    <div class="empty-state" x-show="!loading && tasks.length === 0">
+        No tasks found. Create tasks in Settings &rarr; Task Scheduler.
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+        <button class="action-btn" @click="openSettings('scheduler')">
+            Manage Tasks in Settings
+        </button>
+    </div>
+</div>
+
+<script>
+function tasksDashboardData() {
+    return {
+        loading: false,
+        tasks: [],
+        stats: { total: 0, running: 0, scheduled: 0, adhoc: 0 },
+
+        async init() {
+            await this.refresh();
+        },
+
+        async refresh() {
+            this.loading = true;
+            try {
+                const token = Alpine.store('csrfStore')?.token || '';
+                const resp = await fetch('/scheduler_tasks_list', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': token
+                    },
+                    body: JSON.stringify({})
+                });
+                const data = await resp.json();
+                this.tasks = data.tasks || [];
+                this.computeStats();
+
+                // Update tile badge with running count
+                Alpine.store('tileRowStore')?.updateTileBadge(
+                    'tasks',
+                    this.stats.running,
+                    this.stats.running > 0 ? 'success' : 'info'
+                );
+            } catch (e) {
+                console.error('Error loading tasks dashboard:', e);
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        computeStats() {
+            this.stats = {
+                total: this.tasks.length,
+                running: this.tasks.filter(t => t.state === 'running').length,
+                scheduled: this.tasks.filter(t => t.type === 'scheduled').length,
+                adhoc: this.tasks.filter(t => t.type === 'adhoc').length
+            };
+        },
+
+        async runTask(taskName) {
+            try {
+                const token = Alpine.store('csrfStore')?.token || '';
+                await fetch('/scheduler_task_run', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': token
+                    },
+                    body: JSON.stringify({ name: taskName })
+                });
+                await this.refresh();
+            } catch (e) {
+                console.error('Error running task:', e);
+            }
+        },
+
+        async toggleTask(task) {
+            try {
+                const token = Alpine.store('csrfStore')?.token || '';
+                const newState = (task.state === 'paused' || task.state === 'disabled') ? 'active' : 'paused';
+                await fetch('/scheduler_task_update', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-Token': token
+                    },
+                    body: JSON.stringify({ name: task.name, state: newState })
+                });
+                await this.refresh();
+            } catch (e) {
+                console.error('Error toggling task:', e);
+            }
+        },
+
+        formatCron(task) {
+            if (task.type === 'adhoc') return 'Manual trigger';
+            if (task.type === 'planned' && task.planned_times) {
+                return task.planned_times.length + ' planned run(s)';
+            }
+
+            // Parse cron fields for human-readable display
+            const cron = task.cron || '';
+            if (!cron) return 'No schedule';
+
+            const parts = cron.trim().split(/\s+/);
+            if (parts.length < 5) return cron;
+
+            const [minute, hour, dom, month, dow] = parts;
+
+            // Common patterns
+            if (minute === '*' && hour === '*') return 'Every minute';
+            if (hour === '*' && minute.startsWith('*/')) return `Every ${minute.slice(2)} minutes`;
+            if (minute === '0' && hour.startsWith('*/')) return `Every ${hour.slice(2)} hours`;
+            if (minute === '0' && hour === '*') return 'Every hour';
+            if (minute === '0' && hour === '0' && dom === '*' && month === '*' && dow === '*') return 'Daily at midnight';
+            if (dom === '*' && month === '*' && dow === '*') {
+                const h = parseInt(hour);
+                const m = parseInt(minute);
+                const period = h >= 12 ? 'pm' : 'am';
+                const displayH = h === 0 ? 12 : h > 12 ? h - 12 : h;
+                if (m === 0) return `Daily at ${displayH}${period}`;
+                return `Daily at ${displayH}:${String(m).padStart(2, '0')}${period}`;
+            }
+            if (dow !== '*' && dom === '*' && month === '*') {
+                const days = { '0': 'Sun', '1': 'Mon', '2': 'Tue', '3': 'Wed', '4': 'Thu', '5': 'Fri', '6': 'Sat' };
+                const dayName = days[dow] || dow;
+                return `Weekly on ${dayName}`;
+            }
+
+            return cron;
+        },
+
+        truncatePrompt(prompt) {
+            if (!prompt) return '';
+            return prompt.length > 150 ? prompt.substring(0, 150) + '...' : prompt;
+        },
+
+        formatLastRun(dateStr) {
+            if (!dateStr) return 'Never';
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diff = now - date;
+
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return Math.round(diff / 60000) + 'm ago';
+            if (diff < 86400000) return Math.round(diff / 3600000) + 'h ago';
+            if (diff < 604800000) return Math.round(diff / 86400000) + 'd ago';
+            return date.toLocaleDateString();
+        },
+
+        viewDetails(taskName) {
+            // Navigate to settings scheduler tab with focus on this task
+            this.openSettings('scheduler');
+        },
+
+        openSettings(tab) {
+            Alpine.store('tileRowStore')?.collapseTile();
+            Alpine.store('settingsStore')?.setTab(tab);
+            document.getElementById('settings')?.click();
+        }
+    };
+}
+</script>
+
+<style>
+.tasks-dashboard-panel {
+    color: var(--text-primary, #fff);
+}
+
+.tasks-dashboard-panel .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.tasks-dashboard-panel .panel-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.tasks-dashboard-panel .btn-sm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--tertiary-bg, #252525);
+    border: 1px solid var(--color-border, #333);
+    border-radius: 4px;
+    color: var(--text-secondary, #aaa);
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.tasks-dashboard-panel .btn-sm:hover:not(:disabled) {
+    background: var(--hover-bg, #303030);
+    color: var(--text-primary, #fff);
+}
+
+.tasks-dashboard-panel .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.tasks-dashboard-panel .stat-card {
+    background: var(--tertiary-bg, #252525);
+    border: 1px solid var(--color-border, #333);
+    border-radius: 6px;
+    padding: 12px;
+    text-align: center;
+}
+
+.tasks-dashboard-panel .stat-value {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-primary, #4a9eff);
+}
+
+.tasks-dashboard-panel .stat-value.running-value { color: var(--color-success, #38a169); }
+.tasks-dashboard-panel .stat-value.scheduled-value { color: var(--color-primary, #4a9eff); }
+.tasks-dashboard-panel .stat-value.adhoc-value { color: var(--color-warning, #d69e2e); }
+
+.tasks-dashboard-panel .stat-label {
+    font-size: 11px;
+    color: var(--text-secondary, #aaa);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Task cards - full detail */
+.task-cards-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.task-card-full {
+    background: var(--tertiary-bg, #252525);
+    border: 1px solid var(--color-border, #333);
+    border-radius: 6px;
+    padding: 12px;
+    border-left: 3px solid var(--color-border, #333);
+}
+
+.task-card-full.task-running { border-left-color: var(--color-success, #38a169); }
+.task-card-full.task-active { border-left-color: var(--color-primary, #4a9eff); }
+.task-card-full.task-idle { border-left-color: var(--text-secondary, #aaa); }
+.task-card-full.task-paused,
+.task-card-full.task-disabled { border-left-color: var(--color-warning, #d69e2e); }
+.task-card-full.task-error { border-left-color: var(--color-danger, #e53e3e); }
+
+.task-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.task-card-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.task-card-badges {
+    display: flex;
+    gap: 6px;
+}
+
+.type-badge,
+.state-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+.type-badge.type-scheduled { background: #2c5282; color: #90cdf4; }
+.type-badge.type-adhoc { background: #744210; color: #fbd38d; }
+.type-badge.type-planned { background: #553c9a; color: #d6bcfa; }
+
+.state-badge.state-running { background: #276749; color: #9ae6b4; }
+.state-badge.state-active { background: #2c5282; color: #90cdf4; }
+.state-badge.state-idle { background: #2d3748; color: #a0aec0; }
+.state-badge.state-paused { background: #744210; color: #fbd38d; }
+.state-badge.state-disabled { background: #4a5568; color: #a0aec0; }
+.state-badge.state-error { background: #742a2a; color: #feb2b2; }
+
+.task-card-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 6px;
+}
+
+.task-card-prompt {
+    font-size: 12px;
+    color: var(--text-tertiary, #777);
+    line-height: 1.4;
+    margin-bottom: 8px;
+    padding: 6px 8px;
+    background: rgba(0, 0, 0, 0.15);
+    border-radius: 4px;
+    font-family: var(--font-mono, 'JetBrains Mono', monospace);
+    word-break: break-word;
+}
+
+.task-card-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-secondary, #aaa);
+    margin-bottom: 8px;
+}
+
+.task-card-project {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.task-card-lastrun {
+    font-family: monospace;
+}
+
+.task-card-actions {
+    display: flex;
+    gap: 6px;
+    justify-content: flex-end;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-border, #333);
+}
+
+.tasks-dashboard-panel .btn-xs {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid var(--color-border, #333);
+    border-radius: 3px;
+    color: var(--text-secondary, #aaa);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+}
+
+.tasks-dashboard-panel .btn-xs:hover:not(:disabled) {
+    background: var(--hover-bg, #303030);
+    color: var(--text-primary, #fff);
+}
+
+.tasks-dashboard-panel .btn-xs:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.tasks-dashboard-panel .btn-run:hover:not(:disabled) {
+    border-color: var(--color-success, #38a169);
+    color: var(--color-success, #38a169);
+}
+
+.tasks-dashboard-panel .btn-toggle:hover:not(:disabled) {
+    border-color: var(--color-warning, #d69e2e);
+    color: var(--color-warning, #d69e2e);
+}
+
+.tasks-dashboard-panel .btn-details:hover:not(:disabled) {
+    border-color: var(--color-primary, #4a9eff);
+    color: var(--color-primary, #4a9eff);
+}
+
+.tasks-dashboard-panel .empty-state {
+    text-align: center;
+    padding: 20px;
+    color: var(--text-secondary, #aaa);
+    font-size: 13px;
+}
+
+.tasks-dashboard-panel .quick-actions {
+    margin-top: 12px;
+}
+
+.tasks-dashboard-panel .action-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--tertiary-bg, #252525);
+    border: 1px solid var(--color-border, #333);
+    border-radius: 6px;
+    color: var(--text-secondary, #aaa);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tasks-dashboard-panel .action-btn:hover {
+    background: var(--color-primary-bg, #1a365d);
+    color: var(--color-primary, #4a9eff);
+    border-color: var(--color-primary, #4a9eff);
+}
+
+/* Scrollbar styling for task list */
+.task-cards-section::-webkit-scrollbar {
+    width: 4px;
+}
+
+.task-cards-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.task-cards-section::-webkit-scrollbar-thumb {
+    background: var(--color-border, #333);
+    border-radius: 2px;
+}
+</style>

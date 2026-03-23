@@ -6,7 +6,7 @@
 const tileRowModel = {
     // State
     expandedTile: null,  // Currently expanded tile ID (null = all collapsed)
-    // 4 monitoring tiles - Portfolio moved to sidebar dashboard, Scheduler stays in Settings
+    // 5 monitoring tiles - Portfolio moved to sidebar dashboard, Scheduler stays in Settings
     tiles: [
         {
             id: 'workflows',
@@ -39,6 +39,14 @@ const tileRowModel = {
             component: 'components/panels/cowork-panel.html',
             badge: 0,
             badgeType: 'warning'
+        },
+        {
+            id: 'tasks',
+            icon: 'tasks',
+            label: 'Tasks',
+            component: 'components/panels/tasks-dashboard-panel.html',
+            badge: 0,
+            badgeType: 'info'
         }
     ],
     panelContent: '',
@@ -96,11 +104,12 @@ const tileRowModel = {
     // Badge management
     async loadBadges() {
         try {
-            // Load badges from various APIs (4 tiles only)
+            // Load badges from various APIs (5 tiles)
             await Promise.all([
                 this.loadWorkflowBadge(),
                 this.loadRalphBadge(),
-                this.loadCoworkBadge()
+                this.loadCoworkBadge(),
+                this.loadTasksBadge()
             ]);
         } catch (error) {
             console.error('Error loading badges:', error);
@@ -145,6 +154,18 @@ const tileRowModel = {
         }
     },
 
+    async loadTasksBadge() {
+        try {
+            const resp = await this.apiCall('/scheduler_tasks_list', {});
+            if (resp.tasks) {
+                const runningCount = resp.tasks.filter(t => t.state === 'running').length;
+                this.updateTileBadge('tasks', runningCount, runningCount > 0 ? 'success' : null);
+            }
+        } catch (e) {
+            // Silently fail
+        }
+    },
+
     updateTileBadge(tileId, count, type) {
         const tile = this.tiles.find(t => t.id === tileId);
         if (tile) {
@@ -182,7 +203,7 @@ const tileRowModel = {
         }
     },
 
-    // Icon mapping (4 tiles only)
+    // Icon mapping (5 tiles)
     getIconSvg(iconName) {
         const icons = {
             workflow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -205,6 +226,12 @@ const tileRowModel = {
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87"/>
                 <path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>`,
+            tasks: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"/>
+                <path d="M9 14l2 2 4-4"/>
+                <line x1="9" y1="18" x2="15" y2="18"/>
             </svg>`
         };
         return icons[iconName] || icons.workflow;
