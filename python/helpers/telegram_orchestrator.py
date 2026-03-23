@@ -23,6 +23,7 @@ ORCHESTRATOR_COMMANDS = {
     "providers",
     "routing",
     "trust",
+    "backup",
 }
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
@@ -43,6 +44,7 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /providers — Show LLM provider health and availability
 /routing — Show active LLM routing configuration
 /trust — View or change your trust level
+/backup — Run database backup
 /help — This message
 /new — Reset conversation
 
@@ -153,6 +155,11 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
         return (
             f"Change my trust level to {args.strip()}. Valid levels: "
             f"observer (1), guided (2), collaborative (3), autonomous (4)."
+        )
+    if cmd == "backup":
+        return (
+            "Run a backup of all instrument databases using the backup utility. "
+            "Report how many databases were backed up and any errors."
         )
     return ""
 
