@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-23T03:20:53.267469+00:00",
+  "generated_at": "2026-03-23T03:37:52.717846+00:00",
   "platform": {
     "commands": {
       "total": 414,
@@ -10,7 +10,7 @@
       "active": 35
     },
     "tools": {
-      "total": 74
+      "total": 75
     },
     "api_endpoints": {
       "total": 173
@@ -27,11 +27,17 @@
       "telegram_orchestrator",
       "twilio_voice"
     ],
-    "helper_modules": 145
+    "helper_modules": 148
   },
   "github": {
-    "repos": 0,
-    "verticals": []
+    "repos": 26,
+    "verticals": [
+      "ai-ops",
+      "communications",
+      "devops",
+      "hospitality",
+      "productivity"
+    ]
   },
   "ag_mesh": {
     "event_types": [
@@ -51,11 +57,630 @@
     ],
     "agent_profiles": 6
   },
-  "products": [],
+  "products": [
+    {
+      "slug": "dev-flow",
+      "name": "DevFlow",
+      "tagline": "AI software delivery platform that recursively deploys agents to build code.",
+      "description": "Takes requirements and specifications, then recursively deploys AI agents to build, test, and ship production code. Leverages 414+ commands, skills, runbooks, and SOPs to handle the full software lifecycle from scaffolding to deployment.",
+      "audience": "builder",
+      "instruments": [
+        "deployment_orchestrator",
+        "project_scaffold",
+        "claude_sdk",
+        "plugin_marketplace",
+        "skill_importer"
+      ],
+      "tools": [
+        "code_execution_tool",
+        "code_review",
+        "deployment_config",
+        "deployment_execute",
+        "deployment_orchestrator",
+        "deployment_record_result",
+        "deployment_run_checks",
+        "deployment_validate_env",
+        "devops_deploy",
+        "devops_monitor",
+        "project_scaffold",
+        "claude_sdk_bridge",
+        "plugin_marketplace",
+        "skill_importer",
+        "api_design",
+        "opencode_bridge"
+      ],
+      "repos": [
+        "agent-jumbo",
+        "small-business-frontend-template",
+        "small-business-backend-template"
+      ],
+      "integrations": [
+        "GitHub",
+        "Claude Code",
+        "Docker",
+        "Vercel"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.accepted",
+        "task.completed",
+        "task.failed"
+      ],
+      "icon_suggestion": "Rocket launching from a code bracket, representing automated software delivery"
+    },
+    {
+      "slug": "architect-flow",
+      "name": "ArchitectFlow",
+      "tagline": "AI-powered requirements generation and system design.",
+      "description": "Transforms business ideas into structured technical specifications, architecture diagrams, and implementation plans. Uses reasoning engines and diagram generation to produce comprehensive system designs that feed directly into DevFlow.",
+      "audience": "builder",
+      "instruments": [
+        "diagram_architect",
+        "diagram_generator",
+        "reasoning_planning_engine"
+      ],
+      "tools": [
+        "diagram_architect",
+        "diagram_tool",
+        "research_organize",
+        "document_query"
+      ],
+      "repos": [
+        "ai-solution-delivery"
+      ],
+      "integrations": [
+        "Draw.io",
+        "Mermaid"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Blueprint grid with connected nodes forming an architecture diagram"
+    },
+    {
+      "slug": "content-studio",
+      "name": "ContentStudio",
+      "tagline": "AI content generation and marketing automation.",
+      "description": "Generates blog posts, social media content, email campaigns, and marketing collateral using brand voice profiles. Integrates with knowledge sources and digest pipelines to produce contextually relevant content at scale.",
+      "audience": "business",
+      "instruments": [
+        "digest_builder",
+        "knowledge_ingest"
+      ],
+      "tools": [
+        "brand_voice",
+        "email",
+        "email_advanced",
+        "digest_builder",
+        "knowledge_ingest",
+        "search_engine"
+      ],
+      "repos": [
+        "mahoosuc.ai"
+      ],
+      "integrations": [
+        "Telegram",
+        "RSS",
+        "Notion"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Pen writing on a canvas with sparkle effects representing AI-generated content"
+    },
+    {
+      "slug": "ops-flow",
+      "name": "OpsFlow",
+      "tagline": "Autonomous AI operations, monitoring, and self-healing infrastructure.",
+      "description": "Manages system operations with autonomous task execution, workflow automation, error recovery, and resource monitoring. The AI ops agent continuously monitors health, detects anomalies, and self-heals without human intervention.",
+      "audience": "builder",
+      "instruments": [
+        "ai_ops_agent",
+        "workflow_engine",
+        "work_queue",
+        "ralph_loop"
+      ],
+      "tools": [
+        "workflow_engine",
+        "workflow_training",
+        "scheduler",
+        "ralph_loop",
+        "swarm_batch",
+        "observability_usage_estimator"
+      ],
+      "repos": [
+        "commandbridge"
+      ],
+      "integrations": [
+        "Redis",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.accepted",
+        "task.completed",
+        "task.failed",
+        "task.escalated"
+      ],
+      "icon_suggestion": "Gear with a circular arrow indicating autonomous operation and self-healing"
+    },
+    {
+      "slug": "security-shield",
+      "name": "SecurityShield",
+      "tagline": "Passkey-enforced security monitoring and risk-gated approvals.",
+      "description": "Provides fail-closed security enforcement with biometric passkey gates, risk classification for all incoming tasks, and continuous security auditing. High-risk operations require mobile biometric approval before execution.",
+      "audience": "builder",
+      "instruments": [
+        "security_monitor"
+      ],
+      "tools": [
+        "security_audit",
+        "auth_test"
+      ],
+      "repos": [],
+      "integrations": [
+        "WebAuthn/Passkeys",
+        "Mobile Push"
+      ],
+      "ag_mesh_events": [
+        "task.approval_required",
+        "task.approval_resolved"
+      ],
+      "icon_suggestion": "Shield with a fingerprint overlay representing biometric security enforcement"
+    },
+    {
+      "slug": "sales-flow",
+      "name": "SalesFlow",
+      "tagline": "AI-generated proposals, demos, and business intelligence.",
+      "description": "Creates customer-facing proposals, demo environments, and business cases automatically. Combines business health analysis with customer lifecycle data to generate targeted sales materials and track pipeline progression.",
+      "audience": "business",
+      "instruments": [
+        "sales_generator",
+        "business_xray",
+        "customer_lifecycle",
+        "solution_catalog"
+      ],
+      "tools": [
+        "sales_generator",
+        "business_xray_tool",
+        "customer_lifecycle",
+        "solution_catalog",
+        "demo_request_create",
+        "demo_request_list",
+        "analytics_roi_calculator"
+      ],
+      "repos": [
+        "SilverSurfer.ai",
+        "ChamberOfCommerceAI"
+      ],
+      "integrations": [
+        "Stripe",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Handshake with an upward trending chart representing deal acceleration"
+    },
+    {
+      "slug": "finance-bridge",
+      "name": "FinanceBridge",
+      "tagline": "Unified financial management with multi-provider bank and payment integration.",
+      "description": "Connects bank accounts via Plaid, processes payments through Stripe, and generates financial reports. Tracks transactions, revenue, expenses, and produces automated finance summaries across all connected businesses.",
+      "audience": "business",
+      "instruments": [
+        "finance_manager",
+        "stripe_payments"
+      ],
+      "tools": [
+        "finance_manager",
+        "stripe_payments",
+        "mahoosuc_finance_report"
+      ],
+      "repos": [],
+      "integrations": [
+        "Plaid",
+        "Stripe"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Dollar sign connected by bridge arches to multiple bank icons"
+    },
+    {
+      "slug": "property-hub",
+      "name": "PropertyHub",
+      "tagline": "AI-powered property and vacation rental management.",
+      "description": "Full rental property management including tenants, leases, maintenance tracking, and financials. Integrates with vacation rental platforms like Airbnb through a unified PMS abstraction layer, with AI voice agents handling guest communication.",
+      "audience": "business",
+      "instruments": [
+        "property_manager",
+        "pms_hub"
+      ],
+      "tools": [
+        "property_manager_tool",
+        "pms_hub_tool"
+      ],
+      "repos": [
+        "remotemotel",
+        "front-desk",
+        "west-bethel-motel-booking-system"
+      ],
+      "integrations": [
+        "Airbnb",
+        "Google Calendar",
+        "Twilio"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "House with a key and calendar overlay representing property management"
+    },
+    {
+      "slug": "comms-bridge",
+      "name": "CommsBridge",
+      "tagline": "Unified voice, SMS, and messaging across Google Voice, Twilio, and Telegram.",
+      "description": "Provides a single interface for outbound calls, SMS, and chat messaging across multiple providers. Google Voice handles browser-based SMS, Twilio powers programmable voice calls, and Telegram serves as the primary command interface.",
+      "audience": "both",
+      "instruments": [
+        "google_voice",
+        "twilio_voice",
+        "calendar_hub"
+      ],
+      "tools": [
+        "google_voice_sms",
+        "twilio_voice_call",
+        "telegram_send",
+        "calendar_hub",
+        "notify_user"
+      ],
+      "repos": [],
+      "integrations": [
+        "Google Voice",
+        "Twilio",
+        "Telegram",
+        "Google Calendar"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Speech bubble with phone and message icons converging into a single hub"
+    },
+    {
+      "slug": "agent-foundry",
+      "name": "AgentFoundry",
+      "tagline": "Build, specialize, and orchestrate autonomous AI agent teams.",
+      "description": "Creates and manages specialized AI agents with distinct capabilities, orchestrates virtual teams for complex multi-step tasks, and provides a learning loop that improves agent performance over time. Includes the Ralph autonomous iteration loop for self-directed work.",
+      "audience": "builder",
+      "instruments": [
+        "specialist_agent_framework",
+        "virtual_team",
+        "learning_improvement_system"
+      ],
+      "tools": [
+        "virtual_team",
+        "call_subordinate",
+        "a2a_chat",
+        "behaviour_adjustment"
+      ],
+      "repos": [
+        "ai-business-ops",
+        "CTOx"
+      ],
+      "integrations": [
+        "AG Mesh",
+        "Redis Streams"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.accepted",
+        "task.completed",
+        "task.escalated"
+      ],
+      "icon_suggestion": "Anvil with a glowing AI agent silhouette being forged, representing agent creation"
+    },
+    {
+      "slug": "portfolio-studio",
+      "name": "PortfolioStudio",
+      "tagline": "Scan, score, and manage your entire code project portfolio.",
+      "description": "Automatically scans codebases to detect languages, frameworks, and quality metrics. Generates sale-readiness scores, tracks project health across repositories, and manages the AI migration pipeline for modernizing legacy systems.",
+      "audience": "both",
+      "instruments": [
+        "portfolio_manager",
+        "ai_migration"
+      ],
+      "tools": [
+        "portfolio_manager",
+        "portfolio_manager_tool",
+        "ai_migration",
+        "project_lifecycle"
+      ],
+      "repos": [
+        "everywhere",
+        "everywhere-demo",
+        "everywhere-prod"
+      ],
+      "integrations": [
+        "GitHub",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Grid of project cards with health score badges and a magnifying glass"
+    },
+    {
+      "slug": "health-flow",
+      "name": "HealthFlow",
+      "tagline": "Healthcare data interoperability and HEDIS quality measurement.",
+      "description": "Enterprise health information exchange platform with FHIR R4 compliance, real-time care gap detection, and HEDIS quality measures. Enables provider integration through starter toolkits and validation pipelines for clinical analytics.",
+      "audience": "business",
+      "instruments": [],
+      "tools": [],
+      "repos": [
+        "hdim",
+        "hdim-validation",
+        "hdim-accelerator",
+        "healthdata-in-motion-platform",
+        "hedis-core-platform"
+      ],
+      "integrations": [
+        "FHIR R4",
+        "HL7"
+      ],
+      "ag_mesh_events": [],
+      "icon_suggestion": "Heart with data pulse line and interconnected nodes representing health data exchange"
+    },
+    {
+      "slug": "life-os",
+      "name": "LifeOS",
+      "tagline": "Personal operating system for daily planning, habits, and life optimization.",
+      "description": "Tracks life events, generates daily plans, manages personal dashboards and widgets. Integrates with Linear for task management, Motion for scheduling, and Notion for knowledge \u2014 creating a unified personal productivity layer.",
+      "audience": "both",
+      "instruments": [
+        "life_os",
+        "linear_integration",
+        "motion_integration",
+        "notion_integration"
+      ],
+      "tools": [
+        "life_os",
+        "linear_integration",
+        "motion_integration",
+        "notion_integration",
+        "memory_save",
+        "memory_load",
+        "memory_delete",
+        "memory_forget",
+        "vision_load"
+      ],
+      "repos": [],
+      "integrations": [
+        "Linear",
+        "Motion",
+        "Notion"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Compass with daily planner pages and habit tracker rings"
+    }
+  ],
   "pricing": {
-    "tiers": [],
-    "cost_components": [],
-    "competitive_reference": [],
-    "assumptions": []
+    "cost_components": [
+      {
+        "name": "LLM API Tokens (Cloud)",
+        "unit": "per 1K tokens",
+        "cost_low": 0.0001,
+        "cost_high": 0.6,
+        "notes": "Range from Gemini 2.0 Flash ($0.10/M input) to OpenAI o3 ($600/M output). Typical balanced usage with Claude 3.5 Sonnet or GPT-4o costs ~$0.003-0.015/1K tokens. Platform routes via LiteLLM across 18 chat providers. Local Ollama models (qwen2.5:3b, deepseek-r1:8b, llama3.2:3b) have $0 token cost."
+      },
+      {
+        "name": "LLM API Tokens (Local/Ollama)",
+        "unit": "per 1K tokens",
+        "cost_low": 0.0,
+        "cost_high": 0.0,
+        "notes": "Ollama, LM Studio, and other local providers have zero per-token cost. Electricity cost is negligible (~$0.01-0.05/hr for CPU inference). The router catalogues 3 local models (qwen2.5:3b at 1.9GB, deepseek-r1:8b at 4.7GB, llama3.2:3b at 2.2GB) with auto-detection."
+      },
+      {
+        "name": "Compute (Docker/Self-Hosted)",
+        "unit": "per month",
+        "cost_low": 0.0,
+        "cost_high": 80.0,
+        "notes": "Self-hosted on user hardware: $0. VPS hosting (4 vCPU, 8GB RAM suitable for the platform + small local models): $20-40/mo on Hetzner/OVH, $40-80/mo on AWS/GCP. GPU instance for larger local models: $50-200/mo. Platform targets 'modest hardware' with P95 backend ready <= 45s."
+      },
+      {
+        "name": "Storage (SQLite Databases)",
+        "unit": "per month",
+        "cost_low": 0.0,
+        "cost_high": 5.0,
+        "notes": "36 instruments each with dedicated SQLite .db files, plus llm_router.db for usage tracking and events.db per instrument. All use WAL mode for concurrency. Typical total footprint: 50MB-2GB. On self-hosted hardware: $0. On cloud block storage: $0.50-5.00/mo."
+      },
+      {
+        "name": "Integration APIs (Stripe)",
+        "unit": "per transaction",
+        "cost_low": 0.3,
+        "cost_high": 0.3,
+        "notes": "Stripe charges 2.9% + $0.30 per transaction. This is a pass-through cost borne by the platform operator for payment processing. The stripe_payments instrument manages customers, products, invoices, and subscriptions with full lifecycle sync."
+      },
+      {
+        "name": "Integration APIs (Twilio Voice)",
+        "unit": "per minute",
+        "cost_low": 0.013,
+        "cost_high": 0.022,
+        "notes": "Twilio voice calls: ~$0.013-0.022/min outbound (US). The twilio_voice instrument uses TwiML for call scripting. Pass-through cost using operator's own Twilio credentials (BYOK pattern)."
+      },
+      {
+        "name": "Integration APIs (SMS via Google Voice)",
+        "unit": "per message",
+        "cost_low": 0.0,
+        "cost_high": 0.0,
+        "notes": "Google Voice SMS is free (included with Google Voice account). The google_voice instrument uses browser automation (Playwright session) to send/receive SMS with dedup via SHA-256 hashing. No per-message API cost."
+      },
+      {
+        "name": "Infrastructure (Domain, SSL, DNS)",
+        "unit": "per month",
+        "cost_low": 1.0,
+        "cost_high": 5.0,
+        "notes": "Domain registration: ~$10-15/yr. SSL via Let's Encrypt: free. DNS: free-$5/mo. Amortized monthly: $1-5."
+      },
+      {
+        "name": "Support and Maintenance",
+        "unit": "per month",
+        "cost_low": 0.0,
+        "cost_high": 200.0,
+        "notes": "Community support (GitHub issues, Discord): $0. Professional support with SLA: estimated $50-200/mo per customer depending on tier. Documentation and community maintenance is an operational cost spread across all users."
+      }
+    ],
+    "tiers": [
+      {
+        "name": "Community (Free)",
+        "price_monthly": 0,
+        "tagline": "Full-power self-hosted AI orchestration, no strings attached",
+        "includes": [
+          "Complete platform (all 36 instruments)",
+          "LLM Router with 18 chat providers + 9 embedding providers",
+          "Bring Your Own Keys (BYOK) for all cloud LLM providers",
+          "Unlimited local model usage via Ollama/LM Studio",
+          "SQLite-based storage (WAL mode, zero config)",
+          "Full Web UI with task scheduler and dashboards",
+          "Stripe, Twilio, Google Voice integrations (BYOK credentials)",
+          "Community support (GitHub Issues, Discord)",
+          "All future open-source updates"
+        ],
+        "limits": {
+          "agents": "unlimited",
+          "instruments": "36 (all included)",
+          "cloud_llm_routing": "BYOK only, no included tokens",
+          "support": "community only",
+          "businesses": "1 instance"
+        },
+        "cost_basis": "Zero marginal cost to us. User self-hosts on their own hardware and provides their own API keys. All LLM, Twilio, Stripe costs are pass-through to the user's own accounts. Our cost is only open-source maintenance, amortized across the community. This is the genuine open-core model: the full product is free and usable."
+      },
+      {
+        "name": "Pro",
+        "price_monthly": 39,
+        "tagline": "Managed routing, usage insights, and priority support for serious operators",
+        "includes": [
+          "Everything in Community",
+          "Managed LLM proxy with $10/mo included cloud token budget (via Agent Jumbo Venice.ai endpoint)",
+          "Usage analytics dashboard with per-project cost tracking",
+          "Priority model routing with automatic fallback chains",
+          "Prompt caching optimization (supported on Anthropic, OpenAI models)",
+          "Pre-built workflow templates and agent configurations",
+          "Email support with 48-hour SLA",
+          "Early access to new instruments and features",
+          "Automatic backup scheduling for SQLite databases"
+        ],
+        "limits": {
+          "included_cloud_token_budget": "$10/mo (overage billed at cost + 20%)",
+          "agents": "unlimited",
+          "instruments": "36 (all included)",
+          "support": "email, 48-hour SLA",
+          "businesses": "1 instance"
+        },
+        "cost_basis": "The $10 included token budget costs us ~$8-10 at wholesale rates (we route through our Venice.ai proxy at near-cost). Support cost ~$5-8/customer/mo amortized. Infrastructure for proxy/analytics: ~$3-5/customer/mo. Total COGS ~$16-23, yielding 41-59% gross margin at $39. Priced below Dify Pro ($59) and n8n Cloud Pro ($50) while including LLM tokens that competitors charge separately."
+      },
+      {
+        "name": "Enterprise",
+        "price_monthly": 149,
+        "tagline": "Multi-business orchestration with premium support and governance controls",
+        "includes": [
+          "Everything in Pro",
+          "$50/mo included cloud token budget",
+          "Multi-instance management (up to 5 business deployments)",
+          "Advanced governance: routing rules, cost caps, model allowlists per project",
+          "Batch API support for high-volume background processing",
+          "Dedicated onboarding and configuration review",
+          "Priority support with 12-hour SLA",
+          "Custom instrument development guidance",
+          "Audit logging and compliance exports",
+          "SSO/SAML integration support"
+        ],
+        "limits": {
+          "included_cloud_token_budget": "$50/mo (overage billed at cost + 15%)",
+          "agents": "unlimited",
+          "instruments": "36 + custom",
+          "support": "priority, 12-hour SLA",
+          "businesses": "up to 5 instances"
+        },
+        "cost_basis": "Token budget costs ~$40-45 at wholesale. Support at higher SLA: ~$20-30/customer/mo. Multi-instance infrastructure overhead: ~$10-15/mo. Total COGS ~$70-90, yielding 40-53% gross margin at $149. Positioned well below custom-priced enterprise tiers from CrewAI and LangChain while providing concrete multi-business value."
+      },
+      {
+        "name": "Enterprise Custom",
+        "price_monthly": 0,
+        "tagline": "Custom deployments, dedicated support, and white-label options -- contact us",
+        "includes": [
+          "Everything in Enterprise",
+          "Unlimited business instances",
+          "Custom token budget and volume pricing",
+          "Dedicated support engineer",
+          "White-label and custom branding options",
+          "On-premise deployment assistance",
+          "Custom SLA (up to 1-hour response)",
+          "Quarterly architecture reviews"
+        ],
+        "limits": {
+          "included_cloud_token_budget": "custom",
+          "agents": "unlimited",
+          "instruments": "unlimited + custom development",
+          "support": "dedicated engineer",
+          "businesses": "unlimited"
+        },
+        "cost_basis": "Contact sales. Pricing based on deployment scale, token volume, and support requirements. Minimum expected: $500/mo. Targeted at agencies and MSPs operating 10+ business instances."
+      }
+    ],
+    "competitive_reference": [
+      {
+        "competitor": "Dify",
+        "tier": "Pro",
+        "price": 59,
+        "comparison_notes": "Dify Pro at $59/mo includes 5,000 message credits but requires separate LLM API keys. Agent Jumbo Pro at $39 includes $10 token budget routed through our proxy AND supports unlimited local model usage. Dify is cloud-hosted; Agent Jumbo is self-hosted with optional managed routing."
+      },
+      {
+        "competitor": "n8n",
+        "tier": "Cloud Pro",
+        "price": 50,
+        "comparison_notes": "n8n Cloud Pro at $50/mo focuses on workflow automation with 2,500 executions. Agent Jumbo is purpose-built for AI agent orchestration with 36 specialized instruments, LLM routing across 18 providers, and full lifecycle management. n8n has broader integration ecosystem (500+ nodes) but no native LLM routing or agent loop management."
+      },
+      {
+        "competitor": "CrewAI",
+        "tier": "Enterprise",
+        "price": 0,
+        "comparison_notes": "CrewAI Enterprise is custom-priced (typically $200+/mo). Their open-source framework requires significant custom integration. Agent Jumbo provides a complete operational platform (Web UI, task scheduler, dashboards, payment processing, communication instruments) out of the box at $0 for self-hosted."
+      },
+      {
+        "competitor": "LangGraph (LangChain)",
+        "tier": "Cloud Plus",
+        "price": 0,
+        "comparison_notes": "LangGraph Cloud is usage-based pricing (no fixed monthly). Their Developer tier is free with limited runs. Agent Jumbo's self-hosted model means zero platform fees for local usage. LangGraph excels at durable execution and human-in-the-loop; Agent Jumbo excels at full lifecycle orchestration with integrated business instruments."
+      },
+      {
+        "competitor": "OpenHands",
+        "tier": "Cloud",
+        "price": 0,
+        "comparison_notes": "OpenHands is focused purely on AI software engineering (coding agent). Agent Jumbo covers the full AI Architect lifecycle: design, build, test, validate, deploy, plus business operations (CRM, payments, communications). Different scope but overlapping in the coding-agent vertical."
+      }
+    ],
+    "assumptions": [
+      "All pricing assumes self-hosted deployment where the operator provides their own compute hardware or VPS.",
+      "LLM token costs are based on published pricing as of March 2026: OpenAI GPT-4o at $5/$15 per million tokens, Anthropic Claude 3.5 Sonnet at $3/$15, Gemini 2.0 Flash at $0.10/$0.40, local Ollama models at $0.",
+      "The 'typical small business' usage profile is estimated at 500K-2M tokens/month across chat, code generation, and background tasks, costing $2-15/month in cloud LLM fees depending on model mix.",
+      "Stripe transaction fees (2.9% + $0.30) and Twilio per-minute charges are always pass-through costs borne by the operator regardless of tier.",
+      "The managed LLM proxy (Agent Jumbo Venice.ai endpoint) operates at near-cost with a 15-20% markup on wholesale token prices to cover routing infrastructure.",
+      "Support cost estimates assume a lean team: community support is volunteer/maintainer time, Pro email support is ~15 min/ticket average, Enterprise priority support is ~30 min/ticket with dedicated rotation.",
+      "36 instruments confirmed in codebase, each with independent SQLite database. Total storage footprint for a typical installation: 50MB-2GB.",
+      "Enterprise multi-instance pricing assumes shared infrastructure for proxy/analytics with per-instance marginal cost of ~$2-3/mo.",
+      "GPU costs for local model inference are excluded from tier pricing since they are operator hardware decisions, not platform costs.",
+      "Competitor pricing sourced from public pricing pages and GitHub documentation as of March 2026; actual enterprise pricing may vary."
+    ]
   }
 }
