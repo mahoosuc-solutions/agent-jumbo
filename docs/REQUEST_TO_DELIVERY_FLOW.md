@@ -57,10 +57,11 @@ flowchart LR
 5. [Instrument Layer](#5-instrument-layer)
 6. [The Five Project Systems](#6-the-five-project-systems)
 7. [Knowledge Ingest Pipeline](#7-knowledge-ingest-pipeline)
-8. [Response Delivery](#8-response-delivery)
-9. [Security Model](#9-security-model)
-10. [Extension Hooks Reference](#10-extension-hooks-reference)
-11. [Debugging Guide](#11-debugging-guide)
+8. [Stripe Payment Pipeline](#8-stripe-payment-pipeline)
+9. [Response Delivery](#9-response-delivery)
+10. [Security Model](#10-security-model)
+11. [Extension Hooks Reference](#11-extension-hooks-reference)
+12. [Debugging Guide](#12-debugging-guide)
 
 <!-- markdownlint-enable MD007 -->
 
@@ -267,11 +268,74 @@ Agent 0 can delegate via the `call_subordinate` tool, creating child agents. Eac
 - Shares the same `AgentContext`
 - Reports results back to the parent agent
 
+### Multi-LLM Orchestration Engine
+
+Agent Jumbo can act as a **meta-agent**, decomposing complex tasks and dispatching subtasks concurrently to different LLM providers.
+
+```mermaid
+flowchart LR
+    subgraph Input
+        PROMPT[Complex Prompt]
+    end
+
+    subgraph Detect["Detection (_82_coordination_hints)"]
+        HINTS[Detect multi-part structure]
+    end
+
+    subgraph Decompose["Task Decomposer"]
+        CLASSIFY[Classify subtasks]
+        SPLIT[Assign provider affinity]
+    end
+
+    subgraph Context["Shared Context Store"]
+        CTX[Build per-subtask context packages]
+    end
+
+    subgraph Execute["Parallel Executor"]
+        CLAUDE[Claude: reasoning/code]
+        GEMINI[Gemini: speed/vision]
+        OLLAMA[Ollama: local/simple]
+    end
+
+    subgraph Synthesize["Result Synthesizer"]
+        COMBINE[Combine + unify]
+    end
+
+    PROMPT --> HINTS --> DECOMPOSE
+    DECOMPOSE --> CLASSIFY --> SPLIT --> CTX
+    CTX --> CLAUDE & GEMINI & OLLAMA
+    CLAUDE & GEMINI & OLLAMA --> COMBINE
+```
+
+**Components:**
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Task Classifier | `python/helpers/task_decomposer.py` | Maps prompts to optimal provider (regex patterns) |
+| Task Decomposer | `python/helpers/task_decomposer.py` | Splits multi-part prompts into subtasks with dependencies |
+| Shared Context Store | `python/helpers/shared_context.py` | Serializes context per-subtask within provider window limits |
+| Parallel Executor | `python/helpers/parallel_executor.py` | DAG-aware concurrent execution via `asyncio.gather` |
+| Result Synthesizer | `python/helpers/result_synthesizer.py` | Combines multi-provider results into coherent response |
+| Coordinator Tool | `python/tools/coordinator.py` | Agent-callable interface (decompose, dispatch, classify) |
+| Coordination Hints | `python/extensions/message_loop_prompts_after/_82_coordination_hints.py` | Auto-detects multi-part tasks in prompt processing |
+| Coordinator Extension | `python/extensions/system_prompt/_90_coordinator.py` | Injects coordinator awareness into system prompt |
+
+**Provider Context Budgets:**
+
+| Provider | Context Window | Usable (75%) | Best For |
+|----------|---------------|-------------|----------|
+| Anthropic (Claude) | 200K tokens | 150K | Complex reasoning, code generation, creative writing |
+| Google (Gemini) | 1M tokens | 750K | Speed, vision, long context, data extraction |
+| OpenAI (GPT) | 128K tokens | 96K | General tasks, structured output |
+| Ollama (local) | 8K tokens | 6K | Simple tasks, privacy, zero cost |
+
+**Context Priority** (highest first): prompt → system instructions → dependency results → project context → conversation history → memory recalls. Each section is truncated at sentence boundaries when budget is exceeded.
+
 ---
 
 ## 4. Tool Catalog
 
-72 tools in `python/tools/`. Each inherits from `python.helpers.tool.Tool` and implements `async execute() -> Response`.
+75 tools in `python/tools/`. Each inherits from `python.helpers.tool.Tool` and implements `async execute() -> Response`.
 
 Tools are resolved dynamically: first checks `agents/{profile}/tools/{name}.py`, then `python/tools/{name}.py`.
 
@@ -300,6 +364,19 @@ Tools are resolved dynamically: first checks `agents/{profile}/tools/{name}.py`,
 | `linear_integration` | Linear issues: create, update, search, sync pipeline |
 | `motion_integration` | Motion calendar/task sync |
 | `notion_integration` | Notion page/database operations |
+
+### Orchestration and Coordination (2)
+
+| Tool | Purpose |
+|------|---------|
+| `coordinator` | Multi-LLM task coordination: decompose, dispatch, classify, provider_health, cost_report |
+| `solution_catalog` | AI solutions marketplace: list, get, create, publish to Stripe, dashboard |
+
+### Payments (1)
+
+| Tool | Purpose |
+|------|---------|
+| `stripe_payments` | Stripe integration: customers, products, checkout, invoices, subscriptions, MRR/churn reporting |
 
 ### Knowledge and Memory (7)
 
@@ -457,6 +534,8 @@ self.manager = Manager(db_path)
 | `virtual_team` | `virtual_team.db` | Multi-agent coordination |
 | `work_queue` | `work_queue.db` | Work item discovery, scoring, execution |
 | `workflow_engine` | `workflow.db` | Workflow definition and execution |
+| `stripe_payments` | `stripe_payments.db` | Stripe customers, products, prices, payments, subscriptions, invoices, webhooks |
+| `solution_catalog` | none (filesystem) | AI solutions marketplace (`solutions/` directory) |
 
 ---
 
@@ -592,7 +671,57 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 
 ---
 
-## 8. Response Delivery
+## 8. Stripe Payment Pipeline
+
+End-to-end payment processing from AI-built code to sale.
+
+```mermaid
+flowchart LR
+    PROJ[Project Complete] --> PORTFOLIO[Portfolio Manager]
+    PORTFOLIO -->|score readiness| PRODUCT[Create Product]
+    PRODUCT -->|sync| STRIPE_PROD[Stripe Product + Price]
+
+    LEAD[Lead Captured] --> LIFECYCLE[Customer Lifecycle]
+    LIFECYCLE -->|sync| STRIPE_CUST[Stripe Customer]
+
+    PROPOSAL[Proposal Accepted] --> INVOICE[Stripe Invoice]
+    STRIPE_PROD --> CHECKOUT[Checkout Session URL]
+
+    INVOICE --> PAYMENT[Payment]
+    CHECKOUT --> PAYMENT
+    PAYMENT -->|webhook| PIPELINE[Pipeline: closed-won]
+    PIPELINE --> DELIVERY[Deployment Begins]
+```
+
+**Key components:**
+
+| Component | File | Purpose |
+|-----------|------|---------|
+| Stripe Provider | `instruments/custom/stripe_payments/providers/stripe_provider.py` | httpx-based Stripe API (form-encoded) |
+| Mock Provider | `instruments/custom/stripe_payments/providers/mock_provider.py` | Deterministic test data |
+| Payment Manager | `instruments/custom/stripe_payments/stripe_manager.py` | Business logic: sync, checkout, subscriptions, reporting |
+| Payment Database | `instruments/custom/stripe_payments/stripe_db.py` | 7 tables: customers, products, prices, payments, subscriptions, invoices, webhook_events |
+| Webhook Handler | `instruments/custom/stripe_payments/webhook_handler.py` | Idempotent processing of 8 Stripe event types |
+| Webhook API | `python/api/stripe_webhook.py` | `/api/stripe/webhook` with signature verification |
+| Agent Tool | `python/tools/stripe_payments.py` | 17 actions across CRUD, sync, checkout, subscriptions, reporting |
+
+**Solutions Platform:**
+
+5 seed AI infrastructure solutions in `solutions/`:
+
+- AI Customer Support ($3,500 + $750/mo)
+- AI Document Processing ($5,000 + $1,200/mo)
+- AI Sales Automation ($4,000 + $900/mo)
+- AI Property Management ($2,500 + $500/mo)
+- AI Financial Reporting ($3,000 + $600/mo)
+
+Each solution has `solution.json` (pricing, instruments, agents) and `architecture.md` (Mermaid diagrams). Managed via `solution_catalog` tool. Knowledge base at `knowledge/custom/ai-infrastructure/` (10 reference docs, 3,100+ lines).
+
+**Telegram commands:** `/payments`, `/revenue`, `/invoices`, `/solutions`, `/solution <name>`
+
+---
+
+## 9. Response Delivery
 
 ### Telegram
 
@@ -636,7 +765,7 @@ Items are deduplicated by `(source_id, content_hash)` — SHA256 of content, fir
 
 ---
 
-## 9. Security Model
+## 10. Security Model
 
 ### Passkey Enforcement
 
@@ -680,16 +809,16 @@ All instrument SQLite databases use WAL mode + `busy_timeout=5000ms` to prevent 
 
 ---
 
-## 10. Extension Hooks Reference
+## 11. Extension Hooks Reference
 
 22 hook points across the agent lifecycle. Extensions are Python files in `python/extensions/{hook_name}/`, executed in filename-sort order.
 
 | Hook | Timing | Files |
 |------|--------|-------|
 | `agent_init` | Agent creation | `_10_initial_message`, `_15_load_profile_settings` |
-| `system_prompt` | Before each LLM call (system) | `_10_system_prompt`, `_20_behaviour`, `_30_cowork`, `_85_telegram`, `adr_context` |
+| `system_prompt` | Before each LLM call (system) | `_10_system_prompt`, `_20_behaviour`, `_30_cowork`, `_85_telegram`, `_90_coordinator`, `adr_context` |
 | `message_loop_prompts_before` | Before history assembly | `_90_organize_history_wait` |
-| `message_loop_prompts_after` | After history assembly | `_50_recall_memories`, `_60_datetime`, `_70_agent_info`, `_75_project_extras`, `_80_enhancer`, `_91_wait` |
+| `message_loop_prompts_after` | After history assembly | `_50_recall_memories`, `_60_datetime`, `_70_agent_info`, `_75_project_extras`, `_80_enhancer`, `_82_coordination_hints`, `_91_wait` |
 | `monologue_start` | Monologue begins | `_10_memory_init`, `_60_rename_chat` |
 | `message_loop_start` | Each loop iteration starts | `_10_iteration_no` |
 | `before_main_llm_call` | Just before LLM call | `_10_log_for_stream` |
@@ -712,7 +841,7 @@ All instrument SQLite databases use WAL mode + `busy_timeout=5000ms` to prevent 
 
 ---
 
-## 11. Debugging Guide
+## 12. Debugging Guide
 
 ### Trace a Telegram Message
 
