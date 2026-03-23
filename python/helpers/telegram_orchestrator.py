@@ -22,6 +22,7 @@ ORCHESTRATOR_COMMANDS = {
     "coordinate",
     "providers",
     "routing",
+    "trust",
 }
 
 HELP_TEXT = """*Agent Jumbo — Telegram Commands*
@@ -41,6 +42,7 @@ HELP_TEXT = """*Agent Jumbo — Telegram Commands*
 /coordinate <task> — Multi-LLM coordinated execution
 /providers — Show LLM provider health and availability
 /routing — Show active LLM routing configuration
+/trust — View or change your trust level
 /help — This message
 /new — Reset conversation
 
@@ -141,6 +143,16 @@ def slash_command_to_prompt(cmd: str, args: str) -> str:
         return (
             "Show the current LLM routing configuration. Which models are configured "
             "for chat, utility, browser, and embedding roles? What routing rules are active?"
+        )
+    if cmd == "trust":
+        if not args.strip():
+            return (
+                "Show my current trust level and explain what each level means. "
+                "Include what actions are automatic vs require approval at my current level."
+            )
+        return (
+            f"Change my trust level to {args.strip()}. Valid levels: "
+            f"observer (1), guided (2), collaborative (3), autonomous (4)."
         )
     return ""
 

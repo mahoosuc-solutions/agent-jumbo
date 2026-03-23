@@ -61,6 +61,30 @@ Connecting every component is AG Mesh, the event-driven backbone built on Redis 
 
 ---
 
+## Security Foundation
+
+**Headline:**
+Built on Kali Linux. Secured like it matters.
+
+**Body:**
+While most AI platforms run on generic Linux distributions, Mahoosuc OS is built on Kali Linux — the same operating system used by security professionals worldwide to test and harden enterprise systems. This is not security theater. It is a deliberate architectural choice that gives every deployment access to 600+ security tools, rolling security updates, and a container-hardened runtime that treats every external input as potentially hostile.
+
+Every webhook adapter is fail-closed — no secret configured means no access. Every high-risk tool requires passkey authentication. Every agent monologue has hard iteration and time limits. Every database uses WAL mode for concurrent safety. Every exception handler is explicit. The Progressive Trust System lets cautious users start with full oversight and gradually release control as they build confidence. Security is not a feature you enable — it is the foundation everything runs on.
+
+**Security Stats:**
+
+| Control | Implementation |
+|---------|---------------|
+| OS Foundation | Kali Linux (rolling security updates) |
+| Channel Security | 16 adapters, all fail-closed with HMAC/Ed25519 verification |
+| Tool Authorization | Passkey enforcement for high-risk tools |
+| Agent Safety | 25-iteration limit + 30-minute wall-clock timeout |
+| Data Encryption | AES-256-GCM, no plaintext fallback |
+| Trust System | 4 progressive levels (Observer → Autonomous) |
+| Code Quality | 0 bare except clauses across entire codebase |
+
+---
+
 ## Solution Headlines
 
 **DevFlow**
