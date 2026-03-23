@@ -99,7 +99,7 @@ class CodeExecution(Tool):
         return f"icon://terminal {session_text}{text}"
 
     async def after_execution(self, response, **kwargs):
-        self.agent.hist_add_tool_result(self.name, response.message, **(response.additional or {}))
+        await self.agent.hist_add_tool_result(self.name, response.message, **(response.additional or {}))
 
     async def prepare_state(self, reset=False, session: int | None = None):
         self.state: State | None = self.agent.get_data("_cet_state")

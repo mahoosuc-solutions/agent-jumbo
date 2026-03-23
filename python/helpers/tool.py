@@ -62,7 +62,7 @@ class Tool:
 
     async def after_execution(self, response: Response, **kwargs):
         text = sanitize_string(response.message.strip())
-        self.agent.hist_add_tool_result(self.name, text, **(response.additional or {}))
+        await self.agent.hist_add_tool_result(self.name, text, **(response.additional or {}))
         PrintStyle(font_color="#1B4F72", background_color="white", padding=True, bold=True).print(
             f"{self.agent.agent_name}: Response from tool '{self.name}'"
         )
@@ -82,7 +82,7 @@ class Tool:
         result = " ".join(words)
         return result
 
-    def handle_exception(self, error: Exception):
+    async def handle_exception(self, error: Exception):
         """Default tool-level exception handling.
 
         Ensures all tool classes can safely surface errors without crashing
@@ -98,5 +98,5 @@ class Tool:
             heading=f"{self.agent.agent_name}: Tool '{self.name}' failed",
             content=message,
         )
-        self.agent.hist_add_warning(message)
+        await self.agent.hist_add_warning(message)
         return Response(message=message, break_loop=True)

@@ -375,8 +375,8 @@ class Message(ApiHandler):
         try:
             output = await self._run_external_chat(user_msg, backend, timeout_seconds)
             agent = context.get_agent()
-            agent.hist_add_user_message(user_msg)
-            agent.hist_add_ai_response(output)
+            await agent.hist_add_user_message(user_msg)
+            await agent.hist_add_ai_response(output)
             context.log.log(
                 type="response",
                 heading=f"{backend} response",

@@ -1,16 +1,11 @@
 import asyncio
+import contextlib
 import json
 import os
 import random
 import string
 import threading
 import time
-
-import nest_asyncio
-
-nest_asyncio.apply()
-
-import contextlib
 from collections import OrderedDict, deque
 from collections.abc import Awaitable, Callable, Coroutine
 from dataclasses import dataclass, field
@@ -53,6 +48,7 @@ class AgentContextType(Enum):
 
 class AgentContext:
     _contexts: dict[str, "AgentContext"] = {}
+    _contexts_lock = threading.Lock()
     _counter: int = 0
     _notification_manager = None
 
@@ -74,10 +70,11 @@ class AgentContext:
     ):
         # initialize context
         self.id = id or AgentContext.generate_id()
-        existing = self._contexts.get(self.id, None)
-        if existing:
-            AgentContext.remove(self.id)
-        self._contexts[self.id] = self
+        with AgentContext._contexts_lock:
+            existing = self._contexts.get(self.id, None)
+            if existing:
+                AgentContext.remove(self.id)
+            self._contexts[self.id] = self
         if set_current:
             AgentContext.set_current(self.id)
 
@@ -163,7 +160,8 @@ class AgentContext:
 
     @staticmethod
     def remove(id: str):
-        context = AgentContext._contexts.pop(id, None)
+        with AgentContext._contexts_lock:
+            context = AgentContext._contexts.pop(id, None)
         if context and context.task:
             context.task.kill()
         return context
@@ -440,14 +438,13 @@ class AgentContext:
     # this wrapper ensures that superior agents are called back if the chat was loaded from file and original callstack is gone
     async def _process_chain(self, agent: "Agent", msg: "UserMessage|str", user=True):
         try:
-            (
-                agent.hist_add_user_message(msg)  # type: ignore
-                if user
-                else agent.hist_add_tool_result(
+            if user:
+                await agent.hist_add_user_message(msg)  # type: ignore
+            else:
+                await agent.hist_add_tool_result(
                     tool_name="call_subordinate",
                     tool_result=msg,  # type: ignore
                 )
-            )
             response = await agent.monologue()  # type: ignore
             superior = agent.data.get(Agent.DATA_NAME_SUPERIOR, None)
             if superior:
@@ -553,9 +550,19 @@ class Agent:
             except Exception:
                 pass  # gracefully skip if manifest missing or yaml unavailable
 
-        asyncio.run(self.call_extensions("agent_init"))
+        self._agent_init_done = False  # deferred to first monologue call
+
+    async def _deferred_agent_init(self):
+        """Run agent_init extensions on first monologue (deferred from __init__)."""
+        if self._agent_init_done:
+            return
+        self._agent_init_done = True
+        await self.call_extensions("agent_init")
 
     async def monologue(self):
+        # Deferred agent_init (moved from __init__ to avoid asyncio.run)
+        await self._deferred_agent_init()
+
         # Read limits from performance profile (settings), fallback to env var, then default
         try:
             from python.helpers import settings as _settings_mod
@@ -666,10 +673,10 @@ class Agent:
                             self.loop_data.last_response == agent_response
                         ):  # if assistant_response is the same as last message in history, let him know
                             # Append the assistant's response to the history
-                            self.hist_add_ai_response(agent_response)
+                            await self.hist_add_ai_response(agent_response)
                             # Append warning message to the history
                             warning_msg = self.read_prompt("fw.msg_repeat.md")
-                            self.hist_add_warning(message=warning_msg)
+                            await self.hist_add_warning(message=warning_msg)
                             PrintStyle(font_color="orange", padding=True).print(warning_msg)
                             self.context.log.log(type="warning", content=warning_msg)
                             # Nudge the model away from repeating and toward a response tool.
@@ -680,7 +687,7 @@ class Agent:
 
                         else:  # otherwise proceed with tool
                             # Append the assistant's response to the history
-                            self.hist_add_ai_response(agent_response)
+                            await self.hist_add_ai_response(agent_response)
                             # process tools requested in agent message
                             tools_result = await self.process_tools(agent_response)
                             if tools_result:  # final response of message loop available
@@ -693,7 +700,7 @@ class Agent:
                         # Forward repairable errors to the LLM, maybe it can fix them
                         msg = {"message": errors.format_error(e)}
                         await self.call_extensions("error_format", msg=msg)
-                        self.hist_add_warning(msg["message"])
+                        await self.hist_add_warning(msg["message"])
                         PrintStyle(font_color="red", padding=True).print(msg["message"])
                         self.context.log.log(type="error", content=msg["message"])
                     except Exception as e:
@@ -925,14 +932,14 @@ class Agent:
     def set_data(self, field: str, value):
         self.data[field] = value
 
-    def hist_add_message(self, ai: bool, content: history.MessageContent, tokens: int = 0):
+    async def hist_add_message(self, ai: bool, content: history.MessageContent, tokens: int = 0):
         self.last_message = datetime.now(timezone.utc)
         # Allow extensions to process content before adding to history
         content_data = {"content": content}
-        asyncio.run(self.call_extensions("hist_add_before", content_data=content_data, ai=ai))
+        await self.call_extensions("hist_add_before", content_data=content_data, ai=ai)
         return self.history.add_message(ai=ai, content=content_data["content"], tokens=tokens)
 
-    def hist_add_user_message(self, message: UserMessage, intervention: bool = False):
+    async def hist_add_user_message(self, message: UserMessage, intervention: bool = False):
         self.history.new_topic()  # user message starts a new topic in history
 
         # load message template based on intervention
@@ -959,7 +966,7 @@ class Agent:
         content = self._inject_vision_content(content, message.attachments)
 
         # add to history
-        msg = self.hist_add_message(False, content=content)  # type: ignore
+        msg = await self.hist_add_message(False, content=content)  # type: ignore
         self.last_user_message = msg
         return msg
 
@@ -1015,25 +1022,25 @@ class Agent:
 
         return history.RawMessage(raw_content=parts, preview=text_str[:200])
 
-    def hist_add_ai_response(self, message: str):
+    async def hist_add_ai_response(self, message: str):
         # Guard for external backends (codex/claude_code) that skip message_loop()
         if hasattr(self, "loop_data") and self.loop_data is not None:
             self.loop_data.last_response = message
         content = self.parse_prompt("fw.ai_response.md", message=message)
-        return self.hist_add_message(True, content=content)
+        return await self.hist_add_message(True, content=content)
 
-    def hist_add_warning(self, message: history.MessageContent):
+    async def hist_add_warning(self, message: history.MessageContent):
         content = self.parse_prompt("fw.warning.md", message=message)
-        return self.hist_add_message(False, content=content)
+        return await self.hist_add_message(False, content=content)
 
-    def hist_add_tool_result(self, tool_name: str, tool_result: str, **kwargs):
+    async def hist_add_tool_result(self, tool_name: str, tool_result: str, **kwargs):
         data = {
             "tool_name": tool_name,
             "tool_result": tool_result,
             **kwargs,
         }
-        asyncio.run(self.call_extensions("hist_add_tool_result", data=data))
-        return self.hist_add_message(False, content=data)
+        await self.call_extensions("hist_add_tool_result", data=data)
+        return await self.hist_add_message(False, content=data)
 
     def concat_messages(self, messages):  # TODO add param for message range, topic, history
         return self.history.output_text(human_label="user", ai_label="assistant")
@@ -1387,12 +1394,12 @@ class Agent:
             if last_tool:
                 tool_progress = last_tool.progress.strip()
                 if tool_progress:
-                    self.hist_add_tool_result(last_tool.name, tool_progress)
+                    await self.hist_add_tool_result(last_tool.name, tool_progress)
                     last_tool.set_progress(None)
             if progress.strip():
-                self.hist_add_ai_response(progress)
+                await self.hist_add_ai_response(progress)
             # append the intervention message
-            self.hist_add_user_message(msg, intervention=True)
+            await self.hist_add_user_message(msg, intervention=True)
             raise InterventionException(msg)
 
     async def wait_if_paused(self):
@@ -1468,7 +1475,7 @@ class Agent:
                 except Exception as e:
                     tool_status = "error"
                     perf_metrics.increment("runtime.tool_execution.errors")
-                    return tool.handle_exception(e) or e
+                    return await tool.handle_exception(e) or e
                 finally:
                     perf_metrics.observe_ms(
                         "runtime.tool_execution.duration_ms",
@@ -1488,7 +1495,7 @@ class Agent:
 
         if not tool_requests:
             warning_msg_misformat = self.read_prompt("fw.msg_misformat.md")
-            self.hist_add_warning(warning_msg_misformat)
+            await self.hist_add_warning(warning_msg_misformat)
             PrintStyle(font_color="red", padding=True).print(warning_msg_misformat)
             self.context.log.log(
                 type="error",

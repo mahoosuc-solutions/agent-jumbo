@@ -61,7 +61,7 @@ services:
     cpus: "12.0"
     mem_limit: 64g
     env_file:
-      - ../../.env
+      - /mnt/wdblack/dev/secrets/agent-jumbo.env
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
       - AGENTMESH_REDIS_URL=redis://redis:6379

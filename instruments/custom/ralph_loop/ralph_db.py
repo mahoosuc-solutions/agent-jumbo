@@ -20,7 +20,7 @@ class RalphLoopDatabase:
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:
-        conn = self._connect()
+        conn = sqlite3.connect(self.db_path)
         conn.execute("PRAGMA journal_mode=WAL;")
         conn.execute("PRAGMA busy_timeout=5000;")
         return conn

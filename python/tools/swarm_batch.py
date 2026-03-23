@@ -33,7 +33,7 @@ class SwarmBatch(Tool):
                 sub = Agent(self.agent.number + 10 + index, config, self.agent.context)
                 sub.set_data(Agent.DATA_NAME_SUPERIOR, self.agent)
 
-                sub.hist_add_user_message(UserMessage(message=task_text, attachments=[]))
+                await sub.hist_add_user_message(UserMessage(message=task_text, attachments=[]))
                 result = await sub.monologue()
                 return f"### [Agent {index + 1}] Result for: '{task_text[:50]}...'\n\n{result}"
             except Exception as e:
