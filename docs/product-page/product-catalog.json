@@ -1,0 +1,494 @@
+{
+  "products": [
+    {
+      "slug": "dev-flow",
+      "name": "DevFlow",
+      "tagline": "AI software delivery platform that recursively deploys agents to build code.",
+      "description": "Takes requirements and specifications, then recursively deploys AI agents to build, test, and ship production code. Leverages 414+ commands, skills, runbooks, and SOPs to handle the full software lifecycle from scaffolding to deployment.",
+      "audience": "builder",
+      "instruments": [
+        "deployment_orchestrator",
+        "project_scaffold",
+        "claude_sdk",
+        "plugin_marketplace",
+        "skill_importer"
+      ],
+      "tools": [
+        "code_execution_tool",
+        "code_review",
+        "deployment_config",
+        "deployment_execute",
+        "deployment_orchestrator",
+        "deployment_record_result",
+        "deployment_run_checks",
+        "deployment_validate_env",
+        "devops_deploy",
+        "devops_monitor",
+        "project_scaffold",
+        "claude_sdk_bridge",
+        "plugin_marketplace",
+        "skill_importer",
+        "api_design",
+        "opencode_bridge"
+      ],
+      "repos": [
+        "agent-jumbo",
+        "small-business-frontend-template",
+        "small-business-backend-template"
+      ],
+      "integrations": [
+        "GitHub",
+        "Claude Code",
+        "Docker",
+        "Vercel"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.accepted",
+        "task.completed",
+        "task.failed"
+      ],
+      "icon_suggestion": "Rocket launching from a code bracket, representing automated software delivery"
+    },
+    {
+      "slug": "architect-flow",
+      "name": "ArchitectFlow",
+      "tagline": "AI-powered requirements generation and system design.",
+      "description": "Transforms business ideas into structured technical specifications, architecture diagrams, and implementation plans. Uses reasoning engines and diagram generation to produce comprehensive system designs that feed directly into DevFlow.",
+      "audience": "builder",
+      "instruments": [
+        "diagram_architect",
+        "diagram_generator",
+        "reasoning_planning_engine"
+      ],
+      "tools": [
+        "diagram_architect",
+        "diagram_tool",
+        "research_organize",
+        "document_query"
+      ],
+      "repos": [
+        "ai-solution-delivery"
+      ],
+      "integrations": [
+        "Draw.io",
+        "Mermaid"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Blueprint grid with connected nodes forming an architecture diagram"
+    },
+    {
+      "slug": "content-studio",
+      "name": "ContentStudio",
+      "tagline": "AI content generation and marketing automation.",
+      "description": "Generates blog posts, social media content, email campaigns, and marketing collateral using brand voice profiles. Integrates with knowledge sources and digest pipelines to produce contextually relevant content at scale.",
+      "audience": "business",
+      "instruments": [
+        "digest_builder",
+        "knowledge_ingest"
+      ],
+      "tools": [
+        "brand_voice",
+        "email",
+        "email_advanced",
+        "digest_builder",
+        "knowledge_ingest",
+        "search_engine"
+      ],
+      "repos": [
+        "mahoosuc.ai"
+      ],
+      "integrations": [
+        "Telegram",
+        "RSS",
+        "Notion"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Pen writing on a canvas with sparkle effects representing AI-generated content"
+    },
+    {
+      "slug": "ops-flow",
+      "name": "OpsFlow",
+      "tagline": "Autonomous AI operations, monitoring, and self-healing infrastructure.",
+      "description": "Manages system operations with autonomous task execution, workflow automation, error recovery, and resource monitoring. The AI ops agent continuously monitors health, detects anomalies, and self-heals without human intervention.",
+      "audience": "builder",
+      "instruments": [
+        "ai_ops_agent",
+        "workflow_engine",
+        "work_queue",
+        "ralph_loop"
+      ],
+      "tools": [
+        "workflow_engine",
+        "workflow_training",
+        "scheduler",
+        "ralph_loop",
+        "swarm_batch",
+        "observability_usage_estimator"
+      ],
+      "repos": [
+        "commandbridge"
+      ],
+      "integrations": [
+        "Redis",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.accepted",
+        "task.completed",
+        "task.failed",
+        "task.escalated"
+      ],
+      "icon_suggestion": "Gear with a circular arrow indicating autonomous operation and self-healing"
+    },
+    {
+      "slug": "security-shield",
+      "name": "SecurityShield",
+      "tagline": "Passkey-enforced security monitoring and risk-gated approvals.",
+      "description": "Provides fail-closed security enforcement with biometric passkey gates, risk classification for all incoming tasks, and continuous security auditing. High-risk operations require mobile biometric approval before execution.",
+      "audience": "builder",
+      "instruments": [
+        "security_monitor"
+      ],
+      "tools": [
+        "security_audit",
+        "auth_test"
+      ],
+      "repos": [],
+      "integrations": [
+        "WebAuthn/Passkeys",
+        "Mobile Push"
+      ],
+      "ag_mesh_events": [
+        "task.approval_required",
+        "task.approval_resolved"
+      ],
+      "icon_suggestion": "Shield with a fingerprint overlay representing biometric security enforcement"
+    },
+    {
+      "slug": "sales-flow",
+      "name": "SalesFlow",
+      "tagline": "AI-generated proposals, demos, and business intelligence.",
+      "description": "Creates customer-facing proposals, demo environments, and business cases automatically. Combines business health analysis with customer lifecycle data to generate targeted sales materials and track pipeline progression.",
+      "audience": "business",
+      "instruments": [
+        "sales_generator",
+        "business_xray",
+        "customer_lifecycle",
+        "solution_catalog"
+      ],
+      "tools": [
+        "sales_generator",
+        "business_xray_tool",
+        "customer_lifecycle",
+        "solution_catalog",
+        "demo_request_create",
+        "demo_request_list",
+        "analytics_roi_calculator"
+      ],
+      "repos": [
+        "SilverSurfer.ai",
+        "ChamberOfCommerceAI"
+      ],
+      "integrations": [
+        "Stripe",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Handshake with an upward trending chart representing deal acceleration"
+    },
+    {
+      "slug": "finance-bridge",
+      "name": "FinanceBridge",
+      "tagline": "Unified financial management with multi-provider bank and payment integration.",
+      "description": "Connects bank accounts via Plaid, processes payments through Stripe, and generates financial reports. Tracks transactions, revenue, expenses, and produces automated finance summaries across all connected businesses.",
+      "audience": "business",
+      "instruments": [
+        "finance_manager",
+        "stripe_payments"
+      ],
+      "tools": [
+        "finance_manager",
+        "stripe_payments",
+        "mahoosuc_finance_report"
+      ],
+      "repos": [],
+      "integrations": [
+        "Plaid",
+        "Stripe"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Dollar sign connected by bridge arches to multiple bank icons"
+    },
+    {
+      "slug": "property-hub",
+      "name": "PropertyHub",
+      "tagline": "AI-powered property and vacation rental management.",
+      "description": "Full rental property management including tenants, leases, maintenance tracking, and financials. Integrates with vacation rental platforms like Airbnb through a unified PMS abstraction layer, with AI voice agents handling guest communication.",
+      "audience": "business",
+      "instruments": [
+        "property_manager",
+        "pms_hub"
+      ],
+      "tools": [
+        "property_manager_tool",
+        "pms_hub_tool"
+      ],
+      "repos": [
+        "remotemotel",
+        "front-desk",
+        "west-bethel-motel-booking-system"
+      ],
+      "integrations": [
+        "Airbnb",
+        "Google Calendar",
+        "Twilio"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "House with a key and calendar overlay representing property management"
+    },
+    {
+      "slug": "comms-bridge",
+      "name": "CommsBridge",
+      "tagline": "Unified voice, SMS, and messaging across Google Voice, Twilio, and Telegram.",
+      "description": "Provides a single interface for outbound calls, SMS, and chat messaging across multiple providers. Google Voice handles browser-based SMS, Twilio powers programmable voice calls, and Telegram serves as the primary command interface.",
+      "audience": "both",
+      "instruments": [
+        "google_voice",
+        "twilio_voice",
+        "calendar_hub"
+      ],
+      "tools": [
+        "google_voice_sms",
+        "twilio_voice_call",
+        "telegram_send",
+        "calendar_hub",
+        "notify_user"
+      ],
+      "repos": [],
+      "integrations": [
+        "Google Voice",
+        "Twilio",
+        "Telegram",
+        "Google Calendar"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Speech bubble with phone and message icons converging into a single hub"
+    },
+    {
+      "slug": "agent-foundry",
+      "name": "AgentFoundry",
+      "tagline": "Build, specialize, and orchestrate autonomous AI agent teams.",
+      "description": "Creates and manages specialized AI agents with distinct capabilities, orchestrates virtual teams for complex multi-step tasks, and provides a learning loop that improves agent performance over time. Includes the Ralph autonomous iteration loop for self-directed work.",
+      "audience": "builder",
+      "instruments": [
+        "specialist_agent_framework",
+        "virtual_team",
+        "learning_improvement_system"
+      ],
+      "tools": [
+        "virtual_team",
+        "call_subordinate",
+        "a2a_chat",
+        "behaviour_adjustment"
+      ],
+      "repos": [
+        "ai-business-ops",
+        "CTOx"
+      ],
+      "integrations": [
+        "AG Mesh",
+        "Redis Streams"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.accepted",
+        "task.completed",
+        "task.escalated"
+      ],
+      "icon_suggestion": "Anvil with a glowing AI agent silhouette being forged, representing agent creation"
+    },
+    {
+      "slug": "portfolio-studio",
+      "name": "PortfolioStudio",
+      "tagline": "Scan, score, and manage your entire code project portfolio.",
+      "description": "Automatically scans codebases to detect languages, frameworks, and quality metrics. Generates sale-readiness scores, tracks project health across repositories, and manages the AI migration pipeline for modernizing legacy systems.",
+      "audience": "both",
+      "instruments": [
+        "portfolio_manager",
+        "ai_migration"
+      ],
+      "tools": [
+        "portfolio_manager",
+        "portfolio_manager_tool",
+        "ai_migration",
+        "project_lifecycle"
+      ],
+      "repos": [
+        "everywhere",
+        "everywhere-demo",
+        "everywhere-prod"
+      ],
+      "integrations": [
+        "GitHub",
+        "Linear"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Grid of project cards with health score badges and a magnifying glass"
+    },
+    {
+      "slug": "health-flow",
+      "name": "HealthFlow",
+      "tagline": "Healthcare data interoperability and HEDIS quality measurement.",
+      "description": "Enterprise health information exchange platform with FHIR R4 compliance, real-time care gap detection, and HEDIS quality measures. Enables provider integration through starter toolkits and validation pipelines for clinical analytics.",
+      "audience": "business",
+      "instruments": [],
+      "tools": [],
+      "repos": [
+        "hdim",
+        "hdim-validation",
+        "hdim-accelerator",
+        "healthdata-in-motion-platform",
+        "hedis-core-platform"
+      ],
+      "integrations": [
+        "FHIR R4",
+        "HL7"
+      ],
+      "ag_mesh_events": [],
+      "icon_suggestion": "Heart with data pulse line and interconnected nodes representing health data exchange"
+    },
+    {
+      "slug": "life-os",
+      "name": "LifeOS",
+      "tagline": "Personal operating system for daily planning, habits, and life optimization.",
+      "description": "Tracks life events, generates daily plans, manages personal dashboards and widgets. Integrates with Linear for task management, Motion for scheduling, and Notion for knowledge — creating a unified personal productivity layer.",
+      "audience": "both",
+      "instruments": [
+        "life_os",
+        "linear_integration",
+        "motion_integration",
+        "notion_integration"
+      ],
+      "tools": [
+        "life_os",
+        "linear_integration",
+        "motion_integration",
+        "notion_integration",
+        "memory_save",
+        "memory_load",
+        "memory_delete",
+        "memory_forget",
+        "vision_load"
+      ],
+      "repos": [],
+      "integrations": [
+        "Linear",
+        "Motion",
+        "Notion"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed"
+      ],
+      "icon_suggestion": "Compass with daily planner pages and habit tracker rings"
+    }
+  ],
+  "naming_rationale": "Products follow three naming patterns: *Flow for process/workflow-oriented products (DevFlow, ArchitectFlow, OpsFlow, SalesFlow, HealthFlow), *Studio for creative/analysis tools (ContentStudio, PortfolioStudio), and *Bridge for integration hubs connecting external services (FinanceBridge, CommsBridge). Two products break the pattern intentionally: SecurityShield (evokes protection rather than process), AgentFoundry (evokes creation/forging of agents), PropertyHub (evokes a central property management hub), and LifeOS (mirrors the personal operating system metaphor). The 13 products cover all 36 instruments, 84+ tools, and 26 repos while staying within a digestible range.",
+  "interconnections": [
+    {
+      "from": "architect-flow",
+      "to": "dev-flow",
+      "event": "task.assigned",
+      "description": "Architecture specs and requirements flow into DevFlow as implementation tasks for AI agent teams."
+    },
+    {
+      "from": "dev-flow",
+      "to": "ops-flow",
+      "event": "task.assigned",
+      "description": "Completed builds trigger deployment orchestration and monitoring setup in OpsFlow."
+    },
+    {
+      "from": "ops-flow",
+      "to": "security-shield",
+      "event": "task.approval_required",
+      "description": "High-risk operations (production deployments, destructive actions) route through SecurityShield for biometric approval."
+    },
+    {
+      "from": "security-shield",
+      "to": "ops-flow",
+      "event": "task.approval_resolved",
+      "description": "Approved or rejected tasks flow back to OpsFlow for execution or cancellation."
+    },
+    {
+      "from": "sales-flow",
+      "to": "dev-flow",
+      "event": "task.assigned",
+      "description": "Demo environment requests from SalesFlow trigger project scaffolding in DevFlow."
+    },
+    {
+      "from": "content-studio",
+      "to": "comms-bridge",
+      "event": "task.assigned",
+      "description": "Generated content is distributed via CommsBridge channels (email, Telegram, SMS)."
+    },
+    {
+      "from": "agent-foundry",
+      "to": "ops-flow",
+      "event": "task.assigned",
+      "description": "Specialist agents created in AgentFoundry register with OpsFlow for autonomous task execution."
+    },
+    {
+      "from": "portfolio-studio",
+      "to": "dev-flow",
+      "event": "task.assigned",
+      "description": "AI migration plans and project modernization tasks flow from PortfolioStudio into DevFlow."
+    },
+    {
+      "from": "property-hub",
+      "to": "comms-bridge",
+      "event": "task.assigned",
+      "description": "Guest communication (booking confirmations, check-in instructions) routes through CommsBridge voice and SMS."
+    },
+    {
+      "from": "property-hub",
+      "to": "finance-bridge",
+      "event": "task.assigned",
+      "description": "Rental payments and lease financials sync to FinanceBridge for unified reporting."
+    },
+    {
+      "from": "ops-flow",
+      "to": "agent-foundry",
+      "event": "task.escalated",
+      "description": "Tasks beyond current agent capability escalate to AgentFoundry for specialist agent creation or team orchestration."
+    },
+    {
+      "from": "life-os",
+      "to": "comms-bridge",
+      "event": "task.assigned",
+      "description": "Daily plan reminders and life event notifications are delivered through CommsBridge channels."
+    }
+  ]
+}
