@@ -377,16 +377,46 @@ class Coordinator(Tool):
 
         subtasks = self.decomposer.decompose_simple(prompt)
 
+        # Build shared context from the current agent state
+        from python.helpers.shared_context import SharedContextStore
+
+        context_store = SharedContextStore.from_agent_context(self.agent)
+
+        # Track dependency results for context injection
+        dep_results: dict[str, str] = {}
+
         async def call_fn(sub_prompt: str, provider: str, model: str | None) -> str:
             from python.helpers.call_llm import call_llm
 
+            # Build context package respecting the provider's window
+            package = context_store.build_context_package(
+                subtask_id=f"{provider}_task",
+                prompt=sub_prompt,
+                provider=provider,
+                model=model,
+                dependency_results=dep_results if dep_results else None,
+            )
+
             # Use the agent's utility model for sub-calls
             llm = self.agent.config.utility_model.create_model()
-            return await call_llm(
-                system="You are a helpful assistant. Complete the following task concisely.",
+            system = package.system_prompt or "You are a helpful assistant. Complete the following task concisely."
+
+            # Prepend context sections to the prompt
+            full_prompt = sub_prompt
+            if package.project_context:
+                full_prompt = f"[Project Context]\n{package.project_context}\n\n{full_prompt}"
+            if package.history_summary:
+                full_prompt = f"[Conversation Context]\n{package.history_summary}\n\n{full_prompt}"
+
+            result = await call_llm(
+                system=system,
                 model=llm,
-                message=sub_prompt,
+                message=full_prompt,
             )
+
+            # Store result for downstream dependency injection
+            dep_results[f"{provider}_task"] = result
+            return result
 
         results = await self.executor.execute(subtasks, call_fn)
         synthesized = _synthesize(results)
