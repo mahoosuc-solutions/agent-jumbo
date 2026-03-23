@@ -651,7 +651,7 @@ const model = {
         console.log("Backend disconnected, showing as frontend-only toast");
       }
     }
-    
+
     // Fallback to frontend-only toast
     return this.addFrontendToastOnly(
       type,
@@ -688,7 +688,8 @@ const model = {
     title = "Warning",
     display_time = 5,
     group = "",
-    priority = defaultPriority
+    priority = defaultPriority,
+    frontendOnly = false
   ) {
     return await this.addFrontendToast(
       NotificationType.WARNING,
