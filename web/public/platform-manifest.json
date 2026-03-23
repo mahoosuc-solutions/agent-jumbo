@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-03-23T06:14:53.874579+00:00",
+  "generated_at": "2026-03-23T06:16:38.882413+00:00",
   "platform": {
     "commands": {
       "total": 414,
@@ -30,8 +30,14 @@
     "helper_modules": 151
   },
   "github": {
-    "repos": 0,
-    "verticals": []
+    "repos": 26,
+    "verticals": [
+      "ai-ops",
+      "communications",
+      "devops",
+      "hospitality",
+      "productivity"
+    ]
   },
   "ag_mesh": {
     "event_types": [
@@ -487,7 +493,6 @@
         "brand_voice"
       ],
       "repos": [
-        "remotemotel",
         "front-desk"
       ],
       "integrations": [
