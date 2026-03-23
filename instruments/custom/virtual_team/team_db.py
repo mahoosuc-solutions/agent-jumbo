@@ -19,7 +19,10 @@ class VirtualTeamDatabase:
 
     def get_connection(self):
         """Get database connection"""
-        return sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.db_path)
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
 
     def init_database(self):
         """Initialize all tables"""

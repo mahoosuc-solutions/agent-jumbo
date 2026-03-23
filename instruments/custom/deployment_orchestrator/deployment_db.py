@@ -18,9 +18,15 @@ class DeploymentOrchestratorDatabase:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        conn = self._connect()
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _init_db(self):
         """Initialize database schema"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.executescript("""
                 -- Projects registered for deployment
                 CREATE TABLE IF NOT EXISTS projects (
@@ -120,7 +126,7 @@ class DeploymentOrchestratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Register a project for deployment"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO projects (name, project_path, project_type, language, framework, metadata)
@@ -132,7 +138,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_project(self, project_id: int) -> dict:
         """Get project by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM projects WHERE project_id = ?", (project_id,)).fetchone()
 
@@ -144,7 +150,7 @@ class DeploymentOrchestratorDatabase:
 
     def list_projects(self) -> list:
         """List all registered projects"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute("SELECT * FROM projects ORDER BY created_at DESC").fetchall()
             return [dict(row) for row in rows]
@@ -161,7 +167,7 @@ class DeploymentOrchestratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Save a CI/CD pipeline configuration"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO pipelines (project_id, platform, name, config_path, config_content, metadata)
@@ -173,7 +179,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_pipeline(self, pipeline_id: int) -> dict:
         """Get pipeline by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM pipelines WHERE pipeline_id = ?", (pipeline_id,)).fetchone()
 
@@ -185,7 +191,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_pipelines(self, project_id: int) -> list:
         """Get pipelines for a project"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(
                 "SELECT * FROM pipelines WHERE project_id = ? ORDER BY created_at DESC", (project_id,)
@@ -203,7 +209,7 @@ class DeploymentOrchestratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Save Docker configuration"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO docker_configs
@@ -216,7 +222,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_docker_config(self, project_id: int) -> dict:
         """Get Docker config for a project"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute(
                 "SELECT * FROM docker_configs WHERE project_id = ? ORDER BY created_at DESC LIMIT 1", (project_id,)
@@ -234,7 +240,7 @@ class DeploymentOrchestratorDatabase:
         self, project_id: int, manifest_type: str, name: str, content: str, metadata: dict | None = None
     ) -> int:
         """Save Kubernetes manifest"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO k8s_manifests (project_id, manifest_type, name, content, metadata)
@@ -246,7 +252,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_k8s_manifests(self, project_id: int, manifest_type: str | None = None) -> list:
         """Get Kubernetes manifests for a project"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if manifest_type:
                 rows = conn.execute(
@@ -279,7 +285,7 @@ class DeploymentOrchestratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create deployment environment"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO environments (project_id, name, env_type, config, secrets, metadata)
@@ -298,7 +304,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_environment(self, environment_id: int) -> dict:
         """Get environment by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM environments WHERE environment_id = ?", (environment_id,)).fetchone()
 
@@ -312,7 +318,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_environments(self, project_id: int) -> list:
         """Get environments for a project"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(
                 "SELECT * FROM environments WHERE project_id = ? ORDER BY env_type", (project_id,)
@@ -335,7 +341,7 @@ class DeploymentOrchestratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create a deployment record"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO deployments (project_id, environment_id, version, metadata)
@@ -347,7 +353,7 @@ class DeploymentOrchestratorDatabase:
 
     def update_deployment_status(self, deployment_id: int, status: str, logs: str | None = None):
         """Update deployment status"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             completed_at = isoformat_z(utc_now()) if status in ["completed", "failed"] else None
             conn.execute(
                 """
@@ -359,7 +365,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_deployment(self, deployment_id: int) -> dict:
         """Get deployment by ID"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute("SELECT * FROM deployments WHERE deployment_id = ?", (deployment_id,)).fetchone()
 
@@ -371,7 +377,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_deployments(self, project_id: int, limit: int = 10) -> list:
         """Get recent deployments for a project"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(
                 """
@@ -388,7 +394,7 @@ class DeploymentOrchestratorDatabase:
 
     def get_latest_deployment(self, project_id: int, environment_id: int | None = None) -> dict:
         """Get latest deployment for a project/environment"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if environment_id:
                 row = conn.execute(

@@ -540,6 +540,8 @@ class Agent:
         self.last_user_message: history.Message | None = None
         self.intervention: UserMessage | None = None
         self.data: dict[str, Any] = {}  # free data object all the tools can use
+        self._cached_system_prompt: list[str] | None = None
+        self._cached_user_profile: dict | None = None
 
         # Load capability manifest for the active profile (if available)
         self.manifest: dict[str, Any] = {}
@@ -579,6 +581,7 @@ class Agent:
 
                 # loop data dictionary to pass to extensions
                 self.loop_data = LoopData(user_message=self.last_user_message)
+                self._cached_system_prompt = None  # invalidate per-monologue cache
                 # M3: Propagate request_id for end-to-end tracing
                 self.loop_data.request_id = getattr(self.context, "request_id", None)  # type: ignore[attr-defined]
                 # call monologue_start extensions
@@ -824,11 +827,17 @@ class Agent:
             raise HandledException(exception)  # Re-raise the exception to kill the loop
 
     async def get_system_prompt(self, loop_data: LoopData) -> list[str]:
+        # Return cached system prompt on iterations > 1 (prompt doesn't change mid-monologue)
+        if self._cached_system_prompt is not None and loop_data.iteration > 1:
+            return self._cached_system_prompt
+
         system_prompt: list[str] = []
 
         # Add User Profile if available
         try:
-            profile = await asyncio.wait_for(self._load_default_user_profile(), timeout=2.0)
+            if not hasattr(self, "_cached_user_profile") or self._cached_user_profile is None:
+                self._cached_user_profile = await asyncio.wait_for(self._load_default_user_profile(), timeout=2.0)
+            profile = self._cached_user_profile
             if profile:
                 profile_text = "## Power User Profile (Identity Verified via Passkey)\n"
                 profile_text += f"- **User**: {profile.get('full_name')} <{profile.get('email')}>\n"
@@ -873,6 +882,7 @@ class Agent:
                 )
                 loop_data._sysprompt_budget_warned = True
 
+        self._cached_system_prompt = system_prompt
         return system_prompt
 
     async def _load_default_user_profile(self) -> dict | None:

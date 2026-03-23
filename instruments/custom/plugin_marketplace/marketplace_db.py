@@ -18,9 +18,15 @@ class PluginMarketplaceDatabase:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        conn = self._connect()
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _init_db(self):
         """Initialize database schema with default marketplaces"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.executescript("""
                 -- Marketplace sources
                 CREATE TABLE IF NOT EXISTS marketplaces (
@@ -134,7 +140,7 @@ class PluginMarketplaceDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Add a new marketplace source"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO marketplaces (name, url, api_endpoint, type, auto_update, metadata)
@@ -146,7 +152,7 @@ class PluginMarketplaceDatabase:
 
     def get_marketplace(self, marketplace_id: int | None = None, name: str | None = None) -> dict:
         """Get marketplace by ID or name"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if marketplace_id:
                 row = conn.execute("SELECT * FROM marketplaces WHERE marketplace_id = ?", (marketplace_id,)).fetchone()
@@ -163,7 +169,7 @@ class PluginMarketplaceDatabase:
 
     def list_marketplaces(self, enabled_only: bool = False) -> list:
         """List all marketplaces"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             query = "SELECT * FROM marketplaces"
             if enabled_only:
@@ -180,7 +186,7 @@ class PluginMarketplaceDatabase:
 
     def update_marketplace_sync(self, marketplace_id: int, plugin_count: int):
         """Update marketplace sync timestamp and plugin count"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE marketplaces SET last_synced = ?, plugin_count = ?
@@ -191,12 +197,12 @@ class PluginMarketplaceDatabase:
 
     def toggle_marketplace(self, marketplace_id: int, enabled: bool):
         """Enable/disable a marketplace"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("UPDATE marketplaces SET enabled = ? WHERE marketplace_id = ?", (enabled, marketplace_id))
 
     def remove_marketplace(self, marketplace_id: int):
         """Remove a marketplace and its cached plugins"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("DELETE FROM marketplace_plugins WHERE marketplace_id = ?", (marketplace_id,))
             conn.execute("DELETE FROM marketplaces WHERE marketplace_id = ?", (marketplace_id,))
 
@@ -220,7 +226,7 @@ class PluginMarketplaceDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Cache a plugin from marketplace"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT OR REPLACE INTO marketplace_plugins
@@ -252,7 +258,7 @@ class PluginMarketplaceDatabase:
         self, plugin_id: int | None = None, identifier: str | None = None, marketplace_id: int | None = None
     ) -> dict:
         """Get cached plugin by ID or identifier"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if plugin_id:
                 row = conn.execute("SELECT * FROM marketplace_plugins WHERE plugin_id = ?", (plugin_id,)).fetchone()
@@ -283,7 +289,7 @@ class PluginMarketplaceDatabase:
         self, query: str, marketplace_id: int | None = None, tags: list | None = None, limit: int = 50
     ) -> list:
         """Search plugins by name/description"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
 
             sql = """
@@ -320,7 +326,7 @@ class PluginMarketplaceDatabase:
         self, marketplace_id: int | None = None, sort_by: str = "downloads", limit: int = 50, offset: int = 0
     ) -> list:
         """List plugins with sorting and pagination"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
 
             sort_columns = {
@@ -362,7 +368,7 @@ class PluginMarketplaceDatabase:
 
     def get_plugins_by_tag(self, tag: str, limit: int = 50) -> list:
         """Get plugins by tag"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             rows = conn.execute(
                 """
@@ -385,7 +391,7 @@ class PluginMarketplaceDatabase:
 
     def clear_marketplace_cache(self, marketplace_id: int):
         """Clear cached plugins for a marketplace"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("DELETE FROM marketplace_plugins WHERE marketplace_id = ?", (marketplace_id,))
 
     # ========== Installation Tracking ==========
@@ -399,7 +405,7 @@ class PluginMarketplaceDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Record a plugin installation"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT OR REPLACE INTO installed_plugins
@@ -412,7 +418,7 @@ class PluginMarketplaceDatabase:
 
     def update_installation_status(self, plugin_identifier: str, status: str, import_status: str | None = None):
         """Update installation status"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             if import_status:
                 conn.execute(
                     """
@@ -432,7 +438,7 @@ class PluginMarketplaceDatabase:
 
     def get_installed_plugin(self, plugin_identifier: str) -> dict:
         """Get installed plugin record"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             row = conn.execute(
                 "SELECT * FROM installed_plugins WHERE plugin_identifier = ?", (plugin_identifier,)
@@ -446,7 +452,7 @@ class PluginMarketplaceDatabase:
 
     def list_installed(self, status: str | None = None) -> list:
         """List installed plugins"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             if status:
                 rows = conn.execute(
@@ -464,14 +470,14 @@ class PluginMarketplaceDatabase:
 
     def remove_installation(self, plugin_identifier: str):
         """Remove installation record"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("DELETE FROM installed_plugins WHERE plugin_identifier = ?", (plugin_identifier,))
 
     # ========== Statistics ==========
 
     def get_stats(self) -> dict:
         """Get marketplace statistics"""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             marketplaces = conn.execute("SELECT COUNT(*) FROM marketplaces WHERE enabled = 1").fetchone()[0]
 
             cached_plugins = conn.execute("SELECT COUNT(*) FROM marketplace_plugins").fetchone()[0]

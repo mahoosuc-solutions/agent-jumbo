@@ -18,9 +18,15 @@ class MigrationDatabase:
         Path(db_path).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        conn = self._connect()
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _init_db(self):
         """Initialize database schema"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         # Migration projects - top-level business assessment
@@ -202,7 +208,7 @@ class MigrationDatabase:
         self, business_name: str, customer_id: int | None = None, industry: str | None = None, **kwargs
     ) -> int:
         """Create a new migration project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -232,7 +238,7 @@ class MigrationDatabase:
 
     def get_project(self, project_id: int) -> dict | None:
         """Get project by ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -246,7 +252,7 @@ class MigrationDatabase:
 
     def list_projects(self, customer_id: int | None = None, status: str | None = None) -> list[dict]:
         """List migration projects"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -269,7 +275,7 @@ class MigrationDatabase:
 
     def update_project(self, project_id: int, **kwargs) -> bool:
         """Update project fields"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         fields = []
@@ -305,7 +311,7 @@ class MigrationDatabase:
 
     def add_process(self, project_id: int, name: str, **kwargs) -> int:
         """Add a business process"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -342,7 +348,7 @@ class MigrationDatabase:
 
     def get_process(self, process_id: int) -> dict | None:
         """Get process by ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -356,7 +362,7 @@ class MigrationDatabase:
 
     def list_processes(self, project_id: int, status: str | None = None) -> list[dict]:
         """List processes for a project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -376,7 +382,7 @@ class MigrationDatabase:
 
     def update_process(self, process_id: int, **kwargs) -> bool:
         """Update process fields"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         fields = []
@@ -424,7 +430,7 @@ class MigrationDatabase:
 
     def add_task(self, process_id: int, name: str, **kwargs) -> int:
         """Add a task to a process"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -459,7 +465,7 @@ class MigrationDatabase:
 
     def get_task(self, task_id: int) -> dict | None:
         """Get task by ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -473,7 +479,7 @@ class MigrationDatabase:
 
     def list_tasks(self, process_id: int) -> list[dict]:
         """List tasks for a process"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -491,7 +497,7 @@ class MigrationDatabase:
 
     def update_task(self, task_id: int, **kwargs) -> bool:
         """Update task fields including automation analysis"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         fields = []
@@ -541,7 +547,7 @@ class MigrationDatabase:
 
     def add_workflow(self, process_id: int, name: str, steps: list[dict], **kwargs) -> int:
         """Add an optimized workflow design"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -576,7 +582,7 @@ class MigrationDatabase:
 
     def get_workflow(self, workflow_id: int) -> dict | None:
         """Get workflow by ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -590,7 +596,7 @@ class MigrationDatabase:
 
     def list_workflows(self, process_id: int | None = None, project_id: int | None = None) -> list[dict]:
         """List workflows"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -622,7 +628,7 @@ class MigrationDatabase:
 
     def add_roadmap(self, project_id: int, name: str, phases: list[dict], **kwargs) -> int:
         """Add a migration roadmap"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -658,7 +664,7 @@ class MigrationDatabase:
 
     def get_roadmap(self, roadmap_id: int) -> dict | None:
         """Get roadmap by ID"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -672,7 +678,7 @@ class MigrationDatabase:
 
     def list_roadmaps(self, project_id: int) -> list[dict]:
         """List roadmaps for a project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -692,7 +698,7 @@ class MigrationDatabase:
 
     def add_roi_projection(self, project_id: int, scenario: str, **kwargs) -> int:
         """Add ROI projection"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -733,7 +739,7 @@ class MigrationDatabase:
 
     def list_roi_projections(self, project_id: int) -> list[dict]:
         """List ROI projections for a project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 
@@ -753,7 +759,7 @@ class MigrationDatabase:
 
     def add_quick_win(self, project_id: int, name: str, **kwargs) -> int:
         """Add a quick win opportunity"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         cursor = conn.cursor()
 
         cursor.execute(
@@ -785,7 +791,7 @@ class MigrationDatabase:
 
     def list_quick_wins(self, project_id: int, status: str | None = None) -> list[dict]:
         """List quick wins for a project"""
-        conn = sqlite3.connect(self.db_path)
+        conn = self._connect()
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
 

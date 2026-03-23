@@ -19,13 +19,19 @@ class RalphLoopDatabase:
         self._ensure_directory()
         self._init_db()
 
+    def _connect(self) -> sqlite3.Connection:
+        conn = self._connect()
+        conn.execute("PRAGMA journal_mode=WAL;")
+        conn.execute("PRAGMA busy_timeout=5000;")
+        return conn
+
     def _ensure_directory(self):
         """Ensure the database directory exists."""
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
 
     def _init_db(self):
         """Initialize database schema."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.executescript("""
                 CREATE TABLE IF NOT EXISTS ralph_loops (
                     loop_id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -84,7 +90,7 @@ class RalphLoopDatabase:
         context: dict | None = None,
     ) -> int:
         """Create a new Ralph loop."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO ralph_loops
@@ -107,7 +113,7 @@ class RalphLoopDatabase:
 
     def get_loop(self, loop_id: int) -> dict | None:
         """Get a loop by ID."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute("SELECT * FROM ralph_loops WHERE loop_id = ?", (loop_id,))
             row = cursor.fetchone()
@@ -119,7 +125,7 @@ class RalphLoopDatabase:
 
     def get_active_loop(self, agent_id: str) -> dict | None:
         """Get the active loop for an agent."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute(
                 """
@@ -139,7 +145,7 @@ class RalphLoopDatabase:
 
     def list_loops(self, status: str | None = None, agent_id: str | None = None, limit: int = 50) -> list:
         """List loops with optional filtering."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             query = "SELECT * FROM ralph_loops WHERE 1=1"
             params = []
@@ -195,7 +201,7 @@ class RalphLoopDatabase:
             return
 
         params.append(loop_id)
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 f"UPDATE ralph_loops SET {', '.join(updates)} WHERE loop_id = ?",  # nosec B608 - controlled query construction
                 params,
@@ -203,7 +209,7 @@ class RalphLoopDatabase:
 
     def increment_iteration(self, loop_id: int) -> int:
         """Increment the iteration counter and return new value."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE ralph_loops
@@ -218,7 +224,7 @@ class RalphLoopDatabase:
 
     def complete_loop(self, loop_id: int, status: str = "completed"):
         """Mark a loop as completed."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE ralph_loops
@@ -230,7 +236,7 @@ class RalphLoopDatabase:
 
     def delete_loop(self, loop_id: int):
         """Delete a loop and its iterations."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute("DELETE FROM ralph_iterations WHERE loop_id = ?", (loop_id,))
             conn.execute("DELETE FROM ralph_loops WHERE loop_id = ?", (loop_id,))
 
@@ -247,7 +253,7 @@ class RalphLoopDatabase:
         error_message: str | None = None,
     ) -> int:
         """Record an iteration."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             cursor = conn.execute(
                 """
                 INSERT INTO ralph_iterations
@@ -277,7 +283,7 @@ class RalphLoopDatabase:
         error_message: str | None = None,
     ):
         """Complete an iteration with results."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.execute(
                 """
                 UPDATE ralph_iterations
@@ -302,7 +308,7 @@ class RalphLoopDatabase:
 
     def get_iterations(self, loop_id: int) -> list:
         """Get all iterations for a loop."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute(
                 """
@@ -321,7 +327,7 @@ class RalphLoopDatabase:
 
     def get_latest_iteration(self, loop_id: int) -> dict | None:
         """Get the latest iteration for a loop."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             conn.row_factory = sqlite3.Row
             cursor = conn.execute(
                 """
@@ -343,7 +349,7 @@ class RalphLoopDatabase:
 
     def get_stats(self, agent_id: str | None = None) -> dict:
         """Get Ralph loop statistics."""
-        with sqlite3.connect(self.db_path) as conn:
+        with self._connect() as conn:
             agent_filter = " AND agent_id = ?" if agent_id else ""
             params = [agent_id] if agent_id else []
 
