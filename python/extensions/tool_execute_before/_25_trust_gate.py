@@ -25,6 +25,11 @@ class TrustGate(Extension):
         tool_name = kwargs.get("tool_name", "")
         tool_args = kwargs.get("tool_args", {})
 
+        import logging
+
+        _log = logging.getLogger(__name__)
+        _log.warning("TrustGate called: tool=%s, trust=%s", tool_name, get_trust_level())
+
         # Skip gate for essential tools (otherwise agent can't respond or receive input)
         if tool_name in ("response", "input", "wait", "unknown"):
             return
@@ -58,4 +63,5 @@ class TrustGate(Extension):
 
         # Raise RepairableException — this sends the message back to the LLM
         # as an error it can "repair" by asking the user for confirmation
+        _log.warning("TrustGate BLOCKING tool=%s — raising RepairableException", tool_name)
         raise RepairableException(approval_msg)

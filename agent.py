@@ -1445,21 +1445,10 @@ class Agent:
                 tool_status = "success"
                 perf_metrics.increment("runtime.tool_execution.requests")
                 try:
-                    # Security gate: check passkey authorization for high-risk tools
-                    from python.helpers.security import SecurityManager
-
-                    # Skip passkey for automated contexts (no human to authenticate)
-                    is_automated = (
-                        self.context.type in (AgentContextType.TASK, AgentContextType.BACKGROUND)
-                        or self.data.get(Agent.DATA_NAME_SUPERIOR) is not None
-                    )
-                    if not is_automated and not SecurityManager.is_tool_authorized(tool_name):
-                        from python.helpers.tool import Response
-
-                        return Response(
-                            message=f"Tool '{tool_name}' requires authorization. Use passkey authentication first.",
-                            break_loop=False,
-                        )
+                    # Security/trust authorization is handled by the trust gate extension
+                    # in tool_execute_before/_25_trust_gate.py. The trust gate raises
+                    # RepairableException for blocked tools, which is caught by the
+                    # monologue loop's exception handler.
 
                     await self.handle_intervention()
                     await tool.before_execution(**tool_args)
