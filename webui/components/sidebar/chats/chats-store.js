@@ -125,12 +125,12 @@ const model = {
       await sendJsonData("/chat_reset", {
         context
       });
-      
+
       // Increment reset counter
       if (typeof globalThis.resetCounter === 'number') {
         globalThis.resetCounter = globalThis.resetCounter + 1;
       }
-      
+
       updateAfterScroll();
     } catch (e) {
       toastFetchError("Error resetting chat", e);
@@ -147,7 +147,7 @@ const model = {
       });
 
       if (response.ok) {
-        this.selectChat(response.ctxid);
+        this.selectChat(response.ctxid || response.context);
         return;
       }
 
@@ -294,7 +294,7 @@ const model = {
         );
         return;
       }
-      
+
       // Try to initiate restart
       const resp = await sendJsonData("/restart", {});
     } catch (e) {
