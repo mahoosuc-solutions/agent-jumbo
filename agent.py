@@ -1472,6 +1472,8 @@ class Agent:
                     )
                     await tool.after_execution(response)
                     return response
+                except RepairableException:
+                    raise  # Let repairable errors (trust gate, etc.) reach the monologue handler
                 except Exception as e:
                     tool_status = "error"
                     perf_metrics.increment("runtime.tool_execution.errors")
