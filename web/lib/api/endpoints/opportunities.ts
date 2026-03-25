@@ -83,6 +83,12 @@ const DashboardResponseSchema = z.object({
       items: z.array(OpportunitySchema),
     }),
   ),
+  collector_schedule: z.object({
+    enabled: z.boolean(),
+    cron: z.string(),
+    task_uuid: z.string(),
+    collectors: z.array(z.record(z.string(), z.unknown())),
+  }),
   recent: z.array(OpportunitySchema),
 }).passthrough()
 
@@ -117,6 +123,22 @@ const IngestResponseSchema = z.object({
   created: z.number(),
   updated: z.number(),
   qualified: z.number(),
+  opportunities: z.array(OpportunitySchema),
+}).passthrough()
+
+const CollectorRunResponseSchema = z.object({
+  success: z.boolean(),
+  created: z.number(),
+  updated: z.number(),
+  qualified: z.number(),
+  runs: z.array(
+    z.object({
+      adapter: z.string(),
+      items_received: z.number(),
+      created: z.number(),
+      updated: z.number(),
+    }),
+  ),
   opportunities: z.array(OpportunitySchema),
 }).passthrough()
 
@@ -167,6 +189,12 @@ export function ingestOpportunities(opportunities: Record<string, unknown>[], au
   })
 }
 
+export function runCollectors(collectors: Record<string, unknown>[], autoQualify = true) {
+  return validatedApi('opportunities_update', CollectorRunResponseSchema, {
+    body: { action: 'run_collectors', collectors, auto_qualify: autoQualify },
+  })
+}
+
 export function updateOpportunity(opportunityId: number, updates: Record<string, unknown>) {
   return validatedApi('opportunities_update', OpportunityResponseSchema, {
     body: { action: 'update', opportunity_id: opportunityId, updates },
@@ -202,5 +230,27 @@ export function setTerritoryStatus(territoryId: number, status: string) {
     'opportunities_update',
     z.object({ success: z.boolean(), updated: z.boolean() }).passthrough(),
     { body: { action: 'set_territory_status', territory_id: territoryId, status } },
+  )
+}
+
+export function scheduleCollectors(cron: string, collectors: Record<string, unknown>[]) {
+  return validatedApi(
+    'opportunities_update',
+    z.object({
+      success: z.boolean(),
+      cron: z.string().optional(),
+      task_uuid: z.string().optional(),
+      collectors: z.array(z.record(z.string(), z.unknown())).optional(),
+      error: z.string().optional(),
+    }).passthrough(),
+    { body: { action: 'schedule_collectors', cron, collectors } },
+  )
+}
+
+export function unscheduleCollectors() {
+  return validatedApi(
+    'opportunities_update',
+    z.object({ success: z.boolean(), error: z.string().optional() }).passthrough(),
+    { body: { action: 'unschedule_collectors' } },
   )
 }

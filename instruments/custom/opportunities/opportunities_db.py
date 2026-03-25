@@ -89,12 +89,36 @@ class OpportunitiesDatabase:
                 FOREIGN KEY (opportunity_id) REFERENCES opportunities(id)
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS settings (
+                key TEXT PRIMARY KEY,
+                value TEXT NOT NULL,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
         conn.execute("CREATE INDEX IF NOT EXISTS idx_territories_status ON territories(status)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_territory ON opportunities(territory_id)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_stage ON opportunities(stage)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_lane ON opportunities(lane)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_due_date ON opportunities(due_date)")
         conn.commit()
+
+    def get_setting(self, key: str, default: str = "") -> str:
+        row = self.db.query_one("SELECT value FROM settings WHERE key = ?", (key,))
+        return row["value"] if row else default
+
+    def set_setting(self, key: str, value: str) -> None:
+        with self.db.transaction() as conn:
+            conn.execute(
+                """
+                INSERT INTO settings (key, value, updated_at)
+                VALUES (?, ?, CURRENT_TIMESTAMP)
+                ON CONFLICT(key) DO UPDATE SET
+                  value = excluded.value,
+                  updated_at = CURRENT_TIMESTAMP
+                """,
+                (key, value),
+            )
 
     def seed_territories(self) -> None:
         existing = self.db.query_one("SELECT id FROM territories LIMIT 1")

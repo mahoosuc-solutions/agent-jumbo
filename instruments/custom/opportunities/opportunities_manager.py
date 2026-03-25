@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from python.helpers import files
 
 from .opportunities_db import OpportunitiesDatabase
+from .source_adapters import get_adapter
 
 VALID_STAGES = {
     "discovered",
@@ -57,6 +59,7 @@ class OpportunitiesManager:
             }
             for lane in VALID_LANES
         }
+        data["collector_schedule"] = self.get_collector_schedule()
         data["recent"] = opportunities[:8]
         return data
 
@@ -108,6 +111,117 @@ class OpportunitiesManager:
             "opportunities": imported,
         }
 
+    def run_collectors(self, collectors: list[dict[str, Any]], auto_qualify: bool = True) -> dict[str, Any]:
+        runs: list[dict[str, Any]] = []
+        total_created = 0
+        total_updated = 0
+        total_qualified = 0
+        imported: list[dict[str, Any]] = []
+
+        for collector in collectors:
+            source_type = str(collector.get("adapter", "")).strip()
+            adapter = get_adapter(source_type)
+            items = adapter.collect(collector.get("config", {}))
+            result = self.import_opportunities(items, auto_qualify=auto_qualify)
+            total_created += result["created"]
+            total_updated += result["updated"]
+            total_qualified += result["qualified"]
+            imported.extend(result["opportunities"])
+            runs.append(
+                {
+                    "adapter": source_type,
+                    "items_received": len(items),
+                    "created": result["created"],
+                    "updated": result["updated"],
+                }
+            )
+
+        return {
+            "runs": runs,
+            "created": total_created,
+            "updated": total_updated,
+            "qualified": total_qualified,
+            "opportunities": imported,
+        }
+
+    def get_collector_schedule(self) -> dict[str, Any]:
+        enabled = self.db.get_setting("collector_schedule_enabled", "false") == "true"
+        cron = self.db.get_setting("collector_schedule_cron", "0 */6 * * *")
+        task_uuid = self.db.get_setting("collector_schedule_task_uuid", "")
+        raw_collectors = self.db.get_setting("collector_schedule_collectors", "[]")
+        try:
+            collectors = json.loads(raw_collectors)
+        except Exception:
+            collectors = []
+        return {
+            "enabled": enabled,
+            "cron": cron,
+            "task_uuid": task_uuid,
+            "collectors": collectors if isinstance(collectors, list) else [],
+        }
+
+    async def schedule_collectors(self, cron: str, collectors: list[dict[str, Any]]) -> dict[str, Any]:
+        try:
+            from python.helpers.task_scheduler import ScheduledTask, TaskSchedule, TaskScheduler
+        except ImportError:
+            return {"success": False, "error": "Scheduler not available (crontab not installed)"}
+
+        await self.unschedule_collectors()
+
+        parts = cron.split()
+        if len(parts) != 5:
+            return {"success": False, "error": f"Invalid cron expression: {cron} (need 5 fields)"}
+
+        schedule = TaskSchedule(
+            minute=parts[0],
+            hour=parts[1],
+            day=parts[2],
+            month=parts[3],
+            weekday=parts[4],
+        )
+        collectors_json = json.dumps(collectors)
+        prompt = (
+            "Run the opportunities_update API with action='run_collectors' and auto_qualify=true. "
+            f"Use collectors={collectors_json}. Report created, updated, and qualified counts."
+        )
+        task = ScheduledTask.create(
+            name="Opportunity Collector Run",
+            system_prompt=(
+                "You are an intake automation agent. When triggered, run the configured opportunity "
+                "collectors, feed normalized results into the opportunity dashboard, and report a concise summary."
+            ),
+            prompt=prompt,
+            schedule=schedule,
+        )
+
+        scheduler = TaskScheduler.get()
+        await scheduler.reload()
+        await scheduler.add_task(task)
+
+        self.db.set_setting("collector_schedule_enabled", "true")
+        self.db.set_setting("collector_schedule_cron", cron)
+        self.db.set_setting("collector_schedule_collectors", collectors_json)
+        self.db.set_setting("collector_schedule_task_uuid", task.uuid)
+        return {"success": True, "cron": cron, "task_uuid": task.uuid, "collectors": collectors}
+
+    async def unschedule_collectors(self) -> dict[str, Any]:
+        task_uuid = self.db.get_setting("collector_schedule_task_uuid", "")
+        if task_uuid:
+            try:
+                from python.helpers.task_scheduler import TaskScheduler
+
+                scheduler = TaskScheduler.get()
+                await scheduler.reload()
+                await scheduler.remove_task_by_uuid(task_uuid)
+            except ImportError:
+                pass
+            except Exception as exc:
+                return {"success": False, "error": f"Failed to remove collector schedule: {exc}"}
+
+        self.db.set_setting("collector_schedule_enabled", "false")
+        self.db.set_setting("collector_schedule_task_uuid", "")
+        return {"success": True}
+
     def _validate_payload(self, payload: dict[str, Any], stage: str, lane_default: str) -> dict[str, Any]:
         return self.db.create_opportunity(self._build_payload(payload, stage=stage, lane_default=lane_default))
 
@@ -128,7 +242,7 @@ class OpportunitiesManager:
         if recommendation not in VALID_RECOMMENDATIONS:
             raise ValueError(f"invalid recommendation: {recommendation}")
 
-        lane = str(payload.get("lane", "discovery")).strip() or "discovery"
+        lane = str(payload.get("lane", lane_default)).strip() or lane_default
         if lane not in VALID_LANES:
             raise ValueError(f"invalid lane: {lane}")
 

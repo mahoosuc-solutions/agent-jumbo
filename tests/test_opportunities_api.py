@@ -141,6 +141,40 @@ async def test_opportunity_ingest_deduplicates_and_returns_counts(tmp_path, monk
 
 
 @pytest.mark.asyncio
+async def test_run_collectors_action_supports_inline_adapter(tmp_path, monkeypatch):
+    _patch_abs_path(monkeypatch, tmp_path)
+    update = OpportunitiesUpdate(SimpleNamespace(), SimpleNamespace())
+    result = await update.process(
+        {
+            "action": "run_collectors",
+            "collectors": [
+                {
+                    "adapter": "inline_json",
+                    "config": {
+                        "opportunities": [
+                            {
+                                "territory_id": 1,
+                                "title": "Metro public health workflow modernization",
+                                "buyer_name": "Metro health authority",
+                                "source_type": "public_rfp",
+                                "external_id": "inline-api-1",
+                                "raw_requirements": "Need secure dashboards and workflow automation.",
+                            }
+                        ]
+                    },
+                }
+            ],
+        },
+        DummyRequest(),
+    )
+
+    assert result["success"] is True
+    assert result["created"] == 1
+    assert result["updated"] == 0
+    assert result["runs"][0]["adapter"] == "inline_json"
+
+
+@pytest.mark.asyncio
 async def test_opportunity_create_estimate_approve_handoff(tmp_path, monkeypatch):
     _patch_abs_path(monkeypatch, tmp_path)
     dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())

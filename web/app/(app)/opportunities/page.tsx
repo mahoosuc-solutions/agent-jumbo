@@ -8,6 +8,7 @@ import {
   Compass,
   FileCheck2,
   Import,
+  Clock3,
   MapPinned,
   Plus,
   Sparkles,
@@ -25,13 +26,15 @@ import {
   useApproveOpportunity,
   useCreateOpportunity,
   useHandoffOpportunity,
-  useIngestOpportunities,
   useOpportunities,
   useOpportunitiesDashboard,
   useQualifyOpportunity,
+  useRunCollectors,
   useSaveOpportunityEstimate,
+  useScheduleCollectors,
   useSetTerritoryStatus,
   useTerritories,
+  useUnscheduleCollectors,
 } from '@/hooks/useOpportunities'
 
 const stageVariant: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'neutral'> = {
@@ -68,21 +71,38 @@ export default function OpportunitiesPage() {
   const [laneFilter, setLaneFilter] = useState('')
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [importModalOpen, setImportModalOpen] = useState(false)
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false)
   const [estimateModalOpen, setEstimateModalOpen] = useState(false)
   const [autoQualifyImport, setAutoQualifyImport] = useState(true)
+  const [collectorCron, setCollectorCron] = useState('0 */6 * * *')
+  const [collectorConfigsText, setCollectorConfigsText] = useState(`[
+  {
+    "adapter": "json_file",
+    "config": {
+      "path": "/tmp/opportunities-feed.json"
+    }
+  }
+]`)
   const [importPayload, setImportPayload] = useState(`[
   {
-    "territory_id": 1,
-    "title": "County public health reporting modernization",
-    "buyer_name": "County health department",
-    "source_type": "public_rfp",
-    "external_id": "county-rfp-001",
-    "source_url": "https://example.gov/rfps/001",
-    "zip_code": "02108",
-    "city": "Boston",
-    "state": "MA",
-    "raw_requirements": "Need secure FHIR reporting, workflow dashboards, analytics, and integration support.",
-    "due_date": "2026-04-30"
+    "adapter": "inline_json",
+    "config": {
+      "opportunities": [
+        {
+          "territory_id": 1,
+          "title": "County public health reporting modernization",
+          "buyer_name": "County health department",
+          "source_type": "public_rfp",
+          "external_id": "county-rfp-001",
+          "source_url": "https://example.gov/rfps/001",
+          "zip_code": "02108",
+          "city": "Boston",
+          "state": "MA",
+          "raw_requirements": "Need secure FHIR reporting, workflow dashboards, analytics, and integration support.",
+          "due_date": "2026-04-30"
+        }
+      ]
+    }
   }
 ]`)
   const [newOpportunity, setNewOpportunity] = useState({
@@ -139,19 +159,21 @@ export default function OpportunitiesPage() {
   }, [selectedOpportunity, selectedOpportunityId])
 
   const createOpportunity = useCreateOpportunity()
-  const ingestOpportunities = useIngestOpportunities()
+  const runCollectors = useRunCollectors()
   const saveEstimate = useSaveOpportunityEstimate()
   const approveOpportunity = useApproveOpportunity()
   const qualifyOpportunity = useQualifyOpportunity()
   const handoffOpportunity = useHandoffOpportunity()
   const setTerritoryStatus = useSetTerritoryStatus()
+  const scheduleCollectors = useScheduleCollectors()
+  const unscheduleCollectors = useUnscheduleCollectors()
 
   useEffect(() => {
     if (createOpportunity.isError) toast(createOpportunity.error?.message || 'Failed to create opportunity', 'danger')
   }, [createOpportunity.isError, createOpportunity.error, toast])
   useEffect(() => {
-    if (ingestOpportunities.isError) toast(ingestOpportunities.error?.message || 'Failed to import opportunities', 'danger')
-  }, [ingestOpportunities.isError, ingestOpportunities.error, toast])
+    if (runCollectors.isError) toast(runCollectors.error?.message || 'Failed to run collectors', 'danger')
+  }, [runCollectors.isError, runCollectors.error, toast])
   useEffect(() => {
     if (saveEstimate.isError) toast(saveEstimate.error?.message || 'Failed to save estimate', 'danger')
   }, [saveEstimate.isError, saveEstimate.error, toast])
@@ -164,6 +186,12 @@ export default function OpportunitiesPage() {
   useEffect(() => {
     if (handoffOpportunity.isError) toast(handoffOpportunity.error?.message || 'Failed to hand off opportunity', 'danger')
   }, [handoffOpportunity.isError, handoffOpportunity.error, toast])
+  useEffect(() => {
+    if (scheduleCollectors.isError) toast(scheduleCollectors.error?.message || 'Failed to schedule collectors', 'danger')
+  }, [scheduleCollectors.isError, scheduleCollectors.error, toast])
+  useEffect(() => {
+    if (unscheduleCollectors.isError) toast(unscheduleCollectors.error?.message || 'Failed to unschedule collectors', 'danger')
+  }, [unscheduleCollectors.isError, unscheduleCollectors.error, toast])
 
   async function handleCreateOpportunity(e: React.FormEvent) {
     e.preventDefault()
@@ -198,7 +226,7 @@ export default function OpportunitiesPage() {
     })
   }
 
-  async function handleImportOpportunities(e: React.FormEvent) {
+  async function handleRunCollectors(e: React.FormEvent) {
     e.preventDefault()
     let parsed: unknown
     try {
@@ -212,8 +240,8 @@ export default function OpportunitiesPage() {
       return
     }
 
-    const result = await ingestOpportunities.mutateAsync({
-      opportunities: parsed as Record<string, unknown>[],
+    const result = await runCollectors.mutateAsync({
+      collectors: parsed as Record<string, unknown>[],
       autoQualify: autoQualifyImport,
     })
     setImportModalOpen(false)
@@ -221,7 +249,32 @@ export default function OpportunitiesPage() {
       setSelectedTerritoryId(result.opportunities[0].territory_id)
       setSelectedOpportunityId(result.opportunities[0].id)
     }
-    toast(`Imported ${result.created} new and updated ${result.updated} opportunities`, 'success')
+    toast(`Collectors created ${result.created} and updated ${result.updated} opportunities`, 'success')
+  }
+
+  async function handleScheduleCollectors(e: React.FormEvent) {
+    e.preventDefault()
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(collectorConfigsText)
+    } catch {
+      toast('Collector config must be valid JSON', 'danger')
+      return
+    }
+    if (!Array.isArray(parsed)) {
+      toast('Collector config must be a JSON array', 'danger')
+      return
+    }
+    const result = await scheduleCollectors.mutateAsync({
+      cron: collectorCron.trim(),
+      collectors: parsed as Record<string, unknown>[],
+    })
+    if (!result.success) {
+      toast(result.error || 'Failed to schedule collectors', 'danger')
+      return
+    }
+    setScheduleModalOpen(false)
+    toast('Collector schedule saved', 'success')
   }
 
   async function handleSaveEstimate() {
@@ -307,6 +360,9 @@ export default function OpportunitiesPage() {
           <Button size="sm" variant="secondary" onClick={() => setImportModalOpen(true)}>
             <Import className="h-4 w-4" /> Import Feed
           </Button>
+          <Button size="sm" variant="secondary" onClick={() => setScheduleModalOpen(true)}>
+            <Clock3 className="h-4 w-4" /> Schedule
+          </Button>
           <Button size="sm" onClick={() => setCreateModalOpen(true)}>
             <Plus className="h-4 w-4" /> New Opportunity
           </Button>
@@ -390,13 +446,13 @@ export default function OpportunitiesPage() {
       <Modal
         open={importModalOpen}
         onOpenChange={setImportModalOpen}
-        title="Import Opportunities"
-        description="Paste a normalized JSON array from feed, email, RSS, or portal collectors."
+        title="Run Collectors"
+        description="Paste collector configs to ingest normalized opportunities from inline or file-backed feeds."
       >
-        <form onSubmit={handleImportOpportunities} className="space-y-4">
+        <form onSubmit={handleRunCollectors} className="space-y-4">
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-[var(--text-primary)]" htmlFor="import-payload">
-              JSON Payload
+              Collector Config
             </label>
             <textarea
               id="import-payload"
@@ -417,9 +473,55 @@ export default function OpportunitiesPage() {
             <Button type="button" size="sm" variant="secondary" onClick={() => setImportModalOpen(false)}>
               Cancel
             </Button>
-            <Button type="submit" size="sm" loading={ingestOpportunities.isPending}>
-              Import Opportunities
+            <Button type="submit" size="sm" loading={runCollectors.isPending}>
+              Run Collectors
             </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        open={scheduleModalOpen}
+        onOpenChange={setScheduleModalOpen}
+        title="Collector Schedule"
+        description="Register a scheduled collector run using cron plus one or more source adapters."
+      >
+        <form onSubmit={handleScheduleCollectors} className="space-y-4">
+          <Input
+            label="Cron"
+            value={collectorCron}
+            onChange={(e) => setCollectorCron(e.target.value)}
+            placeholder="0 */6 * * *"
+          />
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[var(--text-primary)]" htmlFor="collector-configs">
+              Collector Configs
+            </label>
+            <textarea
+              id="collector-configs"
+              className="flex min-h-[220px] w-full rounded-md border border-[var(--border-default)] bg-[var(--surface-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"
+              value={collectorConfigsText}
+              onChange={(e) => setCollectorConfigsText(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-between gap-2">
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => void unscheduleCollectors.mutateAsync()}
+              loading={unscheduleCollectors.isPending}
+            >
+              Unschedule
+            </Button>
+            <div className="flex gap-2">
+              <Button type="button" size="sm" variant="secondary" onClick={() => setScheduleModalOpen(false)}>
+                Cancel
+              </Button>
+              <Button type="submit" size="sm" loading={scheduleCollectors.isPending}>
+                Save Schedule
+              </Button>
+            </div>
           </div>
         </form>
       </Modal>
@@ -531,6 +633,43 @@ export default function OpportunitiesPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </CardBody>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div>
+            <h2 className="font-semibold text-[var(--text-primary)]">Collector Automation</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              Adapter-based intake automation for normalized feeds and scheduled territory coverage.
+            </p>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="rounded-lg bg-[var(--surface-secondary)] p-4">
+              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Schedule</p>
+              <p className="mt-2 text-sm text-[var(--text-primary)]">
+                {dashboard.data?.collector_schedule.enabled ? dashboard.data.collector_schedule.cron : 'disabled'}
+              </p>
+            </div>
+            <div className="rounded-lg bg-[var(--surface-secondary)] p-4">
+              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Collectors</p>
+              <p className="mt-2 text-sm text-[var(--text-primary)]">
+                {dashboard.data?.collector_schedule.collectors.length ?? 0}
+              </p>
+            </div>
+            <div className="rounded-lg bg-[var(--surface-secondary)] p-4">
+              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Task UUID</p>
+              <p className="mt-2 text-sm text-[var(--text-primary)] break-all">
+                {dashboard.data?.collector_schedule.task_uuid || 'not scheduled'}
+              </p>
+            </div>
+            <div className="rounded-lg bg-[var(--surface-secondary)] p-4">
+              <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Supported Adapters</p>
+              <p className="mt-2 text-sm text-[var(--text-primary)]">inline_json, json_file</p>
+            </div>
           </div>
         </CardBody>
       </Card>

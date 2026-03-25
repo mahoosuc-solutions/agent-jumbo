@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 from instruments.custom.opportunities.opportunities_manager import OpportunitiesManager
 
@@ -118,6 +120,114 @@ def test_import_opportunities_deduplicates_by_source_identity(tmp_path):
     opportunities = manager.list_opportunities(territory_id=territory["id"])
     assert len(opportunities) == 1
     assert "FHIR interoperability" in opportunities[0]["must_have_requirements"]
+
+
+def test_run_collectors_supports_inline_and_file_adapters(tmp_path):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    json_feed = tmp_path / "feed.json"
+    json_feed.write_text(
+        """
+        [
+          {
+            "territory_id": 1,
+            "title": "Municipal public health dashboards",
+            "buyer_name": "City public health office",
+            "source_type": "public_rfp",
+            "external_id": "city-collector-1",
+            "raw_requirements": "Need dashboards, FHIR integration, and secure workflows."
+          }
+        ]
+        """.strip(),
+        encoding="utf-8",
+    )
+
+    result = manager.run_collectors(
+        [
+            {
+                "adapter": "inline_json",
+                "config": {
+                    "opportunities": [
+                        {
+                            "territory_id": 1,
+                            "title": "Regional interoperability platform",
+                            "buyer_name": "Regional health collaborative",
+                            "source_type": "public_rfp",
+                            "external_id": "inline-1",
+                            "raw_requirements": "Need secure FHIR interoperability and workflow automation.",
+                        }
+                    ]
+                },
+            },
+            {
+                "adapter": "json_file",
+                "config": {"path": str(json_feed)},
+            },
+        ]
+    )
+
+    assert result["created"] == 2
+    assert result["updated"] == 0
+    assert result["qualified"] == 2
+    assert {run["adapter"] for run in result["runs"]} == {"inline_json", "json_file"}
+
+
+class _DummyScheduledTask:
+    @staticmethod
+    def create(name, system_prompt, prompt, schedule):
+        return SimpleNamespace(uuid="collector-task-123", name=name, prompt=prompt, schedule=schedule)
+
+
+class _DummyTaskScheduler:
+    def __init__(self):
+        self.added = []
+        self.removed = []
+
+    async def reload(self):
+        return None
+
+    async def add_task(self, task):
+        self.added.append(task)
+
+    async def remove_task_by_uuid(self, task_uuid):
+        self.removed.append(task_uuid)
+
+    @classmethod
+    def get(cls):
+        return dummy_scheduler
+
+
+dummy_scheduler = _DummyTaskScheduler()
+
+
+def test_schedule_collectors_persists_settings(tmp_path, monkeypatch):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    scheduler_module = SimpleNamespace(
+        ScheduledTask=_DummyScheduledTask,
+        TaskSchedule=lambda minute, hour, day, month, weekday: SimpleNamespace(
+            minute=minute,
+            hour=hour,
+            day=day,
+            month=month,
+            weekday=weekday,
+        ),
+        TaskScheduler=_DummyTaskScheduler,
+    )
+    monkeypatch.setitem(sys.modules, "python.helpers.task_scheduler", scheduler_module)
+
+    import asyncio
+
+    result = asyncio.run(
+        manager.schedule_collectors(
+            "0 */4 * * *",
+            [{"adapter": "json_file", "config": {"path": "/tmp/feed.json"}}],
+        )
+    )
+
+    assert result["success"] is True
+    schedule = manager.get_collector_schedule()
+    assert schedule["enabled"] is True
+    assert schedule["cron"] == "0 */4 * * *"
+    assert schedule["task_uuid"] == "collector-task-123"
 
 
 def test_handoff_requires_approval_and_creates_downstream_artifacts(tmp_path, monkeypatch):

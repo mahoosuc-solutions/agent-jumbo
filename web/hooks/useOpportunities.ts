@@ -11,8 +11,11 @@ import {
   handoffOpportunity,
   ingestOpportunities,
   qualifyOpportunity,
+  runCollectors,
   saveOpportunityEstimate,
+  scheduleCollectors,
   setTerritoryStatus,
+  unscheduleCollectors,
   updateOpportunity,
 } from '@/lib/api/endpoints/opportunities'
 
@@ -82,6 +85,15 @@ export function useIngestOpportunities() {
   })
 }
 
+export function useRunCollectors() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ collectors, autoQualify = true }: { collectors: Record<string, unknown>[]; autoQualify?: boolean }) =>
+      runCollectors(collectors, autoQualify),
+    onSuccess: () => invalidateAll(qc),
+  })
+}
+
 export function useUpdateOpportunity() {
   const qc = useQueryClient()
   return useMutation({
@@ -129,6 +141,23 @@ export function useSetTerritoryStatus() {
   return useMutation({
     mutationFn: ({ territoryId, status }: { territoryId: number; status: string }) =>
       setTerritoryStatus(territoryId, status),
+    onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useScheduleCollectors() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ cron, collectors }: { cron: string; collectors: Record<string, unknown>[] }) =>
+      scheduleCollectors(cron, collectors),
+    onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useUnscheduleCollectors() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: () => unscheduleCollectors(),
     onSuccess: () => invalidateAll(qc),
   })
 }

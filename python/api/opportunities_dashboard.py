@@ -17,6 +17,8 @@ class OpportunitiesDashboard(ApiHandler):
             action = input.get("action", "dashboard")
             if action == "dashboard":
                 return {"success": True, **manager.dashboard()}
+            if action == "collector_schedule":
+                return {"success": True, "collector_schedule": manager.get_collector_schedule()}
             if action == "territories":
                 return {"success": True, "territories": manager.list_territories(status=input.get("status"))}
             if action == "list":

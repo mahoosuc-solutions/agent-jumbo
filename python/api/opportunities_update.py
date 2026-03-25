@@ -24,6 +24,20 @@ class OpportunitiesUpdate(ApiHandler):
                     auto_qualify=bool(input.get("auto_qualify", True)),
                 )
                 return {"success": True, **result}
+            if action == "run_collectors":
+                result = manager.run_collectors(
+                    input.get("collectors", []),
+                    auto_qualify=bool(input.get("auto_qualify", True)),
+                )
+                return {"success": True, **result}
+            if action == "schedule_collectors":
+                result = await manager.schedule_collectors(
+                    str(input.get("cron", "0 */6 * * *")),
+                    input.get("collectors", []),
+                )
+                return result
+            if action == "unschedule_collectors":
+                return await manager.unschedule_collectors()
 
             if action == "set_territory_status":
                 territory_id = int(input.get("territory_id", 0))
