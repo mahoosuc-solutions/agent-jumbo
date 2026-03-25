@@ -167,6 +167,30 @@ class WorkQueueDatabase:
             self.upsert_item(item)
         return len(items)
 
+    def create_manual_items(self, items: list[dict[str, Any]]) -> int:
+        if not items:
+            return 0
+        for item in items:
+            self.upsert_item(
+                {
+                    "external_id": item["external_id"],
+                    "source": item.get("source", "idea"),
+                    "source_type": item.get("source_type", "idea_next_step"),
+                    "title": item["title"],
+                    "description": item.get("description", ""),
+                    "file_path": item.get("file_path"),
+                    "line_number": item.get("line_number"),
+                    "url": item.get("url"),
+                    "status": item.get("status", "queued"),
+                    "priority_score": item.get("priority_score", 50),
+                    "priority_raw": item.get("priority_raw", {}),
+                    "effort_estimate": item.get("effort_estimate"),
+                    "effort_minutes": item.get("effort_minutes"),
+                    "project_path": item["project_path"],
+                }
+            )
+        return len(items)
+
     def get_item(self, item_id: int) -> dict[str, Any] | None:
         return self.db.query_one("SELECT * FROM work_items WHERE id = ?", (item_id,))
 
