@@ -4,12 +4,14 @@
 # Workflow runtime and lifecycle governance
 python/helpers/folder_delivery_workflow.py @webemo-aaron
 python/helpers/schema_governance.py @webemo-aaron
+python/helpers/release_governance.py @webemo-aaron
 python/helpers/project_lifecycle.py @webemo-aaron
 python/tools/project_lifecycle.py @webemo-aaron
 python/api/project_lifecycle.py @webemo-aaron
 instruments/custom/workflow_engine/templates/folder_evaluation_delivery_v1.json @webemo-aaron
 scripts/ci/check_traceability.py @webemo-aaron
 scripts/ci/check_schema_governance.py @webemo-aaron
+scripts/ci/check_release_governance.py @webemo-aaron
 .github/pull_request_template.md @webemo-aaron
 .github/workflows/ci.yml @webemo-aaron
 .github/CODEOWNERS @webemo-aaron

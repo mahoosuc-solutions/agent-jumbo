@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from python.helpers import files, projects, schema_governance
+from python.helpers import files, projects, release_governance, schema_governance
 
 WORKFLOW_PROFILE_ID = "folder_evaluation_delivery_v1"
 WORKFLOW_TEMPLATE_PATH = "instruments/custom/workflow_engine/templates/folder_evaluation_delivery_v1.json"
@@ -30,6 +30,7 @@ CANONICAL_ARTIFACTS = [
     "execution_plan.json",
     "evaluation_report.json",
     "release_readiness.json",
+    "post_deploy_report.json",
     "data_dictionary.json",
     "schema_model.json",
     "schema_change_log.json",
@@ -315,7 +316,23 @@ def _artifact_payload(artifact_name: str, run_context: WorkflowRunContext) -> di
         "release_readiness.json": {
             "ready": False,
             "blocking_checks": [],
-            "required_observers": [],
+            "required_observers": ["engineering", "operations"],
+        },
+        "post_deploy_report.json": {
+            "status": "degraded",
+            "observation_window": {
+                "started_at": "",
+                "duration_minutes": 0,
+                "decision": "",
+            },
+            "rollback_triggered": False,
+            "checks": {
+                "health_endpoint": False,
+                "chat_readiness": False,
+                "workflow_smoke": False,
+                "schema_verification": False,
+                "monitoring_snapshot": False,
+            },
         },
         "data_dictionary.json": {
             "policy": "additive_first",
@@ -345,7 +362,26 @@ def _artifact_payload(artifact_name: str, run_context: WorkflowRunContext) -> di
             "pr_number": "",
             "linear_issue_keys": [],
             "artifact_manifest": [],
-            "monitoring_snapshot": {},
+            "approvals": [],
+            "deploy_target": "",
+            "pre_deploy_checks": {
+                "artifact_manifest_verified": False,
+                "config_validated": False,
+                "secrets_present": False,
+                "dependency_reachability": False,
+                "migration_compatibility": False,
+                "environment_lock": False,
+                "backup_confirmed": False,
+            },
+            "post_deploy_checks": {
+                "health_endpoint": False,
+                "chat_readiness": False,
+                "workflow_smoke": False,
+                "schema_verification": False,
+                "monitoring_snapshot": False,
+            },
+            "monitoring_snapshot": {"status": "", "observed_at": ""},
+            "rollback_plan": {"strategy": "", "owner": "", "trigger_conditions": []},
         },
     }
     return defaults.get(artifact_name, {})
@@ -505,6 +541,24 @@ def apply_artifact_updates(
     schema_bundle = schema_governance.load_schema_bundle_from_artifact_root(artifact_root)
     if schema_bundle:
         errors = schema_governance.validate_schema_bundle(schema_bundle)
+        if errors:
+            raise ValueError(errors[0])
+
+    release_bundle = release_governance.load_release_artifact_payload(artifact_root, "release_bundle.json")
+    if release_bundle and release_governance.should_validate_release_bundle(release_bundle):
+        errors = release_governance.validate_release_bundle(release_bundle)
+        if errors:
+            raise ValueError(errors[0])
+
+    release_readiness = release_governance.load_release_artifact_payload(artifact_root, "release_readiness.json")
+    if release_readiness and release_governance.should_validate_release_readiness(release_readiness):
+        errors = release_governance.validate_release_readiness(release_readiness)
+        if errors:
+            raise ValueError(errors[0])
+
+    post_deploy_report = release_governance.load_release_artifact_payload(artifact_root, "post_deploy_report.json")
+    if post_deploy_report and release_governance.should_validate_post_deploy_report(post_deploy_report):
+        errors = release_governance.validate_post_deploy_report(post_deploy_report)
         if errors:
             raise ValueError(errors[0])
 
