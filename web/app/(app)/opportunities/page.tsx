@@ -78,6 +78,7 @@ export default function OpportunitiesPage() {
   const [collectorConfigsText, setCollectorConfigsText] = useState(`[
   {
     "adapter": "json_file",
+    "name": "metro-json-drop",
     "config": {
       "path": "/tmp/opportunities-feed.json"
     }
@@ -86,6 +87,7 @@ export default function OpportunitiesPage() {
   const [importPayload, setImportPayload] = useState(`[
   {
     "adapter": "inline_json",
+    "name": "manual-inline-feed",
     "config": {
       "opportunities": [
         {
@@ -668,8 +670,52 @@ export default function OpportunitiesPage() {
             </div>
             <div className="rounded-lg bg-[var(--surface-secondary)] p-4">
               <p className="text-xs uppercase tracking-wide text-[var(--text-tertiary)]">Supported Adapters</p>
-              <p className="mt-2 text-sm text-[var(--text-primary)]">inline_json, json_file</p>
+              <p className="mt-2 text-sm text-[var(--text-primary)]">inline_json, json_file, jsonl_file, csv_file</p>
             </div>
+          </div>
+          <div className="mt-6">
+            <p className="text-sm font-medium text-[var(--text-primary)]">Latest Collector Runs</p>
+            {dashboard.data?.collector_runs.length ? (
+              <div className="mt-3 overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Collector</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Items</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead>Updated</TableHead>
+                      <TableHead>Error</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {dashboard.data.collector_runs.map((run) => (
+                      <TableRow key={`${run.adapter}-${run.id ?? run.started_at ?? run.collector_name ?? 'run'}`}>
+                        <TableCell>
+                          <div>
+                            <p className="font-medium text-[var(--text-primary)]">{run.collector_name || run.adapter}</p>
+                            <p className="text-xs text-[var(--text-secondary)] mt-1">{run.adapter}</p>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={run.status === 'ok' ? 'success' : run.status === 'error' ? 'danger' : 'warning'}>
+                            {run.status}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>{run.items_received}</TableCell>
+                        <TableCell>{run.created_count ?? run.created ?? 0}</TableCell>
+                        <TableCell>{run.updated_count ?? run.updated ?? 0}</TableCell>
+                        <TableCell className="max-w-[320px] truncate text-xs text-[var(--text-secondary)]">
+                          {run.error || 'None'}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-[var(--text-secondary)]">No collector runs recorded yet.</p>
+            )}
           </div>
         </CardBody>
       </Card>

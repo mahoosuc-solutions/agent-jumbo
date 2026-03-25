@@ -175,6 +175,42 @@ async def test_run_collectors_action_supports_inline_adapter(tmp_path, monkeypat
 
 
 @pytest.mark.asyncio
+async def test_dashboard_exposes_collector_run_history(tmp_path, monkeypatch):
+    _patch_abs_path(monkeypatch, tmp_path)
+    update = OpportunitiesUpdate(SimpleNamespace(), SimpleNamespace())
+    await update.process(
+        {
+            "action": "run_collectors",
+            "collectors": [
+                {
+                    "adapter": "inline_json",
+                    "name": "dashboard-feed",
+                    "config": {
+                        "opportunities": [
+                            {
+                                "territory_id": 1,
+                                "title": "City interoperability refresh",
+                                "buyer_name": "City health department",
+                                "source_type": "public_rfp",
+                                "external_id": "history-1",
+                                "raw_requirements": "Need secure FHIR dashboards.",
+                            }
+                        ]
+                    },
+                }
+            ],
+        },
+        DummyRequest(),
+    )
+
+    dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())
+    result = await dashboard.process({"action": "dashboard"}, DummyRequest())
+    assert result["success"] is True
+    assert result["collector_runs"]
+    assert result["collector_runs"][0]["collector_name"] == "dashboard-feed"
+
+
+@pytest.mark.asyncio
 async def test_opportunity_create_estimate_approve_handoff(tmp_path, monkeypatch):
     _patch_abs_path(monkeypatch, tmp_path)
     dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())

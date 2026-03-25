@@ -60,6 +60,7 @@ class OpportunitiesManager:
             for lane in VALID_LANES
         }
         data["collector_schedule"] = self.get_collector_schedule()
+        data["collector_runs"] = self.db.list_collector_runs(limit=8)
         data["recent"] = opportunities[:8]
         return data
 
@@ -120,21 +121,49 @@ class OpportunitiesManager:
 
         for collector in collectors:
             source_type = str(collector.get("adapter", "")).strip()
-            adapter = get_adapter(source_type)
-            items = adapter.collect(collector.get("config", {}))
-            result = self.import_opportunities(items, auto_qualify=auto_qualify)
-            total_created += result["created"]
-            total_updated += result["updated"]
-            total_qualified += result["qualified"]
-            imported.extend(result["opportunities"])
-            runs.append(
-                {
-                    "adapter": source_type,
-                    "items_received": len(items),
-                    "created": result["created"],
-                    "updated": result["updated"],
-                }
-            )
+            collector_name = str(collector.get("name", "")).strip()
+            run_id = self.db.start_collector_run(source_type, collector_name=collector_name)
+            try:
+                adapter = get_adapter(source_type)
+                items = adapter.collect(collector.get("config", {}))
+                result = self.import_opportunities(items, auto_qualify=auto_qualify)
+                total_created += result["created"]
+                total_updated += result["updated"]
+                total_qualified += result["qualified"]
+                imported.extend(result["opportunities"])
+                self.db.finish_collector_run(
+                    run_id,
+                    status="ok",
+                    items_received=len(items),
+                    created_count=result["created"],
+                    updated_count=result["updated"],
+                    qualified_count=result["qualified"],
+                )
+                runs.append(
+                    {
+                        "adapter": source_type,
+                        "collector_name": collector_name,
+                        "status": "ok",
+                        "items_received": len(items),
+                        "created": result["created"],
+                        "updated": result["updated"],
+                        "qualified": result["qualified"],
+                    }
+                )
+            except Exception as exc:
+                self.db.finish_collector_run(run_id, status="error", error=str(exc))
+                runs.append(
+                    {
+                        "adapter": source_type,
+                        "collector_name": collector_name,
+                        "status": "error",
+                        "items_received": 0,
+                        "created": 0,
+                        "updated": 0,
+                        "qualified": 0,
+                        "error": str(exc),
+                    }
+                )
 
         return {
             "runs": runs,
@@ -142,6 +171,7 @@ class OpportunitiesManager:
             "updated": total_updated,
             "qualified": total_qualified,
             "opportunities": imported,
+            "errors": [run for run in runs if run["status"] == "error"],
         }
 
     def get_collector_schedule(self) -> dict[str, Any]:

@@ -96,11 +96,27 @@ class OpportunitiesDatabase:
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS collector_runs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                adapter TEXT NOT NULL,
+                collector_name TEXT NOT NULL DEFAULT '',
+                status TEXT NOT NULL DEFAULT 'running',
+                items_received INTEGER NOT NULL DEFAULT 0,
+                created_count INTEGER NOT NULL DEFAULT 0,
+                updated_count INTEGER NOT NULL DEFAULT 0,
+                qualified_count INTEGER NOT NULL DEFAULT 0,
+                error TEXT NOT NULL DEFAULT '',
+                started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                completed_at TIMESTAMP
+            )
+        """)
         conn.execute("CREATE INDEX IF NOT EXISTS idx_territories_status ON territories(status)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_territory ON opportunities(territory_id)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_stage ON opportunities(stage)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_lane ON opportunities(lane)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_opportunities_due_date ON opportunities(due_date)")
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_collector_runs_started_at ON collector_runs(started_at DESC)")
         conn.commit()
 
     def get_setting(self, key: str, default: str = "") -> str:
@@ -119,6 +135,50 @@ class OpportunitiesDatabase:
                 """,
                 (key, value),
             )
+
+    def start_collector_run(self, adapter: str, collector_name: str = "") -> int:
+        with self.db.transaction() as conn:
+            cursor = conn.execute(
+                """
+                INSERT INTO collector_runs (adapter, collector_name, status)
+                VALUES (?, ?, 'running')
+                """,
+                (adapter, collector_name),
+            )
+            return int(cursor.lastrowid)
+
+    def finish_collector_run(
+        self,
+        run_id: int,
+        *,
+        status: str,
+        items_received: int = 0,
+        created_count: int = 0,
+        updated_count: int = 0,
+        qualified_count: int = 0,
+        error: str = "",
+    ) -> None:
+        with self.db.transaction() as conn:
+            conn.execute(
+                """
+                UPDATE collector_runs
+                SET status = ?, items_received = ?, created_count = ?, updated_count = ?,
+                    qualified_count = ?, error = ?, completed_at = CURRENT_TIMESTAMP
+                WHERE id = ?
+                """,
+                (status, items_received, created_count, updated_count, qualified_count, error, run_id),
+            )
+
+    def list_collector_runs(self, limit: int = 10) -> list[dict[str, Any]]:
+        return self.db.query_rows(
+            """
+            SELECT *
+            FROM collector_runs
+            ORDER BY id DESC
+            LIMIT ?
+            """,
+            (limit,),
+        )
 
     def seed_territories(self) -> None:
         existing = self.db.query_one("SELECT id FROM territories LIMIT 1")

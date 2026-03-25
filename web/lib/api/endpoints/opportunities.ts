@@ -65,6 +65,23 @@ export const OpportunitySchema = z.object({
   estimate: OpportunityEstimateSchema.nullable().optional(),
 }).passthrough()
 
+const CollectorRunSchema = z.object({
+  id: z.number().optional(),
+  adapter: z.string(),
+  collector_name: z.string().optional(),
+  status: z.string(),
+  items_received: z.number(),
+  created_count: z.number().optional(),
+  updated_count: z.number().optional(),
+  qualified_count: z.number().optional(),
+  created: z.number().optional(),
+  updated: z.number().optional(),
+  qualified: z.number().optional(),
+  error: z.string().optional(),
+  started_at: z.string().optional(),
+  completed_at: z.string().nullable().optional(),
+}).passthrough()
+
 const DashboardResponseSchema = z.object({
   success: z.boolean(),
   territories: z.array(TerritorySchema),
@@ -89,6 +106,7 @@ const DashboardResponseSchema = z.object({
     task_uuid: z.string(),
     collectors: z.array(z.record(z.string(), z.unknown())),
   }),
+  collector_runs: z.array(CollectorRunSchema),
   recent: z.array(OpportunitySchema),
 }).passthrough()
 
@@ -132,14 +150,10 @@ const CollectorRunResponseSchema = z.object({
   updated: z.number(),
   qualified: z.number(),
   runs: z.array(
-    z.object({
-      adapter: z.string(),
-      items_received: z.number(),
-      created: z.number(),
-      updated: z.number(),
-    }),
+    CollectorRunSchema,
   ),
   opportunities: z.array(OpportunitySchema),
+  errors: z.array(CollectorRunSchema),
 }).passthrough()
 
 export function getOpportunitiesDashboard() {

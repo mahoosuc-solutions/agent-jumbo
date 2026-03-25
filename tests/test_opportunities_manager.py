@@ -171,6 +171,56 @@ def test_run_collectors_supports_inline_and_file_adapters(tmp_path):
     assert {run["adapter"] for run in result["runs"]} == {"inline_json", "json_file"}
 
 
+def test_run_collectors_supports_csv_adapter_and_records_run_report(tmp_path):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    csv_feed = tmp_path / "feed.csv"
+    csv_feed.write_text(
+        "\n".join(
+            [
+                "territory_id,title,buyer_name,source_type,external_id,raw_requirements",
+                '1,"State quality reporting platform","State health agency","public_rfp","csv-1","Need analytics dashboards and secure integrations."',
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    result = manager.run_collectors(
+        [
+            {
+                "adapter": "csv_file",
+                "name": "state-csv-feed",
+                "config": {"path": str(csv_feed)},
+            }
+        ]
+    )
+
+    assert result["created"] == 1
+    assert result["errors"] == []
+    runs = manager.db.list_collector_runs(limit=5)
+    assert runs[0]["adapter"] == "csv_file"
+    assert runs[0]["collector_name"] == "state-csv-feed"
+    assert runs[0]["status"] == "ok"
+
+
+def test_run_collectors_records_errors_without_aborting_all_runs(tmp_path):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    result = manager.run_collectors(
+        [
+            {
+                "adapter": "json_file",
+                "name": "missing-feed",
+                "config": {"path": str(tmp_path / "missing.json")},
+            }
+        ]
+    )
+
+    assert result["created"] == 0
+    assert len(result["errors"]) == 1
+    assert result["runs"][0]["status"] == "error"
+    runs = manager.db.list_collector_runs(limit=5)
+    assert runs[0]["status"] == "error"
+
+
 class _DummyScheduledTask:
     @staticmethod
     def create(name, system_prompt, prompt, schedule):
