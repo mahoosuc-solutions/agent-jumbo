@@ -37,6 +37,9 @@ class OpportunitiesUpdate(ApiHandler):
                 estimate = manager.save_estimate(opportunity_id, input.get("estimate", {}))
                 opportunity = manager.get_opportunity(opportunity_id)
                 return {"success": True, "estimate": estimate, "opportunity": opportunity}
+            if action == "qualify":
+                opportunity = manager.qualify_opportunity(opportunity_id)
+                return {"success": True, "opportunity": opportunity}
             if action == "approve":
                 opportunity = manager.approve_for_solutioning(opportunity_id)
                 return {"success": True, "opportunity": opportunity}

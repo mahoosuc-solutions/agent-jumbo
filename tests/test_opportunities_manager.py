@@ -53,6 +53,32 @@ def test_save_estimate_requires_core_fields(tmp_path):
         raise AssertionError("expected ValueError for incomplete estimate")
 
 
+def test_qualify_scores_opportunity_and_extracts_requirements(tmp_path):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    territory = manager.list_territories()[0]
+    opportunity = manager.create_opportunity(
+        {
+            "territory_id": territory["id"],
+            "title": "Public health FHIR reporting platform",
+            "buyer_name": "City public health department",
+            "raw_requirements": (
+                "Need secure FHIR interoperability, analytics dashboards, reporting, workflow automation, "
+                "and API integrations for clinical and public health teams."
+            ),
+        }
+    )
+
+    qualified = manager.qualify_opportunity(opportunity["id"])
+
+    assert qualified["stage"] == "qualified"
+    assert qualified["lane"] == "estimation"
+    assert qualified["recommendation"] == "pursue"
+    assert qualified["strategic_fit_score"] >= 70
+    assert qualified["confidence_score"] > 60
+    assert "FHIR interoperability" in qualified["must_have_requirements"]
+    assert "Security and compliance" in qualified["must_have_requirements"]
+
+
 def test_handoff_requires_approval_and_creates_downstream_artifacts(tmp_path, monkeypatch):
     _patch_abs_path(monkeypatch, tmp_path)
     manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))

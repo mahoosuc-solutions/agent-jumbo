@@ -26,6 +26,7 @@ import {
   useHandoffOpportunity,
   useOpportunities,
   useOpportunitiesDashboard,
+  useQualifyOpportunity,
   useSaveOpportunityEstimate,
   useSetTerritoryStatus,
   useTerritories,
@@ -121,6 +122,7 @@ export default function OpportunitiesPage() {
   const createOpportunity = useCreateOpportunity()
   const saveEstimate = useSaveOpportunityEstimate()
   const approveOpportunity = useApproveOpportunity()
+  const qualifyOpportunity = useQualifyOpportunity()
   const handoffOpportunity = useHandoffOpportunity()
   const setTerritoryStatus = useSetTerritoryStatus()
 
@@ -133,6 +135,9 @@ export default function OpportunitiesPage() {
   useEffect(() => {
     if (approveOpportunity.isError) toast(approveOpportunity.error?.message || 'Failed to approve opportunity', 'danger')
   }, [approveOpportunity.isError, approveOpportunity.error, toast])
+  useEffect(() => {
+    if (qualifyOpportunity.isError) toast(qualifyOpportunity.error?.message || 'Failed to qualify opportunity', 'danger')
+  }, [qualifyOpportunity.isError, qualifyOpportunity.error, toast])
   useEffect(() => {
     if (handoffOpportunity.isError) toast(handoffOpportunity.error?.message || 'Failed to hand off opportunity', 'danger')
   }, [handoffOpportunity.isError, handoffOpportunity.error, toast])
@@ -223,6 +228,12 @@ export default function OpportunitiesPage() {
     if (!selectedOpportunity) return
     await approveOpportunity.mutateAsync(selectedOpportunity.id)
     toast('Opportunity approved for solutioning', 'success')
+  }
+
+  async function handleQualify() {
+    if (!selectedOpportunity) return
+    await qualifyOpportunity.mutateAsync(selectedOpportunity.id)
+    toast('Opportunity qualified and scored', 'success')
   }
 
   async function handleHandoff() {
@@ -390,6 +401,49 @@ export default function OpportunitiesPage() {
         ))}
       </div>
 
+      <Card>
+        <CardHeader>
+          <div>
+            <h2 className="font-semibold text-[var(--text-primary)]">Assembly-Line Board</h2>
+            <p className="text-sm text-[var(--text-secondary)] mt-1">
+              Functional lane queues for discovery, qualification, estimation, and solutioning.
+            </p>
+          </div>
+        </CardHeader>
+        <CardBody>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+            {Object.entries(dashboard.data?.lane_board ?? {}).map(([lane, bucket]) => (
+              <div key={lane} className="rounded-lg border border-[var(--border-default)] p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <Badge variant={laneVariant[lane] ?? 'neutral'}>{lane}</Badge>
+                  <span className="text-sm font-medium text-[var(--text-primary)]">{bucket.count}</span>
+                </div>
+                <div className="mt-3 space-y-2">
+                  {bucket.items.length > 0 ? (
+                    bucket.items.slice(0, 3).map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className="block w-full rounded-md bg-[var(--surface-secondary)] p-3 text-left hover:bg-[var(--surface-tertiary)]"
+                        onClick={() => {
+                          setSelectedTerritoryId(item.territory_id)
+                          setSelectedOpportunityId(item.id)
+                        }}
+                      >
+                        <p className="text-sm font-medium text-[var(--text-primary)]">{item.title}</p>
+                        <p className="mt-1 text-xs text-[var(--text-secondary)]">{item.buyer_name}</p>
+                      </button>
+                    ))
+                  ) : (
+                    <p className="text-sm text-[var(--text-secondary)]">No items in this lane.</p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardBody>
+      </Card>
+
       <div className="grid grid-cols-1 xl:grid-cols-[360px_minmax(0,1fr)] gap-6">
         <Card className="h-fit">
           <CardHeader>
@@ -421,6 +475,7 @@ export default function OpportunitiesPage() {
                         <p className="text-xs text-[var(--text-tertiary)] mt-2">
                           {territory.zips.length} zips · tier {territory.priority_tier}
                         </p>
+                        <p className="text-xs text-[var(--text-secondary)] mt-2">{territory.next_action}</p>
                       </div>
                       <Badge variant={territory.coverage_complete ? 'success' : territory.status === 'active' ? 'warning' : 'neutral'}>
                         {territory.status}
@@ -594,6 +649,9 @@ export default function OpportunitiesPage() {
                         </p>
                       </div>
                       <div className="flex items-center gap-2 flex-wrap">
+                        <Button size="sm" variant="secondary" onClick={handleQualify} loading={qualifyOpportunity.isPending}>
+                          Qualify
+                        </Button>
                         <Button size="sm" variant="secondary" onClick={() => setEstimateModalOpen(true)}>
                           Save Estimate
                         </Button>
@@ -627,6 +685,23 @@ export default function OpportunitiesPage() {
                     ) : (
                       <p className="mt-4 text-sm text-[var(--text-secondary)]">No estimate saved yet.</p>
                     )}
+                  </div>
+
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-wide text-[var(--text-tertiary)]">
+                      Must-Have Requirements
+                    </p>
+                    <div className="mt-2 flex items-center gap-2 flex-wrap">
+                      {selectedOpportunity.must_have_requirements.length > 0 ? (
+                        selectedOpportunity.must_have_requirements.map((requirement) => (
+                          <Badge key={requirement} variant="info">
+                            {requirement}
+                          </Badge>
+                        ))
+                      ) : (
+                        <p className="text-sm text-[var(--text-secondary)]">Qualification has not extracted must-have requirements yet.</p>
+                      )}
+                    </div>
                   </div>
 
                   {(selectedOpportunity.linked_project_name || selectedOpportunity.linked_proposal_id) && (

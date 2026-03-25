@@ -9,6 +9,7 @@ import {
   getOpportunity,
   getTerritories,
   handoffOpportunity,
+  qualifyOpportunity,
   saveOpportunityEstimate,
   setTerritoryStatus,
   updateOpportunity,
@@ -93,6 +94,14 @@ export function useApproveOpportunity() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: (opportunityId: number) => approveOpportunity(opportunityId),
+    onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useQualifyOpportunity() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (opportunityId: number) => qualifyOpportunity(opportunityId),
     onSuccess: () => invalidateAll(qc),
   })
 }

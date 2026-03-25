@@ -18,6 +18,7 @@ export const TerritorySchema = z.object({
   opportunity_total: z.number().optional(),
   by_stage: z.record(z.string(), z.number()).optional(),
   coverage_complete: z.boolean().optional(),
+  next_action: z.string().optional(),
 }).passthrough()
 
 export const OpportunityEstimateSchema = z.object({
@@ -75,6 +76,13 @@ const DashboardResponseSchema = z.object({
     approved_opportunities: z.number(),
   }),
   lane_counts: z.record(z.string(), z.number()),
+  lane_board: z.record(
+    z.string(),
+    z.object({
+      count: z.number(),
+      items: z.array(OpportunitySchema),
+    }),
+  ),
   recent: z.array(OpportunitySchema),
 }).passthrough()
 
@@ -160,6 +168,12 @@ export function saveOpportunityEstimate(opportunityId: number, estimate: Record<
 export function approveOpportunity(opportunityId: number) {
   return validatedApi('opportunities_update', OpportunityResponseSchema, {
     body: { action: 'approve', opportunity_id: opportunityId },
+  })
+}
+
+export function qualifyOpportunity(opportunityId: number) {
+  return validatedApi('opportunities_update', OpportunityResponseSchema, {
+    body: { action: 'qualify', opportunity_id: opportunityId },
   })
 }
 

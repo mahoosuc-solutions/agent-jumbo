@@ -52,6 +52,40 @@ async def test_opportunities_dashboard_lists_seeded_territories(tmp_path, monkey
     result = await handler.process({"action": "dashboard"}, DummyRequest())
     assert result["success"] is True
     assert result["stats"]["total_territories"] >= 4
+    assert set(result["lane_board"].keys()) == {"discovery", "qualification", "estimation", "solutioning"}
+    assert "next_action" in result["territories"][0]
+
+
+@pytest.mark.asyncio
+async def test_opportunity_qualify_action_updates_lane_and_scores(tmp_path, monkeypatch):
+    _patch_abs_path(monkeypatch, tmp_path)
+    dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())
+    territories = await dashboard.process({"action": "territories"}, DummyRequest())
+    territory_id = territories["territories"][0]["id"]
+
+    update = OpportunitiesUpdate(SimpleNamespace(), SimpleNamespace())
+    created = await update.process(
+        {
+            "action": "create",
+            "opportunity": {
+                "territory_id": territory_id,
+                "title": "County health interoperability modernization",
+                "buyer_name": "County public health authority",
+                "raw_requirements": "Need FHIR integration, security controls, analytics dashboards, and workflow automation.",
+            },
+        },
+        DummyRequest(),
+    )
+
+    qualified = await update.process(
+        {"action": "qualify", "opportunity_id": created["opportunity"]["id"]},
+        DummyRequest(),
+    )
+    assert qualified["success"] is True
+    assert qualified["opportunity"]["stage"] == "qualified"
+    assert qualified["opportunity"]["lane"] == "estimation"
+    assert qualified["opportunity"]["recommendation"] == "pursue"
+    assert qualified["opportunity"]["must_have_requirements"]
 
 
 @pytest.mark.asyncio

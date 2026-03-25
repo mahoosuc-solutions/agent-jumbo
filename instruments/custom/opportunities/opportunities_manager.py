@@ -22,6 +22,19 @@ VALID_STAGES = {
 VALID_LANES = {"discovery", "qualification", "estimation", "solutioning"}
 VALID_RECOMMENDATIONS = {"pursue", "watch", "pass"}
 VALID_APPROVAL = {"pending", "approved", "rejected"}
+TERRITORY_STATUSES = {"planned", "active", "covered", "refresh", "paused"}
+
+MUST_HAVE_RULES = [
+    ("FHIR interoperability", ("fhir", "hl7", "interoperability")),
+    ("Security and compliance", ("security", "secure", "hipaa", "compliance", "soc 2", "audit")),
+    ("Analytics and reporting", ("dashboard", "analytics", "reporting", "quality measure")),
+    ("Workflow automation", ("workflow", "case management", "automation", "operator")),
+    ("Integrations", ("integration", "api", "data exchange", "interface")),
+]
+
+
+def _clamp(value: float, lower: float = 0, upper: float = 100) -> float:
+    return max(lower, min(upper, value))
 
 
 class OpportunitiesManager:
@@ -31,10 +44,19 @@ class OpportunitiesManager:
     def dashboard(self) -> dict[str, Any]:
         data = self.db.territory_dashboard()
         opportunities = self.db.list_opportunities()
+        for territory in data["territories"]:
+            territory["next_action"] = self._territory_next_action(territory)
         lane_counts = dict.fromkeys(VALID_LANES, 0)
         for opportunity in opportunities:
             lane_counts[opportunity["lane"]] = lane_counts.get(opportunity["lane"], 0) + 1
         data["lane_counts"] = lane_counts
+        data["lane_board"] = {
+            lane: {
+                "count": lane_counts.get(lane, 0),
+                "items": [opportunity for opportunity in opportunities if opportunity["lane"] == lane][:5],
+            }
+            for lane in VALID_LANES
+        }
         data["recent"] = opportunities[:8]
         return data
 
@@ -42,7 +64,7 @@ class OpportunitiesManager:
         return self.db.list_territories(status=status)
 
     def set_territory_status(self, territory_id: int, status: str) -> bool:
-        if status not in {"planned", "active", "covered", "refresh", "paused"}:
+        if status not in TERRITORY_STATUSES:
             raise ValueError(f"invalid territory status: {status}")
         return self.db.update_territory_status(territory_id, status)
 
@@ -158,6 +180,48 @@ class OpportunitiesManager:
         self.db.update_opportunity(opportunity_id, {"stage": "estimated", "lane": "estimation"})
         return saved
 
+    def qualify_opportunity(self, opportunity_id: int) -> dict[str, Any]:
+        opportunity = self.db.get_opportunity(opportunity_id)
+        if not opportunity:
+            raise ValueError(f"opportunity {opportunity_id} not found")
+
+        summary = self._normalized_summary(opportunity)
+        must_haves = self._extract_must_haves(
+            " ".join(
+                filter(
+                    None,
+                    [
+                        opportunity.get("title"),
+                        opportunity.get("normalized_summary"),
+                        opportunity.get("raw_requirements"),
+                    ],
+                )
+            )
+        )
+        strategic_fit = self._strategic_fit_score(opportunity)
+        delivery_risk = self._delivery_risk_score(opportunity)
+        confidence = self._confidence_score(strategic_fit, delivery_risk, opportunity)
+        recommendation = self._recommendation(strategic_fit, delivery_risk)
+
+        stage = "qualified"
+        lane = "qualification"
+        if recommendation == "pursue" and strategic_fit >= 70:
+            lane = "estimation"
+
+        return self.update_opportunity(
+            opportunity_id,
+            {
+                "normalized_summary": summary,
+                "must_have_requirements": must_haves,
+                "strategic_fit_score": strategic_fit,
+                "delivery_risk_score": delivery_risk,
+                "confidence_score": confidence,
+                "recommendation": recommendation,
+                "stage": stage,
+                "lane": lane,
+            },
+        )
+
     def approve_for_solutioning(self, opportunity_id: int) -> dict[str, Any]:
         opportunity = self.db.get_opportunity(opportunity_id)
         if not opportunity:
@@ -253,3 +317,110 @@ class OpportunitiesManager:
             "proposal": proposal,
             "work_items_created": promoted["work_items_created"],
         }
+
+    def _normalized_summary(self, opportunity: dict[str, Any]) -> str:
+        existing = str(opportunity.get("normalized_summary") or "").strip()
+        if existing:
+            return existing
+        raw_requirements = str(opportunity.get("raw_requirements") or "").strip()
+        if raw_requirements:
+            collapsed = " ".join(raw_requirements.split())
+            return collapsed[:280]
+        return opportunity["title"]
+
+    def _extract_must_haves(self, text: str) -> list[str]:
+        lowered = text.lower()
+        matches = [label for label, keywords in MUST_HAVE_RULES if any(keyword in lowered for keyword in keywords)]
+        if not matches:
+            return ["Requirements review needed"]
+        return matches
+
+    def _strategic_fit_score(self, opportunity: dict[str, Any]) -> float:
+        text = " ".join(
+            filter(
+                None,
+                [
+                    opportunity.get("title"),
+                    opportunity.get("buyer_name"),
+                    opportunity.get("normalized_summary"),
+                    opportunity.get("raw_requirements"),
+                ],
+            )
+        ).lower()
+        score = 45.0
+        if any(keyword in text for keyword in ("health", "public health", "medicaid", "care", "clinical")):
+            score += 18
+        if any(keyword in text for keyword in ("city", "county", "state", "public", "department", "government")):
+            score += 10
+        if any(keyword in text for keyword in ("fhir", "hl7", "interoperability", "integration", "api")):
+            score += 12
+        if any(keyword in text for keyword in ("dashboard", "analytics", "reporting", "workflow", "automation")):
+            score += 8
+        if any(keyword in text for keyword in ("security", "compliance", "hipaa", "audit")):
+            score += 7
+        return _clamp(score)
+
+    def _delivery_risk_score(self, opportunity: dict[str, Any]) -> float:
+        text = " ".join(
+            filter(
+                None,
+                [
+                    opportunity.get("title"),
+                    opportunity.get("normalized_summary"),
+                    opportunity.get("raw_requirements"),
+                ],
+            )
+        ).lower()
+        score = 28.0
+        if not opportunity.get("raw_requirements"):
+            score += 18
+        if not opportunity.get("zip_code"):
+            score += 6
+        if any(keyword in text for keyword in ("legacy", "migration", "replace", "procurement", "compliance review")):
+            score += 12
+        if any(keyword in text for keyword in ("urgent", "immediate", "asap", "expedited", "rapid turnaround")):
+            score += 14
+        if any(keyword in text for keyword in ("pilot", "discovery", "assessment")):
+            score -= 6
+        return _clamp(score)
+
+    def _confidence_score(
+        self,
+        strategic_fit_score: float,
+        delivery_risk_score: float,
+        opportunity: dict[str, Any],
+    ) -> float:
+        score = 48 + (strategic_fit_score * 0.4) - (delivery_risk_score * 0.35)
+        if opportunity.get("raw_requirements"):
+            score += 8
+        if opportunity.get("normalized_summary"):
+            score += 4
+        return _clamp(score)
+
+    def _recommendation(self, strategic_fit_score: float, delivery_risk_score: float) -> str:
+        if strategic_fit_score >= 70 and delivery_risk_score <= 55:
+            return "pursue"
+        if strategic_fit_score < 45 or delivery_risk_score >= 78:
+            return "pass"
+        return "watch"
+
+    def _territory_next_action(self, territory: dict[str, Any]) -> str:
+        status = territory.get("status")
+        by_stage = territory.get("by_stage", {})
+        if status == "planned":
+            return "Activate this metro cluster and start discovery coverage."
+        if status == "paused":
+            return "Resume territory work or keep paused until capacity opens."
+        if status == "covered":
+            return "Refresh sources on cadence and watch for new opportunities."
+        if by_stage.get("discovered", 0):
+            return "Normalize and qualify newly discovered opportunities."
+        if by_stage.get("qualified", 0):
+            return "Generate detailed estimates for qualified opportunities."
+        if by_stage.get("estimated", 0):
+            return "Review estimates and approve the best pursuits."
+        if by_stage.get("approved_for_solutioning", 0):
+            return "Hand approved pursuits into ideas, projects, and proposals."
+        if territory.get("coverage_complete"):
+            return "Mark this cluster covered and move to the next metro."
+        return "Continue lane review until the cluster reaches coverage."
