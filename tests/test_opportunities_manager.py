@@ -221,6 +221,46 @@ def test_run_collectors_records_errors_without_aborting_all_runs(tmp_path):
     assert runs[0]["status"] == "error"
 
 
+def test_territory_coverage_requires_bundle_evidence_and_backlog_clear(tmp_path):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    territory = manager.list_territories()[0]
+    territory_id = territory["id"]
+
+    manager.create_opportunity(
+        {
+            "territory_id": territory_id,
+            "title": "Boston discovered backlog item",
+            "buyer_name": "Boston public health office",
+            "source_type": "manual",
+            "raw_requirements": "Need secure FHIR dashboards.",
+        }
+    )
+
+    territories = manager.list_territories()
+    boston = next(item for item in territories if item["id"] == territory_id)
+    assert boston["coverage_complete"] is False
+    assert boston["coverage_evidence"]["bundle_ready"] is False
+
+    for collector_name in boston["coverage_evidence"]["required_collectors"]:
+        run_id = manager.db.start_collector_run("json_file", collector_name)
+        manager.db.finish_collector_run(
+            run_id,
+            status="ok",
+            items_received=1,
+            created_count=1,
+            updated_count=0,
+            qualified_count=1,
+        )
+
+    opportunities = manager.list_opportunities(territory_id=territory_id)
+    manager.update_opportunity(opportunities[0]["id"], {"stage": "qualified", "lane": "estimation"})
+
+    refreshed = next(item for item in manager.list_territories() if item["id"] == territory_id)
+    assert refreshed["coverage_evidence"]["bundle_ready"] is True
+    assert refreshed["coverage_evidence"]["backlog_ready"] is True
+    assert refreshed["coverage_complete"] is True
+
+
 class _DummyScheduledTask:
     @staticmethod
     def create(name, system_prompt, prompt, schedule):

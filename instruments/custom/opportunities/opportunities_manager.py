@@ -7,6 +7,7 @@ from python.helpers import files
 
 from .opportunities_db import OpportunitiesDatabase
 from .source_adapters import get_adapter
+from .territory_seed import TERRITORY_PROFILES
 
 VALID_STAGES = {
     "discovered",
@@ -46,7 +47,9 @@ class OpportunitiesManager:
     def dashboard(self) -> dict[str, Any]:
         data = self.db.territory_dashboard()
         opportunities = self.db.list_opportunities()
+        collector_runs = self.db.list_collector_runs(limit=50)
         for territory in data["territories"]:
+            self._enrich_territory_profile(territory, collector_runs)
             territory["next_action"] = self._territory_next_action(territory)
         lane_counts = dict.fromkeys(VALID_LANES, 0)
         for opportunity in opportunities:
@@ -65,7 +68,13 @@ class OpportunitiesManager:
         return data
 
     def list_territories(self, status: str | None = None) -> list[dict[str, Any]]:
-        return self.db.list_territories(status=status)
+        territories = self.db.territory_dashboard()["territories"]
+        if status:
+            territories = [territory for territory in territories if territory.get("status") == status]
+        collector_runs = self.db.list_collector_runs(limit=50)
+        for territory in territories:
+            self._enrich_territory_profile(territory, collector_runs)
+        return territories
 
     def set_territory_status(self, territory_id: int, status: str) -> bool:
         if status not in TERRITORY_STATUSES:
@@ -580,12 +589,15 @@ class OpportunitiesManager:
     def _territory_next_action(self, territory: dict[str, Any]) -> str:
         status = territory.get("status")
         by_stage = territory.get("by_stage", {})
+        coverage = territory.get("coverage_evidence", {})
         if status == "planned":
             return "Activate this metro cluster and start discovery coverage."
         if status == "paused":
             return "Resume territory work or keep paused until capacity opens."
         if status == "covered":
             return "Refresh sources on cadence and watch for new opportunities."
+        if coverage and not coverage.get("bundle_ready", False):
+            return "Run the metro collector bundle until required sources have succeeded."
         if by_stage.get("discovered", 0):
             return "Normalize and qualify newly discovered opportunities."
         if by_stage.get("qualified", 0):
@@ -597,3 +609,39 @@ class OpportunitiesManager:
         if territory.get("coverage_complete"):
             return "Mark this cluster covered and move to the next metro."
         return "Continue lane review until the cluster reaches coverage."
+
+    def _enrich_territory_profile(self, territory: dict[str, Any], collector_runs: list[dict[str, Any]]) -> None:
+        profile = TERRITORY_PROFILES.get((territory["state"], territory["metro_name"], territory["cluster_name"]), {})
+        bundle = profile.get("collector_bundle", [])
+        thresholds = profile.get(
+            "coverage_thresholds",
+            {"required_successful_collectors": 1, "max_discovered_backlog": 0},
+        )
+        territory["collector_bundle"] = bundle
+        territory["coverage_thresholds"] = thresholds
+
+        required_names = [collector["name"] for collector in bundle if collector.get("name")]
+        successful_names = {
+            run.get("collector_name")
+            for run in collector_runs
+            if run.get("status") == "ok" and run.get("collector_name") in required_names
+        }
+        bundle_ready = len(successful_names) >= int(
+            thresholds.get("required_successful_collectors", len(required_names) or 1)
+        )
+        discovered_backlog = int(territory.get("by_stage", {}).get("discovered", 0))
+        backlog_ready = discovered_backlog <= int(thresholds.get("max_discovered_backlog", 0))
+        prior_stage_ready = (
+            bool(territory.get("opportunity_total", 0))
+            and discovered_backlog == 0
+            and int(territory.get("by_stage", {}).get("normalized", 0)) == 0
+        )
+        territory["coverage_evidence"] = {
+            "required_collectors": required_names,
+            "successful_collectors": sorted(name for name in successful_names if name),
+            "successful_collector_count": len(successful_names),
+            "bundle_ready": bundle_ready,
+            "backlog_ready": backlog_ready,
+            "discovered_backlog": discovered_backlog,
+        }
+        territory["coverage_complete"] = bundle_ready and backlog_ready and prior_stage_ready

@@ -752,6 +752,15 @@ export default function OpportunitiesPage() {
                           {territory.zips.length} zips · tier {territory.priority_tier}
                         </p>
                         <p className="text-xs text-[var(--text-secondary)] mt-2">{territory.next_action}</p>
+                        <div className="mt-2 flex items-center gap-2 flex-wrap">
+                          <Badge variant={territory.coverage_evidence?.bundle_ready ? 'success' : 'warning'}>
+                            Bundle {territory.coverage_evidence?.successful_collector_count ?? 0}/
+                            {territory.coverage_thresholds?.required_successful_collectors ?? territory.collector_bundle?.length ?? 0}
+                          </Badge>
+                          <Badge variant={territory.coverage_evidence?.backlog_ready ? 'success' : 'warning'}>
+                            Backlog {territory.coverage_evidence?.discovered_backlog ?? 0}
+                          </Badge>
+                        </div>
                       </div>
                       <Badge variant={territory.coverage_complete ? 'success' : territory.status === 'active' ? 'warning' : 'neutral'}>
                         {territory.status}
@@ -761,6 +770,19 @@ export default function OpportunitiesPage() {
                       <Badge variant="neutral">Opps: {territory.opportunity_total ?? 0}</Badge>
                       <Badge variant="info">Qualified: {territory.by_stage?.qualified ?? 0}</Badge>
                       <Badge variant="warning">Estimated: {territory.by_stage?.estimated ?? 0}</Badge>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-xs text-[var(--text-tertiary)]">Required collectors</p>
+                      <div className="mt-2 flex items-center gap-2 flex-wrap">
+                        {territory.collector_bundle?.map((collector) => {
+                          const successful = territory.coverage_evidence?.successful_collectors?.includes(String(collector.name))
+                          return (
+                            <Badge key={String(collector.name)} variant={successful ? 'success' : 'neutral'}>
+                              {String(collector.name)}
+                            </Badge>
+                          )
+                        })}
+                      </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2">
                       {territory.status !== 'active' && (

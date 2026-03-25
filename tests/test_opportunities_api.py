@@ -211,6 +211,20 @@ async def test_dashboard_exposes_collector_run_history(tmp_path, monkeypatch):
 
 
 @pytest.mark.asyncio
+async def test_dashboard_exposes_territory_bundle_and_coverage_evidence(tmp_path, monkeypatch):
+    _patch_abs_path(monkeypatch, tmp_path)
+    dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())
+    result = await dashboard.process({"action": "dashboard"}, DummyRequest())
+    territory = result["territories"][0]
+
+    assert result["success"] is True
+    assert territory["collector_bundle"]
+    assert territory["coverage_thresholds"]["required_successful_collectors"] >= 1
+    assert "coverage_evidence" in territory
+    assert "required_collectors" in territory["coverage_evidence"]
+
+
+@pytest.mark.asyncio
 async def test_opportunity_create_estimate_approve_handoff(tmp_path, monkeypatch):
     _patch_abs_path(monkeypatch, tmp_path)
     dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())

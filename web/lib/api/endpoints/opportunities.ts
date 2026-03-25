@@ -19,6 +19,16 @@ export const TerritorySchema = z.object({
   by_stage: z.record(z.string(), z.number()).optional(),
   coverage_complete: z.boolean().optional(),
   next_action: z.string().optional(),
+  collector_bundle: z.array(z.record(z.string(), z.unknown())).optional(),
+  coverage_thresholds: z.record(z.string(), z.number()).optional(),
+  coverage_evidence: z.object({
+    required_collectors: z.array(z.string()),
+    successful_collectors: z.array(z.string()),
+    successful_collector_count: z.number(),
+    bundle_ready: z.boolean(),
+    backlog_ready: z.boolean(),
+    discovered_backlog: z.number(),
+  }).optional(),
 }).passthrough()
 
 export const OpportunityEstimateSchema = z.object({
