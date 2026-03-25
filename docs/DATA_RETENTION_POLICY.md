@@ -1,3 +1,9 @@
+---
+title: Data Retention Policy
+description: Default retention guidance for chats, projects, workflows, backups, telemetry, and billing records.
+date: 2026-03-24
+---
+
 # Data Retention Policy
 
 Last updated: 2026-03-24

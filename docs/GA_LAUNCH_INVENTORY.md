@@ -1,3 +1,9 @@
+---
+title: GA Launch Inventory
+description: Feature classification, validation ownership, evidence locations, and rollback paths for launch scope.
+date: 2026-03-24
+---
+
 # GA Launch Inventory
 
 Use this inventory with [Production GA Definition of Done](PRODUCTION_GA_DEFINITION_OF_DONE.md). It is the operator-facing control sheet for feature classification, validation, evidence capture, and rollback planning.

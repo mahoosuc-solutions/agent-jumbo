@@ -1,3 +1,9 @@
+---
+title: Production GA Definition of Done
+description: Source of truth for self-serve launch readiness, release gates, and go-live decision criteria.
+date: 2026-03-24
+---
+
 # Production GA Definition of Done
 
 **Platform:** Agent Jumbo AI Architect Platform

@@ -1,3 +1,9 @@
+---
+title: GA Launch Runbook
+description: Launch-day execution sequence, rollback triggers, and observation window for production GA.
+date: 2026-03-24
+---
+
 # GA Launch Runbook
 
 Use this runbook for the final production GA decision and launch execution on **2026-04-17**.

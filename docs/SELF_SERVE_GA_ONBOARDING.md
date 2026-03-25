@@ -1,3 +1,9 @@
+---
+title: Self-Serve GA Onboarding
+description: Canonical onboarding path for a new self-serve customer setting up Agent Jumbo for production use.
+date: 2026-03-24
+---
+
 # Self-Serve GA Onboarding
 
 This is the canonical onboarding path for a new self-serve customer in the current production GA plan. If another setup document conflicts with this one, this document wins for launch.

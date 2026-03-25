@@ -1,3 +1,9 @@
+---
+title: Terms Of Use
+description: Core service terms, acceptable-use boundaries, and customer responsibilities for the Agent Jumbo platform.
+date: 2026-03-24
+---
+
 # Terms Of Use
 
 Last updated: 2026-03-24

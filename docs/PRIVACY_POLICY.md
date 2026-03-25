@@ -1,3 +1,9 @@
+---
+title: Privacy Policy
+description: Customer-facing summary of how Agent Jumbo handles platform data, integrations, and operational telemetry.
+date: 2026-03-24
+---
+
 # Privacy Policy
 
 Last updated: 2026-03-24

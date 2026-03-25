@@ -1,3 +1,9 @@
+---
+title: Data Deletion Policy
+description: Expected deletion behavior for customer content, integrations, workspaces, and backup expiration.
+date: 2026-03-24
+---
+
 # Data Deletion Policy
 
 Last updated: 2026-03-24
