@@ -60,6 +60,10 @@ const laneVariant: Record<string, 'success' | 'warning' | 'danger' | 'info' | 'n
 
 const EMPTY_REQUIREMENTS = 'Security, reporting, integration requirements'
 
+function prettyJson(value: unknown) {
+  return JSON.stringify(value, null, 2)
+}
+
 export default function OpportunitiesPage() {
   const { toast } = useToast()
   const dashboard = useOpportunitiesDashboard()
@@ -146,6 +150,10 @@ export default function OpportunitiesPage() {
     search: search || undefined,
   })
   const opportunities = opportunitiesQuery.data?.opportunities ?? []
+  const selectedTerritory = useMemo(
+    () => territories.find((territory) => territory.id === selectedTerritoryId) ?? territories[0] ?? null,
+    [selectedTerritoryId, territories],
+  )
   const selectedOpportunity = useMemo(
     () => opportunities.find((opportunity) => opportunity.id === selectedOpportunityId) ?? opportunities[0] ?? null,
     [opportunities, selectedOpportunityId],
@@ -169,6 +177,31 @@ export default function OpportunitiesPage() {
   const setTerritoryStatus = useSetTerritoryStatus()
   const scheduleCollectors = useScheduleCollectors()
   const unscheduleCollectors = useUnscheduleCollectors()
+
+  function getTerritoryBundle(territoryId?: number | null) {
+    const territory = territories.find((item) => item.id === territoryId)
+    return territory?.collector_bundle ?? []
+  }
+
+  function loadBundleIntoImport(territoryId?: number | null) {
+    const bundle = getTerritoryBundle(territoryId)
+    if (bundle.length === 0) {
+      toast('No predefined collector bundle for this territory', 'warning')
+      return
+    }
+    setImportPayload(prettyJson(bundle))
+    setImportModalOpen(true)
+  }
+
+  function loadBundleIntoSchedule(territoryId?: number | null) {
+    const bundle = getTerritoryBundle(territoryId)
+    if (bundle.length === 0) {
+      toast('No predefined collector bundle for this territory', 'warning')
+      return
+    }
+    setCollectorConfigsText(prettyJson(bundle))
+    setScheduleModalOpen(true)
+  }
 
   useEffect(() => {
     if (createOpportunity.isError) toast(createOpportunity.error?.message || 'Failed to create opportunity', 'danger')
@@ -359,6 +392,14 @@ export default function OpportunitiesPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={() => loadBundleIntoImport(selectedTerritory?.id)}
+            disabled={!selectedTerritory?.collector_bundle?.length}
+          >
+            <MapPinned className="h-4 w-4" /> Run Territory Bundle
+          </Button>
           <Button size="sm" variant="secondary" onClick={() => setImportModalOpen(true)}>
             <Import className="h-4 w-4" /> Import Feed
           </Button>
@@ -449,9 +490,30 @@ export default function OpportunitiesPage() {
         open={importModalOpen}
         onOpenChange={setImportModalOpen}
         title="Run Collectors"
-        description="Paste collector configs to ingest normalized opportunities from inline or file-backed feeds."
+        description="Paste collector configs or preload the selected territory bundle to ingest normalized opportunities."
       >
         <form onSubmit={handleRunCollectors} className="space-y-4">
+          <div className="flex items-center justify-between gap-2 flex-wrap rounded-lg border border-[var(--border-default)] bg-[var(--surface-secondary)] p-3">
+            <div>
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                {selectedTerritory ? `${selectedTerritory.metro_name} bundle` : 'No territory selected'}
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
+                {selectedTerritory?.collector_bundle?.length
+                  ? `${selectedTerritory.collector_bundle.length} collectors ready to load`
+                  : 'Select a territory with a predefined bundle'}
+              </p>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => loadBundleIntoImport(selectedTerritory?.id)}
+              disabled={!selectedTerritory?.collector_bundle?.length}
+            >
+              Load Bundle
+            </Button>
+          </div>
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-[var(--text-primary)]" htmlFor="import-payload">
               Collector Config
@@ -489,6 +551,27 @@ export default function OpportunitiesPage() {
         description="Register a scheduled collector run using cron plus one or more source adapters."
       >
         <form onSubmit={handleScheduleCollectors} className="space-y-4">
+          <div className="flex items-center justify-between gap-2 flex-wrap rounded-lg border border-[var(--border-default)] bg-[var(--surface-secondary)] p-3">
+            <div>
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                {selectedTerritory ? `${selectedTerritory.metro_name} schedule bundle` : 'No territory selected'}
+              </p>
+              <p className="text-xs text-[var(--text-secondary)] mt-1">
+                {selectedTerritory?.collector_bundle?.length
+                  ? `${selectedTerritory.collector_bundle.length} collectors ready for scheduling`
+                  : 'Select a territory with a predefined bundle'}
+              </p>
+            </div>
+            <Button
+              type="button"
+              size="sm"
+              variant="secondary"
+              onClick={() => loadBundleIntoSchedule(selectedTerritory?.id)}
+              disabled={!selectedTerritory?.collector_bundle?.length}
+            >
+              Load Bundle
+            </Button>
+          </div>
           <Input
             label="Cron"
             value={collectorCron}
@@ -785,6 +868,28 @@ export default function OpportunitiesPage() {
                       </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          loadBundleIntoImport(territory.id)
+                        }}
+                        disabled={!territory.collector_bundle?.length}
+                      >
+                        Run Bundle
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          loadBundleIntoSchedule(territory.id)
+                        }}
+                        disabled={!territory.collector_bundle?.length}
+                      >
+                        Schedule Bundle
+                      </Button>
                       {territory.status !== 'active' && (
                         <Button
                           size="sm"
