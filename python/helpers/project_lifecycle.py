@@ -566,6 +566,7 @@ def start_folder_workflow(
         raise Exception(started["error"])
 
     artifact_paths = folder_delivery_workflow.initialize_run_artifacts(run_context)
+    folder_delivery_workflow.write_task_claims(project_name, run_context.run_id, claims=[])
     release_bundle = Path(artifact_paths["release_bundle.json"])
     release_bundle_payload = json.loads(release_bundle.read_text(encoding="utf-8"))
     release_bundle_payload["payload"]["workflow_execution"] = started

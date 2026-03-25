@@ -38,6 +38,8 @@ CANONICAL_ARTIFACTS = [
     "release_bundle.json",
 ]
 
+INTEGRATOR_TASK_IDS = {"integrate_results", "integrator"}
+
 SCHEMA_GOVERNANCE_ARTIFACTS = [
     "data_dictionary.json",
     "schema_model.json",
@@ -389,6 +391,41 @@ def write_task_claims(project_name: str, run_id: str, claims: list[TaskClaim]) -
     return payload
 
 
+def load_task_claims(project_name: str, run_id: str) -> dict[str, Any]:
+    claim_path = get_claim_root(project_name, run_id) / "task_claims.json"
+    if not claim_path.exists():
+        return {"run_id": run_id, "claims": [], "errors": [], "bundle_hash": "", "generated_at": ""}
+    data = json.loads(claim_path.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise ValueError("Invalid task claim payload")
+    return data
+
+
+def get_task_claim(project_name: str, run_id: str, task_id: str) -> dict[str, Any] | None:
+    payload = load_task_claims(project_name, run_id)
+    for claim in payload.get("claims", []):
+        if str(claim.get("task_id", "")).strip() == task_id:
+            return claim
+    return None
+
+
+def ensure_task_claim_owner(project_name: str, run_id: str, task_id: str, assigned_to: str) -> dict[str, Any]:
+    payload = load_task_claims(project_name, run_id)
+    errors = [str(error) for error in payload.get("errors", []) if str(error).strip()]
+    if errors:
+        raise ValueError(f"Task claims are invalid for run {run_id}: {errors[0]}")
+
+    claim = get_task_claim(project_name, run_id, task_id)
+    if not claim:
+        raise ValueError(f"Task claim missing for task '{task_id}' in run '{run_id}'")
+    owner = str(claim.get("owner", "")).strip()
+    if not assigned_to.strip():
+        raise ValueError(f"Assigned owner is required for claimed task '{task_id}'")
+    if owner != assigned_to.strip():
+        raise ValueError(f"Task '{task_id}' is owned by '{owner}', not '{assigned_to}'")
+    return claim
+
+
 def record_gate_decision(
     project_name: str,
     run_id: str,
@@ -414,6 +451,58 @@ def record_gate_decision(
     gate_path = gate_root / f"{_slug(gate_name)}.json"
     gate_path.write_text(_json_dumps(decision.to_dict()) + "\n", encoding="utf-8")
     return decision.to_dict()
+
+
+def apply_artifact_updates(
+    project_name: str,
+    run_id: str,
+    task_id: str,
+    stage_family: str,
+    producer: str,
+    artifact_updates: list[dict[str, Any]],
+    assigned_to: str = "",
+) -> dict[str, Any]:
+    if not artifact_updates:
+        return {"updated": [], "bundle_hash": ""}
+
+    claim = ensure_task_claim_owner(project_name, run_id, task_id, assigned_to) if assigned_to else None
+    artifact_root = get_artifact_root(project_name, run_id)
+    files.create_dir(str(artifact_root))
+    updated: list[str] = []
+
+    for update in artifact_updates:
+        artifact_name = str(update.get("artifact_name", "")).strip()
+        if not artifact_name:
+            raise ValueError("artifact_name is required for artifact updates")
+        if claim:
+            owned_artifacts = [str(item).strip() for item in claim.get("owned_artifacts", []) if str(item).strip()]
+            if owned_artifacts and artifact_name not in owned_artifacts:
+                raise ValueError(f"Task '{task_id}' is not allowed to write artifact '{artifact_name}'")
+        if artifact_name in CANONICAL_ARTIFACTS and task_id not in INTEGRATOR_TASK_IDS:
+            raise ValueError(f"Canonical artifact '{artifact_name}' may only be written by the integrator task")
+
+        artifact_path = artifact_root / artifact_name
+        payload = update.get("payload")
+        if not isinstance(payload, dict):
+            raise ValueError(f"Artifact '{artifact_name}' payload must be an object")
+        envelope = {
+            "artifact_name": artifact_name,
+            "schema_version": SCHEMA_VERSION,
+            "run_id": run_id,
+            "stage_family": stage_family,
+            "producer": producer,
+            "bundle_hash": build_bundle_hash(payload),
+            "generated_at": _now_iso(),
+            "inputs": update.get("inputs", {}),
+            "source_refs": update.get("source_refs", []),
+            "payload": payload,
+            "written_by_task": task_id,
+            "written_by_owner": assigned_to,
+        }
+        artifact_path.write_text(_json_dumps(envelope) + "\n", encoding="utf-8")
+        updated.append(str(artifact_path))
+
+    return {"updated": updated, "bundle_hash": build_bundle_hash(updated)}
 
 
 def acquire_target_lock(project_name: str, run_context: WorkflowRunContext) -> str:
