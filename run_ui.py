@@ -66,6 +66,7 @@ _startup_tasks: list[object] = []
 _login_attempts: dict[str, list[float]] = {}
 _LOGIN_MAX_ATTEMPTS = 5
 _LOGIN_WINDOW_SECONDS = 60
+_CHAT_RESTORE_WAIT_TIMEOUT_SECONDS = 10
 
 
 def _is_laptop_mode() -> bool:
@@ -499,6 +500,8 @@ def init_a0():
         perf_metrics.record_startup_phase(phase, duration_ms, status=status, error=error or None)
         if status == "success":
             PrintStyle(font_color="green").print(f"[boot] {phase} completed in {duration_ms:.1f}ms")
+        elif status == "deferred":
+            PrintStyle(font_color="yellow").print(f"[boot] {phase} deferred after {duration_ms:.1f}ms: {error}")
         else:
             PrintStyle(font_color="yellow").print(f"[boot] {phase} failed in {duration_ms:.1f}ms: {error}")
 
@@ -519,7 +522,12 @@ def init_a0():
     chats_task = initialize.initialize_chats()
     if chats_task is not None:
         try:
-            chats_task.result_sync(timeout=10)
+            chats_task.result_sync(timeout=_CHAT_RESTORE_WAIT_TIMEOUT_SECONDS)
+        except TimeoutError as e:
+            _record_startup_phase_result("initialize_chats", chats_started, "deferred", str(e))
+            PrintStyle(font_color="yellow").print("[!] Chat restore still running in background")
+            _startup_tasks.append(chats_task)
+            _watch_background_startup_task("initialize_chats", chats_task, chats_started)
         except Exception as e:
             _record_startup_phase_result("initialize_chats", chats_started, "error", str(e))
             PrintStyle(font_color="yellow").print(f"[!] Chat restore incomplete: {e}")

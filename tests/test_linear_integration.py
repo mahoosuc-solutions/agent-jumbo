@@ -225,3 +225,41 @@ class TestLinearManager:
             cached = self.manager.db.get_issues()
             assert len(cached) == 1
             assert cached[0]["identifier"] == "AJB-1"
+
+    @pytest.mark.asyncio
+    async def test_create_issue_batch(self):
+        with patch.object(self.manager, "create_issue", new=AsyncMock()) as mock_create:
+            mock_create.side_effect = [
+                {
+                    "success": True,
+                    "issue": {
+                        "id": "i1",
+                        "identifier": "AJB-1",
+                        "title": "Parent",
+                        "url": "",
+                        "state": {"name": "Todo"},
+                        "priority": 0,
+                    },
+                },
+                {
+                    "success": True,
+                    "issue": {
+                        "id": "i2",
+                        "identifier": "AJB-2",
+                        "title": "Child",
+                        "url": "",
+                        "state": {"name": "Todo"},
+                        "priority": 0,
+                    },
+                },
+            ]
+            result = await self.manager.create_issue_batch(
+                issues=[
+                    {"title": "Parent", "description": "Top level"},
+                    {"title": "Child", "description": "Slice"},
+                ],
+                team_id="team-1",
+            )
+            assert result["success"] is True
+            assert result["created"] == 2
+            assert result["failed"] == 0

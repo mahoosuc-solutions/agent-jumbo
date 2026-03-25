@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from python.helpers import files, project_validation, projects
+from python.helpers import files, folder_delivery_workflow, project_validation, projects
 from python.helpers.print_style import PrintStyle
 
 LIFECYCLE_FILE = "lifecycle.json"
@@ -129,6 +129,14 @@ def _default_lifecycle(owner: str = "") -> dict[str, Any]:
         "retention": {
             "max_runs": 100,
         },
+        "workflow_profiles": {
+            folder_delivery_workflow.WORKFLOW_PROFILE_ID: {
+                "enabled": True,
+                "approval_policy": "human_gated",
+                "max_parallelism": 1,
+            }
+        },
+        "active_workflow_run": None,
         "schedules": {},
         "last_run": None,
     }
@@ -480,6 +488,238 @@ def run_phase(
         f"status={run_status} duration_ms={duration_ms}"
     )
 
+    return run_record
+
+
+def start_folder_workflow(
+    project_name: str,
+    target_path: str,
+    actor: str = "system",
+    scope: dict[str, Any] | None = None,
+    constraints: dict[str, Any] | None = None,
+    deploy_environment: str = "",
+    branch_ref: str = "",
+    max_parallelism: int | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+
+    profile_settings = (
+        lifecycle.get("workflow_profiles", {}).get(folder_delivery_workflow.WORKFLOW_PROFILE_ID, {})
+        if isinstance(lifecycle.get("workflow_profiles"), dict)
+        else {}
+    )
+    if profile_settings and not bool(profile_settings.get("enabled", True)):
+        raise Exception(f"Workflow profile is disabled: {folder_delivery_workflow.WORKFLOW_PROFILE_ID}")
+
+    run_context = folder_delivery_workflow.create_run_context(
+        project_name=project_name,
+        target_path=target_path,
+        actor=actor,
+        branch_ref=branch_ref,
+        deploy_environment=deploy_environment,
+        scope=scope,
+        constraints=constraints,
+        approval_policy=str(profile_settings.get("approval_policy", "human_gated")),
+        max_parallelism=int(max_parallelism or profile_settings.get("max_parallelism", 1) or 1),
+    )
+
+    folder_delivery_workflow.acquire_target_lock(project_name, run_context)
+
+    manager = _get_workflow_manager()
+    template_path = files.get_abs_path(folder_delivery_workflow.WORKFLOW_TEMPLATE_PATH)
+    workflow_name = f"{project_name}_{folder_delivery_workflow.WORKFLOW_PROFILE_ID}"
+
+    workflow = manager.get_workflow(name=workflow_name)
+    if not workflow or "error" in workflow:
+        created = manager.create_from_template(
+            template_path,
+            workflow_name,
+            customizations={
+                "settings": {
+                    "parallel_execution": run_context.max_parallelism > 1,
+                    "require_approvals": True,
+                },
+                "global_context": {
+                    "context_keys": [
+                        "run_id",
+                        "target_id",
+                        "target_path",
+                        "artifact_root",
+                        "branch_ref",
+                        "deploy_environment",
+                    ]
+                },
+            },
+        )
+        if "error" in created:
+            folder_delivery_workflow.release_target_lock(project_name, run_context.target_id, run_context.run_id)
+            raise Exception(created["error"])
+
+    started = manager.start_workflow(
+        workflow_name=workflow_name,
+        execution_name=f"{project_name}_{run_context.target_id}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+        context=run_context.to_dict(),
+    )
+    if "error" in started:
+        folder_delivery_workflow.release_target_lock(project_name, run_context.target_id, run_context.run_id)
+        raise Exception(started["error"])
+
+    artifact_paths = folder_delivery_workflow.initialize_run_artifacts(run_context)
+    release_bundle = Path(artifact_paths["release_bundle.json"])
+    release_bundle_payload = json.loads(release_bundle.read_text(encoding="utf-8"))
+    release_bundle_payload["payload"]["workflow_execution"] = started
+    release_bundle_payload["bundle_hash"] = folder_delivery_workflow.build_bundle_hash(
+        release_bundle_payload["payload"]
+    )
+    release_bundle.write_text(json.dumps(release_bundle_payload, indent=2) + "\n", encoding="utf-8")
+
+    run_record = {
+        "run_id": run_context.run_id,
+        "project_name": project_name,
+        "phase": "folder_delivery",
+        "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+        "target_id": run_context.target_id,
+        "target_path": run_context.target_path,
+        "stage_family": run_context.stage_family,
+        "actor": actor,
+        "status": "started",
+        "started_at": run_context.created_at,
+        "finished_at": None,
+        "workflow": {
+            "workflow_name": workflow_name,
+            "template": folder_delivery_workflow.WORKFLOW_TEMPLATE_PATH,
+            "execution": started,
+        },
+        "artifacts": artifact_paths,
+        "scope": run_context.scope,
+        "constraints": run_context.constraints,
+        "approval_policy": run_context.approval_policy,
+        "max_parallelism": run_context.max_parallelism,
+        "gates": {},
+    }
+
+    run_folder = folder_delivery_workflow.get_run_root(project_name, run_context.run_id)
+    files.create_dir(str(run_folder))
+    (run_folder / "run_context.json").write_text(json.dumps(run_context.to_dict(), indent=2) + "\n", encoding="utf-8")
+    (run_folder / "run_record.json").write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    (_runs_path(project_name) / f"{run_context.run_id}.json").write_text(
+        json.dumps(run_record, indent=2) + "\n", encoding="utf-8"
+    )
+
+    lifecycle["active_workflow_run"] = {
+        "run_id": run_context.run_id,
+        "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+        "target_id": run_context.target_id,
+        "target_path": run_context.target_path,
+        "status": "started",
+        "started_at": run_context.created_at,
+    }
+    lifecycle["last_run"] = {
+        "run_id": run_context.run_id,
+        "phase": "folder_delivery",
+        "status": "started",
+        "started_at": run_context.created_at,
+        "finished_at": None,
+        "duration_ms": 0,
+    }
+    _write_lifecycle(project_name, lifecycle)
+    return run_record
+
+
+def approve_folder_gate(
+    project_name: str,
+    run_id: str,
+    gate_name: str,
+    approved_by: str,
+    approved: bool = True,
+    evidence_refs: list[str] | None = None,
+    rejection_reason: str = "",
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, approved_by)
+
+    run_file = _runs_path(project_name) / f"{run_id}.json"
+    if not run_file.exists():
+        raise Exception(f"Workflow run not found: {run_id}")
+    run_record = json.loads(run_file.read_text(encoding="utf-8"))
+
+    artifact_root = folder_delivery_workflow.get_artifact_root(project_name, run_id)
+    artifact_hashes: dict[str, str] = {}
+    for artifact_name in folder_delivery_workflow.CANONICAL_ARTIFACTS:
+        artifact_path = artifact_root / artifact_name
+        if artifact_path.exists():
+            artifact_hashes[artifact_name] = folder_delivery_workflow.build_bundle_hash(
+                json.loads(artifact_path.read_text(encoding="utf-8"))
+            )
+    bundle_hash = folder_delivery_workflow.build_bundle_hash(artifact_hashes)
+    decision = folder_delivery_workflow.record_gate_decision(
+        project_name=project_name,
+        run_id=run_id,
+        gate_name=gate_name,
+        approved=approved,
+        approved_by=approved_by,
+        evidence_refs=evidence_refs,
+        bundle_hash=bundle_hash,
+        rejection_reason=rejection_reason,
+    )
+
+    execution = ((run_record.get("workflow") or {}).get("execution") or {}).get("execution_id")
+    gate_to_stage = {
+        "planning_to_execution": "planning",
+        "release_to_deploy": "release_decision",
+    }
+    stage_id = gate_to_stage.get(_slug(gate_name))
+    if approved and execution and stage_id:
+        manager = _get_workflow_manager()
+        manager.approve_stage(
+            execution_id=int(execution),
+            stage_id=stage_id,
+            approved_by=approved_by,
+            notes=f"Gate approved via project_lifecycle: {gate_name}",
+        )
+
+    run_record.setdefault("gates", {})[_slug(gate_name)] = decision
+    run_record["status"] = "gated" if approved else "blocked"
+    run_file.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    return decision
+
+
+def finalize_folder_workflow(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    status: str = "completed",
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+
+    run_file = _runs_path(project_name) / f"{run_id}.json"
+    if not run_file.exists():
+        raise Exception(f"Workflow run not found: {run_id}")
+    run_record = json.loads(run_file.read_text(encoding="utf-8"))
+    target_id = str(run_record.get("target_id", "")).strip()
+    if target_id:
+        folder_delivery_workflow.release_target_lock(project_name, target_id, run_id)
+
+    finished_at = _now_iso()
+    run_record["status"] = status
+    run_record["finished_at"] = finished_at
+    run_file.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+
+    active = lifecycle.get("active_workflow_run")
+    if isinstance(active, dict) and active.get("run_id") == run_id:
+        active["status"] = status
+        active["finished_at"] = finished_at
+    lifecycle["last_run"] = {
+        "run_id": run_id,
+        "phase": "folder_delivery",
+        "status": status,
+        "started_at": run_record.get("started_at"),
+        "finished_at": finished_at,
+        "duration_ms": 0,
+    }
+    _write_lifecycle(project_name, lifecycle)
     return run_record
 
 

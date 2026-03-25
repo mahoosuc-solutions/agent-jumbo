@@ -19,6 +19,9 @@ class ProjectLifecycle(Tool):
     - link_subproject
     - run_phase
     - list_phase_runs
+    - start_folder_workflow
+    - approve_folder_gate
+    - finalize_folder_workflow
     - add_phase_schedule
     - remove_phase_schedule
     """
@@ -127,6 +130,76 @@ class ProjectLifecycle(Tool):
                     additional={"project_name": project_name, "runs": runs},
                 )
 
+            if action == "start_folder_workflow":
+                target_path = str(self.args.get("target_path", "")).strip()
+                if not target_path:
+                    raise Exception("target_path is required")
+                scope = self.args.get("scope")
+                constraints = self.args.get("constraints")
+                if scope is not None and not isinstance(scope, dict):
+                    raise Exception("scope must be an object when provided")
+                if constraints is not None and not isinstance(constraints, dict):
+                    raise Exception("constraints must be an object when provided")
+                run = project_lifecycle.start_folder_workflow(
+                    project_name=project_name,
+                    target_path=target_path,
+                    actor=actor,
+                    scope=scope if isinstance(scope, dict) else None,
+                    constraints=constraints if isinstance(constraints, dict) else None,
+                    deploy_environment=str(self.args.get("deploy_environment", "")).strip(),
+                    branch_ref=str(self.args.get("branch_ref", "")).strip(),
+                    max_parallelism=int(self.args.get("max_parallelism", 1) or 1),
+                )
+                return Response(
+                    message=(
+                        f"Started folder delivery workflow '{run['run_id']}' for project '{project_name}' "
+                        f"target '{run['target_path']}'."
+                    ),
+                    break_loop=False,
+                    additional={"project_name": project_name, "run": run},
+                )
+
+            if action == "approve_folder_gate":
+                run_id = str(self.args.get("run_id", "")).strip()
+                gate_name = str(self.args.get("gate_name", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                if not gate_name:
+                    raise Exception("gate_name is required")
+                evidence_refs = self.args.get("evidence_refs")
+                if evidence_refs is not None and not isinstance(evidence_refs, list):
+                    raise Exception("evidence_refs must be an array when provided")
+                decision = project_lifecycle.approve_folder_gate(
+                    project_name=project_name,
+                    run_id=run_id,
+                    gate_name=gate_name,
+                    approved_by=actor,
+                    approved=self._to_bool(self.args.get("approved", True)),
+                    evidence_refs=[str(item) for item in evidence_refs] if isinstance(evidence_refs, list) else None,
+                    rejection_reason=str(self.args.get("rejection_reason", "")).strip(),
+                )
+                return Response(
+                    message=f"Recorded gate decision for '{gate_name}' on workflow run '{run_id}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "gate_decision": decision},
+                )
+
+            if action == "finalize_folder_workflow":
+                run_id = str(self.args.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                run = project_lifecycle.finalize_folder_workflow(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    status=str(self.args.get("status", "completed")).strip() or "completed",
+                )
+                return Response(
+                    message=f"Finalized workflow run '{run_id}' with status '{run['status']}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "run": run},
+                )
+
             if action == "add_phase_schedule":
                 phase = str(self.args.get("phase", "")).strip()
                 cron = str(self.args.get("cron", "")).strip()
@@ -164,7 +237,8 @@ class ProjectLifecycle(Tool):
             return Response(
                 message=(
                     "Unknown action. Use one of: get, upsert, set_phase, set_access, "
-                    "link_subproject, run_phase, list_phase_runs, add_phase_schedule, remove_phase_schedule"
+                    "link_subproject, run_phase, list_phase_runs, start_folder_workflow, "
+                    "approve_folder_gate, finalize_folder_workflow, add_phase_schedule, remove_phase_schedule"
                 ),
                 break_loop=False,
             )
@@ -179,3 +253,11 @@ class ProjectLifecycle(Tool):
             if isinstance(parsed, dict):
                 return parsed
         raise Exception("Expected JSON object payload")
+
+    @staticmethod
+    def _to_bool(value) -> bool:
+        if isinstance(value, bool):
+            return value
+        if isinstance(value, str):
+            return value.strip().lower() in {"1", "true", "yes", "y", "on"}
+        return bool(value)

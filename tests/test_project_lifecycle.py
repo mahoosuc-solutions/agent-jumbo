@@ -259,6 +259,74 @@ def test_run_phase_records_failed_visual_validation(monkeypatch):
         projects.delete_project(project_name)
 
 
+def test_start_folder_workflow_creates_run_and_allows_gate_and_finalize(monkeypatch):
+    project_name = _new_project_name()
+    _create_project(project_name)
+
+    class FakeManager:
+        def __init__(self):
+            self._created = False
+            self.approved: list[tuple[int, str, str]] = []
+
+        def get_workflow(self, name=None, workflow_id=None):
+            if self._created:
+                return {"workflow_id": 77, "name": name}
+            return {"error": "Workflow not found"}
+
+        def create_from_template(self, template_path, name, customizations=None):
+            self._created = True
+            return {"workflow_id": 77, "name": name, "status": "created"}
+
+        def start_workflow(self, workflow_id=None, workflow_name=None, execution_name=None, context=None):
+            return {
+                "execution_id": 123,
+                "workflow_id": 77,
+                "workflow_name": workflow_name,
+                "status": "running",
+                "context": context,
+            }
+
+        def approve_stage(self, execution_id, stage_id, approved_by, notes=None):
+            self.approved.append((execution_id, stage_id, approved_by))
+            return {"status": "approved"}
+
+    fake_manager = FakeManager()
+    monkeypatch.setattr(project_lifecycle, "_get_workflow_manager", lambda: fake_manager)
+
+    try:
+        run = project_lifecycle.start_folder_workflow(
+            project_name=project_name,
+            target_path="python/helpers",
+            actor="alice",
+            scope={"include": ["python/helpers"]},
+            constraints={"no_destructive_migrations": True},
+            branch_ref="feat/test",
+            max_parallelism=2,
+        )
+        assert run["workflow_profile"] == "folder_evaluation_delivery_v1"
+        assert Path(run["artifacts"]["definition_of_done.json"]).exists()
+
+        decision = project_lifecycle.approve_folder_gate(
+            project_name=project_name,
+            run_id=run["run_id"],
+            gate_name="planning_to_execution",
+            approved_by="alice",
+            evidence_refs=["artifacts/definition_of_done.json"],
+        )
+        assert decision["approved"] is True
+        assert fake_manager.approved == [(123, "planning", "alice")]
+
+        finalized = project_lifecycle.finalize_folder_workflow(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            status="completed",
+        )
+        assert finalized["status"] == "completed"
+    finally:
+        projects.delete_project(project_name)
+
+
 def test_run_phase_rejects_when_lock_exists(monkeypatch):
     project_name = _new_project_name()
     _create_project(project_name)

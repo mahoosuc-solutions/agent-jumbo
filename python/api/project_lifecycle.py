@@ -59,6 +59,55 @@ class ProjectLifecycle(ApiHandler):
                 phase = str(input.get("phase", "")).strip()
                 limit = int(input.get("limit", 25) or 25)
                 data = project_lifecycle.list_phase_runs(project_name, phase=phase, limit=limit)
+            elif action == "start_folder_workflow":
+                target_path = str(input.get("target_path", "")).strip()
+                if not target_path:
+                    raise Exception("target_path is required")
+                scope = input.get("scope")
+                constraints = input.get("constraints")
+                if scope is not None and not isinstance(scope, dict):
+                    raise Exception("scope must be an object when provided")
+                if constraints is not None and not isinstance(constraints, dict):
+                    raise Exception("constraints must be an object when provided")
+                data = project_lifecycle.start_folder_workflow(
+                    project_name=project_name,
+                    target_path=target_path,
+                    actor=actor,
+                    scope=scope if isinstance(scope, dict) else None,
+                    constraints=constraints if isinstance(constraints, dict) else None,
+                    deploy_environment=str(input.get("deploy_environment", "")).strip(),
+                    branch_ref=str(input.get("branch_ref", "")).strip(),
+                    max_parallelism=int(input.get("max_parallelism", 1) or 1),
+                )
+            elif action == "approve_folder_gate":
+                run_id = str(input.get("run_id", "")).strip()
+                gate_name = str(input.get("gate_name", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                if not gate_name:
+                    raise Exception("gate_name is required")
+                evidence_refs = input.get("evidence_refs")
+                if evidence_refs is not None and not isinstance(evidence_refs, list):
+                    raise Exception("evidence_refs must be an array when provided")
+                data = project_lifecycle.approve_folder_gate(
+                    project_name=project_name,
+                    run_id=run_id,
+                    gate_name=gate_name,
+                    approved_by=actor,
+                    approved=bool(input.get("approved", True)),
+                    evidence_refs=[str(item) for item in evidence_refs] if isinstance(evidence_refs, list) else None,
+                    rejection_reason=str(input.get("rejection_reason", "")).strip(),
+                )
+            elif action == "finalize_folder_workflow":
+                run_id = str(input.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.finalize_folder_workflow(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    status=str(input.get("status", "completed")).strip() or "completed",
+                )
             elif action == "add_phase_schedule":
                 phase = str(input.get("phase", "")).strip()
                 cron = str(input.get("cron", "")).strip()

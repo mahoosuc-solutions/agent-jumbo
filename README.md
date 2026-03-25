@@ -50,6 +50,23 @@ Visit [http://localhost:3000](http://localhost:3000)
 pip install agent-jumbo-devops
 ```
 
+### Local Docker Run
+
+For a clean local startup, use the repo-root Docker workflow instead of the legacy deployment compose file under `docker/run/`.
+
+```bash
+cp .env.example .env
+docker compose up --build
+```
+
+Then open `http://localhost:5000`.
+
+Notes:
+
+- The container runs in `AGENT_JUMBO_LAPTOP_MODE=true` by default to keep local startup self-contained.
+- If you already run Ollama on the host, the container will use `http://host.docker.internal:11434` by default.
+- The repository is mounted into `/aj`, so edits on the host are reflected immediately in the container.
+
 ### Basic Kubernetes Deployment
 
 ```python

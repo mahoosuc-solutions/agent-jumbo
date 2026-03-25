@@ -329,7 +329,6 @@ class SecurityVaultManager:
         """Ensures fundamental security keys (like VAPID) exist."""
         if not cls.get_secret("VAPID_PRIVATE_KEY"):
             try:
-                # Generate VAPID keys if pywebpush is available
                 import base64
 
                 import ecdsa
@@ -344,6 +343,10 @@ class SecurityVaultManager:
                 cls.set_secret("VAPID_PRIVATE_KEY", private_key)
                 cls.set_secret("VAPID_PUBLIC_KEY", public_key)
                 print("[🔐 Security] Generated new VAPID keypair for proactive alerts.")
+            except ImportError:
+                # Push notifications are optional; skip key generation when crypto
+                # support is not installed in the current runtime.
+                return
             except Exception as e:
                 print(f"[⚠️ Security] Failed to generate VAPID keys: {e}")
 
