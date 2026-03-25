@@ -42,10 +42,30 @@ jobs:
         run: |
           python3 scripts/ci/check_traceability.py --event-path "${GITHUB_EVENT_PATH}"
 
+  schema-governance:
+    name: Schema Governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate checked-in schema governance bundles
+        shell: bash
+        run: |
+          mapfile -t roots < <(find . -path '*/artifacts/data_dictionary.json' -printf '%h\n' | sort -u)
+          if [ "${#roots[@]}" -eq 0 ]; then
+            python3 scripts/ci/check_schema_governance.py
+            exit 0
+          fi
+          args=()
+          for root in "${roots[@]}"; do
+            args+=(--artifact-root "$root")
+          done
+          python3 scripts/ci/check_schema_governance.py "${args[@]}"
+
   test:
     name: Test Suite
     runs-on: ubuntu-latest
-    needs: [lint, traceability]
+    needs: [lint, traceability, schema-governance]
     steps:
       - uses: actions/checkout@v4
 
@@ -75,7 +95,7 @@ jobs:
   test-instruments:
     name: Instrument Tests
     runs-on: ubuntu-latest
-    needs: [lint, traceability]
+    needs: [lint, traceability, schema-governance]
     steps:
       - uses: actions/checkout@v4
 
@@ -99,7 +119,7 @@ jobs:
   test-integration:
     name: Integration Tests
     runs-on: ubuntu-latest
-    needs: [lint, traceability]
+    needs: [lint, traceability, schema-governance]
     steps:
       - uses: actions/checkout@v4
 
@@ -123,7 +143,7 @@ jobs:
   performance-gate-free:
     name: Performance Gate (Free Tier)
     runs-on: ubuntu-latest
-    needs: [lint, traceability]
+    needs: [lint, traceability, schema-governance]
     env:
       TIER: free
       PERF_SLO_PROFILE: free

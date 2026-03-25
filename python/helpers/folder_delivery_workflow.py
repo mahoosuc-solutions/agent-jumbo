@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from python.helpers import files, projects
+from python.helpers import files, projects, schema_governance
 
 WORKFLOW_PROFILE_ID = "folder_evaluation_delivery_v1"
 WORKFLOW_TEMPLATE_PATH = "instruments/custom/workflow_engine/templates/folder_evaluation_delivery_v1.json"
@@ -501,6 +501,12 @@ def apply_artifact_updates(
         }
         artifact_path.write_text(_json_dumps(envelope) + "\n", encoding="utf-8")
         updated.append(str(artifact_path))
+
+    schema_bundle = schema_governance.load_schema_bundle_from_artifact_root(artifact_root)
+    if schema_bundle:
+        errors = schema_governance.validate_schema_bundle(schema_bundle)
+        if errors:
+            raise ValueError(errors[0])
 
     return {"updated": updated, "bundle_hash": build_bundle_hash(updated)}
 
