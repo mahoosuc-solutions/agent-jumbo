@@ -98,6 +98,67 @@ class ProjectLifecycle(ApiHandler):
                     evidence_refs=[str(item) for item in evidence_refs] if isinstance(evidence_refs, list) else None,
                     rejection_reason=str(input.get("rejection_reason", "")).strip(),
                 )
+            elif action == "build_folder_release_bundle":
+                run_id = str(input.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                linear_issue_keys = input.get("linear_issue_keys")
+                if linear_issue_keys is not None and not isinstance(linear_issue_keys, list):
+                    raise Exception("linear_issue_keys must be an array when provided")
+                data = project_lifecycle.build_folder_release_bundle(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    commit_sha=str(input.get("commit_sha", "")).strip(),
+                    pr_number=str(input.get("pr_number", "")).strip(),
+                    linear_issue_keys=[str(item) for item in linear_issue_keys]
+                    if isinstance(linear_issue_keys, list)
+                    else None,
+                    deploy_target=str(input.get("deploy_target", "")).strip(),
+                    pre_deploy_checks=input.get("pre_deploy_checks")
+                    if isinstance(input.get("pre_deploy_checks"), dict)
+                    else None,
+                    post_deploy_checks=input.get("post_deploy_checks")
+                    if isinstance(input.get("post_deploy_checks"), dict)
+                    else None,
+                    monitoring_snapshot=input.get("monitoring_snapshot")
+                    if isinstance(input.get("monitoring_snapshot"), dict)
+                    else None,
+                    rollback_plan=input.get("rollback_plan") if isinstance(input.get("rollback_plan"), dict) else None,
+                )
+            elif action == "validate_folder_release_readiness":
+                run_id = str(input.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                required_observers = input.get("required_observers")
+                if required_observers is not None and not isinstance(required_observers, list):
+                    raise Exception("required_observers must be an array when provided")
+                data = project_lifecycle.validate_folder_release_readiness(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    required_observers=[str(item) for item in required_observers]
+                    if isinstance(required_observers, list)
+                    else None,
+                )
+            elif action == "record_folder_post_deploy":
+                run_id = str(input.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.record_folder_post_deploy(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    checks=input.get("checks") if isinstance(input.get("checks"), dict) else None,
+                    status=str(input.get("status", "healthy")).strip() or "healthy",
+                    rollback_triggered=bool(input.get("rollback_triggered", False)),
+                    observation_window=input.get("observation_window")
+                    if isinstance(input.get("observation_window"), dict)
+                    else None,
+                    monitoring_snapshot=input.get("monitoring_snapshot")
+                    if isinstance(input.get("monitoring_snapshot"), dict)
+                    else None,
+                )
             elif action == "finalize_folder_workflow":
                 run_id = str(input.get("run_id", "")).strip()
                 if not run_id:

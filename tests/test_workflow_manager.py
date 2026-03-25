@@ -593,6 +593,91 @@ class TestWorkflowEngineManager:
         finally:
             projects.delete_project(project_name)
 
+    def test_folder_delivery_operations_deploy_requires_matching_approved_bundle(self):
+        project_name = f"wf_release_{uuid4().hex[:8]}"
+        projects.create_project(
+            project_name,
+            projects.BasicProjectData(
+                title="WF Release",
+                description="workflow release test",
+                instructions="",
+                color="#225588",
+                memory="own",
+                file_structure={
+                    "enabled": True,
+                    "max_depth": 1,
+                    "max_files": 10,
+                    "max_folders": 10,
+                    "max_lines": 50,
+                    "gitignore": "",
+                },
+            ),
+        )
+
+        try:
+            run_context = folder_delivery_workflow.create_run_context(project_name=project_name, target_path="python")
+            folder_delivery_workflow.initialize_run_artifacts(run_context)
+            approved_hash = folder_delivery_workflow.collect_artifact_manifest(project_name, run_context.run_id)[
+                "bundle_hash"
+            ]
+            folder_delivery_workflow.record_gate_decision(
+                project_name=project_name,
+                run_id=run_context.run_id,
+                gate_name="release_to_deploy",
+                approved=True,
+                approved_by="ops",
+                bundle_hash=approved_hash,
+            )
+
+            wf = self.manager.create_workflow(
+                name="Folder Delivery Operations",
+                stages=[
+                    {
+                        "id": "operations",
+                        "name": "Operations",
+                        "tasks": [{"id": "deploy_release", "name": "Deploy"}],
+                    }
+                ],
+            )
+            exec_result = self.manager.start_workflow(
+                workflow_id=wf["workflow_id"],
+                context={
+                    "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+                    "project_name": project_name,
+                    "run_id": run_context.run_id,
+                },
+            )
+
+            self.manager.start_task(
+                execution_id=exec_result["execution_id"],
+                stage_id="operations",
+                task_id="deploy_release",
+                assigned_to="ops_1",
+            )
+
+            folder_delivery_workflow.write_system_artifact(
+                project_name=project_name,
+                run_id=run_context.run_id,
+                artifact_name="evaluation_report.json",
+                payload={
+                    "definition_of_done_score": 95,
+                    "rework_items": [],
+                    "quality_summary": "post-approval drift",
+                },
+                stage_family="execution",
+                producer="test",
+            )
+
+            with pytest.raises(ValueError, match="bundle hash does not match"):
+                self.manager.start_task(
+                    execution_id=exec_result["execution_id"],
+                    stage_id="operations",
+                    task_id="deploy_release",
+                    assigned_to="ops_1",
+                )
+        finally:
+            projects.delete_project(project_name)
+
     def test_fail_task_no_retry(self):
         """Test failing a task without retry"""
         wf = self.manager.create_workflow(

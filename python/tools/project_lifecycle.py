@@ -21,6 +21,9 @@ class ProjectLifecycle(Tool):
     - list_phase_runs
     - start_folder_workflow
     - approve_folder_gate
+    - build_folder_release_bundle
+    - validate_folder_release_readiness
+    - record_folder_post_deploy
     - finalize_folder_workflow
     - add_phase_schedule
     - remove_phase_schedule
@@ -184,6 +187,87 @@ class ProjectLifecycle(Tool):
                     additional={"project_name": project_name, "gate_decision": decision},
                 )
 
+            if action == "build_folder_release_bundle":
+                run_id = str(self.args.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                linear_issue_keys = self.args.get("linear_issue_keys")
+                if linear_issue_keys is not None and not isinstance(linear_issue_keys, list):
+                    raise Exception("linear_issue_keys must be an array when provided")
+                data = project_lifecycle.build_folder_release_bundle(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    commit_sha=str(self.args.get("commit_sha", "")).strip(),
+                    pr_number=str(self.args.get("pr_number", "")).strip(),
+                    linear_issue_keys=[str(item).strip() for item in linear_issue_keys]
+                    if isinstance(linear_issue_keys, list)
+                    else None,
+                    deploy_target=str(self.args.get("deploy_target", "")).strip(),
+                    pre_deploy_checks=self.args.get("pre_deploy_checks")
+                    if isinstance(self.args.get("pre_deploy_checks"), dict)
+                    else None,
+                    post_deploy_checks=self.args.get("post_deploy_checks")
+                    if isinstance(self.args.get("post_deploy_checks"), dict)
+                    else None,
+                    monitoring_snapshot=self.args.get("monitoring_snapshot")
+                    if isinstance(self.args.get("monitoring_snapshot"), dict)
+                    else None,
+                    rollback_plan=self.args.get("rollback_plan")
+                    if isinstance(self.args.get("rollback_plan"), dict)
+                    else None,
+                )
+                return Response(
+                    message=f"Built release bundle for workflow run '{run_id}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "release_bundle": data},
+                )
+
+            if action == "validate_folder_release_readiness":
+                run_id = str(self.args.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                required_observers = self.args.get("required_observers")
+                if required_observers is not None and not isinstance(required_observers, list):
+                    raise Exception("required_observers must be an array when provided")
+                data = project_lifecycle.validate_folder_release_readiness(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    required_observers=[str(item).strip() for item in required_observers]
+                    if isinstance(required_observers, list)
+                    else None,
+                )
+                return Response(
+                    message=f"Validated release readiness for workflow run '{run_id}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "release_readiness": data},
+                )
+
+            if action == "record_folder_post_deploy":
+                run_id = str(self.args.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.record_folder_post_deploy(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    checks=self.args.get("checks") if isinstance(self.args.get("checks"), dict) else None,
+                    status=str(self.args.get("status", "healthy")).strip() or "healthy",
+                    rollback_triggered=self._to_bool(self.args.get("rollback_triggered", False)),
+                    observation_window=self.args.get("observation_window")
+                    if isinstance(self.args.get("observation_window"), dict)
+                    else None,
+                    monitoring_snapshot=self.args.get("monitoring_snapshot")
+                    if isinstance(self.args.get("monitoring_snapshot"), dict)
+                    else None,
+                )
+                return Response(
+                    message=f"Recorded post-deploy evidence for workflow run '{run_id}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "post_deploy_report": data},
+                )
+
             if action == "finalize_folder_workflow":
                 run_id = str(self.args.get("run_id", "")).strip()
                 if not run_id:
@@ -238,7 +322,8 @@ class ProjectLifecycle(Tool):
                 message=(
                     "Unknown action. Use one of: get, upsert, set_phase, set_access, "
                     "link_subproject, run_phase, list_phase_runs, start_folder_workflow, "
-                    "approve_folder_gate, finalize_folder_workflow, add_phase_schedule, remove_phase_schedule"
+                    "approve_folder_gate, build_folder_release_bundle, validate_folder_release_readiness, "
+                    "record_folder_post_deploy, finalize_folder_workflow, add_phase_schedule, remove_phase_schedule"
                 ),
                 break_loop=False,
             )

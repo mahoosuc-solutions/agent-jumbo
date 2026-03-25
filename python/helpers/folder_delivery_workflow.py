@@ -489,6 +489,151 @@ def record_gate_decision(
     return decision.to_dict()
 
 
+def load_artifact_envelope(project_name: str, run_id: str, artifact_name: str) -> dict[str, Any]:
+    artifact_path = get_artifact_root(project_name, run_id) / artifact_name
+    if not artifact_path.exists():
+        return {}
+    data = json.loads(artifact_path.read_text(encoding="utf-8"))
+    return data if isinstance(data, dict) else {}
+
+
+def load_artifact_payload(project_name: str, run_id: str, artifact_name: str) -> dict[str, Any]:
+    envelope = load_artifact_envelope(project_name, run_id, artifact_name)
+    payload = envelope.get("payload", envelope)
+    return payload if isinstance(payload, dict) else {}
+
+
+def collect_artifact_manifest(project_name: str, run_id: str) -> dict[str, Any]:
+    artifact_root = get_artifact_root(project_name, run_id)
+    manifest: list[dict[str, Any]] = []
+    artifact_hashes: dict[str, str] = {}
+
+    for artifact_name in CANONICAL_ARTIFACTS:
+        artifact_path = artifact_root / artifact_name
+        if not artifact_path.exists():
+            continue
+        envelope = json.loads(artifact_path.read_text(encoding="utf-8"))
+        if not isinstance(envelope, dict):
+            continue
+        bundle_hash = str(envelope.get("bundle_hash", "")).strip()
+        if not bundle_hash:
+            bundle_hash = build_bundle_hash(envelope.get("payload", envelope))
+        entry = {
+            "artifact_name": artifact_name,
+            "path": str(artifact_path),
+            "bundle_hash": bundle_hash,
+            "stage_family": str(envelope.get("stage_family", "")).strip(),
+            "producer": str(envelope.get("producer", "")).strip(),
+        }
+        manifest.append(entry)
+        artifact_hashes[artifact_name] = bundle_hash
+
+    manifest.sort(key=lambda item: item["artifact_name"])
+    return {
+        "artifacts": manifest,
+        "artifact_hashes": artifact_hashes,
+        "bundle_hash": build_bundle_hash(artifact_hashes),
+    }
+
+
+def load_gate_decisions(project_name: str, run_id: str) -> list[dict[str, Any]]:
+    gate_root = get_gate_root(project_name, run_id)
+    if not gate_root.exists():
+        return []
+    decisions: list[dict[str, Any]] = []
+    for gate_file in sorted(gate_root.glob("*.json")):
+        data = json.loads(gate_file.read_text(encoding="utf-8"))
+        if isinstance(data, dict):
+            decisions.append(data)
+    return decisions
+
+
+def get_gate_decision(project_name: str, run_id: str, gate_name: str) -> dict[str, Any] | None:
+    gate_path = get_gate_root(project_name, run_id) / f"{_slug(gate_name)}.json"
+    if not gate_path.exists():
+        return None
+    data = json.loads(gate_path.read_text(encoding="utf-8"))
+    return data if isinstance(data, dict) else None
+
+
+def ensure_release_gate_ready(project_name: str, run_id: str, gate_name: str = "release_to_deploy") -> dict[str, Any]:
+    decision = get_gate_decision(project_name, run_id, gate_name)
+    if not decision or decision.get("approved") is not True:
+        raise ValueError(f"Gate '{gate_name}' must be approved before deployment can start")
+
+    manifest = collect_artifact_manifest(project_name, run_id)
+    current_bundle_hash = str(manifest.get("bundle_hash", "")).strip()
+    approved_bundle_hash = str(decision.get("bundle_hash", "")).strip()
+    if approved_bundle_hash != current_bundle_hash:
+        raise ValueError(f"Gate '{gate_name}' approval bundle hash does not match the current artifact bundle")
+
+    return {
+        "gate_name": gate_name,
+        "approved_by": decision.get("approved_by"),
+        "approved_at": decision.get("approved_at"),
+        "bundle_hash": approved_bundle_hash,
+    }
+
+
+def write_system_artifact(
+    project_name: str,
+    run_id: str,
+    artifact_name: str,
+    payload: dict[str, Any],
+    stage_family: str,
+    producer: str,
+    inputs: dict[str, Any] | None = None,
+    source_refs: list[str] | None = None,
+) -> dict[str, Any]:
+    artifact_root = get_artifact_root(project_name, run_id)
+    files.create_dir(str(artifact_root))
+    artifact_path = artifact_root / artifact_name
+    envelope = {
+        "artifact_name": artifact_name,
+        "schema_version": SCHEMA_VERSION,
+        "run_id": run_id,
+        "stage_family": stage_family,
+        "producer": producer,
+        "bundle_hash": build_bundle_hash(payload),
+        "generated_at": _now_iso(),
+        "inputs": inputs or {},
+        "source_refs": source_refs or [],
+        "payload": payload,
+        "written_by_task": "system",
+        "written_by_owner": producer,
+    }
+    artifact_path.write_text(_json_dumps(envelope) + "\n", encoding="utf-8")
+    validate_artifact_root(artifact_root)
+    return envelope
+
+
+def validate_artifact_root(artifact_root: str | Path) -> None:
+    artifact_root = Path(artifact_root)
+    schema_bundle = schema_governance.load_schema_bundle_from_artifact_root(artifact_root)
+    if schema_bundle:
+        errors = schema_governance.validate_schema_bundle(schema_bundle)
+        if errors:
+            raise ValueError(errors[0])
+
+    release_bundle = release_governance.load_release_artifact_payload(artifact_root, "release_bundle.json")
+    if release_bundle and release_governance.should_validate_release_bundle(release_bundle):
+        errors = release_governance.validate_release_bundle(release_bundle)
+        if errors:
+            raise ValueError(errors[0])
+
+    release_readiness = release_governance.load_release_artifact_payload(artifact_root, "release_readiness.json")
+    if release_readiness and release_governance.should_validate_release_readiness(release_readiness):
+        errors = release_governance.validate_release_readiness(release_readiness)
+        if errors:
+            raise ValueError(errors[0])
+
+    post_deploy_report = release_governance.load_release_artifact_payload(artifact_root, "post_deploy_report.json")
+    if post_deploy_report and release_governance.should_validate_post_deploy_report(post_deploy_report):
+        errors = release_governance.validate_post_deploy_report(post_deploy_report)
+        if errors:
+            raise ValueError(errors[0])
+
+
 def apply_artifact_updates(
     project_name: str,
     run_id: str,
@@ -538,29 +683,7 @@ def apply_artifact_updates(
         artifact_path.write_text(_json_dumps(envelope) + "\n", encoding="utf-8")
         updated.append(str(artifact_path))
 
-    schema_bundle = schema_governance.load_schema_bundle_from_artifact_root(artifact_root)
-    if schema_bundle:
-        errors = schema_governance.validate_schema_bundle(schema_bundle)
-        if errors:
-            raise ValueError(errors[0])
-
-    release_bundle = release_governance.load_release_artifact_payload(artifact_root, "release_bundle.json")
-    if release_bundle and release_governance.should_validate_release_bundle(release_bundle):
-        errors = release_governance.validate_release_bundle(release_bundle)
-        if errors:
-            raise ValueError(errors[0])
-
-    release_readiness = release_governance.load_release_artifact_payload(artifact_root, "release_readiness.json")
-    if release_readiness and release_governance.should_validate_release_readiness(release_readiness):
-        errors = release_governance.validate_release_readiness(release_readiness)
-        if errors:
-            raise ValueError(errors[0])
-
-    post_deploy_report = release_governance.load_release_artifact_payload(artifact_root, "post_deploy_report.json")
-    if post_deploy_report and release_governance.should_validate_post_deploy_report(post_deploy_report):
-        errors = release_governance.validate_post_deploy_report(post_deploy_report)
-        if errors:
-            raise ValueError(errors[0])
+    validate_artifact_root(artifact_root)
 
     return {"updated": updated, "bundle_hash": build_bundle_hash(updated)}
 

@@ -367,6 +367,11 @@ class WorkflowEngineManager:
                 task_id=task_id,
                 assigned_to=assigned_to or "",
             )
+        if run_binding and stage_id == "operations" and task_id == "deploy_release":
+            folder_delivery_workflow.ensure_release_gate_ready(
+                project_name=run_binding["project_name"],
+                run_id=run_binding["run_id"],
+            )
 
         self.db.update_task_execution(
             execution_id=execution_id,

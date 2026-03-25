@@ -327,6 +327,125 @@ def test_start_folder_workflow_creates_run_and_allows_gate_and_finalize(monkeypa
         projects.delete_project(project_name)
 
 
+def test_folder_release_artifacts_are_built_and_post_deploy_is_recorded(monkeypatch):
+    project_name = _new_project_name()
+    _create_project(project_name)
+
+    class FakeManager:
+        def __init__(self):
+            self._created = False
+            self.approved: list[tuple[int, str, str]] = []
+
+        def get_workflow(self, name=None, workflow_id=None):
+            if self._created:
+                return {"workflow_id": 88, "name": name}
+            return {"error": "Workflow not found"}
+
+        def create_from_template(self, template_path, name, customizations=None):
+            self._created = True
+            return {"workflow_id": 88, "name": name, "status": "created"}
+
+        def start_workflow(self, workflow_id=None, workflow_name=None, execution_name=None, context=None):
+            return {
+                "execution_id": 456,
+                "workflow_id": 88,
+                "workflow_name": workflow_name,
+                "status": "running",
+                "context": context,
+            }
+
+        def approve_stage(self, execution_id, stage_id, approved_by, notes=None):
+            self.approved.append((execution_id, stage_id, approved_by))
+            return {"status": "approved"}
+
+    monkeypatch.setattr(project_lifecycle, "_get_workflow_manager", lambda: FakeManager())
+
+    try:
+        run = project_lifecycle.start_folder_workflow(
+            project_name=project_name,
+            target_path="python/helpers",
+            actor="alice",
+            branch_ref="feat/test",
+        )
+        bundle = project_lifecycle.build_folder_release_bundle(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            commit_sha="6b5002cc",
+            pr_number="4",
+            linear_issue_keys=["AJB-123"],
+            deploy_target="staging",
+            pre_deploy_checks={
+                "artifact_manifest_verified": True,
+                "config_validated": True,
+                "secrets_present": True,
+                "dependency_reachability": True,
+                "migration_compatibility": True,
+                "environment_lock": True,
+                "backup_confirmed": True,
+            },
+            post_deploy_checks={
+                "health_endpoint": False,
+                "chat_readiness": False,
+                "workflow_smoke": False,
+                "schema_verification": False,
+                "monitoring_snapshot": False,
+            },
+            monitoring_snapshot={"status": "green", "observed_at": "2026-03-25T00:00:00+00:00"},
+            rollback_plan={"strategy": "forward_fix", "owner": "ops", "trigger_conditions": ["health red"]},
+        )
+        assert bundle["workflow_execution"]["execution_id"] == 456
+        assert bundle["artifact_manifest"]
+
+        readiness = project_lifecycle.validate_folder_release_readiness(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            required_observers=["engineering", "operations"],
+        )
+        assert readiness["ready"] is True
+        assert readiness["blocking_checks"] == []
+
+        gate = project_lifecycle.approve_folder_gate(
+            project_name=project_name,
+            run_id=run["run_id"],
+            gate_name="release_to_deploy",
+            approved_by="alice",
+            evidence_refs=["artifacts/release_bundle.json", "artifacts/release_readiness.json"],
+        )
+        assert gate["approved"] is True
+
+        post_deploy = project_lifecycle.record_folder_post_deploy(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            checks={
+                "health_endpoint": True,
+                "chat_readiness": True,
+                "workflow_smoke": True,
+                "schema_verification": True,
+                "monitoring_snapshot": True,
+            },
+            status="healthy",
+            rollback_triggered=False,
+            observation_window={
+                "started_at": "2026-03-25T01:00:00+00:00",
+                "duration_minutes": 30,
+                "decision": "hold",
+            },
+            monitoring_snapshot={"status": "healthy", "observed_at": "2026-03-25T01:30:00+00:00"},
+        )
+        assert post_deploy["status"] == "healthy"
+
+        release_bundle = project_lifecycle.folder_delivery_workflow.load_artifact_payload(
+            project_name, run["run_id"], "release_bundle.json"
+        )
+        assert any(item.get("gate_name") == "release_to_deploy" for item in release_bundle["approvals"])
+        assert release_bundle["post_deploy_checks"]["health_endpoint"] is True
+    finally:
+        projects.delete_project(project_name)
+
+
 def test_run_phase_rejects_when_lock_exists(monkeypatch):
     project_name = _new_project_name()
     _create_project(project_name)

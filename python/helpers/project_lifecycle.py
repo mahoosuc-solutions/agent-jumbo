@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from python.helpers import files, folder_delivery_workflow, project_validation, projects
+from python.helpers import files, folder_delivery_workflow, project_validation, projects, release_governance
 from python.helpers.print_style import PrintStyle
 
 LIFECYCLE_FILE = "lifecycle.json"
@@ -54,6 +54,10 @@ def _lifecycle_path(project_name: str) -> Path:
 
 def _runs_path(project_name: str) -> Path:
     return Path(projects.get_project_lifecycle_folder(project_name, RUNS_DIR))
+
+
+def _run_record_path(project_name: str, run_id: str) -> Path:
+    return _runs_path(project_name) / f"{run_id}.json"
 
 
 def _default_phase_bindings() -> dict[str, dict[str, Any]]:
@@ -163,6 +167,24 @@ def _write_lifecycle(project_name: str, data: dict[str, Any]) -> dict[str, Any]:
     _ensure_lifecycle_dirs(project_name)
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     return data
+
+
+def _load_run_record(project_name: str, run_id: str) -> dict[str, Any]:
+    run_file = _run_record_path(project_name, run_id)
+    if not run_file.exists():
+        raise Exception(f"Workflow run not found: {run_id}")
+    data = json.loads(run_file.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise Exception(f"Invalid workflow run record: {run_id}")
+    return data
+
+
+def _write_run_record(project_name: str, run_id: str, run_record: dict[str, Any]) -> dict[str, Any]:
+    run_file = _run_record_path(project_name, run_id)
+    run_file.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    run_folder = folder_delivery_workflow.get_run_root(project_name, run_id) / "run_record.json"
+    run_folder.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    return run_record
 
 
 def _run_lock_path(project_name: str) -> Path:
@@ -645,15 +667,8 @@ def approve_folder_gate(
         raise Exception(f"Workflow run not found: {run_id}")
     run_record = json.loads(run_file.read_text(encoding="utf-8"))
 
-    artifact_root = folder_delivery_workflow.get_artifact_root(project_name, run_id)
-    artifact_hashes: dict[str, str] = {}
-    for artifact_name in folder_delivery_workflow.CANONICAL_ARTIFACTS:
-        artifact_path = artifact_root / artifact_name
-        if artifact_path.exists():
-            artifact_hashes[artifact_name] = folder_delivery_workflow.build_bundle_hash(
-                json.loads(artifact_path.read_text(encoding="utf-8"))
-            )
-    bundle_hash = folder_delivery_workflow.build_bundle_hash(artifact_hashes)
+    manifest = folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)
+    bundle_hash = manifest["bundle_hash"]
     decision = folder_delivery_workflow.record_gate_decision(
         project_name=project_name,
         run_id=run_id,
@@ -682,8 +697,230 @@ def approve_folder_gate(
 
     run_record.setdefault("gates", {})[_slug(gate_name)] = decision
     run_record["status"] = "gated" if approved else "blocked"
-    run_file.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    _write_run_record(project_name, run_id, run_record)
     return decision
+
+
+def build_folder_release_bundle(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    commit_sha: str = "",
+    pr_number: str = "",
+    linear_issue_keys: list[str] | None = None,
+    deploy_target: str = "",
+    pre_deploy_checks: dict[str, Any] | None = None,
+    post_deploy_checks: dict[str, Any] | None = None,
+    monitoring_snapshot: dict[str, Any] | None = None,
+    rollback_plan: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+
+    artifact_root = folder_delivery_workflow.get_artifact_root(project_name, run_id)
+    existing = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    manifest = folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)
+    approvals = [
+        decision
+        for decision in folder_delivery_workflow.load_gate_decisions(project_name, run_id)
+        if decision.get("approved")
+    ]
+
+    payload = {
+        **existing,
+        "commit_sha": str(commit_sha or existing.get("commit_sha", "")).strip(),
+        "pr_number": str(pr_number or existing.get("pr_number", "")).strip(),
+        "linear_issue_keys": linear_issue_keys
+        if linear_issue_keys is not None
+        else existing.get("linear_issue_keys", []),
+        "artifact_manifest": manifest["artifacts"],
+        "approvals": approvals,
+        "deploy_target": str(deploy_target or existing.get("deploy_target", "")).strip(),
+        "pre_deploy_checks": pre_deploy_checks
+        if pre_deploy_checks is not None
+        else existing.get("pre_deploy_checks", {}),
+        "post_deploy_checks": post_deploy_checks
+        if post_deploy_checks is not None
+        else existing.get("post_deploy_checks", {}),
+        "monitoring_snapshot": monitoring_snapshot
+        if monitoring_snapshot is not None
+        else existing.get("monitoring_snapshot", {}),
+        "rollback_plan": rollback_plan if rollback_plan is not None else existing.get("rollback_plan", {}),
+        "workflow_execution": existing.get("workflow_execution")
+        or (run_record.get("workflow") or {}).get("execution", {}),
+        "artifact_bundle_hash": manifest["bundle_hash"],
+    }
+
+    envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_bundle.json",
+        payload=payload,
+        stage_family="release_decision",
+        producer="project_lifecycle.build_folder_release_bundle",
+        inputs={"run_id": run_id, "artifact_bundle_hash": manifest["bundle_hash"]},
+        source_refs=[str(artifact_root)],
+    )
+
+    run_record.setdefault("release", {})["bundle"] = {
+        "artifact_bundle_hash": manifest["bundle_hash"],
+        "artifact_count": len(manifest["artifacts"]),
+        "artifact_path": str(artifact_root / "release_bundle.json"),
+        "bundle_hash": envelope["bundle_hash"],
+        "built_at": envelope["generated_at"],
+        "built_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return payload
+
+
+def validate_folder_release_readiness(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    required_observers: list[str] | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+
+    release_bundle = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    blocking_checks: list[str] = []
+    if not release_bundle:
+        blocking_checks.append("release_bundle.json is missing")
+    else:
+        blocking_checks.extend(release_governance.validate_release_bundle(release_bundle))
+
+    release_gate = folder_delivery_workflow.get_gate_decision(project_name, run_id, "release_to_deploy")
+    current_bundle_hash = folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)["bundle_hash"]
+    if release_gate and release_gate.get("approved") is True and release_gate.get("bundle_hash") != current_bundle_hash:
+        blocking_checks.append("Approved release gate bundle hash does not match the current artifact bundle")
+
+    existing = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_readiness.json")
+    payload = {
+        "ready": not blocking_checks,
+        "blocking_checks": blocking_checks,
+        "required_observers": required_observers
+        if required_observers is not None
+        else existing.get("required_observers", []),
+        "artifact_bundle_hash": current_bundle_hash,
+    }
+
+    envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_readiness.json",
+        payload=payload,
+        stage_family="release_decision",
+        producer="project_lifecycle.validate_folder_release_readiness",
+        inputs={"run_id": run_id, "artifact_bundle_hash": current_bundle_hash},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id))],
+    )
+
+    run_record.setdefault("release", {})["readiness"] = {
+        "ready": payload["ready"],
+        "blocking_checks": blocking_checks,
+        "artifact_path": str(
+            folder_delivery_workflow.get_artifact_root(project_name, run_id) / "release_readiness.json"
+        ),
+        "bundle_hash": envelope["bundle_hash"],
+        "validated_at": envelope["generated_at"],
+        "validated_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return payload
+
+
+def record_folder_post_deploy(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    checks: dict[str, Any] | None = None,
+    status: str = "healthy",
+    rollback_triggered: bool = False,
+    observation_window: dict[str, Any] | None = None,
+    monitoring_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+    gate = folder_delivery_workflow.ensure_release_gate_ready(project_name, run_id)
+
+    existing_report = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "post_deploy_report.json")
+    post_deploy_payload = {
+        **existing_report,
+        "status": str(status or existing_report.get("status", "")).strip(),
+        "rollback_triggered": bool(rollback_triggered),
+        "observation_window": observation_window
+        if observation_window is not None
+        else existing_report.get("observation_window", {}),
+        "checks": checks if checks is not None else existing_report.get("checks", {}),
+        "approved_gate": gate,
+    }
+    post_deploy_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="post_deploy_report.json",
+        payload=post_deploy_payload,
+        stage_family="operations",
+        producer="project_lifecycle.record_folder_post_deploy",
+        inputs={"run_id": run_id, "gate_name": gate["gate_name"], "bundle_hash": gate["bundle_hash"]},
+        source_refs=[str(folder_delivery_workflow.get_gate_root(project_name, run_id))],
+    )
+
+    release_bundle = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    updated_release_bundle = {
+        **release_bundle,
+        "approvals": [
+            decision
+            for decision in folder_delivery_workflow.load_gate_decisions(project_name, run_id)
+            if decision.get("approved")
+        ],
+        "post_deploy_checks": post_deploy_payload["checks"],
+        "monitoring_snapshot": monitoring_snapshot
+        if monitoring_snapshot is not None
+        else release_bundle.get("monitoring_snapshot", {}),
+        "artifact_bundle_hash": folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)["bundle_hash"],
+        "post_deploy_report": {
+            "status": post_deploy_payload["status"],
+            "rollback_triggered": post_deploy_payload["rollback_triggered"],
+            "observation_window": post_deploy_payload["observation_window"],
+            "artifact_path": str(
+                folder_delivery_workflow.get_artifact_root(project_name, run_id) / "post_deploy_report.json"
+            ),
+        },
+    }
+    release_bundle_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_bundle.json",
+        payload=updated_release_bundle,
+        stage_family="operations",
+        producer="project_lifecycle.record_folder_post_deploy",
+        inputs={"run_id": run_id, "post_deploy_status": post_deploy_payload["status"]},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "post_deploy_report.json")],
+    )
+
+    run_record.setdefault("release", {})["post_deploy"] = {
+        "status": post_deploy_payload["status"],
+        "rollback_triggered": post_deploy_payload["rollback_triggered"],
+        "artifact_path": str(
+            folder_delivery_workflow.get_artifact_root(project_name, run_id) / "post_deploy_report.json"
+        ),
+        "bundle_hash": post_deploy_envelope["bundle_hash"],
+        "recorded_at": post_deploy_envelope["generated_at"],
+        "recorded_by": actor,
+    }
+    run_record["release"]["bundle"] = {
+        **run_record.get("release", {}).get("bundle", {}),
+        "bundle_hash": release_bundle_envelope["bundle_hash"],
+        "artifact_bundle_hash": updated_release_bundle["artifact_bundle_hash"],
+        "updated_at": release_bundle_envelope["generated_at"],
+        "updated_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return post_deploy_payload
 
 
 def finalize_folder_workflow(

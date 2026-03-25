@@ -61,8 +61,8 @@ def validate_release_bundle(payload: dict[str, Any]) -> list[str]:
         errors.append("release_bundle.linear_issue_keys must be a non-empty list")
     if not isinstance(payload.get("artifact_manifest"), list) or not payload.get("artifact_manifest"):
         errors.append("release_bundle.artifact_manifest must be a non-empty list")
-    if not isinstance(payload.get("approvals"), list) or not payload.get("approvals"):
-        errors.append("release_bundle.approvals must be a non-empty list")
+    if not isinstance(payload.get("approvals"), list):
+        errors.append("release_bundle.approvals must be a list")
     if not isinstance(payload.get("rollback_plan"), dict):
         errors.append("release_bundle.rollback_plan must be an object")
 
