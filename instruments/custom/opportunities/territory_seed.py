@@ -1,0 +1,68 @@
+from __future__ import annotations
+
+SEED_TERRITORIES = [
+    {
+        "state": "MA",
+        "metro_name": "Greater Boston",
+        "cluster_name": "Boston Public + Health Core",
+        "priority_tier": 1,
+        "status": "planned",
+        "zips": [
+            {"zip_code": "02108", "city": "Boston", "state": "MA"},
+            {"zip_code": "02109", "city": "Boston", "state": "MA"},
+            {"zip_code": "02110", "city": "Boston", "state": "MA"},
+            {"zip_code": "02111", "city": "Boston", "state": "MA"},
+            {"zip_code": "02114", "city": "Boston", "state": "MA"},
+            {"zip_code": "02115", "city": "Boston", "state": "MA"},
+            {"zip_code": "02210", "city": "Boston", "state": "MA"},
+        ],
+    },
+    {
+        "state": "NY",
+        "metro_name": "New York City",
+        "cluster_name": "NYC Gov + Health Corridor",
+        "priority_tier": 1,
+        "status": "planned",
+        "zips": [
+            {"zip_code": "10001", "city": "New York", "state": "NY"},
+            {"zip_code": "10007", "city": "New York", "state": "NY"},
+            {"zip_code": "10013", "city": "New York", "state": "NY"},
+            {"zip_code": "10016", "city": "New York", "state": "NY"},
+            {"zip_code": "10451", "city": "Bronx", "state": "NY"},
+            {"zip_code": "11101", "city": "Long Island City", "state": "NY"},
+            {"zip_code": "11201", "city": "Brooklyn", "state": "NY"},
+        ],
+    },
+    {
+        "state": "DC",
+        "metro_name": "Washington",
+        "cluster_name": "DC Federal + Public Health Beltway",
+        "priority_tier": 1,
+        "status": "planned",
+        "zips": [
+            {"zip_code": "20001", "city": "Washington", "state": "DC"},
+            {"zip_code": "20002", "city": "Washington", "state": "DC"},
+            {"zip_code": "20004", "city": "Washington", "state": "DC"},
+            {"zip_code": "20005", "city": "Washington", "state": "DC"},
+            {"zip_code": "20036", "city": "Washington", "state": "DC"},
+            {"zip_code": "20814", "city": "Bethesda", "state": "MD"},
+            {"zip_code": "22202", "city": "Arlington", "state": "VA"},
+        ],
+    },
+    {
+        "state": "IL",
+        "metro_name": "Chicago",
+        "cluster_name": "Chicago Civic + Health Services Core",
+        "priority_tier": 2,
+        "status": "planned",
+        "zips": [
+            {"zip_code": "60601", "city": "Chicago", "state": "IL"},
+            {"zip_code": "60602", "city": "Chicago", "state": "IL"},
+            {"zip_code": "60603", "city": "Chicago", "state": "IL"},
+            {"zip_code": "60604", "city": "Chicago", "state": "IL"},
+            {"zip_code": "60607", "city": "Chicago", "state": "IL"},
+            {"zip_code": "60611", "city": "Chicago", "state": "IL"},
+            {"zip_code": "60612", "city": "Chicago", "state": "IL"},
+        ],
+    },
+]

@@ -5,7 +5,7 @@ Stores proposals, demos, ROI calculations, and case studies
 
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from python.helpers.datetime_utils import isoformat_z, utc_now
@@ -171,7 +171,7 @@ class SalesGeneratorDatabase:
         metadata: dict | None = None,
     ) -> int:
         """Create a new proposal"""
-        valid_until = (datetime.now().replace(day=datetime.now().day + valid_days)).isoformat()
+        valid_until = (datetime.now() + timedelta(days=valid_days)).isoformat()
 
         with self._connect() as conn:
             cursor = conn.execute(

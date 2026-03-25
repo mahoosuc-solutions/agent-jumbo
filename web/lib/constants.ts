@@ -1,7 +1,7 @@
 import {
   MessageSquare, LayoutDashboard, Rocket, Workflow, Calendar,
   MessageCircle, Puzzle, Eye, GitBranch, Brain, FolderOpen,
-  Archive, Users, Settings, ClipboardList, Lightbulb, FolderKanban, type LucideIcon,
+  Archive, Users, Settings, ClipboardList, Lightbulb, FolderKanban, BriefcaseBusiness, type LucideIcon,
 } from 'lucide-react'
 
 export const SITE_NAME = 'Agent Jumbo'
@@ -61,6 +61,7 @@ export const APP_NAVIGATION: NavGroup[] = [
     items: [
       { label: 'Chat', href: '/chat', icon: MessageSquare },
       { label: 'Overview', href: '/overview', icon: LayoutDashboard },
+      { label: 'Opportunities', href: '/opportunities', icon: BriefcaseBusiness },
       { label: 'Ideas', href: '/ideas', icon: Lightbulb },
       { label: 'Projects', href: '/projects', icon: FolderKanban },
     ],
