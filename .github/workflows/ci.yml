@@ -65,8 +65,15 @@ jobs:
   release-governance:
     name: Release Governance
     runs-on: ubuntu-latest
+    env:
+      LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+      LINEAR_DEFAULT_TEAM_ID: ${{ secrets.LINEAR_DEFAULT_TEAM_ID }}
     steps:
       - uses: actions/checkout@v4
+
+      - name: Enrich folder workflow evidence from CI context
+        run: |
+          python3 scripts/ci/update_folder_workflow_evidence.py --event-path "${GITHUB_EVENT_PATH}" --mode ci --sync-linear
 
       - name: Validate checked-in release governance bundles
         shell: bash
@@ -81,6 +88,17 @@ jobs:
             args+=(--artifact-root "$root")
           done
           python3 scripts/ci/check_release_governance.py "${args[@]}"
+
+      - name: Upload folder workflow evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: folder-workflow-evidence
+          path: |
+            **/artifacts/*.json
+            **/run_record.json
+            **/run_context.json
+          if-no-files-found: ignore
 
   test:
     name: Test Suite

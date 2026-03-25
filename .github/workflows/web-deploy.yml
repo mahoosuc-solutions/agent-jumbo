@@ -10,6 +10,9 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+      LINEAR_DEFAULT_TEAM_ID: ${{ secrets.LINEAR_DEFAULT_TEAM_ID }}
 
     steps:
       - uses: actions/checkout@v4
@@ -39,14 +42,40 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
       - name: Deploy to Production
-        run: vercel deploy --prebuilt --prod
+        id: deploy
+        run: |
+          deployment_url=$(vercel deploy --prebuilt --prod)
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "$deployment_url"
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: Record folder workflow deploy evidence
+        if: always()
+        run: |
+          python3 scripts/ci/update_folder_workflow_evidence.py \
+            --mode deploy \
+            --environment production \
+            --status "${{ job.status }}" \
+            --deployment-system vercel \
+            --workflow-file web-deploy.yml \
+            --deployment-url "${{ steps.deploy.outputs.deployment_url }}"
+
+      - name: Upload deploy evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: folder-workflow-deploy-evidence
+          path: |
+            **/artifacts/*.json
+            **/run_record.json
+            **/run_context.json
+          if-no-files-found: ignore
+
       - name: Deployment Summary
         if: always()
         run: |
           echo "Deployment workflow completed"
-          echo "Check Vercel dashboard for deployment status"
+          echo "Deployment URL: ${{ steps.deploy.outputs.deployment_url }}"

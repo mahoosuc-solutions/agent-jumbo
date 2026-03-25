@@ -12,8 +12,10 @@ instruments/custom/workflow_engine/templates/folder_evaluation_delivery_v1.json 
 scripts/ci/check_traceability.py @webemo-aaron
 scripts/ci/check_schema_governance.py @webemo-aaron
 scripts/ci/check_release_governance.py @webemo-aaron
+scripts/ci/update_folder_workflow_evidence.py @webemo-aaron
 .github/pull_request_template.md @webemo-aaron
 .github/workflows/ci.yml @webemo-aaron
+.github/workflows/web-deploy.yml @webemo-aaron
 .github/CODEOWNERS @webemo-aaron
 
 # Linear integration and traceability
