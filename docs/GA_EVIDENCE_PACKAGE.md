@@ -45,7 +45,6 @@ Current branch snapshot:
 
 ## Open Gaps As Of 2026-03-24
 
-- Privacy, terms, retention, and deletion publication package is still missing
-- Several March features need fresh manual smoke evidence
-- Monitoring and alerting evidence is not yet bundled for launch review
-- Ideas/projects beta slice needs explicit smoke evidence and launch classification
+- Final launch-window refresh is still required for all artifacts collected before 2026-04-14
+- Customer-facing documentation surface must expose the compliance docs linked in the compliance record
+- Production-target fire drill is still required for monitoring and alerting before GA sign-off

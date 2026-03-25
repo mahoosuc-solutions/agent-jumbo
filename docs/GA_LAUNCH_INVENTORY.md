@@ -37,8 +37,8 @@ If a row does not have an owner, validation path, evidence path, and rollback pa
 | Platform status API | ga | Engineering | route smoke with backend up and down | API smoke log | fallback to static-only status | Pending evidence refresh |
 | Stripe pricing and payment path | ga | Product/Ops | Stripe test-mode end-to-end flow | payment validation record | disable payment route and hold launch | Pending evidence refresh |
 | Self-serve onboarding docs | ga | Product | fresh install from docs | onboarding dry-run notes | remove self-serve claim | Pending evidence refresh |
-| Monitoring and alerting | ga | Operations | alert fire drill and dashboard checks | ops checklist | hold launch | Missing evidence |
-| Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review | linked final docs | hold launch | Missing publication |
+| Monitoring and alerting | ga | Operations | alert fire drill and dashboard checks | `artifacts/validation/monitoring-alerting-*.md` | hold launch | Local evidence captured; refresh in target env |
+| Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review | `artifacts/validation/compliance-links-*.md` | hold launch | Local publication package prepared |
 
 ## Freeze Review Checklist
 
