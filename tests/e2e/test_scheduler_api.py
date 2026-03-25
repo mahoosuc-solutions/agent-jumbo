@@ -125,11 +125,9 @@ def test_scheduler_delete_nonexistent(app_server, auth_cookies):
     try:
         data = api_post(app_server, auth_cookies, "scheduler_task_delete", {"task_id": fake_uuid})
         # If the server returns 200 with an error payload, check for error indicators
-        assert (
-            data.get("success") is False
-            or data.get("ok") is False
-            or "error" in data
-        ), f"Expected error response for nonexistent task, got: {data}"
+        assert data.get("success") is False or data.get("ok") is False or "error" in data, (
+            f"Expected error response for nonexistent task, got: {data}"
+        )
     except urllib.error.HTTPError as exc:
         # 4xx or 5xx is acceptable for a nonexistent resource
         assert exc.code in (400, 404, 422, 500), (

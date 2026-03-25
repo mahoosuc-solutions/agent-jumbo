@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import json
 import time
+import urllib.parse
 import urllib.request
 from typing import Any
 
@@ -21,6 +22,13 @@ def _register(cls: type) -> type:
     if ChannelFactory is not None:
         return ChannelFactory.register("viber")(cls)
     return cls
+
+
+def _validated_url(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"https", "http"}:
+        raise ValueError(f"Unsupported Viber URL scheme: {parsed.scheme or 'missing'}")
+    return url
 
 
 @_register
@@ -51,16 +59,18 @@ class ViberAdapter(ChannelBridge):
         if not auth_token:
             return {"ok": False, "error": "missing viber_auth_token"}
         url = "https://chatapi.viber.com/pa/send_message"
-        payload = json.dumps({
-            "receiver": target_id,
-            "min_api_version": 1,
-            "sender": {"name": sender_name},
-            "tracking_data": kwargs.get("tracking_data", ""),
-            "type": "text",
-            "text": text,
-        }).encode()
+        payload = json.dumps(
+            {
+                "receiver": target_id,
+                "min_api_version": 1,
+                "sender": {"name": sender_name},
+                "tracking_data": kwargs.get("tracking_data", ""),
+                "type": "text",
+                "text": text,
+            }
+        ).encode()
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             data=payload,
             headers={
                 "X-Viber-Auth-Token": auth_token,
@@ -69,7 +79,7 @@ class ViberAdapter(ChannelBridge):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
                 result = json.loads(resp.read().decode())
             return {"ok": result.get("status") == 0, **result}
         except Exception as exc:
@@ -91,12 +101,14 @@ class ViberAdapter(ChannelBridge):
             return
         if webhook_url:
             url = "https://chatapi.viber.com/pa/set_webhook"
-            payload = json.dumps({
-                "url": webhook_url,
-                "event_types": ["delivered", "seen", "failed", "message", "conversation_started"],
-            }).encode()
+            payload = json.dumps(
+                {
+                    "url": webhook_url,
+                    "event_types": ["delivered", "seen", "failed", "message", "conversation_started"],
+                }
+            ).encode()
             req = urllib.request.Request(
-                url,
+                _validated_url(url),
                 data=payload,
                 headers={
                     "X-Viber-Auth-Token": auth_token,
@@ -105,7 +117,7 @@ class ViberAdapter(ChannelBridge):
                 method="POST",
             )
             try:
-                with urllib.request.urlopen(req, timeout=10) as resp:
+                with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                     result = json.loads(resp.read().decode())
                 if result.get("status") == 0:
                     self.status = ChannelStatus.CONNECTED
@@ -118,7 +130,7 @@ class ViberAdapter(ChannelBridge):
         # No webhook URL configured -- just verify account info
         url = "https://chatapi.viber.com/pa/get_account_info"
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             data=b"{}",
             headers={
                 "X-Viber-Auth-Token": auth_token,
@@ -127,7 +139,7 @@ class ViberAdapter(ChannelBridge):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 result = json.loads(resp.read().decode())
             if result.get("status") == 0:
                 self.status = ChannelStatus.CONNECTED
@@ -142,7 +154,7 @@ class ViberAdapter(ChannelBridge):
             url = "https://chatapi.viber.com/pa/set_webhook"
             payload = json.dumps({"url": ""}).encode()
             req = urllib.request.Request(
-                url,
+                _validated_url(url),
                 data=payload,
                 headers={
                     "X-Viber-Auth-Token": auth_token,
@@ -151,7 +163,7 @@ class ViberAdapter(ChannelBridge):
                 method="POST",
             )
             try:
-                urllib.request.urlopen(req, timeout=10)
+                urllib.request.urlopen(req, timeout=10)  # nosec B310
             except Exception:
                 pass
         self.status = ChannelStatus.DISCONNECTED

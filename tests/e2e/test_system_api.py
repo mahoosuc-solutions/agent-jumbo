@@ -1,7 +1,5 @@
 """E2E tests for system health and status API endpoints."""
 
-import urllib.error
-
 import pytest
 
 from tests.e2e.helpers import api_get, api_post
@@ -20,9 +18,7 @@ def test_health_check_returns_status(app_server, auth_cookies):
         f"Expected status to be 'healthy' or 'degraded', got: {data['status']}"
     )
     assert "checks" in data, f"Expected 'checks' key in response: {data}"
-    assert isinstance(data["checks"], dict), (
-        f"Expected 'checks' to be a dict, got: {type(data['checks'])}"
-    )
+    assert isinstance(data["checks"], dict), f"Expected 'checks' to be a dict, got: {type(data['checks'])}"
 
 
 @pytest.mark.e2e
@@ -46,7 +42,5 @@ def test_gateway_status_returns_channels(app_server, auth_cookies):
     """POST gateway_status returns channels list and gateway stats."""
     data = api_post(app_server, auth_cookies, "gateway_status", {})
     assert "channels" in data, f"Expected 'channels' key in response: {data}"
-    assert isinstance(data["channels"], list), (
-        f"Expected 'channels' to be a list, got: {type(data['channels'])}"
-    )
+    assert isinstance(data["channels"], list), f"Expected 'channels' to be a list, got: {type(data['channels'])}"
     assert "gateway" in data, f"Expected 'gateway' key in response: {data}"

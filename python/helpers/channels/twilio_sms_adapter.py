@@ -25,6 +25,13 @@ def _register(cls: type) -> type:
     return cls
 
 
+def _validated_url(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"https", "http"}:
+        raise ValueError(f"Unsupported Twilio URL scheme: {parsed.scheme or 'missing'}")
+    return url
+
+
 @_register
 class TwilioSmsAdapter(ChannelBridge):
     """Adapter for Twilio SMS via REST API."""
@@ -52,15 +59,17 @@ class TwilioSmsAdapter(ChannelBridge):
         if not all([account_sid, auth_token, from_number]):
             return {"ok": False, "error": "missing twilio_account_sid, twilio_auth_token, or twilio_from_number"}
         url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}/Messages.json"
-        payload = urllib.parse.urlencode({
-            "To": target_id,
-            "From": from_number,
-            "Body": text,
-        }).encode()
+        payload = urllib.parse.urlencode(
+            {
+                "To": target_id,
+                "From": from_number,
+                "Body": text,
+            }
+        ).encode()
         # Twilio uses HTTP Basic Auth
         credentials = base64.b64encode(f"{account_sid}:{auth_token}".encode()).decode()
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             data=payload,
             headers={
                 "Authorization": f"Basic {credentials}",
@@ -69,7 +78,7 @@ class TwilioSmsAdapter(ChannelBridge):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
                 result = json.loads(resp.read().decode())
             return {"ok": True, **result}
         except Exception as exc:
@@ -88,9 +97,7 @@ class TwilioSmsAdapter(ChannelBridge):
             sorted_params = sorted(params.items())
             param_string = "".join(k + v[0] for k, v in sorted_params)
             data = (webhook_url + param_string).encode()
-            computed = base64.b64encode(
-                hmac.new(auth_token.encode(), data, hashlib.sha1).digest()
-            ).decode()
+            computed = base64.b64encode(hmac.new(auth_token.encode(), data, hashlib.sha1).digest()).decode()
             return hmac.compare_digest(computed, signature)
         except Exception:
             return False
@@ -104,11 +111,11 @@ class TwilioSmsAdapter(ChannelBridge):
         url = f"https://api.twilio.com/2010-04-01/Accounts/{account_sid}.json"
         credentials = base64.b64encode(f"{account_sid}:{auth_token}".encode()).decode()
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             headers={"Authorization": f"Basic {credentials}"},
         )
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 if resp.status == 200:
                     self.status = ChannelStatus.CONNECTED
                 else:

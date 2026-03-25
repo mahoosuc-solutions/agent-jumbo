@@ -6,6 +6,7 @@ import hashlib
 import hmac
 import json
 import time
+import urllib.parse
 import urllib.request
 from typing import Any
 
@@ -21,6 +22,13 @@ def _register(cls: type) -> type:
     if ChannelFactory is not None:
         return ChannelFactory.register("line")(cls)
     return cls
+
+
+def _validated_url(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"https", "http"}:
+        raise ValueError(f"Unsupported LINE URL scheme: {parsed.scheme or 'missing'}")
+    return url
 
 
 @_register
@@ -56,18 +64,22 @@ class LineAdapter(ChannelBridge):
         reply_token = kwargs.get("reply_token", "")
         if reply_token:
             url = "https://api.line.me/v2/bot/message/reply"
-            payload = json.dumps({
-                "replyToken": reply_token,
-                "messages": [{"type": "text", "text": text}],
-            }).encode()
+            payload = json.dumps(
+                {
+                    "replyToken": reply_token,
+                    "messages": [{"type": "text", "text": text}],
+                }
+            ).encode()
         else:
             url = "https://api.line.me/v2/bot/message/push"
-            payload = json.dumps({
-                "to": target_id,
-                "messages": [{"type": "text", "text": text}],
-            }).encode()
+            payload = json.dumps(
+                {
+                    "to": target_id,
+                    "messages": [{"type": "text", "text": text}],
+                }
+            ).encode()
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             data=payload,
             headers={
                 "Authorization": f"Bearer {access_token}",
@@ -76,7 +88,7 @@ class LineAdapter(ChannelBridge):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
                 resp_body = resp.read().decode()
                 result = json.loads(resp_body) if resp_body else {}
             return {"ok": True, **result}
@@ -101,11 +113,11 @@ class LineAdapter(ChannelBridge):
             return
         url = "https://api.line.me/v2/bot/info"
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             headers={"Authorization": f"Bearer {access_token}"},
         )
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 if resp.status == 200:
                     self.status = ChannelStatus.CONNECTED
                 else:

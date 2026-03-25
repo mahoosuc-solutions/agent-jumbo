@@ -24,6 +24,13 @@ def _register(cls: type) -> type:
     return cls
 
 
+def _validated_url(url: str) -> str:
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in {"https", "http"}:
+        raise ValueError(f"Unsupported Mastodon URL scheme: {parsed.scheme or 'missing'}")
+    return url
+
+
 @_register
 class MastodonAdapter(ChannelBridge):
     """Adapter for Mastodon via Mastodon.py / REST API."""
@@ -61,7 +68,7 @@ class MastodonAdapter(ChannelBridge):
             }
         ).encode()
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             data=form_data,
             headers={
                 "Authorization": f"Bearer {access_token}",
@@ -70,7 +77,7 @@ class MastodonAdapter(ChannelBridge):
             method="POST",
         )
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:  # nosec B310
                 result = json.loads(resp.read().decode())
             return {"ok": True, **result}
         except Exception as exc:
@@ -95,11 +102,11 @@ class MastodonAdapter(ChannelBridge):
             return
         url = f"{instance_url}/api/v1/accounts/verify_credentials"
         req = urllib.request.Request(
-            url,
+            _validated_url(url),
             headers={"Authorization": f"Bearer {access_token}"},
         )
         try:
-            with urllib.request.urlopen(req, timeout=10) as resp:
+            with urllib.request.urlopen(req, timeout=10) as resp:  # nosec B310
                 if resp.status == 200:
                     self.status = ChannelStatus.CONNECTED
                 else:
