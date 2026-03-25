@@ -27,13 +27,16 @@ If a row does not have an owner, validation path, evidence path, and rollback pa
 | Trust and Security dashboard | ga | Product | browser smoke on dashboard render and state | launch smoke record | hide dashboard link | Pending evidence refresh |
 | Dashboards sidebar navigation | ga | Product | browser smoke for sidebar registration and routing | launch smoke record | feature flag or hide section | Pending evidence refresh |
 | New chat auto-select | ga | Product | browser smoke after chat creation | launch smoke record | rollback deploy | Pending evidence refresh |
+| Ideas workspace | beta | Product | backend tests plus browser smoke for create, refine, and save brief | test report plus launch smoke record | hide sidebar link | Needs classification follow-up |
+| Projects workspace | beta | Product | backend tests plus browser smoke for load and project chat activation | test report plus launch smoke record | hide sidebar link | Needs classification follow-up |
+| Idea promotion to project/workflow/queue | beta | Engineering/Product | targeted integration tests plus manual promotion smoke | pytest output plus launch smoke record | disable promotion action | Needs validation bundle |
 | In-monologue task planner | beta | Product | targeted functional smoke | launch smoke record | hide or label beta | Needs GA decision |
 | Graceful shutdown | ga | Operations | controlled shutdown and restart smoke | ops run log | rollback deploy | Pending evidence refresh |
 | Backup create and restore | ga | Operations | backup plus restore rehearsal | backup and restore log | stop launch if restore fails | Pending evidence refresh |
 | Public product page | ga | Product | `web` build plus manual content smoke | build log plus smoke record | unpublish marketing route | Pending evidence refresh |
 | Platform status API | ga | Engineering | route smoke with backend up and down | API smoke log | fallback to static-only status | Pending evidence refresh |
 | Stripe pricing and payment path | ga | Product/Ops | Stripe test-mode end-to-end flow | payment validation record | disable payment route and hold launch | Pending evidence refresh |
-| Self-serve onboarding docs | ga | Product | fresh install from docs | onboarding dry-run notes | remove self-serve claim | Missing canonical walkthrough |
+| Self-serve onboarding docs | ga | Product | fresh install from docs | onboarding dry-run notes | remove self-serve claim | Pending evidence refresh |
 | Monitoring and alerting | ga | Operations | alert fire drill and dashboard checks | ops checklist | hold launch | Missing evidence |
 | Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review | linked final docs | hold launch | Missing publication |
 

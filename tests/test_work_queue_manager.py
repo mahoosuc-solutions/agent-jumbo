@@ -212,6 +212,30 @@ class TestWorkQueueManager:
             item = self.manager.db.get_item(item_id)
             assert item["status"] == "dismissed"
 
+    def test_create_manual_items_registers_idea_seeded_work(self):
+        """create_manual_items stores manually-seeded queue items for promoted ideas."""
+        created = self.manager.create_manual_items(
+            [
+                {
+                    "external_id": "idea-101-scope",
+                    "title": "Clarify scope",
+                    "description": "Turn the promoted idea into a scoped first milestone",
+                    "project_path": self.project_path,
+                    "source": "idea",
+                    "source_type": "idea_next_step",
+                    "priority_score": 72,
+                }
+            ]
+        )
+
+        assert created == 1
+
+        items = self.manager.get_items(project_path=self.project_path)
+        assert items["total"] == 1
+        assert items["items"][0]["source"] == "idea"
+        assert items["items"][0]["source_type"] == "idea_next_step"
+        assert items["items"][0]["title"] == "Clarify scope"
+
     # ── recalculate_priorities ────────────────────────────────────────
 
     def test_recalculate_priorities_skips_terminal_items(self):

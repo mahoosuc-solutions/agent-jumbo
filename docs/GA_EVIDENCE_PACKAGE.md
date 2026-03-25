@@ -45,8 +45,7 @@ Current branch snapshot:
 
 ## Open Gaps As Of 2026-03-24
 
-- Final release validation script needed modernization for current repo layout
-- Canonical self-serve onboarding walkthrough is still missing
 - Privacy, terms, retention, and deletion publication package is still missing
 - Several March features need fresh manual smoke evidence
 - Monitoring and alerting evidence is not yet bundled for launch review
+- Ideas/projects beta slice needs explicit smoke evidence and launch classification
