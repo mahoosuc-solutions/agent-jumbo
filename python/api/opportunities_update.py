@@ -18,6 +18,12 @@ class OpportunitiesUpdate(ApiHandler):
             if action == "create":
                 opportunity = manager.create_opportunity(input.get("opportunity", {}))
                 return {"success": True, "opportunity": opportunity}
+            if action == "ingest":
+                result = manager.import_opportunities(
+                    input.get("opportunities", []),
+                    auto_qualify=bool(input.get("auto_qualify", True)),
+                )
+                return {"success": True, **result}
 
             if action == "set_territory_status":
                 territory_id = int(input.get("territory_id", 0))

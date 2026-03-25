@@ -9,6 +9,7 @@ import {
   getOpportunity,
   getTerritories,
   handoffOpportunity,
+  ingestOpportunities,
   qualifyOpportunity,
   saveOpportunityEstimate,
   setTerritoryStatus,
@@ -68,6 +69,15 @@ export function useCreateOpportunity() {
   const qc = useQueryClient()
   return useMutation({
     mutationFn: createOpportunity,
+    onSuccess: () => invalidateAll(qc),
+  })
+}
+
+export function useIngestOpportunities() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ opportunities, autoQualify = true }: { opportunities: Record<string, unknown>[]; autoQualify?: boolean }) =>
+      ingestOpportunities(opportunities, autoQualify),
     onSuccess: () => invalidateAll(qc),
   })
 }

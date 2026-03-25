@@ -79,6 +79,47 @@ def test_qualify_scores_opportunity_and_extracts_requirements(tmp_path):
     assert "Security and compliance" in qualified["must_have_requirements"]
 
 
+def test_import_opportunities_deduplicates_by_source_identity(tmp_path):
+    manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))
+    territory = manager.list_territories()[0]
+
+    first = manager.import_opportunities(
+        [
+            {
+                "territory_id": territory["id"],
+                "title": "State immunization registry modernization",
+                "buyer_name": "State public health agency",
+                "source_type": "public_rfp",
+                "external_id": "rfp-123",
+                "source_url": "https://example.gov/rfp/123",
+                "raw_requirements": "Need secure integrations, analytics dashboards, and workflow automation.",
+            }
+        ]
+    )
+    second = manager.import_opportunities(
+        [
+            {
+                "territory_id": territory["id"],
+                "title": "State immunization registry modernization",
+                "buyer_name": "State public health agency",
+                "source_type": "public_rfp",
+                "external_id": "rfp-123",
+                "source_url": "https://example.gov/rfp/123",
+                "raw_requirements": "Updated requirements with FHIR interoperability and compliance reporting.",
+            }
+        ]
+    )
+
+    assert first["created"] == 1
+    assert first["updated"] == 0
+    assert second["created"] == 0
+    assert second["updated"] == 1
+
+    opportunities = manager.list_opportunities(territory_id=territory["id"])
+    assert len(opportunities) == 1
+    assert "FHIR interoperability" in opportunities[0]["must_have_requirements"]
+
+
 def test_handoff_requires_approval_and_creates_downstream_artifacts(tmp_path, monkeypatch):
     _patch_abs_path(monkeypatch, tmp_path)
     manager = OpportunitiesManager(str(tmp_path / "opportunities.db"))

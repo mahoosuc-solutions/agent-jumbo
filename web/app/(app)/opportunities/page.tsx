@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Compass,
   FileCheck2,
+  Import,
   MapPinned,
   Plus,
   Sparkles,
@@ -24,6 +25,7 @@ import {
   useApproveOpportunity,
   useCreateOpportunity,
   useHandoffOpportunity,
+  useIngestOpportunities,
   useOpportunities,
   useOpportunitiesDashboard,
   useQualifyOpportunity,
@@ -65,7 +67,24 @@ export default function OpportunitiesPage() {
   const [stageFilter, setStageFilter] = useState('')
   const [laneFilter, setLaneFilter] = useState('')
   const [createModalOpen, setCreateModalOpen] = useState(false)
+  const [importModalOpen, setImportModalOpen] = useState(false)
   const [estimateModalOpen, setEstimateModalOpen] = useState(false)
+  const [autoQualifyImport, setAutoQualifyImport] = useState(true)
+  const [importPayload, setImportPayload] = useState(`[
+  {
+    "territory_id": 1,
+    "title": "County public health reporting modernization",
+    "buyer_name": "County health department",
+    "source_type": "public_rfp",
+    "external_id": "county-rfp-001",
+    "source_url": "https://example.gov/rfps/001",
+    "zip_code": "02108",
+    "city": "Boston",
+    "state": "MA",
+    "raw_requirements": "Need secure FHIR reporting, workflow dashboards, analytics, and integration support.",
+    "due_date": "2026-04-30"
+  }
+]`)
   const [newOpportunity, setNewOpportunity] = useState({
     territory_id: '',
     title: '',
@@ -120,6 +139,7 @@ export default function OpportunitiesPage() {
   }, [selectedOpportunity, selectedOpportunityId])
 
   const createOpportunity = useCreateOpportunity()
+  const ingestOpportunities = useIngestOpportunities()
   const saveEstimate = useSaveOpportunityEstimate()
   const approveOpportunity = useApproveOpportunity()
   const qualifyOpportunity = useQualifyOpportunity()
@@ -129,6 +149,9 @@ export default function OpportunitiesPage() {
   useEffect(() => {
     if (createOpportunity.isError) toast(createOpportunity.error?.message || 'Failed to create opportunity', 'danger')
   }, [createOpportunity.isError, createOpportunity.error, toast])
+  useEffect(() => {
+    if (ingestOpportunities.isError) toast(ingestOpportunities.error?.message || 'Failed to import opportunities', 'danger')
+  }, [ingestOpportunities.isError, ingestOpportunities.error, toast])
   useEffect(() => {
     if (saveEstimate.isError) toast(saveEstimate.error?.message || 'Failed to save estimate', 'danger')
   }, [saveEstimate.isError, saveEstimate.error, toast])
@@ -173,6 +196,32 @@ export default function OpportunitiesPage() {
       normalized_summary: '',
       recommendation: 'watch',
     })
+  }
+
+  async function handleImportOpportunities(e: React.FormEvent) {
+    e.preventDefault()
+    let parsed: unknown
+    try {
+      parsed = JSON.parse(importPayload)
+    } catch {
+      toast('Import payload must be valid JSON', 'danger')
+      return
+    }
+    if (!Array.isArray(parsed)) {
+      toast('Import payload must be a JSON array', 'danger')
+      return
+    }
+
+    const result = await ingestOpportunities.mutateAsync({
+      opportunities: parsed as Record<string, unknown>[],
+      autoQualify: autoQualifyImport,
+    })
+    setImportModalOpen(false)
+    if (result.opportunities[0]) {
+      setSelectedTerritoryId(result.opportunities[0].territory_id)
+      setSelectedOpportunityId(result.opportunities[0].id)
+    }
+    toast(`Imported ${result.created} new and updated ${result.updated} opportunities`, 'success')
   }
 
   async function handleSaveEstimate() {
@@ -254,9 +303,14 @@ export default function OpportunitiesPage() {
             Territory-based opportunity capture with estimate gating and downstream solutioning handoff.
           </p>
         </div>
-        <Button size="sm" onClick={() => setCreateModalOpen(true)}>
-          <Plus className="h-4 w-4" /> New Opportunity
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button size="sm" variant="secondary" onClick={() => setImportModalOpen(true)}>
+            <Import className="h-4 w-4" /> Import Feed
+          </Button>
+          <Button size="sm" onClick={() => setCreateModalOpen(true)}>
+            <Plus className="h-4 w-4" /> New Opportunity
+          </Button>
+        </div>
       </div>
 
       <Modal
@@ -328,6 +382,43 @@ export default function OpportunitiesPage() {
             </Button>
             <Button type="submit" size="sm" loading={createOpportunity.isPending}>
               Create Opportunity
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        open={importModalOpen}
+        onOpenChange={setImportModalOpen}
+        title="Import Opportunities"
+        description="Paste a normalized JSON array from feed, email, RSS, or portal collectors."
+      >
+        <form onSubmit={handleImportOpportunities} className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-[var(--text-primary)]" htmlFor="import-payload">
+              JSON Payload
+            </label>
+            <textarea
+              id="import-payload"
+              className="flex min-h-[260px] w-full rounded-md border border-[var(--border-default)] bg-[var(--surface-primary)] px-3 py-2 text-sm text-[var(--text-primary)]"
+              value={importPayload}
+              onChange={(e) => setImportPayload(e.target.value)}
+            />
+          </div>
+          <label className="flex items-center gap-2 text-sm text-[var(--text-primary)]">
+            <input
+              type="checkbox"
+              checked={autoQualifyImport}
+              onChange={(e) => setAutoQualifyImport(e.target.checked)}
+            />
+            Auto-qualify imported opportunities
+          </label>
+          <div className="flex justify-end gap-2">
+            <Button type="button" size="sm" variant="secondary" onClick={() => setImportModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" size="sm" loading={ingestOpportunities.isPending}>
+              Import Opportunities
             </Button>
           </div>
         </form>

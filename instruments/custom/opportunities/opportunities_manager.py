@@ -81,6 +81,37 @@ class OpportunitiesManager:
         return self.db.get_opportunity(opportunity_id)
 
     def create_opportunity(self, payload: dict[str, Any]) -> dict[str, Any]:
+        return self._validate_payload(payload, stage="discovered", lane_default="discovery")
+
+    def import_opportunities(self, payloads: list[dict[str, Any]], auto_qualify: bool = True) -> dict[str, Any]:
+        created = 0
+        updated = 0
+        qualified = 0
+        imported: list[dict[str, Any]] = []
+
+        for payload in payloads:
+            opportunity_payload = self._build_payload(payload, stage="discovered", lane_default="discovery")
+            opportunity, was_created = self.db.create_or_update_opportunity(opportunity_payload)
+            if auto_qualify:
+                opportunity = self.qualify_opportunity(opportunity["id"])
+                qualified += 1
+            imported.append(opportunity)
+            if was_created:
+                created += 1
+            else:
+                updated += 1
+
+        return {
+            "created": created,
+            "updated": updated,
+            "qualified": qualified,
+            "opportunities": imported,
+        }
+
+    def _validate_payload(self, payload: dict[str, Any], stage: str, lane_default: str) -> dict[str, Any]:
+        return self.db.create_opportunity(self._build_payload(payload, stage=stage, lane_default=lane_default))
+
+    def _build_payload(self, payload: dict[str, Any], stage: str, lane_default: str) -> dict[str, Any]:
         territory_id = int(payload.get("territory_id") or 0)
         if territory_id <= 0:
             raise ValueError("territory_id is required")
@@ -101,31 +132,29 @@ class OpportunitiesManager:
         if lane not in VALID_LANES:
             raise ValueError(f"invalid lane: {lane}")
 
-        return self.db.create_opportunity(
-            {
-                "territory_id": territory_id,
-                "title": title,
-                "buyer_name": buyer_name,
-                "source_type": str(payload.get("source_type", "manual")).strip() or "manual",
-                "source_url": payload.get("source_url"),
-                "external_id": payload.get("external_id"),
-                "zip_code": str(payload.get("zip_code", "")).strip(),
-                "city": str(payload.get("city", "")).strip(),
-                "state": str(payload.get("state", "")).strip(),
-                "stage": "discovered",
-                "lane": lane,
-                "recommendation": recommendation,
-                "approval_status": "pending",
-                "raw_requirements": str(payload.get("raw_requirements", "")).strip(),
-                "normalized_summary": str(payload.get("normalized_summary", "")).strip(),
-                "must_have_requirements": payload.get("must_have_requirements", []),
-                "due_date": payload.get("due_date"),
-                "strategic_fit_score": float(payload.get("strategic_fit_score", 0)),
-                "delivery_risk_score": float(payload.get("delivery_risk_score", 0)),
-                "estimated_contract_value": float(payload.get("estimated_contract_value", 0)),
-                "confidence_score": float(payload.get("confidence_score", 0)),
-            }
-        )
+        return {
+            "territory_id": territory_id,
+            "title": title,
+            "buyer_name": buyer_name,
+            "source_type": str(payload.get("source_type", "manual")).strip() or "manual",
+            "source_url": payload.get("source_url"),
+            "external_id": payload.get("external_id"),
+            "zip_code": str(payload.get("zip_code", "")).strip(),
+            "city": str(payload.get("city", "")).strip(),
+            "state": str(payload.get("state", "")).strip(),
+            "stage": stage,
+            "lane": lane or lane_default,
+            "recommendation": recommendation,
+            "approval_status": "pending",
+            "raw_requirements": str(payload.get("raw_requirements", "")).strip(),
+            "normalized_summary": str(payload.get("normalized_summary", "")).strip(),
+            "must_have_requirements": payload.get("must_have_requirements", []),
+            "due_date": payload.get("due_date"),
+            "strategic_fit_score": float(payload.get("strategic_fit_score", 0)),
+            "delivery_risk_score": float(payload.get("delivery_risk_score", 0)),
+            "estimated_contract_value": float(payload.get("estimated_contract_value", 0)),
+            "confidence_score": float(payload.get("confidence_score", 0)),
+        }
 
     def update_opportunity(self, opportunity_id: int, updates: dict[str, Any]) -> dict[str, Any]:
         if "stage" in updates and updates["stage"] not in VALID_STAGES:

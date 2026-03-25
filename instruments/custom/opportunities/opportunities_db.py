@@ -224,6 +224,84 @@ class OpportunitiesDatabase:
             raise RuntimeError(f"failed to load opportunity {opportunity_id}")
         return created
 
+    def find_existing_opportunity(
+        self,
+        *,
+        territory_id: int,
+        source_type: str,
+        external_id: str | None = None,
+        source_url: str | None = None,
+        title: str,
+        buyer_name: str,
+        due_date: str | None = None,
+    ) -> dict[str, Any] | None:
+        if external_id:
+            return self.db.query_one(
+                """
+                SELECT *
+                FROM opportunities
+                WHERE territory_id = ? AND source_type = ? AND external_id = ?
+                """,
+                (territory_id, source_type, external_id),
+            )
+        if source_url:
+            return self.db.query_one(
+                """
+                SELECT *
+                FROM opportunities
+                WHERE territory_id = ? AND source_type = ? AND source_url = ?
+                """,
+                (territory_id, source_type, source_url),
+            )
+        return self.db.query_one(
+            """
+            SELECT *
+            FROM opportunities
+            WHERE territory_id = ?
+              AND lower(title) = lower(?)
+              AND lower(buyer_name) = lower(?)
+              AND coalesce(due_date, '') = coalesce(?, '')
+            """,
+            (territory_id, title, buyer_name, due_date),
+        )
+
+    def create_or_update_opportunity(self, payload: dict[str, Any]) -> tuple[dict[str, Any], bool]:
+        existing = self.find_existing_opportunity(
+            territory_id=payload["territory_id"],
+            source_type=payload.get("source_type", "manual"),
+            external_id=payload.get("external_id"),
+            source_url=payload.get("source_url"),
+            title=payload["title"],
+            buyer_name=payload.get("buyer_name", ""),
+            due_date=payload.get("due_date"),
+        )
+        if not existing:
+            return self.create_opportunity(payload), True
+
+        updates = {
+            "source_url": payload.get("source_url"),
+            "external_id": payload.get("external_id"),
+            "zip_code": payload.get("zip_code", ""),
+            "city": payload.get("city", ""),
+            "state": payload.get("state", ""),
+            "raw_requirements": payload.get("raw_requirements", ""),
+            "normalized_summary": payload.get("normalized_summary", ""),
+            "must_have_requirements": payload.get("must_have_requirements", []),
+            "due_date": payload.get("due_date"),
+            "strategic_fit_score": payload.get("strategic_fit_score", existing.get("strategic_fit_score", 0)),
+            "delivery_risk_score": payload.get("delivery_risk_score", existing.get("delivery_risk_score", 0)),
+            "estimated_contract_value": payload.get(
+                "estimated_contract_value",
+                existing.get("estimated_contract_value", 0),
+            ),
+            "confidence_score": payload.get("confidence_score", existing.get("confidence_score", 0)),
+        }
+        self.update_opportunity(existing["id"], updates)
+        reloaded = self.get_opportunity(existing["id"])
+        if not reloaded:
+            raise RuntimeError(f"failed to reload opportunity {existing['id']}")
+        return reloaded, False
+
     def update_opportunity(self, opportunity_id: int, updates: dict[str, Any]) -> bool:
         allowed = {
             "title",

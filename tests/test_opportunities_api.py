@@ -89,6 +89,58 @@ async def test_opportunity_qualify_action_updates_lane_and_scores(tmp_path, monk
 
 
 @pytest.mark.asyncio
+async def test_opportunity_ingest_deduplicates_and_returns_counts(tmp_path, monkeypatch):
+    _patch_abs_path(monkeypatch, tmp_path)
+    dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())
+    territories = await dashboard.process({"action": "territories"}, DummyRequest())
+    territory_id = territories["territories"][0]["id"]
+
+    update = OpportunitiesUpdate(SimpleNamespace(), SimpleNamespace())
+    first = await update.process(
+        {
+            "action": "ingest",
+            "opportunities": [
+                {
+                    "territory_id": territory_id,
+                    "title": "County analytics modernization",
+                    "buyer_name": "County health office",
+                    "source_type": "public_rfp",
+                    "external_id": "county-001",
+                    "source_url": "https://example.gov/opps/county-001",
+                    "raw_requirements": "Need dashboards, workflow automation, and secure integrations.",
+                }
+            ],
+        },
+        DummyRequest(),
+    )
+    second = await update.process(
+        {
+            "action": "ingest",
+            "opportunities": [
+                {
+                    "territory_id": territory_id,
+                    "title": "County analytics modernization",
+                    "buyer_name": "County health office",
+                    "source_type": "public_rfp",
+                    "external_id": "county-001",
+                    "source_url": "https://example.gov/opps/county-001",
+                    "raw_requirements": "Need FHIR dashboards, workflow automation, and secure integrations.",
+                }
+            ],
+        },
+        DummyRequest(),
+    )
+
+    assert first["success"] is True
+    assert first["created"] == 1
+    assert first["updated"] == 0
+    assert second["created"] == 0
+    assert second["updated"] == 1
+    assert second["qualified"] == 1
+    assert len(second["opportunities"]) == 1
+
+
+@pytest.mark.asyncio
 async def test_opportunity_create_estimate_approve_handoff(tmp_path, monkeypatch):
     _patch_abs_path(monkeypatch, tmp_path)
     dashboard = OpportunitiesDashboard(SimpleNamespace(), SimpleNamespace())

@@ -112,6 +112,14 @@ const HandoffResponseSchema = z.object({
   work_items_created: z.number(),
 }).passthrough()
 
+const IngestResponseSchema = z.object({
+  success: z.boolean(),
+  created: z.number(),
+  updated: z.number(),
+  qualified: z.number(),
+  opportunities: z.array(OpportunitySchema),
+}).passthrough()
+
 export function getOpportunitiesDashboard() {
   return validatedApi('opportunities_dashboard', DashboardResponseSchema, {
     body: { action: 'dashboard' },
@@ -150,6 +158,12 @@ export function getOpportunity(opportunityId: number) {
 export function createOpportunity(opportunity: Record<string, unknown>) {
   return validatedApi('opportunities_update', OpportunityResponseSchema, {
     body: { action: 'create', opportunity },
+  })
+}
+
+export function ingestOpportunities(opportunities: Record<string, unknown>[], autoQualify = true) {
+  return validatedApi('opportunities_update', IngestResponseSchema, {
+    body: { action: 'ingest', opportunities, auto_qualify: autoQualify },
   })
 }
 
