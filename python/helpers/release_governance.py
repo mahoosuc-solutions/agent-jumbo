@@ -101,9 +101,6 @@ def should_validate_release_bundle(payload: dict[str, Any]) -> bool:
     return bool(
         str(payload.get("commit_sha", "")).strip()
         or str(payload.get("pr_number", "")).strip()
-        or payload.get("linear_issue_keys")
-        or payload.get("artifact_manifest")
-        or payload.get("approvals")
         or str(payload.get("deploy_target", "")).strip()
         or any(
             value is True

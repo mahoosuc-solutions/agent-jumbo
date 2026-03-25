@@ -126,6 +126,19 @@ class ProjectLifecycle(ApiHandler):
                     else None,
                     rollback_plan=input.get("rollback_plan") if isinstance(input.get("rollback_plan"), dict) else None,
                 )
+            elif action == "sync_folder_linear_plan":
+                run_id = str(input.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.sync_folder_linear_plan(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    team_id=str(input.get("team_id", "")).strip(),
+                    default_priority=int(input.get("priority", 0) or 0),
+                    project_id=str(input.get("project_id", "")).strip(),
+                    state_id=str(input.get("state_id", "")).strip(),
+                )
             elif action == "validate_folder_release_readiness":
                 run_id = str(input.get("run_id", "")).strip()
                 if not run_id:
@@ -140,6 +153,27 @@ class ProjectLifecycle(ApiHandler):
                     required_observers=[str(item) for item in required_observers]
                     if isinstance(required_observers, list)
                     else None,
+                )
+            elif action == "record_folder_deploy_run":
+                run_id = str(input.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.record_folder_deploy_run(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    deployment_system=str(input.get("deployment_system", "")).strip(),
+                    repository=str(input.get("repository", "")).strip(),
+                    workflow_file=str(input.get("workflow_file", "")).strip(),
+                    workflow_run_id=str(input.get("workflow_run_id", "")).strip(),
+                    build_id=str(input.get("build_id", "")).strip(),
+                    environment=str(input.get("environment", "")).strip(),
+                    status=str(input.get("status", "")).strip(),
+                    deployment_url=str(input.get("deployment_url", "")).strip(),
+                    started_at=str(input.get("started_at", "")).strip(),
+                    completed_at=str(input.get("completed_at", "")).strip(),
+                    commit_sha=str(input.get("commit_sha", "")).strip(),
+                    pr_number=str(input.get("pr_number", "")).strip(),
                 )
             elif action == "record_folder_post_deploy":
                 run_id = str(input.get("run_id", "")).strip()

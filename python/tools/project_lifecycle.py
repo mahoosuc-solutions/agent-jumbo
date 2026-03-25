@@ -21,8 +21,10 @@ class ProjectLifecycle(Tool):
     - list_phase_runs
     - start_folder_workflow
     - approve_folder_gate
+    - sync_folder_linear_plan
     - build_folder_release_bundle
     - validate_folder_release_readiness
+    - record_folder_deploy_run
     - record_folder_post_deploy
     - finalize_folder_workflow
     - add_phase_schedule
@@ -223,6 +225,25 @@ class ProjectLifecycle(Tool):
                     additional={"project_name": project_name, "release_bundle": data},
                 )
 
+            if action == "sync_folder_linear_plan":
+                run_id = str(self.args.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.sync_folder_linear_plan(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    team_id=str(self.args.get("team_id", "")).strip(),
+                    default_priority=int(self.args.get("priority", 0) or 0),
+                    project_id=str(self.args.get("project_id", "")).strip(),
+                    state_id=str(self.args.get("state_id", "")).strip(),
+                )
+                return Response(
+                    message=f"Synced Linear plan for workflow run '{run_id}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "linear_plan": data},
+                )
+
             if action == "validate_folder_release_readiness":
                 run_id = str(self.args.get("run_id", "")).strip()
                 if not run_id:
@@ -242,6 +263,33 @@ class ProjectLifecycle(Tool):
                     message=f"Validated release readiness for workflow run '{run_id}'.",
                     break_loop=False,
                     additional={"project_name": project_name, "release_readiness": data},
+                )
+
+            if action == "record_folder_deploy_run":
+                run_id = str(self.args.get("run_id", "")).strip()
+                if not run_id:
+                    raise Exception("run_id is required")
+                data = project_lifecycle.record_folder_deploy_run(
+                    project_name=project_name,
+                    run_id=run_id,
+                    actor=actor,
+                    deployment_system=str(self.args.get("deployment_system", "")).strip(),
+                    repository=str(self.args.get("repository", "")).strip(),
+                    workflow_file=str(self.args.get("workflow_file", "")).strip(),
+                    workflow_run_id=str(self.args.get("workflow_run_id", "")).strip(),
+                    build_id=str(self.args.get("build_id", "")).strip(),
+                    environment=str(self.args.get("environment", "")).strip(),
+                    status=str(self.args.get("status", "")).strip(),
+                    deployment_url=str(self.args.get("deployment_url", "")).strip(),
+                    started_at=str(self.args.get("started_at", "")).strip(),
+                    completed_at=str(self.args.get("completed_at", "")).strip(),
+                    commit_sha=str(self.args.get("commit_sha", "")).strip(),
+                    pr_number=str(self.args.get("pr_number", "")).strip(),
+                )
+                return Response(
+                    message=f"Recorded deploy run for workflow run '{run_id}'.",
+                    break_loop=False,
+                    additional={"project_name": project_name, "deploy_run": data},
                 )
 
             if action == "record_folder_post_deploy":
@@ -322,8 +370,9 @@ class ProjectLifecycle(Tool):
                 message=(
                     "Unknown action. Use one of: get, upsert, set_phase, set_access, "
                     "link_subproject, run_phase, list_phase_runs, start_folder_workflow, "
-                    "approve_folder_gate, build_folder_release_bundle, validate_folder_release_readiness, "
-                    "record_folder_post_deploy, finalize_folder_workflow, add_phase_schedule, remove_phase_schedule"
+                    "approve_folder_gate, sync_folder_linear_plan, build_folder_release_bundle, "
+                    "validate_folder_release_readiness, record_folder_deploy_run, record_folder_post_deploy, "
+                    "finalize_folder_workflow, add_phase_schedule, remove_phase_schedule"
                 ),
                 break_loop=False,
             )

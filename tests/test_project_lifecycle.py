@@ -446,6 +446,210 @@ def test_folder_release_artifacts_are_built_and_post_deploy_is_recorded(monkeypa
         projects.delete_project(project_name)
 
 
+def test_sync_folder_linear_plan_creates_linear_artifacts(monkeypatch):
+    project_name = _new_project_name()
+    _create_project(project_name)
+
+    class FakeWorkflowManager:
+        def __init__(self):
+            self._created = False
+
+        def get_workflow(self, name=None, workflow_id=None):
+            if self._created:
+                return {"workflow_id": 77, "name": name}
+            return {"error": "Workflow not found"}
+
+        def create_from_template(self, template_path, name, customizations=None):
+            self._created = True
+            return {"workflow_id": 77, "name": name, "status": "created"}
+
+        def start_workflow(self, workflow_id=None, workflow_name=None, execution_name=None, context=None):
+            return {
+                "execution_id": 222,
+                "workflow_id": 77,
+                "workflow_name": workflow_name,
+                "status": "running",
+                "context": context,
+            }
+
+    class FakeLinearManager:
+        async def create_issue_batch(
+            self,
+            issues,
+            team_id,
+            default_priority=0,
+            project_id=None,
+            state_id=None,
+            label_ids=None,
+        ):
+            created = []
+            for index, issue in enumerate(issues, start=1):
+                created.append(
+                    {
+                        "id": f"issue-{index}",
+                        "identifier": f"AJB-{120 + index}",
+                        "title": issue["title"],
+                        "url": f"https://linear.app/test/issue/AJB-{120 + index}",
+                        "priority": default_priority,
+                        "state": {"name": "Todo"},
+                    }
+                )
+            return {"success": True, "issues": created, "failures": []}
+
+    monkeypatch.setattr(project_lifecycle, "_get_workflow_manager", lambda: FakeWorkflowManager())
+    monkeypatch.setattr(project_lifecycle, "_get_linear_manager", lambda: FakeLinearManager())
+    monkeypatch.setattr(project_lifecycle, "_get_linear_team_id", lambda: "team-1")
+
+    try:
+        run = project_lifecycle.start_folder_workflow(
+            project_name=project_name,
+            target_path="python/helpers",
+            actor="alice",
+        )
+        project_lifecycle.folder_delivery_workflow.write_system_artifact(
+            project_name=project_name,
+            run_id=run["run_id"],
+            artifact_name="execution_plan.json",
+            payload={
+                "task_slices": [
+                    {"title": "Slice A", "description": "Implement A"},
+                    {"title": "Slice B", "description": "Implement B"},
+                ],
+                "integrator": "agent_1",
+                "approvals_required": ["planning_to_execution", "release_to_deploy"],
+            },
+            stage_family="planning",
+            producer="test",
+        )
+
+        linear_plan = project_lifecycle.sync_folder_linear_plan(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+        )
+        assert linear_plan["created_count"] == 3
+        assert linear_plan["parent_issue"]["identifier"] == "AJB-121"
+        assert len(linear_plan["child_issues"]) == 2
+
+        release_bundle = project_lifecycle.folder_delivery_workflow.load_artifact_payload(
+            project_name, run["run_id"], "release_bundle.json"
+        )
+        assert release_bundle["linear_issue_keys"] == ["AJB-121", "AJB-122", "AJB-123"]
+        assert release_bundle["linear_plan"]["child_issue_count"] == 2
+    finally:
+        projects.delete_project(project_name)
+
+
+def test_record_folder_deploy_run_updates_release_bundle(monkeypatch):
+    project_name = _new_project_name()
+    _create_project(project_name)
+
+    class FakeManager:
+        def __init__(self):
+            self._created = False
+            self.approved: list[tuple[int, str, str]] = []
+
+        def get_workflow(self, name=None, workflow_id=None):
+            if self._created:
+                return {"workflow_id": 91, "name": name}
+            return {"error": "Workflow not found"}
+
+        def create_from_template(self, template_path, name, customizations=None):
+            self._created = True
+            return {"workflow_id": 91, "name": name, "status": "created"}
+
+        def start_workflow(self, workflow_id=None, workflow_name=None, execution_name=None, context=None):
+            return {
+                "execution_id": 654,
+                "workflow_id": 91,
+                "workflow_name": workflow_name,
+                "status": "running",
+                "context": context,
+            }
+
+        def approve_stage(self, execution_id, stage_id, approved_by, notes=None):
+            self.approved.append((execution_id, stage_id, approved_by))
+            return {"status": "approved"}
+
+    monkeypatch.setattr(project_lifecycle, "_get_workflow_manager", lambda: FakeManager())
+
+    try:
+        run = project_lifecycle.start_folder_workflow(
+            project_name=project_name,
+            target_path="python/helpers",
+            actor="alice",
+            branch_ref="feat/test",
+        )
+        project_lifecycle.build_folder_release_bundle(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            commit_sha="44f0c41c",
+            pr_number="4",
+            linear_issue_keys=["AJB-123"],
+            deploy_target="staging",
+            pre_deploy_checks={
+                "artifact_manifest_verified": True,
+                "config_validated": True,
+                "secrets_present": True,
+                "dependency_reachability": True,
+                "migration_compatibility": True,
+                "environment_lock": True,
+                "backup_confirmed": True,
+            },
+            post_deploy_checks={
+                "health_endpoint": False,
+                "chat_readiness": False,
+                "workflow_smoke": False,
+                "schema_verification": False,
+                "monitoring_snapshot": False,
+            },
+            monitoring_snapshot={"status": "green", "observed_at": "2026-03-25T00:00:00+00:00"},
+            rollback_plan={"strategy": "forward_fix", "owner": "ops", "trigger_conditions": ["health red"]},
+        )
+        project_lifecycle.validate_folder_release_readiness(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            required_observers=["engineering", "operations"],
+        )
+        project_lifecycle.approve_folder_gate(
+            project_name=project_name,
+            run_id=run["run_id"],
+            gate_name="release_to_deploy",
+            approved_by="alice",
+            evidence_refs=["artifacts/release_bundle.json"],
+        )
+
+        deploy_run = project_lifecycle.record_folder_deploy_run(
+            project_name=project_name,
+            run_id=run["run_id"],
+            actor="alice",
+            deployment_system="github_actions",
+            repository="mahoosuc-solutions/agent-jumbo",
+            workflow_file="deploy.yml",
+            workflow_run_id="123456789",
+            build_id="build-42",
+            environment="staging",
+            status="in_progress",
+            deployment_url="https://github.com/mahoosuc-solutions/agent-jumbo/actions/runs/123456789",
+            started_at="2026-03-25T02:00:00+00:00",
+            commit_sha="44f0c41c",
+            pr_number="4",
+        )
+        assert deploy_run["workflow_run_id"] == "123456789"
+
+        release_bundle = project_lifecycle.folder_delivery_workflow.load_artifact_payload(
+            project_name, run["run_id"], "release_bundle.json"
+        )
+        assert release_bundle["deployment_reference"]["build_id"] == "build-42"
+        assert release_bundle["deployment_reference"]["workflow_run_id"] == "123456789"
+        assert release_bundle["commit_sha"] == "44f0c41c"
+        assert release_bundle["pr_number"] == "4"
+    finally:
+        projects.delete_project(project_name)
+
+
 def test_run_phase_rejects_when_lock_exists(monkeypatch):
     project_name = _new_project_name()
     _create_project(project_name)
