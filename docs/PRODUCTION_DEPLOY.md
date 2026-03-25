@@ -1,5 +1,7 @@
 # Production Deployment Guide
 
+Before treating any deployment as launch-ready, verify it against [Production GA Definition of Done](PRODUCTION_GA_DEFINITION_OF_DONE.md). This guide explains how to deploy; the GA definition determines whether the platform is actually ready to go live.
+
 > Agent Jumbo — from development to production with confidence.
 
 ---

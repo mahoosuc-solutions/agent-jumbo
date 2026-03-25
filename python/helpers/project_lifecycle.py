@@ -17,9 +17,12 @@ LIFECYCLE_FILE = "lifecycle.json"
 RUNS_DIR = "runs"
 
 TEMPLATE_PATHS = {
-    "product_development": "instruments/custom/workflow_engine/templates/product_development.json",
-    "service_delivery": "instruments/custom/workflow_engine/templates/service_delivery.json",
-    "ai_solutioning": "instruments/custom/workflow_engine/templates/ai_solutioning.json",
+    # The workflow engine currently ships one generic implementation template.
+    # Keep the higher-level lifecycle IDs stable, but resolve them to the
+    # concrete template that exists in the repo until dedicated templates land.
+    "product_development": "instruments/custom/workflow_engine/templates/work_item_implementation.json",
+    "service_delivery": "instruments/custom/workflow_engine/templates/work_item_implementation.json",
+    "ai_solutioning": "instruments/custom/workflow_engine/templates/work_item_implementation.json",
 }
 
 

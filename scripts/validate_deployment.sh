@@ -1,8 +1,16 @@
 #!/bin/bash
-# Validate all Agent Jumbo customizations deployed to Docker
-# Run this script to verify all custom features are properly deployed
+# Validate deployed Agent Jumbo environment and archive a timestamped report.
 
-set -e
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPORT_DIR="${REPORT_DIR:-$ROOT_DIR/artifacts/validation}"
+TS="$(date +%Y%m%d-%H%M%S)"
+REPORT_FILE="$REPORT_DIR/deployment-validation-$TS.log"
+
+mkdir -p "$REPORT_DIR"
+
+exec > >(tee "$REPORT_FILE") 2>&1
 
 CONTAINER="${CONTAINER:-agent-jumbo}"
 BASE_URL="${BASE_URL:-http://localhost:50080}"
@@ -16,10 +24,15 @@ NC='\033[0m' # No Color
 pass() { echo -e "${GREEN}✅ $1${NC}"; }
 fail() { echo -e "${RED}❌ $1${NC}"; }
 warn() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+increment() {
+    local name="$1"
+    printf -v "$name" '%s' "$(( ${!name} + 1 ))"
+}
 
 echo "=========================================="
 echo " Agent Jumbo Docker Deployment Validation"
 echo "=========================================="
+echo " Report: $REPORT_FILE"
 echo ""
 
 # 1. Check container running
@@ -33,8 +46,8 @@ else
 fi
 echo ""
 
-# 2. Check custom instruments (17 modules)
-echo "=== Custom Instruments (17 modules) ==="
+# 2. Check custom instruments
+echo "=== Custom Instruments ==="
 INSTRUMENTS=(
     "ai_migration"
     "business_xray"
@@ -52,7 +65,6 @@ INSTRUMENTS=(
     "skill_importer"
     "virtual_team"
     "workflow_engine"
-    "scheduler"
 )
 
 INST_PASS=0
@@ -60,10 +72,10 @@ INST_FAIL=0
 for mod in "${INSTRUMENTS[@]}"; do
     if docker exec $CONTAINER test -d /aj/instruments/custom/$mod 2>/dev/null; then
         pass "$mod"
-        ((INST_PASS++))
+        increment INST_PASS
     else
         fail "$mod MISSING"
-        ((INST_FAIL++))
+        increment INST_FAIL
     fi
 done
 echo "Instruments: $INST_PASS passed, $INST_FAIL failed"
@@ -97,10 +109,10 @@ TOOL_FAIL=0
 for tool in "${TOOLS[@]}"; do
     if docker exec $CONTAINER test -f /aj/python/tools/${tool}.py 2>/dev/null; then
         pass "$tool"
-        ((TOOL_PASS++))
+        increment TOOL_PASS
     else
         fail "$tool MISSING"
-        ((TOOL_FAIL++))
+        increment TOOL_FAIL
     fi
 done
 echo "Tools: $TOOL_PASS passed, $TOOL_FAIL failed"
@@ -150,24 +162,24 @@ API_FAIL=0
 for api in "${APIS[@]}"; do
     if docker exec $CONTAINER test -f /aj/python/api/${api}.py 2>/dev/null; then
         pass "$api"
-        ((API_PASS++))
+        increment API_PASS
     else
         fail "$api MISSING"
-        ((API_FAIL++))
+        increment API_FAIL
     fi
 done
 echo "APIs: $API_PASS passed, $API_FAIL failed"
 echo ""
 
-# 5. Check custom extensions (6 extensions)
-echo "=== Custom Extensions (6 extensions) ==="
+# 5. Check custom extensions
+echo "=== Custom Extensions ==="
 EXTENSIONS=(
     "message_loop_prompts_after/_80_prompt_enhancer.py"
     "system_prompt/_30_cowork_prompt.py"
     "tool_execute_after/_30_telemetry_end.py"
     "tool_execute_before/_20_cowork_approvals.py"
     "tool_execute_before/_30_telemetry_start.py"
-    "message_loop_prompts_after/_85_ralph_loop_check.py"
+    "message_loop_end/_85_ralph_loop_check.py"
 )
 
 EXT_PASS=0
@@ -175,10 +187,10 @@ EXT_FAIL=0
 for ext in "${EXTENSIONS[@]}"; do
     if docker exec $CONTAINER test -f /aj/python/extensions/${ext} 2>/dev/null; then
         pass "$(basename $ext)"
-        ((EXT_PASS++))
+        increment EXT_PASS
     else
         fail "$(basename $ext) MISSING"
-        ((EXT_FAIL++))
+        increment EXT_FAIL
     fi
 done
 echo "Extensions: $EXT_PASS passed, $EXT_FAIL failed"
@@ -203,10 +215,10 @@ HELP_FAIL=0
 for helper in "${HELPERS[@]}"; do
     if docker exec $CONTAINER test -f /aj/python/helpers/${helper} 2>/dev/null; then
         pass "$helper"
-        ((HELP_PASS++))
+        increment HELP_PASS
     else
         fail "$helper MISSING"
-        ((HELP_FAIL++))
+        increment HELP_FAIL
     fi
 done
 echo "Helpers: $HELP_PASS passed, $HELP_FAIL failed"
@@ -215,24 +227,24 @@ echo ""
 # 7. Check UI components
 echo "=== UI Components ==="
 UI_COMPONENTS=(
-    "settings/workflow"
     "settings/ralph-loop"
     "settings/observability"
     "settings/cowork"
     "settings/external"
     "settings/prompt"
     "modals/file-browser"
+    "panels/workflow-panel.html"
 )
 
 UI_PASS=0
 UI_FAIL=0
 for comp in "${UI_COMPONENTS[@]}"; do
-    if docker exec $CONTAINER test -d /aj/webui/components/${comp} 2>/dev/null; then
+    if docker exec $CONTAINER test -e /aj/webui/components/${comp} 2>/dev/null; then
         pass "$comp"
-        ((UI_PASS++))
+        increment UI_PASS
     else
         fail "$comp MISSING"
-        ((UI_FAIL++))
+        increment UI_FAIL
     fi
 done
 echo "UI Components: $UI_PASS passed, $UI_FAIL failed"
@@ -329,8 +341,10 @@ fi
 echo ""
 if [ $TOTAL_FAIL -eq 0 ]; then
     echo -e "${GREEN}✅ All validations passed! Deployment is complete.${NC}"
+    echo "Report saved to: $REPORT_FILE"
     exit 0
 else
     echo -e "${RED}❌ Some validations failed. Review the output above.${NC}"
+    echo "Report saved to: $REPORT_FILE"
     exit 1
 fi

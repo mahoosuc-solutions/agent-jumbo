@@ -4,6 +4,12 @@
 
 To begin with Agent Jumbo, follow the links below for detailed guides on various topics:
 
+- **[Production GA Definition of Done](PRODUCTION_GA_DEFINITION_OF_DONE.md):** Current source of truth for self-serve production launch readiness.
+- **[GA Launch Inventory](GA_LAUNCH_INVENTORY.md):** Feature-by-feature launch classification, validation, and rollback tracking.
+- **[GA Evidence Package](GA_EVIDENCE_PACKAGE.md):** Required artifacts and collection window for the final go/no-go review.
+- **[GA Evidence Record 2026-03-24](GA_EVIDENCE_RECORD_2026-03-24.md):** Snapshot of the green release, runtime, web, and deployment evidence collected for the release branch.
+- **[Self-Serve GA Onboarding](SELF_SERVE_GA_ONBOARDING.md):** Canonical customer-facing setup path for production launch.
+- **[GA Launch Runbook](GA_LAUNCH_RUNBOOK.md):** Launch-day execution, rollback, and observation procedure.
 - **[Installation](installation.md):** Set up (or [update](installation.md#how-to-update-agent-jumbo)) Agent Jumbo on your system.
 - **[Usage Guide](usage.md):** Explore GUI features and usage scenarios.
 - **[Diagram Generation](diagrams.md):** Create visual diagrams using Mermaid, Excalidraw, and Draw.io.

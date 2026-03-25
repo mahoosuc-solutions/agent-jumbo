@@ -1,5 +1,7 @@
 # Release Checklist
 
+For the current platform go-live standard, use [Production GA Definition of Done](PRODUCTION_GA_DEFINITION_OF_DONE.md) as the controlling launch gate. This checklist remains useful for release mechanics, but it is not sufficient by itself for production GA.
+
 Follow this checklist when preparing a release.
 
 ## Pre-Release (48 hours before)
