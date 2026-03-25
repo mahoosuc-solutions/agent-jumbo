@@ -13,6 +13,7 @@ scripts/ci/check_traceability.py @webemo-aaron
 scripts/ci/check_schema_governance.py @webemo-aaron
 scripts/ci/check_release_governance.py @webemo-aaron
 scripts/ci/update_folder_workflow_evidence.py @webemo-aaron
+scripts/ci/render_folder_workflow_summary.py @webemo-aaron
 .github/pull_request_template.md @webemo-aaron
 .github/workflows/ci.yml @webemo-aaron
 .github/workflows/web-deploy.yml @webemo-aaron
