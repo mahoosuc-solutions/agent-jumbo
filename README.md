@@ -63,7 +63,8 @@ Then open `http://localhost:5000`.
 
 Notes:
 
-- The container runs in `AGENT_JUMBO_LAPTOP_MODE=true` by default to keep local startup self-contained.
+- The container defaults to `AGENT_JUMBO_RUN_MODE=local-lite` and keeps `AGENT_JUMBO_LAPTOP_MODE=true` for backward compatibility.
+- Switch to `AGENT_JUMBO_RUN_MODE=research` when you want a lighter research/browsing setup without the full operational stack.
 - If you already run Ollama on the host, the container will use `http://host.docker.internal:11434` by default.
 - The repository is mounted into `/aj`, so edits on the host are reflected immediately in the container.
 

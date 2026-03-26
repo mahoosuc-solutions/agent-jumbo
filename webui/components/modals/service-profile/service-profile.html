@@ -1,0 +1,302 @@
+<html>
+<head>
+  <title>Service Profile</title>
+  <script type="module">
+    import { store } from "/components/modals/service-profile/service-profile-store.js";
+  </script>
+</head>
+<body>
+  <div x-data x-init="$store.serviceProfile.init()">
+    <template x-if="$store.serviceProfile">
+      <div class="service-profile-modal">
+        <p class="service-profile-intro">
+          Choose which local services should run for this workflow. Applying a new profile briefly restarts the UI.
+        </p>
+
+        <div class="service-profile-grid">
+          <template x-for="profile in $store.serviceProfile.profiles" :key="profile.id">
+            <button
+              type="button"
+              class="service-profile-card"
+              :class="{
+                'is-selected': $store.serviceProfile.selectedProfile === profile.id,
+                'is-current': $store.serviceProfile.currentProfile === profile.id
+              }"
+              @click="$store.serviceProfile.selectProfile(profile.id)"
+            >
+              <div class="service-profile-card-top">
+                <span class="service-profile-card-title" x-text="profile.label"></span>
+                <span
+                  class="service-profile-card-badge"
+                  x-show="$store.serviceProfile.currentProfile === profile.id"
+                >
+                  Active
+                </span>
+              </div>
+              <p class="service-profile-card-copy" x-text="profile.description"></p>
+              <div class="service-profile-service-list">
+                <template x-for="service in profile.services" :key="service.id">
+                  <span class="service-chip" x-text="service.label"></span>
+                </template>
+              </div>
+            </button>
+          </template>
+        </div>
+
+        <div class="service-profile-summary">
+          <div class="service-profile-summary-header">
+            <span>Change Summary</span>
+            <span
+              class="service-profile-summary-target"
+              x-text="$store.serviceProfile.profileLabel($store.serviceProfile.selectedProfile)"
+            ></span>
+          </div>
+
+          <template x-if="$store.serviceProfile.selectedProfile === $store.serviceProfile.currentProfile">
+            <p class="service-profile-summary-copy">This profile is already active.</p>
+          </template>
+
+          <template x-if="$store.serviceProfile.selectedProfile !== $store.serviceProfile.currentProfile">
+            <div class="service-profile-summary-groups">
+              <div>
+                <div class="service-profile-summary-label">Enable</div>
+                <div class="service-profile-summary-chips">
+                  <template x-if="!$store.serviceProfile.profileTransition($store.serviceProfile.selectedProfile).enable.length">
+                    <span class="service-chip service-chip-muted">No new services</span>
+                  </template>
+                  <template
+                    x-for="serviceId in $store.serviceProfile.profileTransition($store.serviceProfile.selectedProfile).enable"
+                    :key="'enable-' + serviceId"
+                  >
+                    <span
+                      class="service-chip service-chip-enable"
+                      x-text="$store.serviceProfile.serviceLabel(serviceId)"
+                    ></span>
+                  </template>
+                </div>
+              </div>
+
+              <div>
+                <div class="service-profile-summary-label">Disable</div>
+                <div class="service-profile-summary-chips">
+                  <template x-if="!$store.serviceProfile.profileTransition($store.serviceProfile.selectedProfile).disable.length">
+                    <span class="service-chip service-chip-muted">No services stopped</span>
+                  </template>
+                  <template
+                    x-for="serviceId in $store.serviceProfile.profileTransition($store.serviceProfile.selectedProfile).disable"
+                    :key="'disable-' + serviceId"
+                  >
+                    <span
+                      class="service-chip service-chip-disable"
+                      x-text="$store.serviceProfile.serviceLabel(serviceId)"
+                    ></span>
+                  </template>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <div class="service-profile-restart-notice">
+            The runtime reconnects automatically after the switch.
+          </div>
+
+          <p
+            class="service-profile-error"
+            x-show="$store.serviceProfile.error"
+            x-text="$store.serviceProfile.error"
+          ></p>
+        </div>
+      </div>
+    </template>
+
+    <template x-if="$store.serviceProfile">
+      <div class="modal-footer" data-modal-footer>
+        <button
+          class="btn btn-cancel"
+          :disabled="$store.serviceProfile.applying"
+          @click="$store.serviceProfile.closeModal()"
+        >
+          Cancel
+        </button>
+        <button
+          class="btn btn-ok"
+          :disabled="$store.serviceProfile.applying || !$store.serviceProfile.supported"
+          @click="$store.serviceProfile.applySelectedProfile()"
+        >
+          <span x-text="$store.serviceProfile.applying ? 'Applying...' : 'Apply Profile'"></span>
+        </button>
+      </div>
+    </template>
+  </div>
+
+  <style>
+    .service-profile-modal {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      padding: 6px 2px 8px;
+    }
+
+    .service-profile-intro {
+      margin: 0;
+      opacity: 0.82;
+      line-height: 1.5;
+    }
+
+    .service-profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .service-profile-card {
+      width: 100%;
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      background: color-mix(in srgb, var(--color-panel) 92%, transparent);
+      color: var(--color-text);
+      padding: 14px;
+      text-align: left;
+      transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+      cursor: pointer;
+    }
+
+    .service-profile-card:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--color-highlight) 55%, var(--color-border));
+    }
+
+    .service-profile-card.is-selected {
+      border-color: var(--color-highlight);
+      background: color-mix(in srgb, var(--color-highlight) 12%, var(--color-panel));
+      box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-highlight) 45%, transparent);
+    }
+
+    .service-profile-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .service-profile-card-title {
+      font-weight: 700;
+      font-size: 1rem;
+    }
+
+    .service-profile-card-badge {
+      border-radius: 999px;
+      padding: 2px 8px;
+      background: rgba(0, 195, 64, 0.12);
+      border: 1px solid rgba(0, 195, 64, 0.35);
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .service-profile-card-copy {
+      margin: 0 0 12px;
+      opacity: 0.82;
+      min-height: 42px;
+      line-height: 1.45;
+    }
+
+    .service-profile-service-list,
+    .service-profile-summary-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .service-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--color-border) 40%, transparent);
+      border: 1px solid color-mix(in srgb, var(--color-border) 65%, transparent);
+      font-size: 0.78rem;
+      line-height: 1.1;
+    }
+
+    .service-chip-enable {
+      background: rgba(0, 195, 64, 0.12);
+      border-color: rgba(0, 195, 64, 0.28);
+    }
+
+    .service-chip-disable {
+      background: rgba(228, 1, 56, 0.1);
+      border-color: rgba(228, 1, 56, 0.28);
+    }
+
+    .service-chip-muted {
+      opacity: 0.72;
+    }
+
+    .service-profile-summary {
+      border: 1px solid var(--color-border);
+      border-radius: 16px;
+      padding: 14px;
+      background: color-mix(in srgb, var(--color-background) 35%, var(--color-panel));
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .service-profile-summary-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-weight: 700;
+    }
+
+    .service-profile-summary-target {
+      opacity: 0.7;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .service-profile-summary-copy {
+      margin: 0;
+      opacity: 0.82;
+    }
+
+    .service-profile-summary-groups {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .service-profile-summary-label {
+      margin-bottom: 8px;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      opacity: 0.7;
+    }
+
+    .service-profile-restart-notice {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(255, 184, 0, 0.1);
+      border: 1px solid rgba(255, 184, 0, 0.24);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+
+    .service-profile-error {
+      margin: 0;
+      color: #ff8fa3;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 720px) {
+      .service-profile-summary-groups {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</body>
+</html>

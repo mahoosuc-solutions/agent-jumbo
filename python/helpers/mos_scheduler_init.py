@@ -13,6 +13,8 @@ from typing import Any
 def register_mos_schedules() -> dict[str, Any]:
     """Register MOS sync jobs. Safe to call multiple times (idempotent)."""
     registered = []
+    status = "skipped"
+    reason = ""
 
     try:
         # This module was written for an older callback-based scheduler API.
@@ -39,11 +41,22 @@ def register_mos_schedules() -> dict[str, Any]:
                 handler=_run_linear_activity_digest,
             )
             registered.append("mos_linear_activity_digest")
+            status = "registered"
+        else:
+            reason = "current scheduler does not expose the legacy callback registration API"
 
-    except Exception:
+    except Exception as e:
+        status = "error"
+        reason = str(e)
         traceback.print_exc()
 
-    return {"registered": registered, "count": len(registered)}
+    return {
+        "registered": registered,
+        "count": len(registered),
+        "status": status,
+        "reason": reason,
+        "skipped_reason": reason if status == "skipped" else "",
+    }
 
 
 async def _run_linear_to_motion() -> None:

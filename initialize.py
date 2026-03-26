@@ -1,15 +1,19 @@
-import os
-
 import models
 from agent import AgentConfig
-from python.helpers import defer, runtime, settings, startup_selector
+from python.helpers import defer, runtime, runtime_mode, settings, startup_selector, startup_status
 from python.helpers.print_style import PrintStyle
 
 _llm_router_bootstrap_started = False
+_mos_schedule_bootstrap_started = False
+_mos_scheduler_status_logged: tuple[str, str] | None = None
 
 
 def _is_laptop_mode() -> bool:
-    return os.getenv("AGENT_JUMBO_LAPTOP_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+    return runtime_mode.is_laptop_mode()
+
+
+def _is_reduced_startup_mode() -> bool:
+    return runtime_mode.is_reduced_startup_mode()
 
 
 def _apply_laptop_runtime_overrides(current_settings: settings.Settings) -> settings.Settings:
@@ -39,6 +43,7 @@ def _apply_laptop_runtime_overrides(current_settings: settings.Settings) -> sett
 
 
 def initialize_agent(override_settings: dict | None = None):
+    global _mos_scheduler_status_logged
     current_settings = settings.get_settings()
     if override_settings:
         current_settings = settings.merge_settings(current_settings, override_settings)
@@ -139,15 +144,7 @@ def initialize_agent(override_settings: dict | None = None):
     except Exception as e:
         PrintStyle(font_color="red").print(f"Failed to initialize security vault: {e}")
 
-    # Initialize MOS schedules (Linear/Motion/Notion sync cron jobs)
-    try:
-        from python.helpers.mos_scheduler_init import register_mos_schedules
-
-        result = register_mos_schedules()
-        if result["count"] > 0:
-            PrintStyle(font_color="green").print(f"MOS schedules registered: {', '.join(result['registered'])}")
-    except Exception as e:
-        PrintStyle(font_color="yellow").print(f"[!] MOS schedule init skipped: {e}")
+    _initialize_mos_schedules_once()
 
     # initialize MCP in deferred task to prevent blocking the main thread
     # async def initialize_mcp_async(mcp_servers_config: str):
@@ -197,6 +194,42 @@ def _initialize_llm_router_once(current_settings: settings.Settings):
     defer.DeferredTask(thread_name="llm-router-bootstrap").start_task(_bootstrap)
 
 
+def _initialize_mos_schedules_once() -> None:
+    global _mos_schedule_bootstrap_started, _mos_scheduler_status_logged
+    existing_status = startup_status.snapshot().get("mos_scheduler", {})
+    if _mos_schedule_bootstrap_started or existing_status.get("status") not in {None, "", "unknown"}:
+        return
+    _mos_schedule_bootstrap_started = True
+
+    try:
+        from python.helpers.mos_scheduler_init import register_mos_schedules
+
+        result = register_mos_schedules()
+        startup_status.set_mos_scheduler_status(
+            status=result.get("status", "unknown"),
+            reason=result.get("reason", ""),
+            registered=result.get("registered", []),
+            count=result.get("count", 0),
+        )
+        log_key = (result.get("status", "unknown"), result.get("reason", ""))
+        should_log_status = _mos_scheduler_status_logged != log_key
+        if result["count"] > 0 and should_log_status:
+            PrintStyle(font_color="green").print(f"MOS schedules registered: {', '.join(result['registered'])}")
+        elif result.get("status") == "skipped" and should_log_status:
+            PrintStyle(font_color="yellow").print(f"[!] MOS schedules skipped: {result.get('reason', 'not available')}")
+        elif result.get("status") == "error" and should_log_status:
+            PrintStyle(font_color="yellow").print(
+                f"[!] MOS schedule init failed: {result.get('reason', 'unknown error')}"
+            )
+        _mos_scheduler_status_logged = log_key
+    except Exception as e:
+        startup_status.set_mos_scheduler_status(status="error", reason=str(e), registered=[], count=0)
+        log_key = ("error", str(e))
+        if _mos_scheduler_status_logged != log_key:
+            PrintStyle(font_color="yellow").print(f"[!] MOS schedule init skipped: {e}")
+            _mos_scheduler_status_logged = log_key
+
+
 def initialize_chats():
     from python.helpers import persist_chat
 
@@ -207,8 +240,8 @@ def initialize_chats():
 
 
 def initialize_mcp():
-    if _is_laptop_mode():
-        PrintStyle(font_color="yellow").print("[!] MCP client init skipped (laptop mode)")
+    if _is_reduced_startup_mode():
+        PrintStyle(font_color="yellow").print(f"[!] MCP client init skipped (run mode: {runtime_mode.get_run_mode()})")
         return None
 
     set = settings.get_settings()
@@ -222,8 +255,8 @@ def initialize_mcp():
 
 
 def initialize_job_loop():
-    if _is_laptop_mode():
-        PrintStyle(font_color="yellow").print("[!] Job loop skipped (laptop mode)")
+    if _is_reduced_startup_mode():
+        PrintStyle(font_color="yellow").print(f"[!] Job loop skipped (run mode: {runtime_mode.get_run_mode()})")
         return None
 
     try:
@@ -237,8 +270,8 @@ def initialize_job_loop():
 
 
 def initialize_preload():
-    if _is_laptop_mode():
-        PrintStyle(font_color="yellow").print("[!] Preload skipped (laptop mode)")
+    if _is_reduced_startup_mode():
+        PrintStyle(font_color="yellow").print(f"[!] Preload skipped (run mode: {runtime_mode.get_run_mode()})")
         return None
 
     try:

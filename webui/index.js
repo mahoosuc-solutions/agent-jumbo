@@ -11,6 +11,7 @@ import { store as chatsStore } from "/components/sidebar/chats/chats-store.js";
 import { store as tasksStore } from "/components/sidebar/tasks/tasks-store.js";
 import { store as chatTopStore } from "/components/chat/top-section/chat-top-store.js";
 import { store as passkeyStore } from "/components/settings/external/passkey-auth-store.js";
+import { store as serviceProfileStore } from "/components/modals/service-profile/service-profile-store.js";
 
 globalThis.fetchApi = api.fetchApi; // TODO - backward compatibility for non-modular scripts, remove once refactored to alpine
 
@@ -389,6 +390,8 @@ export async function poll() {
       );
     }
     chatTopStore.updateCoworkStatus(response);
+    chatTopStore.updateStartupStatus(response.startup);
+    serviceProfileStore.updateFromStatus(response.service_profile);
 
     // Update status icon state
     setConnectionStatus(true);

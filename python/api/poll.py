@@ -2,7 +2,7 @@ import contextlib
 import time
 
 from agent import AgentContext, AgentContextType
-from python.helpers import cowork, perf_metrics
+from python.helpers import cowork, perf_metrics, service_profile, startup_status
 from python.helpers.api import ApiHandler, Request, Response
 from python.helpers.dotenv import get_dotenv_value
 from python.helpers.localization import Localization
@@ -174,6 +174,8 @@ class Poll(ApiHandler):
                 "cowork_enabled": cowork_enabled,
                 "cowork_allowed_count": cowork_allowed_count,
                 "cowork_pending": cowork_pending,
+                "startup": startup_status.snapshot(),
+                "service_profile": service_profile.snapshot(),
             }
         except Exception:
             status = "error"

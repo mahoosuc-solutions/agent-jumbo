@@ -10,6 +10,7 @@ services:
     env_file:
       - .env
     environment:
+      AGENT_JUMBO_RUN_MODE: ${AGENT_JUMBO_RUN_MODE:-local-lite}
       AGENT_JUMBO_LAPTOP_MODE: ${AGENT_JUMBO_LAPTOP_MODE:-true}
       AGENTMESH_REDIS_URL: ""
       LITELLM_LOCAL_MODEL_COST_MAP: "True"

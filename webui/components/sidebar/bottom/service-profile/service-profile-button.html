@@ -1,0 +1,79 @@
+<html>
+<head>
+  <script type="module">
+    import { store } from "/components/modals/service-profile/service-profile-store.js";
+  </script>
+</head>
+<body>
+  <div x-data x-init="$store.serviceProfile.init()">
+    <template x-if="$store.serviceProfile?.loaded && $store.serviceProfile?.supported">
+      <div class="service-profile-launcher">
+        <button class="service-profile-launcher-btn" @click="$store.serviceProfile.openModal()">
+          <span class="service-profile-launcher-dot"></span>
+          <span class="service-profile-launcher-copy">
+            <span class="service-profile-launcher-label">Service Profile</span>
+            <span class="service-profile-launcher-value"
+              x-text="'Profile: ' + $store.serviceProfile.currentProfileLabel"></span>
+          </span>
+        </button>
+      </div>
+    </template>
+  </div>
+
+  <style>
+    .service-profile-launcher {
+      padding: 0.15rem var(--spacing-md) 0.35rem var(--spacing-md);
+    }
+
+    .service-profile-launcher-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid color-mix(in srgb, var(--color-border) 88%, transparent);
+      border-radius: 0.95rem;
+      background: color-mix(in srgb, var(--color-panel) 90%, black 10%);
+      color: var(--color-text);
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+    }
+
+    .service-profile-launcher-btn:hover {
+      transform: translateY(-1px);
+      border-color: color-mix(in srgb, var(--color-highlight) 48%, var(--color-border));
+      background: color-mix(in srgb, var(--color-highlight) 10%, var(--color-panel));
+    }
+
+    .service-profile-launcher-dot {
+      width: 0.7rem;
+      height: 0.7rem;
+      border-radius: 999px;
+      background: #00c340;
+      box-shadow: 0 0 0 5px rgba(0, 195, 64, 0.14);
+      flex-shrink: 0;
+    }
+
+    .service-profile-launcher-copy {
+      display: flex;
+      flex-direction: column;
+      gap: 0.12rem;
+      min-width: 0;
+    }
+
+    .service-profile-launcher-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: color-mix(in srgb, var(--color-text) 65%, transparent);
+    }
+
+    .service-profile-launcher-value {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--color-text);
+    }
+  </style>
+</body>
+</html>

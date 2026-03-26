@@ -206,6 +206,18 @@ div#right-panel::-webkit-scrollbar-thumb:hover {
   border: 1px solid rgba(0, 195, 64, 0.4);
 }
 
+#time-date-container .startup-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(255, 184, 0, 0.12);
+  color: var(--color-text);
+  font-size: 0.75rem;
+  border: 1px solid rgba(255, 184, 0, 0.4);
+}
+
 #time-date-container .cowork-status .cowork-meta {
   opacity: 0.7;
 }

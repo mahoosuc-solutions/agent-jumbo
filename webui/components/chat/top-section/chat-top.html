@@ -31,6 +31,10 @@
                 </div>
                 <!-- Model Selector -->
                 <x-component path="chat/top-section/model-selector.html"></x-component>
+                <div class="startup-status" x-show="$store.chatTop.historyRestoreActive"
+                    x-bind:title="$store.chatTop.historyRestoreMessage">
+                    History restoring
+                </div>
                 <div class="cowork-status" x-show="$store.chatTop.coworkEnabled">
                     Cowork
                     <span class="cowork-meta" x-text="'Folders: ' + $store.chatTop.coworkAllowedCount"></span>
