@@ -12,6 +12,7 @@ services:
     environment:
       AGENT_JUMBO_LAPTOP_MODE: ${AGENT_JUMBO_LAPTOP_MODE:-true}
       AGENTMESH_REDIS_URL: ""
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
       WEB_UI_PORT: 80
       WEB_UI_HOST: 0.0.0.0
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
