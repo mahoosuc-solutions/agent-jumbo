@@ -25,10 +25,11 @@ const KEYS = {
   schedule: ['work-queue', 'schedule'] as const,
 }
 
-export function useWorkQueueDashboard(projectPath?: string) {
+export function useWorkQueueDashboard(projectPath?: string, enabled = true) {
   return useQuery({
     queryKey: KEYS.dashboard(projectPath),
     queryFn: () => getWorkQueueDashboard(projectPath),
+    enabled,
   })
 }
 
@@ -41,10 +42,12 @@ export function useWorkQueueItems(params: {
   sortDir?: string
   page?: number
   pageSize?: number
+  enabled?: boolean
 }) {
   return useQuery({
     queryKey: KEYS.items(params),
     queryFn: () => getWorkQueueItems(params),
+    enabled: params.enabled ?? true,
   })
 }
 

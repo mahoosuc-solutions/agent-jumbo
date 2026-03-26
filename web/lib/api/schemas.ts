@@ -54,6 +54,24 @@ export const HealthResponseSchema = z.object({
     memory: z.object({ ok: z.boolean() }).passthrough(),
     uptime_seconds: z.number(),
     runtime_metrics: z.record(z.string(), z.unknown()),
+    startup: z.object({
+      run_mode: z.string().optional(),
+      critical_subsystems: z.array(z.string()).optional(),
+      optional_subsystems: z.array(z.string()).optional(),
+      chat_restore: z.object({
+        status: z.string().optional(),
+        active: z.boolean().optional(),
+        started_at: z.number().nullable().optional(),
+        finished_at: z.number().nullable().optional(),
+        error: z.string().nullable().optional(),
+      }).passthrough().optional(),
+      mos_scheduler: z.object({
+        status: z.string().optional(),
+        reason: z.string().optional(),
+        registered: z.array(z.string()).optional(),
+        count: z.number().optional(),
+      }).passthrough().optional(),
+    }).passthrough().optional(),
   }).passthrough(),
 }).passthrough()
 

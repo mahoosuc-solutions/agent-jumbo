@@ -4,6 +4,9 @@ use_default_settings:
   engines:
     remove:
       - radio browser
+      - ahmia
+      - torch
+      - wikidata
 # TODO enable radio_browser when it works again
 # currently it crashes on x86 on gethostbyaddr
 
@@ -43,8 +46,6 @@ ui:
 enabled_plugins:
   - 'Hash plugin'
   - 'Self Informations'
-  - 'Tracker URL remover'
-  - 'Ahmia blacklist'
   # - 'Hostnames plugin'  # see 'hostnames' configuration below
   # - 'Open Access DOI rewrite'
 

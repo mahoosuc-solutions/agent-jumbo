@@ -1,7 +1,7 @@
 import shutil
 import time
 
-from python.helpers import errors, git, perf_metrics
+from python.helpers import errors, git, perf_metrics, service_profile, startup_status
 from python.helpers.api import ApiHandler, Request, Response
 
 _boot_time = time.time()
@@ -52,6 +52,10 @@ class HealthCheck(ApiHandler):
 
         # 5. Runtime metrics (existing)
         checks["runtime_metrics"] = perf_metrics.snapshot()
+
+        # 6. Startup/runtime status
+        checks["startup"] = startup_status.snapshot()
+        checks["service_profile"] = service_profile.snapshot()
 
         return {
             "ok": overall_ok,

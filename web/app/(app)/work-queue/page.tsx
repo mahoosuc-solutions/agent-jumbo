@@ -46,6 +46,7 @@ const statusVariant: Record<string, 'success' | 'warning' | 'danger' | 'info' | 
 const sourceVariant: Record<string, 'info' | 'warning' | 'neutral'> = {
   scanner: 'warning',
   linear: 'info',
+  idea: 'neutral',
 }
 
 const typeLabels: Record<string, string> = {
@@ -56,6 +57,7 @@ const typeLabels: Record<string, string> = {
   stale_dep: 'Stale Dep',
   coverage: 'Coverage',
   linear_issue: 'Linear Issue',
+  idea_next_step: 'Idea Next Step',
 }
 
 function priorityColor(score: number): string {

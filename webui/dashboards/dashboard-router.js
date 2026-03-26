@@ -46,6 +46,12 @@ const dashboardRouterModel = {
             label: 'Trust & Security',
             icon: 'trust',
             component: 'dashboards/trust/trust-dashboard.html'
+        },
+        rollout: {
+            id: 'rollout',
+            label: 'Portfolio Rollout',
+            icon: 'rollout',
+            component: 'dashboards/rollout/rollout-dashboard.html'
         }
     },
 
@@ -73,7 +79,8 @@ const dashboardRouterModel = {
                 mos: () => import('/dashboards/mos/mos-store.js'),
                 tasks: () => import('/dashboards/tasks/tasks-store.js'),
                 workQueue: () => import('/dashboards/work-queue/work-queue-store.js'),
-                trust: () => import('/dashboards/trust/trust-store.js')
+                trust: () => import('/dashboards/trust/trust-store.js'),
+                rollout: () => import('/dashboards/rollout/rollout-store.js')
             }[dashboardId];
             if (storeLoader) {
                 await storeLoader();
@@ -114,7 +121,8 @@ const dashboardRouterModel = {
             'workflows': 'workflows',
             'portfolio': 'portfolio',
             'mos': 'mos',
-            'trust': 'trust'
+            'trust': 'trust',
+            'rollout': 'rollout'
         };
         const dashboardId = urlMap[path];
         if (dashboardId && this.dashboards[dashboardId]) {
@@ -149,6 +157,11 @@ const dashboardRouterModel = {
 </svg>`,
             trust: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+ </svg>`,
+            rollout: `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M3 6h18M3 12h18M3 18h10"/>
+    <circle cx="18" cy="18" r="3"/>
+    <path d="M18 15V9"/>
 </svg>`
         };
         return icons[iconName] || icons.portfolio;

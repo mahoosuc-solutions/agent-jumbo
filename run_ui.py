@@ -24,7 +24,19 @@ with contextlib.suppress(Exception):
     warnings.filterwarnings("ignore", category=RequestsDependencyWarning)
 
 import initialize
-from python.helpers import dotenv, fasta2a_server, files, git, login, mcp_server, perf_metrics, process, runtime
+from python.helpers import (
+    dotenv,
+    fasta2a_server,
+    files,
+    git,
+    login,
+    mcp_server,
+    perf_metrics,
+    process,
+    runtime,
+    runtime_mode,
+    startup_status,
+)
 from python.helpers.api import ApiHandler
 from python.helpers.extract_tools import load_classes_from_folder
 from python.helpers.files import get_abs_path
@@ -69,7 +81,7 @@ _LOGIN_WINDOW_SECONDS = 60
 
 
 def _is_laptop_mode() -> bool:
-    return os.getenv("AGENT_JUMBO_LAPTOP_MODE", "").strip().lower() in {"1", "true", "yes", "on"}
+    return runtime_mode.is_reduced_startup_mode()
 
 
 # Set up basic authentication for UI and API but not MCP
@@ -506,27 +518,27 @@ def init_a0():
         def _watch():
             try:
                 task.result_sync()
+                if phase == "initialize_chats":
+                    startup_status.mark_chat_restore_success()
                 _record_startup_phase_result(phase, started_at, "success")
             except Exception as e:
+                if phase == "initialize_chats":
+                    startup_status.mark_chat_restore_error(str(e))
                 _record_startup_phase_result(phase, started_at, "error", str(e))
 
         thread = threading.Thread(target=_watch, daemon=True, name=f"startup-metric-{phase}")
         thread.start()
 
-    # Load chats deterministically first so users retain context after restart.
-    # This is lightweight and avoids races with background task GC/cancellation.
+    # Restore chats in the background so HTTP readiness is not coupled to
+    # how long snapshot deserialization takes on a given machine.
     chats_started = time.perf_counter()
+    startup_status.mark_chat_restore_started()
     chats_task = initialize.initialize_chats()
     if chats_task is not None:
-        try:
-            chats_task.result_sync(timeout=10)
-        except Exception as e:
-            _record_startup_phase_result("initialize_chats", chats_started, "error", str(e))
-            PrintStyle(font_color="yellow").print(f"[!] Chat restore incomplete: {e}")
-        else:
-            _record_startup_phase_result("initialize_chats", chats_started, "success")
-            _startup_tasks.append(chats_task)
+        _startup_tasks.append(chats_task)
+        _watch_background_startup_task("initialize_chats", chats_task, chats_started)
     else:
+        startup_status.mark_chat_restore_success()
         _record_startup_phase_result("initialize_chats", chats_started, "success")
 
     # Initialize heavier subsystems in background.

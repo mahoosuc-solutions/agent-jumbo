@@ -138,6 +138,9 @@ Agent Jumbo comes with a set of built-in tools designed to help agents perform t
 
 Agent Jumbo has integrated SearXNG as its primary search tool, replacing the previous knowledge tools (Perplexity and DuckDuckGo). This integration enhances the agent's ability to retrieve information while ensuring user privacy and customization.
 
+Current transition note:
+The repo still uses `SearXNG` as the built-in query search backend, but the product direction is shifting toward agentic browsing plus optional provider-backed search. See `docs/SEARCH_STACK_TRANSITION.md`.
+
 - Privacy-Focused Search
 SearXNG is an open-source metasearch engine that allows users to search multiple sources without tracking their queries. This integration ensures that user data remains private and secure while accessing a wide range of information.
 

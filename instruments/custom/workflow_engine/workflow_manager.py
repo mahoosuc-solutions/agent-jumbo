@@ -10,6 +10,8 @@ from pathlib import Path
 
 import jsonschema
 
+from python.helpers import folder_delivery_workflow
+
 from .workflow_db import WorkflowEngineDatabase
 
 
@@ -356,6 +358,21 @@ class WorkflowEngineManager:
         If the task has ralph_loop configuration, this will also start a
         Ralph loop to autonomously iterate until completion.
         """
+        execution = self.db.get_execution(execution_id)
+        run_binding = self._get_folder_delivery_binding(execution)
+        if run_binding and stage_id == "execution":
+            folder_delivery_workflow.ensure_task_claim_owner(
+                project_name=run_binding["project_name"],
+                run_id=run_binding["run_id"],
+                task_id=task_id,
+                assigned_to=assigned_to or "",
+            )
+        if run_binding and stage_id == "operations" and task_id == "deploy_release":
+            folder_delivery_workflow.ensure_release_gate_ready(
+                project_name=run_binding["project_name"],
+                run_id=run_binding["run_id"],
+            )
+
         self.db.update_task_execution(
             execution_id=execution_id,
             stage_id=stage_id,
@@ -438,6 +455,22 @@ class WorkflowEngineManager:
 
     def complete_task(self, execution_id: int, stage_id: str, task_id: str, output_data: dict | None = None) -> dict:
         """Complete a task successfully with optional auditing"""
+        execution = self.db.get_execution(execution_id)
+        run_binding = self._get_folder_delivery_binding(execution)
+        if run_binding and output_data and isinstance(output_data, dict):
+            artifact_updates = output_data.get("artifact_updates")
+            if artifact_updates:
+                artifact_result = folder_delivery_workflow.apply_artifact_updates(
+                    project_name=run_binding["project_name"],
+                    run_id=run_binding["run_id"],
+                    task_id=task_id,
+                    stage_family=stage_id,
+                    producer=run_binding["workflow_profile"],
+                    artifact_updates=artifact_updates,
+                    assigned_to=str(output_data.get("assigned_to", "")).strip(),
+                )
+                output_data = {**output_data, "artifact_write_result": artifact_result}
+
         self.db.update_task_execution(
             execution_id=execution_id, stage_id=stage_id, task_id=task_id, status="completed", output_data=output_data
         )
@@ -503,6 +536,24 @@ class WorkflowEngineManager:
 
         # All tasks complete
         return {"task": None, "stage_complete": True, "stage_id": current_stage_id}
+
+    def _get_folder_delivery_binding(self, execution: dict | None) -> dict[str, str] | None:
+        if not execution:
+            return None
+        context = execution.get("context")
+        if not isinstance(context, dict):
+            return None
+        if context.get("workflow_profile") != folder_delivery_workflow.WORKFLOW_PROFILE_ID:
+            return None
+        project_name = str(context.get("project_name", "")).strip()
+        run_id = str(context.get("run_id", "")).strip()
+        if not project_name or not run_id:
+            return None
+        return {
+            "project_name": project_name,
+            "run_id": run_id,
+            "workflow_profile": str(context.get("workflow_profile", "")),
+        }
 
     # ========== Workflow Templates ==========
 

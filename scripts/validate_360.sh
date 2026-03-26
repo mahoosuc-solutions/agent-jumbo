@@ -53,7 +53,8 @@ check_chat_roundtrip() {
   ctx_json="$(curl -fsS -m 12 -H 'Content-Type: application/json' -X POST "$BASE_URL/chat_create" -d "$create_payload")"
   ctxid="$(python - <<'PY' "$ctx_json"
 import json, sys
-print(json.loads(sys.argv[1]).get("ctxid", ""))
+payload = json.loads(sys.argv[1])
+print(payload.get("context") or payload.get("ctxid", ""))
 PY
 )"
 
@@ -119,7 +120,7 @@ run_check "mcp tools cache tests" pytest -q "$ROOT_DIR/tests/test_mcp_tools_cach
 run_check "project lifecycle/validation tests" pytest -q "$ROOT_DIR/tests/test_project_validation.py" "$ROOT_DIR/tests/test_project_lifecycle.py"
 run_check "context persistence restart compatibility" pytest -q "$ROOT_DIR/tests/test_telegram_bridge_restart_persistence.py"
 
-run_check "api health endpoint" check_endpoint_json "/health" "gitinfo"
+run_check "api health endpoint" check_endpoint_json "/health" "ok"
 run_check "api chat readiness" check_endpoint_json "/chat_readiness" "ready"
 run_check "api chat roundtrip" check_chat_roundtrip
 run_check "api skills discovery" check_skills_discovery

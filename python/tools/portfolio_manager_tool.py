@@ -39,6 +39,7 @@ class PortfolioManager(Tool):
         try:
             pm = PM()
             db = PortfolioDB()
+            from python.helpers import portfolio_rollout
 
             if action == "scan":
                 return await self._scan_folder(pm, kwargs.get("folder_path"))
@@ -76,9 +77,43 @@ class PortfolioManager(Tool):
             elif action == "pricing":
                 return await self._manage_pricing(db, kwargs.get("product_id"), kwargs.get("data", {}))
 
+            elif action == "seed_catalog":
+                return await self._seed_catalog_rollout(
+                    portfolio_rollout,
+                    actor=kwargs.get("actor", "system"),
+                )
+
+            elif action == "rollout_dashboard":
+                return await self._get_rollout_dashboard(portfolio_rollout)
+
+            elif action == "start_definition_wave":
+                return await self._start_definition_wave(
+                    portfolio_rollout,
+                    actor=kwargs.get("actor", "system"),
+                    product_slugs=kwargs.get("product_slugs"),
+                    branch_ref=kwargs.get("branch_ref", ""),
+                    deploy_environment=kwargs.get("deploy_environment", ""),
+                )
+
+            elif action == "sync_portfolio_linear":
+                return await self._sync_portfolio_linear(
+                    portfolio_rollout,
+                    actor=kwargs.get("actor", "system"),
+                    sync=bool(kwargs.get("sync", False)),
+                    team_id=kwargs.get("team_id", ""),
+                    project_id=kwargs.get("project_id", ""),
+                    state_id=kwargs.get("state_id", ""),
+                    default_priority=int(kwargs.get("default_priority", 0) or 0),
+                )
+
             else:
                 return Response(
-                    message=f"Unknown action: {action}. Valid actions: scan, list, get, add, update, analyze, export, search, pipeline, dashboard, create_product, pricing",
+                    message=(
+                        "Unknown action: "
+                        f"{action}. Valid actions: scan, list, get, add, update, analyze, export, search, "
+                        "pipeline, dashboard, create_product, pricing, seed_catalog, rollout_dashboard, "
+                        "start_definition_wave, sync_portfolio_linear"
+                    ),
                     break_loop=False,
                 )
 
@@ -400,3 +435,81 @@ class PortfolioManager(Tool):
             return Response(message=f"✅ Pricing tier added: {data['name']} at ${data['price']:.2f}", break_loop=False)
 
         return Response(message=f"Unknown pricing action: {action}", break_loop=False)
+
+    async def _seed_catalog_rollout(self, portfolio_rollout, actor: str) -> Response:
+        payload = portfolio_rollout.seed_catalog_portfolio(actor=actor)
+        summary = payload["summary"]
+        lines = [
+            f"Seeded {payload['seeded_count']} portfolio-managed products from the catalog.",
+            f"Resolved targets: {summary['resolved_targets']}/{summary['total_products']}",
+            f"Blocked products: {summary['blocked_products']}",
+        ]
+        return Response(message="\n".join(lines), break_loop=False, additional={"rollout": payload})
+
+    async def _get_rollout_dashboard(self, portfolio_rollout) -> Response:
+        payload = portfolio_rollout.get_rollout_dashboard()
+        summary = payload["summary"]
+        lines = [
+            f"Portfolio rollout: {summary['total_products']} products",
+            f"Ready for execution: {summary['ready_for_execution']}",
+            f"Planning complete: {summary['planning_complete']}",
+            f"Blocked: {summary['blocked_products']}",
+            "",
+        ]
+        for product in payload["products"][:10]:
+            status = product["status"]
+            if status == "planning":
+                detail = f"missing: {', '.join(product['planning_artifacts']['missing'])}"
+            else:
+                detail = product["blocked_reason"] or product["target_path"] or "no target"
+            lines.append(f"- {product['name']} [{status}] {detail}")
+        return Response(message="\n".join(lines), break_loop=False, additional={"rollout": payload})
+
+    async def _start_definition_wave(
+        self,
+        portfolio_rollout,
+        actor: str,
+        product_slugs: list[str] | None,
+        branch_ref: str,
+        deploy_environment: str,
+    ) -> Response:
+        payload = portfolio_rollout.start_definition_wave(
+            actor=actor,
+            product_slugs=product_slugs,
+            branch_ref=branch_ref,
+            deploy_environment=deploy_environment,
+        )
+        lines = [
+            f"Started: {payload['summary']['started']}",
+            f"Skipped: {payload['summary']['skipped']}",
+            f"Blocked: {payload['summary']['blocked']}",
+        ]
+        if payload["started"]:
+            lines.append("")
+            for item in payload["started"][:10]:
+                lines.append(f"- {item['slug']} -> {item['run_id']}")
+        return Response(message="\n".join(lines), break_loop=False, additional={"rollout": payload})
+
+    async def _sync_portfolio_linear(
+        self,
+        portfolio_rollout,
+        actor: str,
+        sync: bool,
+        team_id: str,
+        project_id: str,
+        state_id: str,
+        default_priority: int,
+    ) -> Response:
+        payload = portfolio_rollout.build_portfolio_linear_plan(
+            actor=actor,
+            sync=sync,
+            team_id=team_id,
+            project_id=project_id,
+            state_id=state_id,
+            default_priority=default_priority,
+        )
+        if sync:
+            message = f"Synced portfolio Linear plan with {len(payload.get('created', []))} issues."
+        else:
+            message = f"Prepared portfolio Linear plan with {len(payload.get('issue_batch', []))} issues."
+        return Response(message=message, break_loop=False, additional={"rollout": payload})

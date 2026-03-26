@@ -19,6 +19,24 @@ export interface HealthResponse {
     memory: HealthCheck
     uptime_seconds: number
     runtime_metrics: Record<string, unknown>
+    startup?: {
+      run_mode?: string
+      critical_subsystems?: string[]
+      optional_subsystems?: string[]
+      chat_restore?: {
+        status?: string
+        active?: boolean
+        started_at?: number | null
+        finished_at?: number | null
+        error?: string | null
+      }
+      mos_scheduler?: {
+        status?: string
+        reason?: string
+        registered?: string[]
+        count?: number
+      }
+    }
   }
 }
 

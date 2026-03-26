@@ -30,8 +30,17 @@ def ensure_playwright_binary():
         cache = get_playwright_cache_dir()
         env = os.environ.copy()
         env["PLAYWRIGHT_BROWSERS_PATH"] = cache
-        subprocess.check_call(["playwright", "install", "chromium", "--only-shell"], env=env)
+        try:
+            subprocess.check_call(["playwright", "install", "chromium", "--only-shell"], env=env)
+        except subprocess.CalledProcessError as exc:
+            raise RuntimeError(
+                "Playwright browser install failed. If this runtime was built without "
+                "Playwright support, rebuild with INSTALL_PLAYWRIGHT=1 or avoid browser-agent features."
+            ) from exc
     bin = get_playwright_binary()
     if not bin:
-        raise Exception("Playwright binary not found after installation")
+        raise RuntimeError(
+            "Playwright binary not found after installation. Rebuild with INSTALL_PLAYWRIGHT=1 "
+            "to enable browser-agent and Playwright-based UI automation features."
+        )
     return bin

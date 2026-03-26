@@ -1,8 +1,8 @@
 """
 Linear Integration Tool for Agent Jumbo / MOS.
 
-Provides 6 actions: create_issue, update_issue, search_issues,
-get_project_issues, sync_pipeline, get_dashboard.
+Provides 7 actions: create_issue, create_issue_batch, update_issue,
+search_issues, get_project_issues, sync_pipeline, get_dashboard.
 """
 
 import json
@@ -40,6 +40,7 @@ class LinearIntegration(Tool):
 
         handlers = {
             "create_issue": self._create_issue,
+            "create_issue_batch": self._create_issue_batch,
             "update_issue": self._update_issue,
             "search_issues": self._search_issues,
             "get_project_issues": self._get_project_issues,
@@ -72,6 +73,26 @@ class LinearIntegration(Tool):
             state_id=self.args.get("state_id"),
         )
         return Response(message=self._fmt(result, "Issue Created"), break_loop=False)
+
+    async def _create_issue_batch(self):
+        team_id = self.args.get("team_id") or self._get_default_team_id()
+        if not team_id:
+            return Response(
+                message="team_id is required. Set linear_default_team_id in settings or pass team_id.",
+                break_loop=False,
+            )
+        issues = self.args.get("issues")
+        if not isinstance(issues, list) or not issues:
+            return Response(message="issues must be a non-empty array.", break_loop=False)
+        result = await self.manager.create_issue_batch(
+            issues=issues,
+            team_id=team_id,
+            default_priority=int(self.args.get("priority", 0) or 0),
+            label_ids=self.args.get("label_ids"),
+            project_id=self.args.get("project_id"),
+            state_id=self.args.get("state_id"),
+        )
+        return Response(message=self._fmt(result, "Issue Batch Created"), break_loop=False)
 
     async def _update_issue(self):
         issue_id = self.args.get("issue_id")

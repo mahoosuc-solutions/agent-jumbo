@@ -4,12 +4,14 @@ SQLite backend for managing code projects and product portfolio
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+from python.helpers import files
 from python.helpers.db_manager import DatabaseManager, get_timestamp
 
 
@@ -113,7 +115,10 @@ class PortfolioDatabase:
     """
 
     def __init__(self, data_dir: str | None = None):
-        self.db = DatabaseManager("portfolio.db", data_dir)
+        resolved_data_dir = data_dir
+        if not resolved_data_dir:
+            resolved_data_dir = "/aj/data" if _is_dockerized() else files.get_abs_path("tmp", "portfolio_data")
+        self.db = DatabaseManager("portfolio.db", resolved_data_dir)
         self._init_schema()
 
     def _init_schema(self):
@@ -386,3 +391,7 @@ class PortfolioDatabase:
     def close(self):
         """Close database connection"""
         self.db.close()
+
+
+def _is_dockerized() -> bool:
+    return bool(os.getenv("DOCKERIZED")) or Path("/.dockerenv").exists()

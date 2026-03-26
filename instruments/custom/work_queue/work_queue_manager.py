@@ -164,6 +164,9 @@ class WorkQueueManager:
     def bulk_update_status(self, item_ids: list[int], status: str) -> int:
         return self.db.bulk_update_status(item_ids, status)
 
+    def create_manual_items(self, items: list[dict[str, Any]]) -> int:
+        return self.db.create_manual_items(items)
+
     # ── Priority recalculation ────────────────────────────────────────
 
     def recalculate_priorities(self) -> int:

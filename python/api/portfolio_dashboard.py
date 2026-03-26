@@ -34,6 +34,7 @@ class PortfolioDashboard(ApiHandler):
         - include_customers: bool (default True)
         - include_projects: bool (default True)
         - include_workspace_projects: bool (default True)
+        - include_rollout: bool (default True)
         - customer_stage: str (filter by stage)
         - project_status: str (filter by status)
         - project_language: str (filter by language)
@@ -43,6 +44,7 @@ class PortfolioDashboard(ApiHandler):
             include_customers = input.get("include_customers", True)
             include_projects = input.get("include_projects", True)
             include_workspace_projects = input.get("include_workspace_projects", True)
+            include_rollout = input.get("include_rollout", True)
 
             result = {
                 "success": True,
@@ -56,6 +58,7 @@ class PortfolioDashboard(ApiHandler):
                 },
                 "customers": [],
                 "projects": [],
+                "rollout": {},
                 "recent_activity": [],
             }
 
@@ -79,6 +82,11 @@ class PortfolioDashboard(ApiHandler):
                 result["projects"] = project_data.get("projects", [])
                 result["stats"]["total_projects"] = project_data.get("total", 0)
                 result["stats"]["active_projects"] = project_data.get("active", 0)
+
+            if include_rollout:
+                from python.helpers import portfolio_rollout
+
+                result["rollout"] = portfolio_rollout.get_rollout_dashboard()
 
             return result
 

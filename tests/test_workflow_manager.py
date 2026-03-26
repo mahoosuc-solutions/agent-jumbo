@@ -8,12 +8,14 @@ import os
 
 # Add parent directory to path
 import sys
+from uuid import uuid4
 
 import pytest
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
+from python.helpers import folder_delivery_workflow, projects
 
 
 class TestWorkflowEngineManager:
@@ -414,6 +416,267 @@ class TestWorkflowEngineManager:
 
         assert result["status"] == "completed"
         assert result["output"]["result"] == "success"
+
+    def test_folder_delivery_execution_requires_matching_task_claim_owner(self):
+        project_name = f"wf_claim_{uuid4().hex[:8]}"
+        projects.create_project(
+            project_name,
+            projects.BasicProjectData(
+                title="WF Claim",
+                description="workflow claim test",
+                instructions="",
+                color="#225588",
+                memory="own",
+                file_structure={
+                    "enabled": True,
+                    "max_depth": 1,
+                    "max_files": 10,
+                    "max_folders": 10,
+                    "max_lines": 50,
+                    "gitignore": "",
+                },
+            ),
+        )
+
+        try:
+            run_context = folder_delivery_workflow.create_run_context(project_name=project_name, target_path="python")
+            folder_delivery_workflow.write_task_claims(
+                project_name,
+                run_context.run_id,
+                [
+                    folder_delivery_workflow.TaskClaim(
+                        task_id="execute_disjoint_slices",
+                        owner="agent_1",
+                        write_globs=["python/helpers/*.py"],
+                        owned_artifacts=["scratch.json"],
+                    )
+                ],
+            )
+
+            wf = self.manager.create_workflow(
+                name="Folder Delivery Claims",
+                stages=[
+                    {
+                        "id": "execution",
+                        "name": "Execution",
+                        "tasks": [{"id": "execute_disjoint_slices", "name": "Run"}],
+                    }
+                ],
+            )
+            exec_result = self.manager.start_workflow(
+                workflow_id=wf["workflow_id"],
+                context={
+                    "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+                    "project_name": project_name,
+                    "run_id": run_context.run_id,
+                },
+            )
+
+            with pytest.raises(ValueError, match="owned by 'agent_1'"):
+                self.manager.start_task(
+                    execution_id=exec_result["execution_id"],
+                    stage_id="execution",
+                    task_id="execute_disjoint_slices",
+                    assigned_to="agent_2",
+                )
+        finally:
+            projects.delete_project(project_name)
+
+    def test_folder_delivery_canonical_artifact_requires_integrator(self):
+        project_name = f"wf_artifact_{uuid4().hex[:8]}"
+        projects.create_project(
+            project_name,
+            projects.BasicProjectData(
+                title="WF Artifact",
+                description="workflow artifact test",
+                instructions="",
+                color="#225588",
+                memory="own",
+                file_structure={
+                    "enabled": True,
+                    "max_depth": 1,
+                    "max_files": 10,
+                    "max_folders": 10,
+                    "max_lines": 50,
+                    "gitignore": "",
+                },
+            ),
+        )
+
+        try:
+            run_context = folder_delivery_workflow.create_run_context(project_name=project_name, target_path="python")
+            folder_delivery_workflow.write_task_claims(
+                project_name,
+                run_context.run_id,
+                [
+                    folder_delivery_workflow.TaskClaim(
+                        task_id="execute_disjoint_slices",
+                        owner="agent_1",
+                        write_globs=["python/helpers/*.py"],
+                        owned_artifacts=["definition_of_done.json"],
+                    ),
+                    folder_delivery_workflow.TaskClaim(
+                        task_id="integrate_results",
+                        owner="agent_1",
+                        write_globs=["usr/projects/**"],
+                        owned_artifacts=["definition_of_done.json"],
+                    ),
+                ],
+            )
+
+            wf = self.manager.create_workflow(
+                name="Folder Delivery Canonical",
+                stages=[
+                    {
+                        "id": "execution",
+                        "name": "Execution",
+                        "tasks": [
+                            {"id": "execute_disjoint_slices", "name": "Run"},
+                            {"id": "integrate_results", "name": "Integrate"},
+                        ],
+                    }
+                ],
+            )
+            exec_result = self.manager.start_workflow(
+                workflow_id=wf["workflow_id"],
+                context={
+                    "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+                    "project_name": project_name,
+                    "run_id": run_context.run_id,
+                },
+            )
+
+            self.manager.start_task(
+                execution_id=exec_result["execution_id"],
+                stage_id="execution",
+                task_id="execute_disjoint_slices",
+                assigned_to="agent_1",
+            )
+            with pytest.raises(ValueError, match="Canonical artifact"):
+                self.manager.complete_task(
+                    execution_id=exec_result["execution_id"],
+                    stage_id="execution",
+                    task_id="execute_disjoint_slices",
+                    output_data={
+                        "assigned_to": "agent_1",
+                        "artifact_updates": [
+                            {
+                                "artifact_name": "definition_of_done.json",
+                                "payload": {"status": "draft"},
+                            }
+                        ],
+                    },
+                )
+
+            self.manager.start_task(
+                execution_id=exec_result["execution_id"],
+                stage_id="execution",
+                task_id="integrate_results",
+                assigned_to="agent_1",
+            )
+            result = self.manager.complete_task(
+                execution_id=exec_result["execution_id"],
+                stage_id="execution",
+                task_id="integrate_results",
+                output_data={
+                    "assigned_to": "agent_1",
+                    "artifact_updates": [
+                        {
+                            "artifact_name": "definition_of_done.json",
+                            "payload": {"status": "final"},
+                        }
+                    ],
+                },
+            )
+            assert result["status"] == "completed"
+            assert result["output"]["artifact_write_result"]["updated"]
+        finally:
+            projects.delete_project(project_name)
+
+    def test_folder_delivery_operations_deploy_requires_matching_approved_bundle(self):
+        project_name = f"wf_release_{uuid4().hex[:8]}"
+        projects.create_project(
+            project_name,
+            projects.BasicProjectData(
+                title="WF Release",
+                description="workflow release test",
+                instructions="",
+                color="#225588",
+                memory="own",
+                file_structure={
+                    "enabled": True,
+                    "max_depth": 1,
+                    "max_files": 10,
+                    "max_folders": 10,
+                    "max_lines": 50,
+                    "gitignore": "",
+                },
+            ),
+        )
+
+        try:
+            run_context = folder_delivery_workflow.create_run_context(project_name=project_name, target_path="python")
+            folder_delivery_workflow.initialize_run_artifacts(run_context)
+            approved_hash = folder_delivery_workflow.collect_artifact_manifest(project_name, run_context.run_id)[
+                "bundle_hash"
+            ]
+            folder_delivery_workflow.record_gate_decision(
+                project_name=project_name,
+                run_id=run_context.run_id,
+                gate_name="release_to_deploy",
+                approved=True,
+                approved_by="ops",
+                bundle_hash=approved_hash,
+            )
+
+            wf = self.manager.create_workflow(
+                name="Folder Delivery Operations",
+                stages=[
+                    {
+                        "id": "operations",
+                        "name": "Operations",
+                        "tasks": [{"id": "deploy_release", "name": "Deploy"}],
+                    }
+                ],
+            )
+            exec_result = self.manager.start_workflow(
+                workflow_id=wf["workflow_id"],
+                context={
+                    "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+                    "project_name": project_name,
+                    "run_id": run_context.run_id,
+                },
+            )
+
+            self.manager.start_task(
+                execution_id=exec_result["execution_id"],
+                stage_id="operations",
+                task_id="deploy_release",
+                assigned_to="ops_1",
+            )
+
+            folder_delivery_workflow.write_system_artifact(
+                project_name=project_name,
+                run_id=run_context.run_id,
+                artifact_name="evaluation_report.json",
+                payload={
+                    "definition_of_done_score": 95,
+                    "rework_items": [],
+                    "quality_summary": "post-approval drift",
+                },
+                stage_family="execution",
+                producer="test",
+            )
+
+            with pytest.raises(ValueError, match="bundle hash does not match"):
+                self.manager.start_task(
+                    execution_id=exec_result["execution_id"],
+                    stage_id="operations",
+                    task_id="deploy_release",
+                    assigned_to="ops_1",
+                )
+        finally:
+            projects.delete_project(project_name)
 
     def test_fail_task_no_retry(self):
         """Test failing a task without retry"""

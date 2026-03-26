@@ -8,6 +8,10 @@ const model = {
   coworkEnabled: false,
   coworkAllowedCount: 0,
   coworkPending: 0,
+  historyRestoreActive: false,
+  historyRestoreStatus: "idle",
+  historyRestoreMessage: "",
+  runMode: "full",
 
   setConnectionState(state, message = "") {
     this.connectionState = state;
@@ -39,6 +43,17 @@ const model = {
     this.coworkEnabled = !!payload.cowork_enabled;
     this.coworkAllowedCount = Number(payload.cowork_allowed_count || 0);
     this.coworkPending = Number(payload.cowork_pending || 0);
+  },
+
+  updateStartupStatus(payload) {
+    const chatRestore = payload?.chat_restore || {};
+    const status = chatRestore.status || "idle";
+    this.runMode = payload?.run_mode || this.runMode;
+    this.historyRestoreStatus = status;
+    this.historyRestoreActive = status === "running";
+    this.historyRestoreMessage = this.historyRestoreActive
+      ? "History is still restoring"
+      : "";
   },
 };
 

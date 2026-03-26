@@ -54,6 +54,10 @@ instruments/**
 .mypy_cache/
 .ruff_cache/
 node_modules/
+**/node_modules/
+**/.next/
+**/dist/
+**/build/
 
 # Keep dependency manifests and optional lock/wheelhouse metadata.
 !requirements.txt

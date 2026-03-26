@@ -1,66 +1,176 @@
-#!/bin/bash
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 
-echo "Agent Jumbo DevOps Release Validation"
-echo "========================================"
-echo ""
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPORT_DIR="${REPORT_DIR:-$ROOT_DIR/artifacts/validation}"
+TS="$(date +%Y%m%d-%H%M%S)"
+REPORT_FILE="$REPORT_DIR/release-validation-$TS.log"
 
-# Color codes
+mkdir -p "$REPORT_DIR"
+
+exec > >(tee "$REPORT_FILE") 2>&1
+
+PYTHON_BIN="${PYTHON_BIN:-}"
+if [[ -z "$PYTHON_BIN" ]]; then
+    if command -v python3.11 >/dev/null 2>&1; then
+        PYTHON_BIN="python3.11"
+    elif [[ -x "$ROOT_DIR/.venv/bin/python" ]]; then
+        PYTHON_BIN="$ROOT_DIR/.venv/bin/python"
+    else
+        PYTHON_BIN="python3"
+    fi
+fi
+
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
+NC='\033[0m'
 
 PASS=0
 FAIL=0
 
-check() {
-    local name=$1
-    local cmd=$2
+pass() {
+    echo -e "${GREEN}✓${NC} $1"
+    PASS=$((PASS + 1))
+}
 
-    echo -n "Checking $name... "
-    if eval "$cmd" > /dev/null 2>&1; then
-        echo -e "${GREEN}✓${NC}"
-        ((PASS++))
+fail() {
+    echo -e "${RED}✗${NC} $1"
+    FAIL=$((FAIL + 1))
+}
+
+warn() {
+    echo -e "${YELLOW}!${NC} $1"
+}
+
+check_cmd() {
+    local name="$1"
+    shift
+    if "$@" >/dev/null 2>&1; then
+        pass "$name"
     else
-        echo -e "${RED}✗${NC}"
-        ((FAIL++))
+        fail "$name"
     fi
 }
 
-# Repository checks
+check_file() {
+    local label="$1"
+    local path="$2"
+    if [[ -f "$ROOT_DIR/$path" ]]; then
+        pass "$label"
+    else
+        fail "$label"
+    fi
+}
+
+check_dir_has_files() {
+    local label="$1"
+    local path="$2"
+    if find "$ROOT_DIR/$path" -maxdepth 1 -type f | grep -q .; then
+        pass "$label"
+    else
+        fail "$label"
+    fi
+}
+
+check_text() {
+    local label="$1"
+    local pattern="$2"
+    local path="$3"
+    if rg -q "$pattern" "$ROOT_DIR/$path"; then
+        pass "$label"
+    else
+        fail "$label"
+    fi
+}
+
+run_optional_tool_check() {
+    local name="$1"
+    shift
+    local tool="$1"
+    shift
+
+    if ! command -v "$tool" >/dev/null 2>&1; then
+        fail "$name (missing command: $tool)"
+        return
+    fi
+
+    if "$@" >/dev/null 2>&1; then
+        pass "$name"
+    else
+        fail "$name"
+    fi
+}
+
+check_python_release_version() {
+    "$PYTHON_BIN" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 11) else 1)'
+}
+
+check_core_python_compile() {
+    "$PYTHON_BIN" -m py_compile \
+        python/helpers/tool.py \
+        python/api/message.py \
+        python/api/message_async.py \
+        python/helpers/skill_registry.py
+}
+
+echo "Agent Jumbo Release Validation"
+echo "=============================="
+echo "Report: $REPORT_FILE"
+echo ""
+
+cd "$ROOT_DIR"
+
 echo "Repository Checks:"
-check "Git repository" "git status"
-check "No uncommitted changes" "git status --porcelain | wc -l | grep -q '^0$'"
-check "Main branch checked out" "git rev-parse --abbrev-ref HEAD | grep -q '^main$'"
-check "Tags exist" "git tag | wc -l | grep -q '^[1-9]'"
+check_cmd "Git repository available" git rev-parse --is-inside-work-tree
+check_cmd "Launch branch checked out" bash -lc 'branch="$(git rev-parse --abbrev-ref HEAD)"; [[ "$branch" == "main" || "$branch" == release* ]]'
+check_cmd "Working tree clean" bash -lc '[[ -z "$(git status --porcelain)" ]]'
+check_cmd "At least one tag exists" bash -lc 'git tag | grep -q .'
 
 echo ""
-echo "File Checks:"
-check "LICENSE exists" "test -f LICENSE"
-check "README.md exists" "test -f README.md"
-check "CONTRIBUTING.md exists" "test -f CONTRIBUTING.md"
-check ".gitignore has sensitive patterns" "grep -q '\.env' .gitignore"
-check "setup.py has metadata" "grep -q 'author_email' setup.py 2>/dev/null || grep -q 'author' pyproject.toml"
+echo "Core File Checks:"
+check_file "LICENSE exists" "LICENSE"
+check_file "README exists" "README.md"
+check_file "CONTRIBUTING exists" "CONTRIBUTING.md"
+check_file "CHANGELOG exists" "CHANGELOG.md"
+check_file "SECURITY exists" "SECURITY.md"
+check_file "INSTALL guide exists" "INSTALL.md"
+check_file "Package metadata exists" "pyproject.toml"
+check_file "Web package exists" "web/package.json"
+check_file "Vercel config exists" "web/vercel.json"
+check_file "GA definition exists" "docs/PRODUCTION_GA_DEFINITION_OF_DONE.md"
+check_file "GA launch inventory exists" "docs/GA_LAUNCH_INVENTORY.md"
+check_file "GA evidence package exists" "docs/GA_EVIDENCE_PACKAGE.md"
+check_file "Self-serve onboarding exists" "docs/SELF_SERVE_GA_ONBOARDING.md"
+check_file "GA launch runbook exists" "docs/GA_LAUNCH_RUNBOOK.md"
 
 echo ""
-echo "Documentation Checks:"
-check "CHANGELOG.md exists" "test -f CHANGELOG.md"
-check "INSTALL.md exists" "test -f INSTALL.md"
-check "SECURITY.md exists" "test -f SECURITY.md"
-check "GitHub workflows exist" "test -f .github/workflows/tests.yml"
-check "Issue templates exist" "test -f .github/ISSUE_TEMPLATE/bug_report.md"
+echo "Workflow and Script Checks:"
+check_dir_has_files "GitHub workflows exist" ".github/workflows"
+check_file "Validation 360 script exists" "scripts/validate_360.sh"
+check_file "Release validation script exists" "scripts/validate_release.sh"
+check_file "Deployment validation script exists" "scripts/validate_deployment.sh"
 
 echo ""
-echo "Code Quality Checks:"
-check "black formatting" "black --check python/ 2>/dev/null || true"
-check "ruff linting" "ruff check python/ 2>/dev/null || true"
-check "Type hints" "mypy python/ --ignore-missing-imports 2>/dev/null || true"
+echo "Metadata and Documentation Consistency:"
+check_text "pyproject has package name" '^name = "agent-jumbo-devops"$' "pyproject.toml"
+check_text "pyproject has version" '^version = ".+"$' "pyproject.toml"
+check_text "pyproject has SPDX license" '^license = "Apache-2.0"$' "pyproject.toml"
+check_text "README references deployment" 'Deployment Guide' "README.md"
+check_text "Release checklist points to GA definition" 'Production GA Definition of Done' "docs/RELEASE_CHECKLIST.md"
+check_text "Production deploy points to GA definition" 'Production GA Definition of Done' "docs/PRODUCTION_DEPLOY.md"
+check_text "Docs index lists GA definition" 'Production GA Definition of Done' "docs/README.md"
 
 echo ""
-echo "Testing Checks:"
-check "Tests exist" "test -f tests/test_devops_deploy.py"
-check "Tests passing" "pytest tests/test_devops_deploy*.py -q 2>/dev/null || true"
+echo "Python Validation:"
+check_cmd "Python 3.11+ available for release tooling" check_python_release_version
+check_text "pyproject declares Python 3.11+" '^requires-python = ">=3.11"$' "pyproject.toml"
+check_cmd "Core files compile" check_core_python_compile
+
+echo ""
+echo "Web Validation:"
+run_optional_tool_check "web/package.json has build script" jq jq -e '.scripts.build' web/package.json
+run_optional_tool_check "web/package.json has type-check script" jq jq -e '.scripts["type-check"]' web/package.json
 
 echo ""
 echo "Summary:"
@@ -68,10 +178,12 @@ echo -e "  ${GREEN}Passed: $PASS${NC}"
 echo -e "  ${RED}Failed: $FAIL${NC}"
 echo ""
 
-if [ $FAIL -eq 0 ]; then
-    echo -e "${GREEN}✅ All checks passed! Ready for release.${NC}"
+if [[ "$FAIL" -eq 0 ]]; then
+    echo -e "${GREEN}Release validation passed.${NC}"
+    echo "Report saved to: $REPORT_FILE"
     exit 0
-else
-    echo -e "${RED}❌ Some checks failed. Please fix before releasing.${NC}"
-    exit 1
 fi
+
+warn "Release validation failed. Fix the items above before treating the repo as release-ready."
+echo "Report saved to: $REPORT_FILE"
+exit 1

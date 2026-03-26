@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import time
@@ -10,16 +11,19 @@ from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
-from python.helpers import files, project_validation, projects
+from python.helpers import files, folder_delivery_workflow, project_validation, projects, release_governance
 from python.helpers.print_style import PrintStyle
 
 LIFECYCLE_FILE = "lifecycle.json"
 RUNS_DIR = "runs"
 
 TEMPLATE_PATHS = {
-    "product_development": "instruments/custom/workflow_engine/templates/product_development.json",
-    "service_delivery": "instruments/custom/workflow_engine/templates/service_delivery.json",
-    "ai_solutioning": "instruments/custom/workflow_engine/templates/ai_solutioning.json",
+    # The workflow engine currently ships one generic implementation template.
+    # Keep the higher-level lifecycle IDs stable, but resolve them to the
+    # concrete template that exists in the repo until dedicated templates land.
+    "product_development": "instruments/custom/workflow_engine/templates/work_item_implementation.json",
+    "service_delivery": "instruments/custom/workflow_engine/templates/work_item_implementation.json",
+    "ai_solutioning": "instruments/custom/workflow_engine/templates/work_item_implementation.json",
 }
 
 
@@ -51,6 +55,10 @@ def _lifecycle_path(project_name: str) -> Path:
 
 def _runs_path(project_name: str) -> Path:
     return Path(projects.get_project_lifecycle_folder(project_name, RUNS_DIR))
+
+
+def _run_record_path(project_name: str, run_id: str) -> Path:
+    return _runs_path(project_name) / f"{run_id}.json"
 
 
 def _default_phase_bindings() -> dict[str, dict[str, Any]]:
@@ -126,6 +134,14 @@ def _default_lifecycle(owner: str = "") -> dict[str, Any]:
         "retention": {
             "max_runs": 100,
         },
+        "workflow_profiles": {
+            folder_delivery_workflow.WORKFLOW_PROFILE_ID: {
+                "enabled": True,
+                "approval_policy": "human_gated",
+                "max_parallelism": 1,
+            }
+        },
+        "active_workflow_run": None,
         "schedules": {},
         "last_run": None,
     }
@@ -152,6 +168,67 @@ def _write_lifecycle(project_name: str, data: dict[str, Any]) -> dict[str, Any]:
     _ensure_lifecycle_dirs(project_name)
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     return data
+
+
+def _load_run_record(project_name: str, run_id: str) -> dict[str, Any]:
+    run_file = _run_record_path(project_name, run_id)
+    if not run_file.exists():
+        raise Exception(f"Workflow run not found: {run_id}")
+    data = json.loads(run_file.read_text(encoding="utf-8"))
+    if not isinstance(data, dict):
+        raise Exception(f"Invalid workflow run record: {run_id}")
+    return data
+
+
+def _write_run_record(project_name: str, run_id: str, run_record: dict[str, Any]) -> dict[str, Any]:
+    run_file = _run_record_path(project_name, run_id)
+    run_file.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    run_folder = folder_delivery_workflow.get_run_root(project_name, run_id) / "run_record.json"
+    run_folder.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    return run_record
+
+
+def _run_async(coro):
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:
+        loop = None
+
+    if loop and loop.is_running():
+        new_loop = asyncio.new_event_loop()
+        try:
+            return new_loop.run_until_complete(coro)
+        finally:
+            new_loop.close()
+    return asyncio.run(coro)
+
+
+def _get_linear_manager():
+    from instruments.custom.linear_integration.linear_manager import LinearManager
+
+    db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
+    api_key = ""
+    try:
+        from python.helpers.settings import get_settings
+
+        api_key = get_settings().get("linear_api_key", "")
+    except Exception:
+        pass
+    if not api_key:
+        api_key = os.getenv("LINEAR_API_KEY", "")
+    return LinearManager(db_path, api_key=api_key or None)
+
+
+def _get_linear_team_id() -> str:
+    try:
+        from python.helpers.settings import get_settings
+
+        team_id = str(get_settings().get("linear_default_team_id", "")).strip()
+        if team_id:
+            return team_id
+    except Exception:
+        pass
+    return str(os.getenv("LINEAR_DEFAULT_TEAM_ID", "")).strip()
 
 
 def _run_lock_path(project_name: str) -> Path:
@@ -477,6 +554,662 @@ def run_phase(
         f"status={run_status} duration_ms={duration_ms}"
     )
 
+    return run_record
+
+
+def start_folder_workflow(
+    project_name: str,
+    target_path: str,
+    actor: str = "system",
+    scope: dict[str, Any] | None = None,
+    constraints: dict[str, Any] | None = None,
+    deploy_environment: str = "",
+    branch_ref: str = "",
+    max_parallelism: int | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+
+    profile_settings = (
+        lifecycle.get("workflow_profiles", {}).get(folder_delivery_workflow.WORKFLOW_PROFILE_ID, {})
+        if isinstance(lifecycle.get("workflow_profiles"), dict)
+        else {}
+    )
+    if profile_settings and not bool(profile_settings.get("enabled", True)):
+        raise Exception(f"Workflow profile is disabled: {folder_delivery_workflow.WORKFLOW_PROFILE_ID}")
+
+    run_context = folder_delivery_workflow.create_run_context(
+        project_name=project_name,
+        target_path=target_path,
+        actor=actor,
+        branch_ref=branch_ref,
+        deploy_environment=deploy_environment,
+        scope=scope,
+        constraints=constraints,
+        approval_policy=str(profile_settings.get("approval_policy", "human_gated")),
+        max_parallelism=int(max_parallelism or profile_settings.get("max_parallelism", 1) or 1),
+    )
+
+    folder_delivery_workflow.acquire_target_lock(project_name, run_context)
+
+    manager = _get_workflow_manager()
+    template_path = files.get_abs_path(folder_delivery_workflow.WORKFLOW_TEMPLATE_PATH)
+    workflow_name = f"{project_name}_{folder_delivery_workflow.WORKFLOW_PROFILE_ID}"
+
+    workflow = manager.get_workflow(name=workflow_name)
+    if not workflow or "error" in workflow:
+        created = manager.create_from_template(
+            template_path,
+            workflow_name,
+            customizations={
+                "settings": {
+                    "parallel_execution": run_context.max_parallelism > 1,
+                    "require_approvals": True,
+                },
+                "global_context": {
+                    "context_keys": [
+                        "run_id",
+                        "target_id",
+                        "target_path",
+                        "artifact_root",
+                        "branch_ref",
+                        "deploy_environment",
+                    ]
+                },
+            },
+        )
+        if "error" in created:
+            folder_delivery_workflow.release_target_lock(project_name, run_context.target_id, run_context.run_id)
+            raise Exception(created["error"])
+
+    started = manager.start_workflow(
+        workflow_name=workflow_name,
+        execution_name=f"{project_name}_{run_context.target_id}_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}",
+        context=run_context.to_dict(),
+    )
+    if "error" in started:
+        folder_delivery_workflow.release_target_lock(project_name, run_context.target_id, run_context.run_id)
+        raise Exception(started["error"])
+
+    artifact_paths = folder_delivery_workflow.initialize_run_artifacts(run_context)
+    folder_delivery_workflow.write_task_claims(project_name, run_context.run_id, claims=[])
+    release_bundle = Path(artifact_paths["release_bundle.json"])
+    release_bundle_payload = json.loads(release_bundle.read_text(encoding="utf-8"))
+    release_bundle_payload["payload"]["workflow_execution"] = started
+    release_bundle_payload["bundle_hash"] = folder_delivery_workflow.build_bundle_hash(
+        release_bundle_payload["payload"]
+    )
+    release_bundle.write_text(json.dumps(release_bundle_payload, indent=2) + "\n", encoding="utf-8")
+
+    run_record = {
+        "run_id": run_context.run_id,
+        "project_name": project_name,
+        "phase": "folder_delivery",
+        "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+        "target_id": run_context.target_id,
+        "target_path": run_context.target_path,
+        "stage_family": run_context.stage_family,
+        "actor": actor,
+        "status": "started",
+        "started_at": run_context.created_at,
+        "finished_at": None,
+        "workflow": {
+            "workflow_name": workflow_name,
+            "template": folder_delivery_workflow.WORKFLOW_TEMPLATE_PATH,
+            "execution": started,
+        },
+        "artifacts": artifact_paths,
+        "scope": run_context.scope,
+        "constraints": run_context.constraints,
+        "approval_policy": run_context.approval_policy,
+        "max_parallelism": run_context.max_parallelism,
+        "gates": {},
+    }
+
+    run_folder = folder_delivery_workflow.get_run_root(project_name, run_context.run_id)
+    files.create_dir(str(run_folder))
+    (run_folder / "run_context.json").write_text(json.dumps(run_context.to_dict(), indent=2) + "\n", encoding="utf-8")
+    (run_folder / "run_record.json").write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+    (_runs_path(project_name) / f"{run_context.run_id}.json").write_text(
+        json.dumps(run_record, indent=2) + "\n", encoding="utf-8"
+    )
+
+    lifecycle["active_workflow_run"] = {
+        "run_id": run_context.run_id,
+        "workflow_profile": folder_delivery_workflow.WORKFLOW_PROFILE_ID,
+        "target_id": run_context.target_id,
+        "target_path": run_context.target_path,
+        "status": "started",
+        "started_at": run_context.created_at,
+    }
+    lifecycle["last_run"] = {
+        "run_id": run_context.run_id,
+        "phase": "folder_delivery",
+        "status": "started",
+        "started_at": run_context.created_at,
+        "finished_at": None,
+        "duration_ms": 0,
+    }
+    _write_lifecycle(project_name, lifecycle)
+    return run_record
+
+
+def approve_folder_gate(
+    project_name: str,
+    run_id: str,
+    gate_name: str,
+    approved_by: str,
+    approved: bool = True,
+    evidence_refs: list[str] | None = None,
+    rejection_reason: str = "",
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, approved_by)
+
+    run_file = _runs_path(project_name) / f"{run_id}.json"
+    if not run_file.exists():
+        raise Exception(f"Workflow run not found: {run_id}")
+    run_record = json.loads(run_file.read_text(encoding="utf-8"))
+
+    manifest = folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)
+    bundle_hash = manifest["bundle_hash"]
+    decision = folder_delivery_workflow.record_gate_decision(
+        project_name=project_name,
+        run_id=run_id,
+        gate_name=gate_name,
+        approved=approved,
+        approved_by=approved_by,
+        evidence_refs=evidence_refs,
+        bundle_hash=bundle_hash,
+        rejection_reason=rejection_reason,
+    )
+
+    execution = ((run_record.get("workflow") or {}).get("execution") or {}).get("execution_id")
+    gate_to_stage = {
+        "planning_to_execution": "planning",
+        "release_to_deploy": "release_decision",
+    }
+    stage_id = gate_to_stage.get(_slug(gate_name))
+    if approved and execution and stage_id:
+        manager = _get_workflow_manager()
+        manager.approve_stage(
+            execution_id=int(execution),
+            stage_id=stage_id,
+            approved_by=approved_by,
+            notes=f"Gate approved via project_lifecycle: {gate_name}",
+        )
+
+    run_record.setdefault("gates", {})[_slug(gate_name)] = decision
+    run_record["status"] = "gated" if approved else "blocked"
+    _write_run_record(project_name, run_id, run_record)
+    return decision
+
+
+def build_folder_release_bundle(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    commit_sha: str = "",
+    pr_number: str = "",
+    linear_issue_keys: list[str] | None = None,
+    deploy_target: str = "",
+    pre_deploy_checks: dict[str, Any] | None = None,
+    post_deploy_checks: dict[str, Any] | None = None,
+    monitoring_snapshot: dict[str, Any] | None = None,
+    rollback_plan: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+
+    artifact_root = folder_delivery_workflow.get_artifact_root(project_name, run_id)
+    existing = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    manifest = folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)
+    approvals = [
+        decision
+        for decision in folder_delivery_workflow.load_gate_decisions(project_name, run_id)
+        if decision.get("approved")
+    ]
+
+    payload = {
+        **existing,
+        "commit_sha": str(commit_sha or existing.get("commit_sha", "")).strip(),
+        "pr_number": str(pr_number or existing.get("pr_number", "")).strip(),
+        "linear_issue_keys": linear_issue_keys
+        if linear_issue_keys is not None
+        else existing.get("linear_issue_keys", []),
+        "artifact_manifest": manifest["artifacts"],
+        "approvals": approvals,
+        "deploy_target": str(deploy_target or existing.get("deploy_target", "")).strip(),
+        "pre_deploy_checks": pre_deploy_checks
+        if pre_deploy_checks is not None
+        else existing.get("pre_deploy_checks", {}),
+        "post_deploy_checks": post_deploy_checks
+        if post_deploy_checks is not None
+        else existing.get("post_deploy_checks", {}),
+        "monitoring_snapshot": monitoring_snapshot
+        if monitoring_snapshot is not None
+        else existing.get("monitoring_snapshot", {}),
+        "rollback_plan": rollback_plan if rollback_plan is not None else existing.get("rollback_plan", {}),
+        "workflow_execution": existing.get("workflow_execution")
+        or (run_record.get("workflow") or {}).get("execution", {}),
+        "artifact_bundle_hash": manifest["bundle_hash"],
+    }
+
+    envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_bundle.json",
+        payload=payload,
+        stage_family="release_decision",
+        producer="project_lifecycle.build_folder_release_bundle",
+        inputs={"run_id": run_id, "artifact_bundle_hash": manifest["bundle_hash"]},
+        source_refs=[str(artifact_root)],
+    )
+
+    run_record.setdefault("release", {})["bundle"] = {
+        "artifact_bundle_hash": manifest["bundle_hash"],
+        "artifact_count": len(manifest["artifacts"]),
+        "artifact_path": str(artifact_root / "release_bundle.json"),
+        "bundle_hash": envelope["bundle_hash"],
+        "built_at": envelope["generated_at"],
+        "built_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return payload
+
+
+def validate_folder_release_readiness(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    required_observers: list[str] | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+
+    release_bundle = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    blocking_checks: list[str] = []
+    if not release_bundle:
+        blocking_checks.append("release_bundle.json is missing")
+    else:
+        blocking_checks.extend(release_governance.validate_release_bundle(release_bundle))
+
+    release_gate = folder_delivery_workflow.get_gate_decision(project_name, run_id, "release_to_deploy")
+    current_bundle_hash = folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)["bundle_hash"]
+    if release_gate and release_gate.get("approved") is True and release_gate.get("bundle_hash") != current_bundle_hash:
+        blocking_checks.append("Approved release gate bundle hash does not match the current artifact bundle")
+
+    existing = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_readiness.json")
+    payload = {
+        "ready": not blocking_checks,
+        "blocking_checks": blocking_checks,
+        "required_observers": required_observers
+        if required_observers is not None
+        else existing.get("required_observers", []),
+        "artifact_bundle_hash": current_bundle_hash,
+    }
+
+    envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_readiness.json",
+        payload=payload,
+        stage_family="release_decision",
+        producer="project_lifecycle.validate_folder_release_readiness",
+        inputs={"run_id": run_id, "artifact_bundle_hash": current_bundle_hash},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id))],
+    )
+
+    run_record.setdefault("release", {})["readiness"] = {
+        "ready": payload["ready"],
+        "blocking_checks": blocking_checks,
+        "artifact_path": str(
+            folder_delivery_workflow.get_artifact_root(project_name, run_id) / "release_readiness.json"
+        ),
+        "bundle_hash": envelope["bundle_hash"],
+        "validated_at": envelope["generated_at"],
+        "validated_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return payload
+
+
+def sync_folder_linear_plan(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    team_id: str = "",
+    default_priority: int = 0,
+    project_id: str = "",
+    state_id: str = "",
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+
+    execution_plan = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "execution_plan.json")
+    if not isinstance(execution_plan, dict):
+        raise Exception("execution_plan.json is required before syncing Linear plan")
+
+    run_context_path = folder_delivery_workflow.get_run_root(project_name, run_id) / "run_context.json"
+    if not run_context_path.exists():
+        raise Exception(f"Workflow run context not found: {run_id}")
+    run_context_data = json.loads(run_context_path.read_text(encoding="utf-8"))
+    run_context = folder_delivery_workflow.WorkflowRunContext(**run_context_data)
+
+    resolved_team_id = str(team_id or _get_linear_team_id()).strip()
+    if not resolved_team_id:
+        raise Exception("Linear team_id is required. Set LINEAR_DEFAULT_TEAM_ID or pass team_id.")
+
+    plan_title = f"{project_name} folder delivery {run_context.target_id}"
+    issue_batch = folder_delivery_workflow.build_linear_issue_batch(run_context, plan_title, execution_plan)
+    manager = _get_linear_manager()
+    result = _run_async(
+        manager.create_issue_batch(
+            issues=issue_batch,
+            team_id=resolved_team_id,
+            default_priority=default_priority,
+            project_id=project_id or None,
+            state_id=state_id or None,
+        )
+    )
+    if not result.get("success"):
+        first_failure = (result.get("failures") or [{}])[0]
+        raise Exception(first_failure.get("error", "Failed to create Linear plan"))
+
+    created_issues = result.get("issues", [])
+    parent_issue = created_issues[0] if created_issues else {}
+    child_issues = created_issues[1:] if len(created_issues) > 1 else []
+    linear_payload = {
+        "parent_issue": parent_issue,
+        "child_issues": child_issues,
+        "run_id": run_id,
+        "team_id": resolved_team_id,
+        "synced_at": _now_iso(),
+        "created_count": len(created_issues),
+        "failures": result.get("failures", []),
+    }
+    linear_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="linear_plan.json",
+        payload=linear_payload,
+        stage_family="planning",
+        producer="project_lifecycle.sync_folder_linear_plan",
+        inputs={"run_id": run_id, "team_id": resolved_team_id},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "execution_plan.json")],
+    )
+
+    release_bundle = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    identifiers = [
+        str(issue.get("identifier", "")).strip() for issue in created_issues if str(issue.get("identifier", "")).strip()
+    ]
+    updated_release_bundle = {
+        **release_bundle,
+        "linear_issue_keys": identifiers or release_bundle.get("linear_issue_keys", []),
+        "linear_plan": {
+            "artifact_path": str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "linear_plan.json"),
+            "parent_issue": {
+                "id": parent_issue.get("id"),
+                "identifier": parent_issue.get("identifier"),
+                "url": parent_issue.get("url"),
+            },
+            "child_issue_count": len(child_issues),
+            "synced_at": linear_payload["synced_at"],
+        },
+    }
+    release_bundle_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_bundle.json",
+        payload=updated_release_bundle,
+        stage_family="planning",
+        producer="project_lifecycle.sync_folder_linear_plan",
+        inputs={"run_id": run_id, "issue_count": len(created_issues)},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "linear_plan.json")],
+    )
+
+    run_record.setdefault("linear", {})["plan"] = {
+        "artifact_path": str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "linear_plan.json"),
+        "created_count": len(created_issues),
+        "parent_issue": parent_issue.get("identifier", ""),
+        "synced_at": linear_payload["synced_at"],
+        "bundle_hash": linear_envelope["bundle_hash"],
+    }
+    run_record.setdefault("release", {})["bundle"] = {
+        **run_record.get("release", {}).get("bundle", {}),
+        "bundle_hash": release_bundle_envelope["bundle_hash"],
+        "updated_at": release_bundle_envelope["generated_at"],
+        "updated_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return linear_payload
+
+
+def record_folder_deploy_run(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    deployment_system: str = "",
+    repository: str = "",
+    workflow_file: str = "",
+    workflow_run_id: str = "",
+    build_id: str = "",
+    environment: str = "",
+    status: str = "",
+    deployment_url: str = "",
+    started_at: str = "",
+    completed_at: str = "",
+    commit_sha: str = "",
+    pr_number: str = "",
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+    gate = folder_delivery_workflow.ensure_release_gate_ready(project_name, run_id)
+
+    existing_deploy_run = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "deploy_run.json")
+    deploy_run_payload = {
+        **existing_deploy_run,
+        "deployment_system": str(deployment_system or existing_deploy_run.get("deployment_system", "")).strip(),
+        "repository": str(repository or existing_deploy_run.get("repository", "")).strip(),
+        "workflow_file": str(workflow_file or existing_deploy_run.get("workflow_file", "")).strip(),
+        "workflow_run_id": str(workflow_run_id or existing_deploy_run.get("workflow_run_id", "")).strip(),
+        "build_id": str(build_id or existing_deploy_run.get("build_id", "")).strip(),
+        "environment": str(environment or existing_deploy_run.get("environment", "")).strip(),
+        "status": str(status or existing_deploy_run.get("status", "")).strip(),
+        "deployment_url": str(deployment_url or existing_deploy_run.get("deployment_url", "")).strip(),
+        "started_at": str(started_at or existing_deploy_run.get("started_at", "")).strip(),
+        "completed_at": str(completed_at or existing_deploy_run.get("completed_at", "")).strip(),
+        "approved_gate": gate,
+    }
+    deploy_run_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="deploy_run.json",
+        payload=deploy_run_payload,
+        stage_family="operations",
+        producer="project_lifecycle.record_folder_deploy_run",
+        inputs={"run_id": run_id, "gate_name": gate["gate_name"], "bundle_hash": gate["bundle_hash"]},
+        source_refs=[str(folder_delivery_workflow.get_gate_root(project_name, run_id))],
+    )
+
+    release_bundle = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    updated_release_bundle = {
+        **release_bundle,
+        "commit_sha": str(commit_sha or release_bundle.get("commit_sha", "")).strip(),
+        "pr_number": str(pr_number or release_bundle.get("pr_number", "")).strip(),
+        "deploy_target": str(environment or release_bundle.get("deploy_target", "")).strip(),
+        "deployment_reference": {
+            "artifact_path": str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "deploy_run.json"),
+            "deployment_system": deploy_run_payload["deployment_system"],
+            "repository": deploy_run_payload["repository"],
+            "workflow_file": deploy_run_payload["workflow_file"],
+            "workflow_run_id": deploy_run_payload["workflow_run_id"],
+            "build_id": deploy_run_payload["build_id"],
+            "deployment_url": deploy_run_payload["deployment_url"],
+            "status": deploy_run_payload["status"],
+            "started_at": deploy_run_payload["started_at"],
+            "completed_at": deploy_run_payload["completed_at"],
+        },
+    }
+    release_bundle_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_bundle.json",
+        payload=updated_release_bundle,
+        stage_family="operations",
+        producer="project_lifecycle.record_folder_deploy_run",
+        inputs={"run_id": run_id, "workflow_run_id": deploy_run_payload["workflow_run_id"]},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "deploy_run.json")],
+    )
+
+    run_record.setdefault("release", {})["deploy_run"] = {
+        "artifact_path": str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "deploy_run.json"),
+        "workflow_run_id": deploy_run_payload["workflow_run_id"],
+        "build_id": deploy_run_payload["build_id"],
+        "status": deploy_run_payload["status"],
+        "recorded_at": deploy_run_envelope["generated_at"],
+        "bundle_hash": deploy_run_envelope["bundle_hash"],
+    }
+    run_record["release"]["bundle"] = {
+        **run_record.get("release", {}).get("bundle", {}),
+        "bundle_hash": release_bundle_envelope["bundle_hash"],
+        "updated_at": release_bundle_envelope["generated_at"],
+        "updated_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return deploy_run_payload
+
+
+def record_folder_post_deploy(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    checks: dict[str, Any] | None = None,
+    status: str = "healthy",
+    rollback_triggered: bool = False,
+    observation_window: dict[str, Any] | None = None,
+    monitoring_snapshot: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+    run_record = _load_run_record(project_name, run_id)
+    gate = folder_delivery_workflow.ensure_release_gate_ready(project_name, run_id)
+
+    existing_report = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "post_deploy_report.json")
+    post_deploy_payload = {
+        **existing_report,
+        "status": str(status or existing_report.get("status", "")).strip(),
+        "rollback_triggered": bool(rollback_triggered),
+        "observation_window": observation_window
+        if observation_window is not None
+        else existing_report.get("observation_window", {}),
+        "checks": checks if checks is not None else existing_report.get("checks", {}),
+        "approved_gate": gate,
+    }
+    post_deploy_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="post_deploy_report.json",
+        payload=post_deploy_payload,
+        stage_family="operations",
+        producer="project_lifecycle.record_folder_post_deploy",
+        inputs={"run_id": run_id, "gate_name": gate["gate_name"], "bundle_hash": gate["bundle_hash"]},
+        source_refs=[str(folder_delivery_workflow.get_gate_root(project_name, run_id))],
+    )
+
+    release_bundle = folder_delivery_workflow.load_artifact_payload(project_name, run_id, "release_bundle.json")
+    updated_release_bundle = {
+        **release_bundle,
+        "approvals": [
+            decision
+            for decision in folder_delivery_workflow.load_gate_decisions(project_name, run_id)
+            if decision.get("approved")
+        ],
+        "post_deploy_checks": post_deploy_payload["checks"],
+        "monitoring_snapshot": monitoring_snapshot
+        if monitoring_snapshot is not None
+        else release_bundle.get("monitoring_snapshot", {}),
+        "artifact_bundle_hash": folder_delivery_workflow.collect_artifact_manifest(project_name, run_id)["bundle_hash"],
+        "post_deploy_report": {
+            "status": post_deploy_payload["status"],
+            "rollback_triggered": post_deploy_payload["rollback_triggered"],
+            "observation_window": post_deploy_payload["observation_window"],
+            "artifact_path": str(
+                folder_delivery_workflow.get_artifact_root(project_name, run_id) / "post_deploy_report.json"
+            ),
+        },
+    }
+    release_bundle_envelope = folder_delivery_workflow.write_system_artifact(
+        project_name=project_name,
+        run_id=run_id,
+        artifact_name="release_bundle.json",
+        payload=updated_release_bundle,
+        stage_family="operations",
+        producer="project_lifecycle.record_folder_post_deploy",
+        inputs={"run_id": run_id, "post_deploy_status": post_deploy_payload["status"]},
+        source_refs=[str(folder_delivery_workflow.get_artifact_root(project_name, run_id) / "post_deploy_report.json")],
+    )
+
+    run_record.setdefault("release", {})["post_deploy"] = {
+        "status": post_deploy_payload["status"],
+        "rollback_triggered": post_deploy_payload["rollback_triggered"],
+        "artifact_path": str(
+            folder_delivery_workflow.get_artifact_root(project_name, run_id) / "post_deploy_report.json"
+        ),
+        "bundle_hash": post_deploy_envelope["bundle_hash"],
+        "recorded_at": post_deploy_envelope["generated_at"],
+        "recorded_by": actor,
+    }
+    run_record["release"]["bundle"] = {
+        **run_record.get("release", {}).get("bundle", {}),
+        "bundle_hash": release_bundle_envelope["bundle_hash"],
+        "artifact_bundle_hash": updated_release_bundle["artifact_bundle_hash"],
+        "updated_at": release_bundle_envelope["generated_at"],
+        "updated_by": actor,
+    }
+    _write_run_record(project_name, run_id, run_record)
+    return post_deploy_payload
+
+
+def finalize_folder_workflow(
+    project_name: str,
+    run_id: str,
+    actor: str = "system",
+    status: str = "completed",
+) -> dict[str, Any]:
+    lifecycle = load_lifecycle(project_name)
+    _require_access(lifecycle, actor)
+
+    run_file = _runs_path(project_name) / f"{run_id}.json"
+    if not run_file.exists():
+        raise Exception(f"Workflow run not found: {run_id}")
+    run_record = json.loads(run_file.read_text(encoding="utf-8"))
+    target_id = str(run_record.get("target_id", "")).strip()
+    if target_id:
+        folder_delivery_workflow.release_target_lock(project_name, target_id, run_id)
+
+    finished_at = _now_iso()
+    run_record["status"] = status
+    run_record["finished_at"] = finished_at
+    run_file.write_text(json.dumps(run_record, indent=2) + "\n", encoding="utf-8")
+
+    active = lifecycle.get("active_workflow_run")
+    if isinstance(active, dict) and active.get("run_id") == run_id:
+        active["status"] = status
+        active["finished_at"] = finished_at
+    lifecycle["last_run"] = {
+        "run_id": run_id,
+        "phase": "folder_delivery",
+        "status": status,
+        "started_at": run_record.get("started_at"),
+        "finished_at": finished_at,
+        "duration_ms": 0,
+    }
+    _write_lifecycle(project_name, lifecycle)
     return run_record
 
 

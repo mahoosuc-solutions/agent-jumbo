@@ -8,6 +8,8 @@ from typing import (
     TypedDict,
 )
 
+os.environ.setdefault("LITELLM_LOCAL_MODEL_COST_MAP", "True")
+
 import litellm
 import openai
 from langchain_core.callbacks.manager import (

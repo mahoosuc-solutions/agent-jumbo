@@ -13,38 +13,50 @@ from typing import Any
 def register_mos_schedules() -> dict[str, Any]:
     """Register MOS sync jobs. Safe to call multiple times (idempotent)."""
     registered = []
+    status = "skipped"
+    reason = ""
 
     try:
-        # Try using existing scheduler infrastructure
-        try:
-            from python.helpers.task_scheduler import TaskScheduler
+        # This module was written for an older callback-based scheduler API.
+        # The current persisted scheduler uses task models instead of handler callbacks.
+        from python.helpers.task_scheduler import TaskScheduler
 
-            scheduler = TaskScheduler.get_instance()
+        has_legacy_api = hasattr(TaskScheduler, "get_instance")
+        scheduler = TaskScheduler.get() if hasattr(TaskScheduler, "get") else None
+        can_register_callbacks = scheduler is not None and hasattr(scheduler, "register_task")
 
-            # Linear → Motion sync: 8am, 12pm, 5pm weekdays
-            scheduler.register_task(
+        if has_legacy_api and can_register_callbacks:
+            legacy_scheduler = TaskScheduler.get_instance()
+
+            legacy_scheduler.register_task(
                 name="mos_linear_to_motion",
                 cron="0 8,12,17 * * 1-5",
                 handler=_run_linear_to_motion,
             )
             registered.append("mos_linear_to_motion")
 
-            # Linear activity → Digest: 6am daily
-            scheduler.register_task(
+            legacy_scheduler.register_task(
                 name="mos_linear_activity_digest",
                 cron="0 6 * * *",
                 handler=_run_linear_activity_digest,
             )
             registered.append("mos_linear_activity_digest")
+            status = "registered"
+        else:
+            reason = "current scheduler does not expose the legacy callback registration API"
 
-        except ImportError:
-            # No task_scheduler available — jobs can be triggered manually
-            pass
-
-    except Exception:
+    except Exception as e:
+        status = "error"
+        reason = str(e)
         traceback.print_exc()
 
-    return {"registered": registered, "count": len(registered)}
+    return {
+        "registered": registered,
+        "count": len(registered),
+        "status": status,
+        "reason": reason,
+        "skipped_reason": reason if status == "skipped" else "",
+    }
 
 
 async def _run_linear_to_motion() -> None:

@@ -71,6 +71,47 @@ class LinearManager:
             self.db.upsert_issue(issue)
         return result
 
+    async def create_issue_batch(
+        self,
+        issues: list[dict[str, Any]],
+        team_id: str,
+        default_priority: int = 0,
+        project_id: str | None = None,
+        state_id: str | None = None,
+        label_ids: list[str] | None = None,
+    ) -> dict[str, Any]:
+        results: list[dict[str, Any]] = []
+        failures: list[dict[str, Any]] = []
+
+        for issue in issues:
+            title = str(issue.get("title", "")).strip()
+            if not title:
+                failures.append({"issue": issue, "error": "title is required"})
+                continue
+            description = str(issue.get("description", "")).strip()
+            priority = int(issue.get("priority", default_priority) or default_priority)
+            issue_result = await self.create_issue(
+                title=title,
+                team_id=team_id,
+                description=description,
+                priority=priority,
+                label_ids=issue.get("label_ids") or label_ids,
+                project_id=issue.get("project_id") or project_id,
+                state_id=issue.get("state_id") or state_id,
+            )
+            if issue_result.get("success"):
+                results.append(issue_result.get("issue", {}))
+            else:
+                failures.append({"issue": issue, "error": issue_result.get("error", "unknown error")})
+
+        return {
+            "success": len(failures) == 0,
+            "created": len(results),
+            "failed": len(failures),
+            "issues": results,
+            "failures": failures,
+        }
+
     async def search_issues(
         self,
         query: str,
