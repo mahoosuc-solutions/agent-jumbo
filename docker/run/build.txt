@@ -8,6 +8,15 @@ docker build -f DockerfileLocal -t agent-jumbo --build-arg CACHE_DATE=$(date +%Y
 # local development image based on local files without cache
 docker build -f DockerfileLocal -t agent-jumbo --no-cache .
 
+# local development image without Playwright browser binaries
+docker build -f DockerfileLocal -t agent-jumbo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+
+# slim local development image without Playwright browser binaries or preload downloads
+docker build -f DockerfileLocal -t agent-jumbo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg RUN_PRELOAD=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+
+# minimal local development image for Telegram/VPN-style deployments
+docker build -f DockerfileLocal -t agent-jumbo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg RUN_PRELOAD=0 --build-arg INSTALL_ADDITIONAL_TOOLS=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+
 
 # GIT BASED BUILDS
 # Run these commands from the /docker/run directory

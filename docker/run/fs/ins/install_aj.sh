@@ -39,8 +39,16 @@ uv pip install -r /git/agent-jumbo/requirements.txt
 # override for packages that have unnecessarily strict dependencies
 uv pip install -r /git/agent-jumbo/requirements2.txt
 
-# install playwright
-bash /ins/install_playwright.sh "$@"
+# install playwright unless explicitly disabled for slimmer runtime builds
+if [ "${INSTALL_PLAYWRIGHT:-1}" = "1" ]; then
+    bash /ins/install_playwright.sh "$@"
+else
+    echo "Skipping Playwright install because INSTALL_PLAYWRIGHT=${INSTALL_PLAYWRIGHT}"
+fi
 
-# Preload A0
-python /git/agent-jumbo/preload.py --dockerized=true
+# Preload models unless explicitly disabled for slimmer runtime builds
+if [ "${RUN_PRELOAD:-1}" = "1" ]; then
+    python /git/agent-jumbo/preload.py --dockerized=true
+else
+    echo "Skipping preload because RUN_PRELOAD=${RUN_PRELOAD}"
+fi
