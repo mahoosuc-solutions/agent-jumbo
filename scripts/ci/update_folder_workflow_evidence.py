@@ -12,7 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from python.helpers import project_lifecycle
+AUTOMATION_ACTOR = "system"
 
 
 def _discover_artifact_roots(repo_root: Path, provided_roots: list[str]) -> list[Path]:
@@ -61,6 +61,8 @@ def _resolve_run_binding(artifact_root: Path) -> dict[str, str]:
 
 
 def _run_ci_mode(binding: dict[str, str], args, event_payload: dict[str, Any]) -> dict[str, Any]:
+    from python.helpers import project_lifecycle
+
     project_name = binding["project_name"]
     run_id = binding["run_id"]
     results: dict[str, Any] = {"project_name": project_name, "run_id": run_id, "mode": "ci"}
@@ -70,7 +72,7 @@ def _run_ci_mode(binding: dict[str, str], args, event_payload: dict[str, Any]) -
             linear_plan = project_lifecycle.sync_folder_linear_plan(
                 project_name=project_name,
                 run_id=run_id,
-                actor="ci",
+                actor=AUTOMATION_ACTOR,
                 team_id=str(args.team_id or "").strip(),
                 default_priority=int(args.priority or 0),
                 project_id=str(args.project_id or "").strip(),
@@ -86,7 +88,7 @@ def _run_ci_mode(binding: dict[str, str], args, event_payload: dict[str, Any]) -
     release_bundle = project_lifecycle.build_folder_release_bundle(
         project_name=project_name,
         run_id=run_id,
-        actor="ci",
+        actor=AUTOMATION_ACTOR,
         commit_sha=os.getenv("GITHUB_SHA", "").strip(),
         pr_number=_resolve_pr_number(event_payload),
         deploy_target=str(
@@ -102,6 +104,8 @@ def _run_ci_mode(binding: dict[str, str], args, event_payload: dict[str, Any]) -
 
 
 def _run_deploy_mode(binding: dict[str, str], args) -> dict[str, Any]:
+    from python.helpers import project_lifecycle
+
     project_name = binding["project_name"]
     run_id = binding["run_id"]
     environment = str(args.environment or os.getenv("GITHUB_REF_NAME") or "").strip()
@@ -114,7 +118,7 @@ def _run_deploy_mode(binding: dict[str, str], args) -> dict[str, Any]:
     deploy_run = project_lifecycle.record_folder_deploy_run(
         project_name=project_name,
         run_id=run_id,
-        actor="ci",
+        actor=AUTOMATION_ACTOR,
         deployment_system=str(args.deployment_system or "github_actions").strip(),
         repository=repository,
         workflow_file=str(args.workflow_file or os.getenv("GITHUB_WORKFLOW", "")).strip(),

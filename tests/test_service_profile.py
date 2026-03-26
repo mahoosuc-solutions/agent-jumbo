@@ -242,8 +242,10 @@ async def test_service_profile_set_handler_applies_and_restarts(monkeypatch):
     )
     monkeypatch.setattr(
         "python.api.service_profile_set.service_profile.apply_profile",
-        lambda profile: calls.append(("apply", profile))
-        or {"selected_profile": profile, "started": ["run_searxng"], "stopped": [], "unchanged": []},
+        lambda profile: (
+            calls.append(("apply", profile))
+            or {"selected_profile": profile, "started": ["run_searxng"], "stopped": [], "unchanged": []}
+        ),
     )
     monkeypatch.setattr(
         "python.api.service_profile_set.service_profile.schedule_run_ui_restart",
