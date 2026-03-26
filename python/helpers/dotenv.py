@@ -2,7 +2,13 @@ import os
 import re
 from typing import Any
 
-from dotenv import load_dotenv as _load_dotenv
+try:
+    from dotenv import load_dotenv as _load_dotenv
+except ImportError:
+
+    def _load_dotenv(*_args, **_kwargs):
+        return False
+
 
 from .files import get_abs_path
 
