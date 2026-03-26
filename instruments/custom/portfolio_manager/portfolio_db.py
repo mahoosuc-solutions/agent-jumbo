@@ -121,10 +121,6 @@ class PortfolioDatabase:
         self.db = DatabaseManager("portfolio.db", resolved_data_dir)
         self._init_schema()
 
-
-def _is_dockerized() -> bool:
-    return bool(os.getenv("DOCKERIZED")) or Path("/.dockerenv").exists()
-
     def _init_schema(self):
         """Initialize database schema"""
         with self.db.cursor() as cur:
@@ -395,3 +391,7 @@ def _is_dockerized() -> bool:
     def close(self):
         """Close database connection"""
         self.db.close()
+
+
+def _is_dockerized() -> bool:
+    return bool(os.getenv("DOCKERIZED")) or Path("/.dockerenv").exists()
