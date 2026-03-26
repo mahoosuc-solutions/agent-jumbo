@@ -6,7 +6,14 @@ from pathlib import Path
 from typing import Any
 
 from instruments.custom.portfolio_manager.portfolio_db import PortfolioDatabase
-from python.helpers import files, folder_delivery_workflow, project_lifecycle, projects, rollout_agent_jobs
+from python.helpers import (
+    files,
+    folder_delivery_workflow,
+    project_lifecycle,
+    projects,
+    provider_readiness,
+    rollout_agent_jobs,
+)
 
 PRODUCT_CATALOG_PATH = "docs/product-page/product-catalog.json"
 PORTFOLIO_PROJECT_PREFIX = "portfolio-"
@@ -21,6 +28,7 @@ PLANNING_ARTIFACTS = [
     "execution_plan.json",
     "linear_plan.json",
 ]
+ROLLOUT_PROVIDER_OPTIONS = ["codex", "claude"]
 
 
 @dataclass
@@ -486,6 +494,29 @@ def _build_unit(
         },
         "bundle_approval": bundle_approval,
         "linear_sync": linear_sync if isinstance(linear_sync, dict) else {},
+        "current_runtime_scope": provider_readiness.current_runtime_scope(),
+        "available_runtime_scopes": provider_readiness.available_runtime_scopes(),
+    }
+
+
+def _provider_readiness_snapshot() -> dict[str, Any]:
+    scopes = provider_readiness.available_runtime_scopes()
+    current_scope = provider_readiness.current_runtime_scope()
+    providers: dict[str, dict[str, Any]] = {}
+    for provider_name in ROLLOUT_PROVIDER_OPTIONS:
+        backend = "claude_code" if provider_name == "claude" else "codex"
+        providers[provider_name] = {
+            scope: provider_readiness.check_backend_readiness(
+                backend=backend,
+                provider="anthropic" if provider_name == "claude" else "openai",
+                runtime_scope=scope,
+            )
+            for scope in scopes
+        }
+    return {
+        "current_runtime_scope": current_scope,
+        "available_runtime_scopes": scopes,
+        "providers": providers,
     }
 
 
@@ -837,6 +868,7 @@ def get_product_workspace(
         (job for job in jobs if str(job.get("job_type", "")) == rollout_agent_jobs.JOB_TYPE_PRODUCT), None
     )
     bundle_approval = _bundle_approval_state(review_state, artifact_details, diff_evidence)
+    readiness = _provider_readiness_snapshot()
     run_log = []
     if run_record:
         run_log.append(
@@ -879,6 +911,7 @@ def get_product_workspace(
         "planning_jobs": jobs,
         "latest_product_job": latest_product_job,
         "diff_evidence": diff_evidence,
+        "provider_readiness": readiness,
     }
 
 
@@ -1095,6 +1128,8 @@ def start_artifact_draft_job(
     artifact_name: str,
     actor: str = "system",
     agent_provider: str = "codex",
+    runtime_scope: str = "current",
+    repo_write_mode: str = "writable",
     catalog_path: str = PRODUCT_CATALOG_PATH,
     db: PortfolioDatabase | None = None,
 ) -> dict[str, Any]:
@@ -1114,6 +1149,8 @@ def start_artifact_draft_job(
         product_context=workspace["product"],
         resolved_repos=unit.get("resolved_repos", []),
         unresolved_repos=unit.get("unresolved_repos", []),
+        runtime_scope=runtime_scope,
+        repo_write_mode=repo_write_mode,
     )
     return get_product_workspace(product_slug, actor=actor, catalog_path=catalog_path, db=db)
 
@@ -1122,6 +1159,8 @@ def start_product_planning_job(
     product_slug: str,
     actor: str = "system",
     agent_provider: str = "codex",
+    runtime_scope: str = "current",
+    repo_write_mode: str = "writable",
     catalog_path: str = PRODUCT_CATALOG_PATH,
     db: PortfolioDatabase | None = None,
 ) -> dict[str, Any]:
@@ -1138,6 +1177,8 @@ def start_product_planning_job(
         product_context=workspace["product"],
         resolved_repos=unit.get("resolved_repos", []),
         unresolved_repos=unit.get("unresolved_repos", []),
+        runtime_scope=runtime_scope,
+        repo_write_mode=repo_write_mode,
     )
     return get_product_workspace(product_slug, actor=actor, catalog_path=catalog_path, db=db)
 
@@ -1218,6 +1259,8 @@ def rerun_planning_job(
     job_id: str,
     actor: str = "system",
     agent_provider: str = "",
+    runtime_scope: str = "",
+    repo_write_mode: str = "",
     catalog_path: str = PRODUCT_CATALOG_PATH,
     db: PortfolioDatabase | None = None,
 ) -> dict[str, Any]:
@@ -1230,8 +1273,22 @@ def rerun_planning_job(
         job_id,
         requested_by=actor,
         agent_provider=agent_provider,
+        runtime_scope=runtime_scope,
+        repo_write_mode=repo_write_mode,
     )
     return get_product_workspace(product_slug, actor=actor, catalog_path=catalog_path, db=db)
+
+
+def get_provider_readiness(
+    product_slug: str = "",
+    actor: str = "system",
+    runtime_scope: str = "",
+    catalog_path: str = PRODUCT_CATALOG_PATH,
+    db: PortfolioDatabase | None = None,
+) -> dict[str, Any]:
+    if product_slug:
+        _require_product(product_slug, catalog_path)
+    return _provider_readiness_snapshot()
 
 
 def start_definition_wave(

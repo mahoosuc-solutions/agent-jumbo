@@ -12,7 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 from instruments.custom.claude_sdk.sdk_manager import ClaudeSDKManager
-from python.helpers import dirty_json, files, folder_delivery_workflow
+from python.helpers import dirty_json, files, folder_delivery_workflow, provider_readiness
 
 JOB_SCHEMA_VERSION = "2.0.0"
 PROMPT_VERSION = "2026-03-25.2"
@@ -20,6 +20,7 @@ STATUS_TERMINAL = {"completed", "failed", "canceled", "attention_required"}
 JOB_PROVIDER_OPTIONS = {"codex", "claude"}
 JOB_TYPE_ARTIFACT = "artifact"
 JOB_TYPE_PRODUCT = "product"
+JOB_REPO_WRITE_MODES = {"writable", "read_only"}
 PRODUCT_ARTIFACT_SEQUENCE = [
     "inventory.json",
     "research_report.json",
@@ -291,6 +292,7 @@ def _prompt_contract(
     artifact_name: str,
     product_context: dict[str, Any],
     workspace_context: dict[str, Any],
+    repo_write_mode: str,
 ) -> tuple[str, str]:
     product = workspace_context.get("product", product_context)
     unit = workspace_context.get("unit", {})
@@ -320,10 +322,15 @@ def _prompt_contract(
         "existing_artifact_payload": existing.get("payload", {}),
     }
 
+    repo_instruction = (
+        "You may update planning files in the target repo when that materially improves planning evidence."
+        if repo_write_mode == "writable"
+        else "Do not modify repository files. This planning run is read-only."
+    )
     system = (
         "You are producing one planning artifact for a portfolio rollout workflow.\n"
         "Inspect and rely on the current repository state in the working directory.\n"
-        "You may update planning files in the target repo when that materially improves planning evidence.\n"
+        f"{repo_instruction}\n"
         "Do not invent implementations or integrations that are not evidenced by the provided context or repo state.\n"
         "Return only a single JSON object matching the requested schema. No markdown fences."
     )
@@ -362,14 +369,16 @@ def _prompt_contract(
     return system, message
 
 
-async def _run_codex_job(system: str, message: str, working_dir: str) -> tuple[str, dict[str, Any]]:
+async def _run_codex_job(
+    system: str, message: str, working_dir: str, repo_write_mode: str
+) -> tuple[str, dict[str, Any]]:
     prompt = f"{system}\n\n{message}"
     executable = _resolve_external_executable("codex")
     cmd = [
         executable,
         "exec",
         "--sandbox",
-        "workspace-write",
+        "workspace-write" if repo_write_mode == "writable" else "read-only",
         "--skip-git-repo-check",
         "--color",
         "never",
@@ -413,7 +422,9 @@ async def _run_codex_job(system: str, message: str, working_dir: str) -> tuple[s
     }
 
 
-async def _run_claude_job(system: str, message: str, working_dir: str) -> tuple[str, dict[str, Any]]:
+async def _run_claude_job(
+    system: str, message: str, working_dir: str, repo_write_mode: str
+) -> tuple[str, dict[str, Any]]:
     manager = ClaudeSDKManager()
     prompt = f"{system}\n\n{message}"
     if manager.sdk_available:
@@ -441,10 +452,11 @@ async def _run_provider(
     system: str,
     message: str,
     working_dir: str,
+    repo_write_mode: str,
 ) -> tuple[str, dict[str, Any]]:
     if agent_provider == "claude":
-        return await _run_claude_job(system, message, working_dir)
-    return await _run_codex_job(system, message, working_dir)
+        return await _run_claude_job(system, message, working_dir, repo_write_mode)
+    return await _run_codex_job(system, message, working_dir, repo_write_mode)
 
 
 def _invalidate_review_state(
@@ -570,9 +582,16 @@ def _artifact_step(
     _invalidate_review_state(project_name, run_id, artifact_name)
     workspace_context = _workspace_context_for_prompt(job)
     product_context = job.get("product_context", {})
-    system, message = _prompt_contract(artifact_name, product_context, workspace_context)
+    repo_write_mode = str(job.get("repo_write_mode", "writable")).strip() or "writable"
+    system, message = _prompt_contract(artifact_name, product_context, workspace_context, repo_write_mode)
     raw_output, runtime_meta = asyncio.run(
-        _run_provider(str(job["agent_provider"]), system=system, message=message, working_dir=working_dir)
+        _run_provider(
+            str(job["agent_provider"]),
+            system=system,
+            message=message,
+            working_dir=working_dir,
+            repo_write_mode=repo_write_mode,
+        )
     )
     payload = _parse_structured_output(raw_output)
     errors = _artifact_completion_errors(artifact_name, payload)
@@ -694,6 +713,14 @@ def _run_job_thread(project_name: str, run_id: str, job_id: str, working_dir: st
     finally:
         after_repo = _git_capture(working_dir)
         diff_meta = _persist_repo_diff(project_name, run_id, job_id, before_repo, after_repo)
+        if (
+            str(job.get("repo_write_mode", "writable")) == "read_only"
+            and diff_meta["summary"].get("state_changed")
+            and str(job.get("status", "")) not in {"canceled", "attention_required"}
+        ):
+            job["status"] = "failed"
+            job["failure_class"] = "unexpected_repo_mutation"
+            job["error"] = "Planning run mutated the repository during read-only mode"
         if diff_meta["summary"].get("state_changed"):
             _invalidate_review_state(project_name, run_id, str(job.get("artifact_name", "")), clear_bundle_only=True)
         job["repo_diff_summary"] = diff_meta["summary"]
@@ -705,6 +732,57 @@ def _run_job_thread(project_name: str, run_id: str, job_id: str, working_dir: st
 
 def _active_jobs(project_name: str, run_id: str) -> list[dict[str, Any]]:
     return [job for job in list_jobs(project_name, run_id) if str(job.get("status", "")) in {"queued", "running"}]
+
+
+def _provider_backend(agent_provider: str) -> str:
+    return "claude_code" if agent_provider == "claude" else "codex"
+
+
+def _provider_name(agent_provider: str) -> str:
+    return "anthropic" if agent_provider == "claude" else "openai"
+
+
+def _attention_job(
+    *,
+    job_id: str,
+    job: dict[str, Any],
+    error: str,
+    failure_class: str,
+    readiness_snapshot: dict[str, Any],
+) -> dict[str, Any]:
+    job["status"] = "attention_required"
+    job["started_at"] = _now_iso()
+    job["finished_at"] = job["started_at"]
+    job["error"] = error
+    job["failure_class"] = failure_class
+    job["readiness_snapshot"] = readiness_snapshot
+    _write_job(str(job["project_name"]), str(job["run_id"]), job)
+    return get_job(str(job["project_name"]), str(job["run_id"]), job_id)
+
+
+def _check_job_readiness(agent_provider: str, runtime_scope: str) -> dict[str, Any]:
+    current_scope = provider_readiness.current_runtime_scope()
+    resolved_scope = current_scope if runtime_scope == "current" else runtime_scope
+    if resolved_scope != current_scope:
+        return {
+            "ready": False,
+            "status": "runtime_misconfigured",
+            "runtime_scope": resolved_scope,
+            "current_runtime_scope": current_scope,
+            "checks": [
+                {
+                    "id": "runtime_scope",
+                    "ok": False,
+                    "detail": f"Planning jobs run in the current {current_scope} runtime only",
+                }
+            ],
+            "fix_hint": f"Switch rollout execution back to the current {current_scope} runtime.",
+        }
+    return provider_readiness.check_backend_readiness(
+        backend=_provider_backend(agent_provider),
+        provider=_provider_name(agent_provider),
+        runtime_scope=resolved_scope,
+    )
 
 
 def start_artifact_job(
@@ -719,9 +797,13 @@ def start_artifact_job(
     product_context: dict[str, Any],
     resolved_repos: list[dict[str, str]] | None = None,
     unresolved_repos: list[str] | None = None,
+    runtime_scope: str = "current",
+    repo_write_mode: str = "writable",
 ) -> dict[str, Any]:
     if agent_provider not in JOB_PROVIDER_OPTIONS:
         raise Exception(f"Unsupported agent provider: {agent_provider}")
+    if repo_write_mode not in JOB_REPO_WRITE_MODES:
+        raise Exception(f"Unsupported repo write mode: {repo_write_mode}")
     active = _active_jobs(project_name, run_id)
     if active:
         raise Exception("A planning job is already active for this product")
@@ -752,9 +834,13 @@ def start_artifact_job(
         "product_context": product_context,
         "resolved_repos": resolved_repos or [],
         "unresolved_repos": unresolved_repos or [],
+        "runtime_scope": runtime_scope,
+        "repo_write_mode": repo_write_mode,
         "cancel_requested": False,
         "raw_output": "",
         "runtime_meta": {},
+        "readiness_snapshot": {},
+        "failure_class": "",
         "validation_errors": [],
         "stderr": "",
         "step_results": [],
@@ -762,6 +848,17 @@ def start_artifact_job(
         "repo_diff_path": "",
         "repo_diff_patch_path": "",
     }
+    _write_job(project_name, run_id, job)
+    readiness = _check_job_readiness(agent_provider, runtime_scope)
+    if not readiness.get("ready"):
+        return _attention_job(
+            job_id=job_id,
+            job=job,
+            error=str(readiness.get("fix_hint") or readiness.get("checks", [{}])[-1].get("detail", "")),
+            failure_class=str(readiness.get("status", "runtime_misconfigured")),
+            readiness_snapshot=readiness,
+        )
+    job["readiness_snapshot"] = readiness
     _write_job(project_name, run_id, job)
     thread = threading.Thread(
         target=_run_job_thread,
@@ -790,9 +887,13 @@ def start_product_job(
     product_context: dict[str, Any],
     resolved_repos: list[dict[str, str]] | None = None,
     unresolved_repos: list[str] | None = None,
+    runtime_scope: str = "current",
+    repo_write_mode: str = "writable",
 ) -> dict[str, Any]:
     if agent_provider not in JOB_PROVIDER_OPTIONS:
         raise Exception(f"Unsupported agent provider: {agent_provider}")
+    if repo_write_mode not in JOB_REPO_WRITE_MODES:
+        raise Exception(f"Unsupported repo write mode: {repo_write_mode}")
     active = _active_jobs(project_name, run_id)
     if active:
         raise Exception("A planning job is already active for this product")
@@ -823,9 +924,13 @@ def start_product_job(
         "product_context": product_context,
         "resolved_repos": resolved_repos or [],
         "unresolved_repos": unresolved_repos or [],
+        "runtime_scope": runtime_scope,
+        "repo_write_mode": repo_write_mode,
         "cancel_requested": False,
         "raw_output": "",
         "runtime_meta": {},
+        "readiness_snapshot": {},
+        "failure_class": "",
         "validation_errors": [],
         "stderr": "",
         "step_results": [],
@@ -834,6 +939,17 @@ def start_product_job(
         "repo_diff_patch_path": "",
         "failed_artifact": "",
     }
+    _write_job(project_name, run_id, job)
+    readiness = _check_job_readiness(agent_provider, runtime_scope)
+    if not readiness.get("ready"):
+        return _attention_job(
+            job_id=job_id,
+            job=job,
+            error=str(readiness.get("fix_hint") or readiness.get("checks", [{}])[-1].get("detail", "")),
+            failure_class=str(readiness.get("status", "runtime_misconfigured")),
+            readiness_snapshot=readiness,
+        )
+    job["readiness_snapshot"] = readiness
     _write_job(project_name, run_id, job)
     thread = threading.Thread(
         target=_run_job_thread,
@@ -861,6 +977,8 @@ def rerun_job(
     job_id: str,
     requested_by: str,
     agent_provider: str = "",
+    runtime_scope: str = "",
+    repo_write_mode: str = "",
 ) -> dict[str, Any]:
     job = get_job(project_name, run_id, job_id)
     provider = agent_provider or str(job.get("agent_provider", "codex"))
@@ -874,6 +992,8 @@ def rerun_job(
         "product_context": job.get("product_context", {}),
         "resolved_repos": job.get("resolved_repos", []),
         "unresolved_repos": job.get("unresolved_repos", []),
+        "runtime_scope": runtime_scope or str(job.get("runtime_scope", "current")),
+        "repo_write_mode": repo_write_mode or str(job.get("repo_write_mode", "writable")),
     }
     if str(job.get("job_type", JOB_TYPE_ARTIFACT)) == JOB_TYPE_PRODUCT:
         return start_product_job(**common)

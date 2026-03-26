@@ -51,6 +51,8 @@ class PortfolioRollout(ApiHandler):
                     artifact_name=artifact_name,
                     actor=actor,
                     agent_provider=str(input.get("agent_provider", "codex")).strip().lower() or "codex",
+                    runtime_scope=str(input.get("runtime_scope", "current")).strip().lower() or "current",
+                    repo_write_mode=str(input.get("repo_write_mode", "writable")).strip().lower() or "writable",
                 )
             elif action == "start_product_planning_job":
                 product_slug = str(input.get("product_slug", "")).strip()
@@ -60,6 +62,14 @@ class PortfolioRollout(ApiHandler):
                     product_slug=product_slug,
                     actor=actor,
                     agent_provider=str(input.get("agent_provider", "codex")).strip().lower() or "codex",
+                    runtime_scope=str(input.get("runtime_scope", "current")).strip().lower() or "current",
+                    repo_write_mode=str(input.get("repo_write_mode", "writable")).strip().lower() or "writable",
+                )
+            elif action == "provider_readiness":
+                data = portfolio_rollout.get_provider_readiness(
+                    product_slug=str(input.get("product_slug", "")).strip(),
+                    actor=actor,
+                    runtime_scope=str(input.get("runtime_scope", "")).strip().lower(),
                 )
             elif action == "get_artifact_draft_job":
                 product_slug = str(input.get("product_slug", "")).strip()
@@ -129,6 +139,8 @@ class PortfolioRollout(ApiHandler):
                     job_id=job_id,
                     actor=actor,
                     agent_provider=str(input.get("agent_provider", "")).strip().lower(),
+                    runtime_scope=str(input.get("runtime_scope", "")).strip().lower(),
+                    repo_write_mode=str(input.get("repo_write_mode", "")).strip().lower(),
                 )
             elif action == "save_artifact":
                 product_slug = str(input.get("product_slug", "")).strip()

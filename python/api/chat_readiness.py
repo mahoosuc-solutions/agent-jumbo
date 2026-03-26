@@ -2,7 +2,7 @@ import urllib.request
 from urllib.error import URLError
 
 import models
-from python.helpers import settings, startup_selector
+from python.helpers import provider_readiness, settings, startup_selector
 from python.helpers.api import ApiHandler, Request, Response
 
 
@@ -74,15 +74,22 @@ class ChatReadiness(ApiHandler):
             ok, detail = self._check_ollama(api_base)
             checks.append({"id": "ollama_connectivity", "ok": ok, "detail": detail})
 
+        provider_snapshot = None
         if backend in {"codex", "claude_code"}:
-            ok_backend, detail_backend = startup_selector.backend_ready(backend)
-            checks.append(
-                {
-                    "id": "execution_backend",
-                    "ok": ok_backend,
-                    "detail": detail_backend,
-                }
+            provider_snapshot = provider_readiness.check_backend_readiness(
+                backend=backend,
+                provider=provider,
+                api_base=api_base,
+                runtime_scope="current",
             )
+            for check in provider_snapshot.get("checks", []):
+                checks.append(
+                    {
+                        "id": f"execution_backend:{check.get('id', 'check')}",
+                        "ok": bool(check.get("ok")),
+                        "detail": str(check.get("detail", "")),
+                    }
+                )
         else:
             checks.append(
                 {
@@ -106,5 +113,6 @@ class ChatReadiness(ApiHandler):
             "provider": provider,
             "model": model_name,
             "backend": backend,
+            "provider_readiness": provider_snapshot or {},
             "startup_selection": startup_selector.get_startup_selection_state(),
         }

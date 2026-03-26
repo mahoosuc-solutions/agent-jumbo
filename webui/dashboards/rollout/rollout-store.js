@@ -185,6 +185,8 @@ const model = {
   bundleNotes: "",
   acknowledgeRepoDiff: false,
   draftProvider: "codex",
+  selectedRuntimeScope: "host",
+  repoWriteMode: "writable",
   pollingInterval: null,
 
   async onOpen() {
@@ -250,6 +252,8 @@ const model = {
       this.targetPathInput = this.workspace?.unit?.target_path || "";
       this.bundleNotes = this.workspace?.bundle_approval?.notes || "";
       this.acknowledgeRepoDiff = false;
+      this.selectedRuntimeScope =
+        this.workspace?.provider_readiness?.current_runtime_scope || this.workspace?.unit?.current_runtime_scope || "host";
       this.resetArtifactForms();
     } catch (err) {
       console.error("Workspace load error:", err);
@@ -274,6 +278,9 @@ const model = {
       });
       if (resp.ok) {
         this.workspace = resp.data || this.workspace;
+        if (!this.selectedRuntimeScope) {
+          this.selectedRuntimeScope = this.workspace?.provider_readiness?.current_runtime_scope || "host";
+        }
         this.resetArtifactForms();
       }
     } catch (err) {
@@ -341,6 +348,8 @@ const model = {
     if (!artifactName) return false;
     if (!this.workspace?.unit?.target_path) return false;
     if (this.hasActivePlanningJobs()) return false;
+    if (!this.isCurrentRuntimeScope()) return false;
+    if (!this.providerReady(this.draftProvider, this.selectedRuntimeScope)) return false;
     return !this.saving;
   },
 
@@ -354,6 +363,8 @@ const model = {
         artifact_name: artifactName,
         actor: this.actor,
         agent_provider: this.draftProvider,
+        runtime_scope: this.selectedRuntimeScope,
+        repo_write_mode: this.repoWriteMode,
       });
       if (!resp.ok) throw new Error(resp.error || `Failed to draft ${artifactName}`);
       this.workspace = resp.data;
@@ -376,6 +387,8 @@ const model = {
         product_slug: this.selectedProductSlug,
         actor: this.actor,
         agent_provider: provider,
+        runtime_scope: this.selectedRuntimeScope,
+        repo_write_mode: this.repoWriteMode,
       });
       if (!resp.ok) throw new Error(resp.error || "Failed to start product planning job");
       this.workspace = resp.data;
@@ -424,6 +437,8 @@ const model = {
         job_id: jobId,
         actor: this.actor,
         agent_provider: provider,
+        runtime_scope: this.selectedRuntimeScope,
+        repo_write_mode: this.repoWriteMode,
       });
       if (!resp.ok) throw new Error(resp.error || "Failed to rerun planning job");
       this.workspace = resp.data;
@@ -527,6 +542,27 @@ const model = {
     }
   },
 
+  async refreshProviderReadiness() {
+    this.saving = true;
+    this.error = null;
+    try {
+      const resp = await callJsonApi("/portfolio_rollout", {
+        action: "provider_readiness",
+        product_slug: this.selectedProductSlug,
+        actor: this.actor,
+        runtime_scope: this.selectedRuntimeScope,
+      });
+      if (!resp.ok) throw new Error(resp.error || "Failed to refresh provider readiness");
+      if (this.workspace) {
+        this.workspace.provider_readiness = resp.data;
+      }
+    } catch (err) {
+      this.error = err?.message || "Failed to refresh provider readiness";
+    } finally {
+      this.saving = false;
+    }
+  },
+
   productsByStatus(status) {
     return (this.dashboard.products || []).filter((item) => item.status === status);
   },
@@ -559,7 +595,12 @@ const model = {
   },
 
   canStartProductJob() {
-    return !!this.workspace?.unit?.target_path && !this.hasActivePlanningJobs();
+    return (
+      !!this.workspace?.unit?.target_path &&
+      !this.hasActivePlanningJobs() &&
+      this.isCurrentRuntimeScope() &&
+      this.providerReady(this.draftProvider, this.selectedRuntimeScope)
+    );
   },
 
   canRetryJob(job) {
@@ -579,6 +620,30 @@ const model = {
       const meta = this.artifactMeta(artifactName);
       return meta.complete && meta.approved;
     });
+  },
+
+  currentRuntimeScope() {
+    return this.workspace?.provider_readiness?.current_runtime_scope || this.workspace?.unit?.current_runtime_scope || "host";
+  },
+
+  isCurrentRuntimeScope() {
+    return this.selectedRuntimeScope === this.currentRuntimeScope();
+  },
+
+  availableRuntimeScopes() {
+    return this.workspace?.provider_readiness?.available_runtime_scopes || [this.currentRuntimeScope()];
+  },
+
+  providerReadiness(providerName, scope = this.selectedRuntimeScope) {
+    return this.workspace?.provider_readiness?.providers?.[providerName]?.[scope] || null;
+  },
+
+  providerReady(providerName, scope = this.selectedRuntimeScope) {
+    return !!this.providerReadiness(providerName, scope)?.ready;
+  },
+
+  providerFixHint(providerName, scope = this.selectedRuntimeScope) {
+    return this.providerReadiness(providerName, scope)?.fix_hint || "";
   },
 
   productProgressLabel(product) {

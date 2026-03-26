@@ -103,6 +103,41 @@ class _ImmediateThread:
             self._target(**self._kwargs)
 
 
+def _mock_rollout_provider_ready(monkeypatch):
+    monkeypatch.setattr(
+        portfolio_rollout.rollout_agent_jobs.provider_readiness,
+        "check_backend_readiness",
+        lambda **kwargs: {
+            "backend": kwargs.get("backend", ""),
+            "provider": kwargs.get("provider", ""),
+            "runtime_scope": kwargs.get("runtime_scope", "host"),
+            "current_runtime_scope": kwargs.get("runtime_scope", "host"),
+            "ready": True,
+            "status": "ready",
+            "checks": [{"id": "smoke", "ok": True, "detail": "ready"}],
+            "fix_hint": "",
+            "runtime": kwargs.get("backend", ""),
+        },
+    )
+    monkeypatch.setattr(
+        portfolio_rollout.provider_readiness,
+        "check_backend_readiness",
+        lambda **kwargs: {
+            "backend": kwargs.get("backend", ""),
+            "provider": kwargs.get("provider", ""),
+            "runtime_scope": kwargs.get("runtime_scope", "host"),
+            "current_runtime_scope": kwargs.get("runtime_scope", "host"),
+            "ready": True,
+            "status": "ready",
+            "checks": [{"id": "smoke", "ok": True, "detail": "ready"}],
+            "fix_hint": "",
+            "runtime": kwargs.get("backend", ""),
+        },
+    )
+    monkeypatch.setattr(portfolio_rollout.provider_readiness, "current_runtime_scope", lambda: "host")
+    monkeypatch.setattr(portfolio_rollout.provider_readiness, "available_runtime_scopes", lambda: ["host", "container"])
+
+
 def test_seed_catalog_portfolio_creates_managed_units(tmp_path, monkeypatch):
     projects_dir = tmp_path / "managed-projects"
     repos_dir = tmp_path / "repos"
@@ -253,6 +288,7 @@ def test_product_workspace_allows_target_override_for_blocked_product(tmp_path, 
 
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
+    _mock_rollout_provider_ready(monkeypatch)
 
     db = PortfolioDatabase(data_dir=str(tmp_path / "db"))
     portfolio_rollout.seed_catalog_portfolio(actor="tester", catalog_path=str(catalog_path), db=db)
@@ -283,6 +319,7 @@ def test_draft_and_approve_planning_bundle_requires_real_artifacts(tmp_path, mon
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
 
     db = PortfolioDatabase(data_dir=str(tmp_path / "db"))
     portfolio_rollout.seed_catalog_portfolio(actor="tester", catalog_path=str(catalog_path), db=db)
@@ -332,9 +369,10 @@ def test_live_artifact_job_writes_artifact_and_invalidates_approval(tmp_path, mo
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
 
-    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str):
         return (
             json.dumps(
                 {
@@ -405,9 +443,10 @@ def test_live_artifact_job_failure_preserves_error(tmp_path, monkeypatch):
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
 
-    async def fake_bad_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_bad_provider(agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str):
         return ("not valid json", {"provider": "fake", "model": "bad", "runtime": agent_provider})
 
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs, "_run_provider", fake_bad_provider)
@@ -443,6 +482,7 @@ def test_product_planning_job_completes_all_artifacts(tmp_path, monkeypatch):
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
     monkeypatch.setattr(
         portfolio_rollout.rollout_agent_jobs,
@@ -450,7 +490,7 @@ def test_product_planning_job_completes_all_artifacts(tmp_path, monkeypatch):
         lambda working_dir: {"available": True, "status_lines": [], "diff_stat": "", "diff_text": ""},
     )
 
-    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str):
         if "inventory.json" in message:
             payload = {
                 "target_path": working_dir,
@@ -519,6 +559,7 @@ def test_codex_attention_required_can_be_retried_with_claude(tmp_path, monkeypat
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
     monkeypatch.setattr(
         portfolio_rollout.rollout_agent_jobs,
@@ -526,7 +567,7 @@ def test_codex_attention_required_can_be_retried_with_claude(tmp_path, monkeypat
         lambda working_dir: {"available": True, "status_lines": [], "diff_stat": "", "diff_text": ""},
     )
 
-    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str):
         if agent_provider == "codex":
             raise portfolio_rollout.rollout_agent_jobs.OperatorActionRequired("codex CLI is not installed")
         return (
@@ -583,6 +624,7 @@ def test_cancel_running_artifact_job_blocks_artifact_write(tmp_path, monkeypatch
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
     monkeypatch.setattr(
         portfolio_rollout.rollout_agent_jobs,
@@ -590,7 +632,9 @@ def test_cancel_running_artifact_job_blocks_artifact_write(tmp_path, monkeypatch
         lambda working_dir: {"available": True, "status_lines": [], "diff_stat": "", "diff_text": ""},
     )
 
-    async def fake_canceling_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_canceling_provider(
+        agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str
+    ):
         marker = "Prompt version: "
         run_id = message.split('"run_id": "')[1].split('"', 1)[0]
         project_name = message.split('"project_name": "')[1].split('"', 1)[0]
@@ -640,6 +684,7 @@ def test_failed_product_job_does_not_claim_later_artifacts(tmp_path, monkeypatch
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
     monkeypatch.setattr(
         portfolio_rollout.rollout_agent_jobs,
@@ -647,7 +692,9 @@ def test_failed_product_job_does_not_claim_later_artifacts(tmp_path, monkeypatch
         lambda working_dir: {"available": True, "status_lines": [], "diff_stat": "", "diff_text": ""},
     )
 
-    async def fake_failing_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_failing_provider(
+        agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str
+    ):
         raise RuntimeError("inventory step failed")
 
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs, "_run_provider", fake_failing_provider)
@@ -681,6 +728,7 @@ def test_bundle_approval_requires_repo_diff_ack(tmp_path, monkeypatch):
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs.threading, "Thread", _ImmediateThread)
 
     snapshots = iter(
@@ -696,7 +744,7 @@ def test_bundle_approval_requires_repo_diff_ack(tmp_path, monkeypatch):
     )
     monkeypatch.setattr(portfolio_rollout.rollout_agent_jobs, "_git_capture", lambda working_dir: next(snapshots))
 
-    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str):
+    async def fake_run_provider(agent_provider: str, system: str, message: str, working_dir: str, repo_write_mode: str):
         return (
             json.dumps(
                 {
@@ -789,6 +837,7 @@ def test_partial_definition_of_done_artifact_stays_incomplete(tmp_path, monkeypa
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
 
     db = PortfolioDatabase(data_dir=str(tmp_path / "db"))
     portfolio_rollout.seed_catalog_portfolio(actor="tester", catalog_path=str(catalog_path), db=db)
@@ -819,6 +868,7 @@ def test_manual_save_is_blocked_while_job_active(tmp_path, monkeypatch):
     monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
     monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
     _fake_folder_run(monkeypatch)
+    _mock_rollout_provider_ready(monkeypatch)
 
     db = PortfolioDatabase(data_dir=str(tmp_path / "db"))
     portfolio_rollout.seed_catalog_portfolio(actor="tester", catalog_path=str(catalog_path), db=db)
@@ -853,3 +903,65 @@ def test_manual_save_is_blocked_while_job_active(tmp_path, monkeypatch):
         raise AssertionError("expected active planning job save block")
     except Exception as exc:
         assert "planning job is active" in str(exc)
+
+
+def test_unready_provider_returns_attention_required_job(tmp_path, monkeypatch):
+    projects_dir = tmp_path / "managed-projects"
+    repos_dir = tmp_path / "repos"
+    repos_dir.mkdir()
+    alpha_repo = repos_dir / "alpha-repo"
+    alpha_repo.mkdir()
+    catalog_path = tmp_path / "catalog.json"
+    _write_catalog(catalog_path)
+
+    monkeypatch.setattr(projects, "PROJECTS_PARENT_DIR", str(projects_dir))
+    monkeypatch.setattr(portfolio_rollout, "_repo_search_roots", lambda: [repos_dir])
+    _fake_folder_run(monkeypatch)
+    monkeypatch.setattr(portfolio_rollout.provider_readiness, "current_runtime_scope", lambda: "host")
+    monkeypatch.setattr(portfolio_rollout.provider_readiness, "available_runtime_scopes", lambda: ["host", "container"])
+    monkeypatch.setattr(
+        portfolio_rollout.rollout_agent_jobs.provider_readiness,
+        "check_backend_readiness",
+        lambda **kwargs: {
+            "backend": kwargs.get("backend", ""),
+            "provider": kwargs.get("provider", ""),
+            "runtime_scope": kwargs.get("runtime_scope", "host"),
+            "current_runtime_scope": "host",
+            "ready": False,
+            "status": "auth_required",
+            "checks": [{"id": "smoke", "ok": False, "detail": "401 Unauthorized"}],
+            "fix_hint": "Authenticate Codex CLI in the host runtime before starting rollout jobs.",
+            "runtime": "codex_cli",
+        },
+    )
+    monkeypatch.setattr(
+        portfolio_rollout.provider_readiness,
+        "check_backend_readiness",
+        lambda **kwargs: {
+            "backend": kwargs.get("backend", ""),
+            "provider": kwargs.get("provider", ""),
+            "runtime_scope": kwargs.get("runtime_scope", "host"),
+            "current_runtime_scope": "host",
+            "ready": False,
+            "status": "auth_required",
+            "checks": [{"id": "smoke", "ok": False, "detail": "401 Unauthorized"}],
+            "fix_hint": "Authenticate Codex CLI in the host runtime before starting rollout jobs.",
+            "runtime": "codex_cli",
+        },
+    )
+
+    db = PortfolioDatabase(data_dir=str(tmp_path / "db"))
+    portfolio_rollout.seed_catalog_portfolio(actor="tester", catalog_path=str(catalog_path), db=db)
+    portfolio_rollout.start_product_planning("alpha", actor="tester", catalog_path=str(catalog_path), db=db)
+
+    workspace = portfolio_rollout.start_product_planning_job(
+        "alpha",
+        actor="tester",
+        agent_provider="codex",
+        catalog_path=str(catalog_path),
+        db=db,
+    )
+    job = workspace["latest_product_job"]
+    assert job["status"] == "attention_required"
+    assert job["failure_class"] == "auth_required"
+    assert job["readiness_snapshot"]["ready"] is False

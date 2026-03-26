@@ -181,6 +181,15 @@
               <option value="codex">Codex</option>
               <option value="claude">Claude</option>
             </select>
+            <select class="btn" x-model="$store.rolloutDashboard.selectedRuntimeScope">
+              <template x-for="scope in $store.rolloutDashboard.availableRuntimeScopes()" :key="scope">
+                <option :value="scope" x-text="scope"></option>
+              </template>
+            </select>
+            <select class="btn" x-model="$store.rolloutDashboard.repoWriteMode">
+              <option value="writable">Writable Planning</option>
+              <option value="read_only">Read-only Planning</option>
+            </select>
             <button class="btn" @click="$store.rolloutDashboard.activeView = 'queue'">Portfolio Queue</button>
             <button class="btn" @click="$store.rolloutDashboard.activeView = 'workspace'" :disabled="!$store.rolloutDashboard.selectedProductSlug">Product Workspace</button>
             <button class="btn" @click="$store.rolloutDashboard.activeView = 'execution'">Execution Readiness</button>
@@ -253,6 +262,7 @@
               <button class="btn btn-primary" @click="$store.rolloutDashboard.startPlanning()" :disabled="!$store.rolloutDashboard.canStartPlanning()">Start Planning Run</button>
               <button class="btn btn-primary" @click="$store.rolloutDashboard.startProductPlanningJob()" :disabled="$store.rolloutDashboard.saving || !$store.rolloutDashboard.canStartProductJob()">Run Full Product Plan</button>
               <button class="btn" @click="$store.rolloutDashboard.loadWorkspace()" :disabled="$store.rolloutDashboard.loading">Refresh Run Status</button>
+              <button class="btn" @click="$store.rolloutDashboard.refreshProviderReadiness()" :disabled="$store.rolloutDashboard.saving">Check Provider Readiness</button>
               <button class="btn" @click="$store.rolloutDashboard.syncLinear()" :disabled="$store.rolloutDashboard.saving">Sync Linear Plan</button>
             </div>
 
@@ -268,7 +278,26 @@
                   <div class="meta-line" x-text="'Progress: ' + $store.rolloutDashboard.workspace.progress.complete_count + '/' + $store.rolloutDashboard.workspace.progress.total + ' complete'"></div>
                   <div class="meta-line" x-text="'Approvals: ' + $store.rolloutDashboard.workspace.progress.approved_count + '/' + $store.rolloutDashboard.workspace.progress.total"></div>
                   <div class="meta-line" x-text="'Active jobs: ' + ($store.rolloutDashboard.workspace.progress.active_jobs || 0)"></div>
+                  <div class="meta-line" x-text="'Current runtime: ' + $store.rolloutDashboard.currentRuntimeScope()"></div>
+                  <div class="meta-line" x-text="'Selected runtime: ' + $store.rolloutDashboard.selectedRuntimeScope"></div>
+                  <div class="meta-line" x-text="'Repo write mode: ' + $store.rolloutDashboard.repoWriteMode"></div>
                   <div class="meta-line" x-show="$store.rolloutDashboard.latestProductJob()" x-text="'Latest full-plan job: ' + ($store.rolloutDashboard.latestProductJob()?.status || 'n/a')"></div>
+                </div>
+
+                <div class="rollout-panel">
+                  <h3>Provider Readiness</h3>
+                  <div class="meta-line" x-show="!$store.rolloutDashboard.isCurrentRuntimeScope()">Planning jobs run in the current runtime only. Change runtime back to <span x-text="$store.rolloutDashboard.currentRuntimeScope()"></span> to execute.</div>
+                  <template x-for="providerName in ['codex', 'claude']" :key="providerName">
+                    <div style="margin-top: 12px;">
+                      <div class="artifact-head">
+                        <strong x-text="providerName"></strong>
+                        <span class="tone-badge" :class="'tone-' + ($store.rolloutDashboard.providerReady(providerName) ? 'success' : 'warn')" x-text="$store.rolloutDashboard.providerReady(providerName) ? 'ready' : (($store.rolloutDashboard.providerReadiness(providerName)?.status || 'unknown').replaceAll('_', ' '))"></span>
+                      </div>
+                      <div class="meta-line" x-text="'Scope: ' + ($store.rolloutDashboard.providerReadiness(providerName)?.runtime_scope || $store.rolloutDashboard.selectedRuntimeScope)"></div>
+                      <div class="meta-line" x-text="'Runtime: ' + (($store.rolloutDashboard.providerReadiness(providerName)?.runtime) || 'n/a')"></div>
+                      <div class="meta-line" x-show="$store.rolloutDashboard.providerFixHint(providerName)" x-text="$store.rolloutDashboard.providerFixHint(providerName)"></div>
+                    </div>
+                  </template>
                 </div>
 
                 <div class="rollout-panel">
@@ -341,6 +370,9 @@
                       <span class="meta-line" x-text="'Finished: ' + $store.rolloutDashboard.formatDate($store.rolloutDashboard.latestJobForArtifact(artifactName)?.finished_at)"></span>
                     </div>
                     <div class="meta-line" x-show="$store.rolloutDashboard.latestJobForArtifact(artifactName)?.error" x-text="$store.rolloutDashboard.latestJobForArtifact(artifactName)?.error"></div>
+                    <div class="meta-line" x-show="$store.rolloutDashboard.latestJobForArtifact(artifactName)?.failure_class" x-text="'Failure class: ' + $store.rolloutDashboard.latestJobForArtifact(artifactName)?.failure_class"></div>
+                    <div class="meta-line" x-show="$store.rolloutDashboard.latestJobForArtifact(artifactName)?.runtime_scope" x-text="'Runtime scope: ' + $store.rolloutDashboard.latestJobForArtifact(artifactName)?.runtime_scope"></div>
+                    <div class="meta-line" x-show="$store.rolloutDashboard.latestJobForArtifact(artifactName)?.repo_write_mode" x-text="'Repo write mode: ' + $store.rolloutDashboard.latestJobForArtifact(artifactName)?.repo_write_mode"></div>
                     <div class="meta-line" x-show="$store.rolloutDashboard.latestJobForArtifact(artifactName)?.repo_diff_summary?.state_changed" x-text="'Repo diff: ' + (($store.rolloutDashboard.latestJobForArtifact(artifactName)?.repo_diff_summary?.changed_files || []).join(', ') || 'changed')"></div>
 
                     <ul class="artifact-errors" x-show="$store.rolloutDashboard.artifactMeta(artifactName).validation_errors?.length">
@@ -439,6 +471,7 @@
                       <span x-text="job.job_type === 'product' ? 'full-plan' : job.artifact_name"></span>
                       <span x-text="job.agent_provider"></span>
                       <span x-text="job.status"></span>
+                      <span x-text="job.runtime_scope || ''"></span>
                       <span x-text="job.current_artifact || ''"></span>
                       <span x-text="$store.rolloutDashboard.formatDate(job.started_at)"></span>
                     </div>
