@@ -42,6 +42,7 @@ from python.helpers.extract_tools import load_classes_from_folder
 from python.helpers.files import get_abs_path
 from python.helpers.print_style import PrintStyle
 from python.helpers.structured_log import setup_structured_logging
+from python.helpers.work_mode.manager import WorkModeManager
 
 # Set the new timezone to 'UTC'
 os.environ["TZ"] = "UTC"
@@ -69,6 +70,11 @@ limiter = Limiter(
     default_limits=[],
     storage_uri="memory://",
 )
+
+# Initialize WorkModeManager and start background network probe
+_work_mode_manager = WorkModeManager.get_instance()
+_work_mode_manager.initialize()
+_work_mode_manager.start_background_probe()
 
 lock = threading.Lock()
 _mcp_token_lock = threading.Lock()
