@@ -61,18 +61,35 @@ def test_probe_gpu_insufficient_vram():
     assert profile.local_inference_eligible is False  # VRAM < 2GB
 
 
-def test_nvidia_smi_hang_is_bounded():
-    """nvidia-smi must not block forever — subprocess.TimeoutExpired is caught."""
+def test_nvidia_smi_timeout_is_caught():
+    """subprocess.TimeoutExpired from nvidia-smi is caught and returns (False, 0.0)."""
     profiler = _make_profiler()
     with (
         patch(
-            "python.helpers.work_mode.profiler.subprocess.run", side_effect=subprocess.TimeoutExpired("nvidia-smi", 3)
+            "python.helpers.work_mode.profiler.subprocess.run",
+            side_effect=subprocess.TimeoutExpired("nvidia-smi", 3),
         ),
         patch.dict("sys.modules", {"torch": None}),
     ):
         has_gpu, vram_gb = profiler._probe_gpu()
     assert has_gpu is False
     assert vram_gb == 0.0
+
+
+def test_suggest_mode_selective_when_gpu_eligible_no_network():
+    """GPU-eligible machine with no network should suggest SELECTIVE mode."""
+    profiler = _make_profiler()
+    with (
+        patch("psutil.virtual_memory") as vm,
+        patch.object(profiler, "_probe_gpu", return_value=(True, 4.0)),
+        patch.object(profiler, "_probe_network", return_value=False),
+    ):
+        vm.return_value = MagicMock(total=16 * 1024**3)
+        profile = profiler.probe()
+
+    assert profile.local_inference_eligible is True
+    assert profile.has_network is False
+    assert profile.suggested_mode == WorkMode.SELECTIVE
 
 
 def test_network_probe_unreachable():
