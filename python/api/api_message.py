@@ -11,6 +11,7 @@ from python.helpers import files
 from python.helpers.api import ApiHandler, Request, Response
 from python.helpers.print_style import PrintStyle
 from python.helpers.strings import redact_sensitive_tokens
+from python.helpers.work_mode.manager import WorkModeManager
 
 
 class ApiMessage(ApiHandler):
@@ -79,6 +80,10 @@ class ApiMessage(ApiHandler):
             context = AgentContext(config=config, type=AgentContextType.USER)
             AgentContext.use(context.id)
             context_id = context.id
+
+            # Inject work mode context snapshot at agent spawn
+            mode_context = WorkModeManager.get_instance().get_snapshot()
+            context.set_data("mode_context", mode_context)
 
         # Update chat lifetime
         with self._cleanup_lock:
