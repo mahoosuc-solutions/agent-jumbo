@@ -1,9 +1,11 @@
 # tests/test_work_mode_gate.py
+import asyncio
 import time
+from unittest.mock import AsyncMock, MagicMock
 
 import pytest
 
-from python.helpers.work_mode.gate import ModeGate, ModeViolationError
+from python.helpers.work_mode.gate import ModeGate, ModeGateTransport, ModeViolationError
 from python.helpers.work_mode.types import Capability, ModeContext, WorkMode
 
 
@@ -70,3 +72,45 @@ def test_mode_violation_error_has_structured_fields():
         assert e.mode == WorkMode.LOCAL
         assert e.capability == Capability.GMAIL
         assert "not_available_in_local_mode" in str(e)
+
+
+def test_transport_blocks_in_local_mode():
+    ctx = _ctx(WorkMode.LOCAL)
+    transport = ModeGateTransport(ctx=ctx)
+    request = MagicMock()
+    request.url = MagicMock()
+    request.url.host = "api.openai.com"
+
+    with pytest.raises(ModeViolationError) as exc_info:
+        asyncio.get_event_loop().run_until_complete(transport.handle_async_request(request))
+    assert exc_info.value.mode == WorkMode.LOCAL
+
+
+def test_transport_allows_localhost_in_local_mode():
+    ctx = _ctx(WorkMode.LOCAL)
+    transport = ModeGateTransport(ctx=ctx)
+    request = MagicMock()
+    request.url = MagicMock()
+    request.url.host = "localhost"
+
+    mock_inner = AsyncMock()
+    mock_inner.handle_async_request = AsyncMock(return_value=MagicMock())
+    transport._wrapped = mock_inner
+
+    asyncio.get_event_loop().run_until_complete(transport.handle_async_request(request))
+    mock_inner.handle_async_request.assert_called_once()
+
+
+def test_transport_allows_all_in_cloud_mode():
+    ctx = _ctx(WorkMode.CLOUD)
+    transport = ModeGateTransport(ctx=ctx)
+    request = MagicMock()
+    request.url = MagicMock()
+    request.url.host = "api.stripe.com"
+
+    mock_inner = AsyncMock()
+    mock_inner.handle_async_request = AsyncMock(return_value=MagicMock())
+    transport._wrapped = mock_inner
+
+    asyncio.get_event_loop().run_until_complete(transport.handle_async_request(request))
+    mock_inner.handle_async_request.assert_called_once()
