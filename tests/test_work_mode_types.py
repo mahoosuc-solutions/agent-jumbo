@@ -1,4 +1,9 @@
 # tests/test_work_mode_types.py
+import dataclasses
+import time
+
+import pytest
+
 from python.helpers.work_mode.types import (
     Capability,
     HardwareProfile,
@@ -40,21 +45,14 @@ def test_hardware_profile_defaults():
 
 
 def test_mode_context_is_frozen():
-    import time
-
     ctx = ModeContext(
         mode=WorkMode.LOCAL,
         selective_consents=frozenset(),
         captured_at=time.monotonic(),
     )
-    import dataclasses
-
     assert dataclasses.fields(ctx)  # is a dataclass
-    try:
+    with pytest.raises(dataclasses.FrozenInstanceError):
         ctx.mode = WorkMode.CLOUD  # type: ignore[misc]
-        raise AssertionError("should have raised")
-    except (dataclasses.FrozenInstanceError, TypeError, AttributeError):
-        pass
 
 
 def test_mode_context_selective_consents_immutable():
@@ -65,3 +63,6 @@ def test_mode_context_selective_consents_immutable():
     )
     assert "gmail" in ctx.selective_consents
     assert "stripe" in ctx.selective_consents
+    # frozenset is immutable — attempting mutation raises AttributeError
+    with pytest.raises(AttributeError):
+        ctx.selective_consents.add("linear")  # type: ignore[attr-defined]
