@@ -69,12 +69,17 @@ class ModeGateTransport:
 
     def __init__(self, ctx: ModeContext, wrapped: object | None = None) -> None:
         self._ctx = ctx
-        try:
-            import httpx
+        if wrapped is not None:
+            self._wrapped: object = wrapped
+        else:
+            try:
+                import httpx
 
-            self._wrapped = wrapped or httpx.AsyncHTTPTransport()
-        except ImportError:
-            self._wrapped = wrapped
+                self._wrapped = httpx.AsyncHTTPTransport()
+            except ImportError as exc:
+                raise RuntimeError(
+                    "httpx is required for ModeGateTransport when no wrapped transport is provided"
+                ) from exc
 
     async def handle_async_request(self, request: object) -> object:
         host: str = getattr(getattr(request, "url", None), "host", "") or ""
@@ -84,4 +89,4 @@ class ModeGateTransport:
 
     async def aclose(self) -> None:
         if hasattr(self._wrapped, "aclose"):
-            await self._wrapped.aclose()
+            await self._wrapped.aclose()  # type: ignore[union-attr]
