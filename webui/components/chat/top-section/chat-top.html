@@ -29,6 +29,8 @@
                             stroke-width="3" x-bind:opacity="$store.chatTop.connected ? 0 : 1" />
                     </svg>
                 </div>
+                <!-- Work Mode Indicator -->
+                <x-component path="work-mode/work-mode-indicator.html"></x-component>
                 <!-- Model Selector -->
                 <x-component path="chat/top-section/model-selector.html"></x-component>
                 <div class="startup-status" x-show="$store.chatTop.historyRestoreActive"

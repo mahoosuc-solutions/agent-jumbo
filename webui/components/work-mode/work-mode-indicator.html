@@ -1,0 +1,23 @@
+<html>
+<head>
+    <script type="module">
+        import { store } from "/components/work-mode/work-mode-store.js";
+    </script>
+</head>
+<body>
+    <div x-data>
+        <template x-if="$store.workMode">
+            <!-- Work Mode Indicator -->
+            <div class="work-mode-indicator"
+                 x-init="$store.workMode.init()"
+                 :title="`Work Mode: ${$store.workMode.label}`">
+                <span class="work-mode-dot"
+                      :class="$store.workMode.colorClass">●</span>
+                <span class="work-mode-label"
+                      :class="$store.workMode.colorClass"
+                      x-text="$store.workMode.label">Local</span>
+            </div>
+        </template>
+    </div>
+</body>
+</html>

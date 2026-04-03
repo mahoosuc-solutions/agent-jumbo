@@ -222,6 +222,34 @@ div#right-panel::-webkit-scrollbar-thumb:hover {
   opacity: 0.7;
 }
 
+/* Work Mode Indicator */
+#time-date-container .work-mode-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(128, 128, 128, 0.1);
+  font-size: 11px;
+  border: 1px solid rgba(128, 128, 128, 0.3);
+  cursor: default;
+  user-select: none;
+}
+
+#time-date-container .work-mode-indicator .work-mode-dot {
+  font-size: 14px;
+  line-height: 1;
+}
+
+#time-date-container .work-mode-indicator .work-mode-label {
+  font-weight: 500;
+}
+
+.text-amber-600 { color: #d97706; }
+.text-blue-600 { color: #2563eb; }
+.text-emerald-600 { color: #059669; }
+.text-gray-500 { color: #6b7280; }
+
 #time-date {
   color: var(--color-text);
   font-size: var(--font-size-normal);
