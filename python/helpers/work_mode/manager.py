@@ -37,6 +37,7 @@ class WorkModeManager:
         self._profiler = ResourceProfiler()
         self._drain = DrainCoordinator()
         self._switch_lock = threading.Lock()
+        self._loop: object = None  # set by initialize() from async context
 
     @classmethod
     def get_instance(cls) -> WorkModeManager:
@@ -47,6 +48,13 @@ class WorkModeManager:
 
     def initialize(self) -> None:
         """Probe hardware, load persisted mode. Called once at startup."""
+        import asyncio
+
+        try:
+            self._loop = asyncio.get_running_loop()
+        except RuntimeError:
+            self._loop = None  # not called from async context; reload will be best-effort
+
         self._profile = self._profiler.probe()
         persisted = self._load_persisted_mode()
         self._mode = persisted if persisted else self._profile.suggested_mode
@@ -174,16 +182,25 @@ class WorkModeManager:
             log.warning("Could not persist consents: %s", e)
 
     def _reload_llm_router(self) -> None:
-        """Trigger LLM router re-discovery after mode switch."""
+        """Trigger LLM router re-discovery after mode switch.
+
+        Schedules on the stored event loop (captured at initialize() time) so
+        this is safe to call from any thread, including the drain worker thread.
+        """
         try:
             import asyncio
 
             from python.helpers.llm_router import get_router
 
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                loop.call_soon_threadsafe(lambda: asyncio.ensure_future(get_router().discover_models(force=True)))
+            loop = self._loop
+            if loop is not None:
+                loop.call_soon_threadsafe(  # type: ignore[union-attr]
+                    lambda: asyncio.ensure_future(
+                        get_router().discover_models(force=True),
+                        loop=loop,  # type: ignore[arg-type]
+                    )
+                )
             else:
-                loop.run_until_complete(get_router().discover_models(force=True))
+                log.debug("WorkModeManager: no event loop stored; skipping LLM router reload")
         except Exception as e:
             log.warning("WorkModeManager: LLM router reload error: %s", e)
