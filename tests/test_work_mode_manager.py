@@ -1,4 +1,5 @@
 # tests/test_work_mode_manager.py
+import threading
 from unittest.mock import MagicMock, patch
 
 from python.helpers.work_mode.manager import WorkModeManager
@@ -8,11 +9,11 @@ from python.helpers.work_mode.types import HardwareProfile, ModeContext, WorkMod
 def _make_manager() -> WorkModeManager:
     mgr = WorkModeManager.__new__(WorkModeManager)
     mgr._mode = WorkMode.LOCAL
-    mgr._selective_consents: frozenset = frozenset()
+    mgr._selective_consents = frozenset()
     mgr._profile = HardwareProfile()
-    mgr._listeners: list = []
+    mgr._listeners = []
     mgr._drain = MagicMock()
-    mgr._switch_lock = __import__("threading").Lock()
+    mgr._switch_lock = threading.Lock()
     mgr._profiler = MagicMock()
     mgr._profiler.probe.return_value = HardwareProfile(ram_gb=16.0, has_network=True, suggested_mode=WorkMode.CLOUD)
     return mgr
