@@ -3,8 +3,6 @@ from python.helpers.work_mode.manager import WorkModeManager
 
 
 class WorkModeGetHandler(ApiHandler):
-    route_name = "work_mode"
-
     @classmethod
     def get_methods(cls) -> list[str]:
         return ["GET"]

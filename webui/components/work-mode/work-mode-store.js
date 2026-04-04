@@ -24,7 +24,7 @@ const model = {
 
   async fetchMode() {
     try {
-      const res = await fetch("/api/work_mode");
+      const res = await fetch("/work_mode_get");
       if (res.ok) {
         const data = await res.json();
         this.current = data.mode;
@@ -38,7 +38,7 @@ const model = {
   async requestSwitch(newMode) {
     this.switching = true;
     try {
-      const res = await fetch("/api/work_mode_set", {
+      const res = await fetch("/work_mode_set", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ mode: newMode }),
