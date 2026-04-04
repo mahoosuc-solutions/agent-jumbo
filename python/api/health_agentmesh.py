@@ -44,12 +44,15 @@ class HealthAgentmesh(ApiHandler):
         base: dict[str, object]
         if bridge:
             base = {"status": "ok", **bridge.health()}
+            base["agentmesh_redis"] = "connected"
             consumer_active: bool = bridge.health().get("running", False)
         else:
             if not redis_url:
                 base = {"status": "disabled", "reason": "AGENTMESH_REDIS_URL not set"}
+                base["agentmesh_redis"] = "unconfigured"
             else:
                 base = {"status": "disconnected", "reason": "bridge failed to connect", "redis_url": redis_url}
+                base["agentmesh_redis"] = "unreachable"
             consumer_active = False
 
         # Extend with new fields
