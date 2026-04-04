@@ -44,7 +44,8 @@ fi
 VERSION=$(echo "${RELEASE_JSON}" | grep '"tag_name"' | head -1 | sed 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\{0,1\}\([^"]*\)".*/\1/')
 
 if [ -z "$VERSION" ]; then
-    echo "ERROR: Failed to determine latest version" >&2
+    echo "ERROR: Failed to determine latest version from GitHub API." >&2
+    echo "API response: ${RELEASE_JSON:0:200}" >&2
     exit 1
 fi
 
@@ -65,15 +66,24 @@ else
 fi
 
 echo "Extracting to ${INSTALL_DIR}..."
+if [ -d "${INSTALL_DIR}" ]; then
+    echo "Removing existing installation..."
+    rm -rf "${INSTALL_DIR}"
+fi
 mkdir -p "${INSTALL_DIR}"
 tar -xzf "${TMP_DIR}/${ARCHIVE_NAME}" -C "${INSTALL_DIR}" --strip-components=1
 
 # Step 5 — Check for uv, install if missing
 if ! command -v uv &>/dev/null; then
     echo "Installing uv (Python package manager)..."
+    # NOTE: This executes a remote script from the official Astral domain.
+    # Review https://astral.sh/uv/install.sh before running in security-sensitive environments.
     curl -LsSf https://astral.sh/uv/install.sh | sh
-    # Add uv to PATH for rest of this script
-    export PATH="${HOME}/.cargo/bin:${HOME}/.local/bin:${PATH}"
+    export PATH="${HOME}/.local/bin:${PATH}"
+    if ! command -v uv &>/dev/null; then
+        echo "ERROR: uv installation failed. Install manually: https://docs.astral.sh/uv/" >&2
+        exit 1
+    fi
 fi
 
 # Step 6 — Install Python dependencies
@@ -124,13 +134,14 @@ echo ""
 
 # Warn if LINK_DIR not in PATH
 if ! echo "${PATH}" | tr ':' '\n' | grep -qx "${LINK_DIR}"; then
-    echo "NOTE: Add ${LINK_DIR} to your PATH:"
-    if [ "$OS" = "Darwin" ]; then
-        echo "  echo 'export PATH=\"${LINK_DIR}:\${PATH}\"' >> ~/.zshrc"
-        echo "  source ~/.zshrc"
-    else
-        echo "  echo 'export PATH=\"${LINK_DIR}:\${PATH}\"' >> ~/.bashrc"
-        echo "  source ~/.bashrc"
-    fi
     echo ""
+    echo "NOTE: Add ${LINK_DIR} to your PATH."
+    # Detect shell rc file
+    case "${SHELL}" in
+        */zsh)  RC_FILE="${HOME}/.zshrc" ;;
+        */fish) RC_FILE="${HOME}/.config/fish/config.fish" ;;
+        *)      RC_FILE="${HOME}/.bashrc" ;;
+    esac
+    echo "  Add to ${RC_FILE}:"
+    echo "    export PATH=\"${LINK_DIR}:\${PATH}\""
 fi
