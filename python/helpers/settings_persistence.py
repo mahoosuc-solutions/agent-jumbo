@@ -243,7 +243,10 @@ def convert_in(settings: dict) -> Settings:
                             current["trust_always_allow"] = list(val) if val else []
                     elif field["id"] == "trust_level":
                         # UI sends string "1"/"2"/"3"/"4"; ensure it's stored as int
-                        current["trust_level"] = int(field["value"])
+                        try:
+                            current["trust_level"] = int(field["value"])
+                        except (ValueError, TypeError):
+                            pass  # Invalid value; keep existing
                     else:
                         current[field["id"]] = field["value"]
     return current
