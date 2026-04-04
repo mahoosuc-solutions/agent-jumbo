@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>West Bethel Motel — Onboarding Guide</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --bg2: #18181f;
+    --bg3: #22222c;
+    --border: #2e2e3a;
+    --border2: #3a3a4a;
+    --text: #e8e8f0;
+    --muted: #888899;
+    --copper: #c87941;
+    --copper2: #e8924a;
+    --green: #4ade80;
+    --yellow: #facc15;
+    --red: #f87171;
+    --blue: #60a5fa;
+    --purple: #a78bfa;
+    --radius: 10px;
+    --mono: 'Fira Mono', 'Cascadia Code', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.6; min-height: 100vh; }
+
+  /* ── Header ── */
+  .header { background: linear-gradient(135deg, #1a1008 0%, #0f0f13 60%); border-bottom: 1px solid var(--border); padding: 32px 48px; display: flex; align-items: center; gap: 20px; }
+  .header-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--copper), var(--copper2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.3px; }
+  .header p { color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .bridge-status { margin-left: auto; display: flex; gap: 10px; }
+  .bridge-pill { display: flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border2); background: var(--bg2); font-size: 12px; font-weight: 500; }
+  .bridge-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); transition: background 0.3s; }
+  .bridge-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .bridge-dot.err { background: var(--red); }
+
+  /* ── Layout ── */
+  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 90px); }
+  .nav { background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 0; position: sticky; top: 0; height: calc(100vh - 90px); overflow-y: auto; }
+  .nav-section { padding: 8px 20px 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
+  .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.15s; border-left: 2px solid transparent; }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: rgba(200, 121, 65, 0.1); color: var(--copper2); border-left-color: var(--copper); }
+  .nav-item .phase-num { width: 20px; height: 20px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .nav-item.active .phase-num { background: var(--copper); border-color: var(--copper); color: #000; }
+  .nav-item.done .phase-num { background: var(--green); border-color: var(--green); color: #000; }
+  .nav-item.done { color: var(--green); }
+  .main { padding: 40px 48px; max-width: 900px; }
+
+  /* ── Progress Bar ── */
+  .progress-bar-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 32px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 10px; }
+  .progress-label span:first-child { font-weight: 600; }
+  .progress-label span:last-child { color: var(--copper2); font-weight: 700; }
+  .progress-track { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--copper), var(--copper2)); border-radius: 3px; transition: width 0.4s ease; }
+
+  /* ── Phase cards ── */
+  .phase { margin-bottom: 48px; }
+  .phase-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+  .phase-badge { width: 40px; height: 40px; border-radius: 10px; background: var(--bg2); border: 1px solid var(--border2); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .phase-badge.active { background: rgba(200,121,65,0.15); border-color: var(--copper); }
+  .phase-title { font-size: 20px; font-weight: 700; }
+  .phase-desc { color: var(--muted); font-size: 13px; margin-top: 3px; }
+  .phase-tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; margin-top: 6px; }
+  .tag-required { background: rgba(248,113,113,0.15); color: var(--red); border: 1px solid rgba(248,113,113,0.3); }
+  .tag-tier { background: rgba(167,139,250,0.15); color: var(--purple); border: 1px solid rgba(167,139,250,0.3); }
+  .tag-optional { background: rgba(96,165,250,0.15); color: var(--blue); border: 1px solid rgba(96,165,250,0.3); }
+
+  /* ── Steps ── */
+  .steps { display: flex; flex-direction: column; gap: 12px; }
+  .step { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+  .step-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; user-select: none; }
+  .step-header:hover { background: var(--bg3); }
+  .step-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; cursor: pointer; transition: all 0.2s; }
+  .step-check.checked { background: var(--green); border-color: var(--green); }
+  .step-check svg { display: none; }
+  .step-check.checked svg { display: block; }
+  .step-num { font-size: 11px; font-weight: 700; color: var(--muted); min-width: 24px; }
+  .step-title { font-weight: 600; font-size: 14px; flex: 1; }
+  .step-tool { font-size: 11px; font-family: var(--mono); color: var(--copper2); background: rgba(200,121,65,0.1); padding: 2px 7px; border-radius: 4px; border: 1px solid rgba(200,121,65,0.2); white-space: nowrap; }
+  .step-chevron { color: var(--muted); font-size: 12px; transition: transform 0.2s; }
+  .step.open .step-chevron { transform: rotate(90deg); }
+
+  .step-body { display: none; border-top: 1px solid var(--border); padding: 16px; background: var(--bg); }
+  .step.open .step-body { display: block; }
+  .step-why { color: var(--muted); font-size: 13px; margin-bottom: 14px; line-height: 1.6; }
+
+  /* ── Command block ── */
+  .cmd-block { background: var(--bg2); border: 1px solid var(--border2); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+  .cmd-label { padding: 8px 14px; font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); border-bottom: 1px solid var(--border); background: var(--bg3); display: flex; justify-content: space-between; align-items: center; }
+  .cmd-copy { cursor: pointer; font-size: 11px; color: var(--copper2); padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(200,121,65,0.3); transition: all 0.15s; }
+  .cmd-copy:hover { background: rgba(200,121,65,0.1); }
+  .cmd-body { padding: 14px; font-family: var(--mono); font-size: 12.5px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; color: #c9d1d9; }
+  .cmd-key { color: #79c0ff; }
+  .cmd-val { color: #a5d6ff; }
+  .cmd-str { color: #a8d8a8; }
+  .cmd-comment { color: #6e7681; font-style: italic; }
+
+  /* ── Prompt block ── */
+  .prompt-block { background: rgba(200,121,65,0.06); border: 1px solid rgba(200,121,65,0.25); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+  .prompt-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--copper); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .prompt-text { font-size: 13.5px; line-height: 1.65; color: var(--text); }
+  .prompt-text strong { color: var(--copper2); }
+
+  /* ── Verify block ── */
+  .verify-block { background: rgba(74,222,128,0.05); border: 1px solid rgba(74,222,128,0.2); border-radius: 8px; padding: 12px 16px; margin-top: 10px; }
+  .verify-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--green); margin-bottom: 6px; }
+  .verify-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  /* ── Service grid ── */
+  .service-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+  .service-card { background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 14px; }
+  .service-icon { font-size: 22px; margin-bottom: 8px; }
+  .service-name { font-weight: 600; font-size: 13px; }
+  .service-tool { font-size: 11px; font-family: var(--mono); color: var(--copper2); margin-top: 4px; }
+  .service-tier { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  /* ── Alert ── */
+  .alert { display: flex; gap: 10px; padding: 12px 14px; border-radius: 8px; font-size: 13px; margin-bottom: 16px; }
+  .alert-info { background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.25); color: var(--blue); }
+  .alert-warn { background: rgba(250,204,21,0.08); border: 1px solid rgba(250,204,21,0.25); color: var(--yellow); }
+
+  /* ── Project creation banner ── */
+  .project-banner { background: linear-gradient(135deg, rgba(200,121,65,0.12), rgba(167,139,250,0.08)); border: 1px solid var(--copper); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+  .project-banner-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .project-banner-text p { font-size: 13px; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; transition: all 0.15s; text-decoration: none; }
+  .btn-copper { background: var(--copper); color: #000; }
+  .btn-copper:hover { background: var(--copper2); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border2); }
+  .btn-ghost:hover { background: var(--bg3); }
+  #create-project-btn { margin-left: auto; flex-shrink: 0; }
+  .project-created { display: none; align-items: center; gap: 8px; margin-left: auto; color: var(--green); font-size: 13px; font-weight: 600; }
+
+  /* ── Workflow import banner ── */
+  .workflow-banner { background: linear-gradient(135deg, rgba(96,165,250,0.08), rgba(167,139,250,0.08)); border: 1px solid rgba(96,165,250,0.35); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 32px; display: flex; align-items: center; gap: 16px; }
+  .workflow-banner-text h3 { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  .workflow-banner-text p { font-size: 13px; color: var(--muted); }
+  #import-workflows-btn { margin-left: auto; flex-shrink: 0; background: var(--blue); color: #000; }
+  #import-workflows-btn:hover { background: #93c5fd; }
+  .workflows-imported { display: none; align-items: center; gap: 8px; margin-left: auto; color: var(--green); font-size: 13px; font-weight: 600; }
+  .workflow-list { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.8; }
+  .workflow-list span { display: inline-block; padding: 1px 7px; border-radius: 4px; background: var(--bg3); border: 1px solid var(--border); margin: 2px 3px 2px 0; font-family: var(--mono); }
+
+  @media (max-width: 768px) {
+    .layout { grid-template-columns: 1fr; }
+    .nav { display: none; }
+    .main { padding: 24px 20px; }
+    .header { padding: 20px; flex-wrap: wrap; }
+    .bridge-status { margin-left: 0; width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-icon">🏨</div>
+  <div>
+    <h1>West Bethel Motel — Platform Onboarding</h1>
+    <p>Step-by-step guide to full service activation via Agent Jumbo + WBM MCP</p>
+  </div>
+  <div class="bridge-status">
+    <div class="bridge-pill" id="bridge-staging">
+      <div class="bridge-dot" id="dot-staging"></div>
+      <span>Staging :3150</span>
+    </div>
+    <div class="bridge-pill" id="bridge-prod">
+      <div class="bridge-dot" id="dot-prod"></div>
+      <span>Production :3151</span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- Sidebar nav -->
+  <nav class="nav">
+    <div class="nav-section">Setup</div>
+    <div class="nav-item active" onclick="scrollTo('phase-0')"><div class="phase-num">0</div> Project Setup</div>
+    <div class="nav-item" onclick="scrollTo('phase-1')"><div class="phase-num">1</div> Bootstrap</div>
+    <div class="nav-item" onclick="scrollTo('phase-2')"><div class="phase-num">2</div> Property Config</div>
+    <div class="nav-item" onclick="scrollTo('phase-3')"><div class="phase-num">3</div> Rooms</div>
+    <div class="nav-item" onclick="scrollTo('phase-4')"><div class="phase-num">4</div> Staff Access</div>
+    <div class="nav-section">Services</div>
+    <div class="nav-item" onclick="scrollTo('phase-5')"><div class="phase-num">5</div> Email</div>
+    <div class="nav-item" onclick="scrollTo('phase-6')"><div class="phase-num">6</div> Voice AI</div>
+    <div class="nav-item" onclick="scrollTo('phase-7')"><div class="phase-num">7</div> SMS</div>
+    <div class="nav-item" onclick="scrollTo('phase-8')"><div class="phase-num">8</div> Door Codes</div>
+    <div class="nav-item" onclick="scrollTo('phase-9')"><div class="phase-num">9</div> Payments</div>
+    <div class="nav-section">Intelligence</div>
+    <div class="nav-item" onclick="scrollTo('phase-10')"><div class="phase-num">10</div> Occupancy & Rates</div>
+    <div class="nav-item" onclick="scrollTo('phase-11')"><div class="phase-num">11</div> Competitor Intel</div>
+    <div class="nav-item" onclick="scrollTo('phase-12')"><div class="phase-num">12</div> Dynamic Pricing</div>
+    <div class="nav-item" onclick="scrollTo('phase-13')"><div class="phase-num">13</div> SEO & Web Presence</div>
+    <div class="nav-section">Completion</div>
+    <div class="nav-item" onclick="scrollTo('phase-14')"><div class="phase-num">14</div> Final Validation</div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main">
+
+    <!-- Progress -->
+    <div class="progress-bar-wrap">
+      <div class="progress-label">
+        <span>Onboarding Progress</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    </div>
+
+    <!-- Project creation banner -->
+    <div class="project-banner" id="project-banner">
+      <div style="font-size:28px">🚀</div>
+      <div class="project-banner-text">
+        <h3>Create this as a managed project in Agent Jumbo</h3>
+        <p>Sets up a dedicated workspace with the WBM system prompt and MCP bridge pre-configured.</p>
+      </div>
+      <button class="btn btn-copper" id="create-project-btn" onclick="createProject()">Create Project</button>
+      <div class="project-created" id="project-created">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Project created — open Agent Jumbo chat
+      </div>
+    </div>
+
+    <!-- Workflow import banner -->
+    <div class="workflow-banner" id="workflow-banner">
+      <div style="font-size:28px">🔁</div>
+      <div class="workflow-banner-text">
+        <h3>Install recurring workflows into Agent Jumbo Scheduler</h3>
+        <p>Creates daily, weekly, monthly, seasonal, and yearly tasks for ongoing WBM operations.</p>
+        <div class="workflow-list">
+          <span>daily-ops-brief</span><span>daily-checkin-scan</span><span>daily-occupancy-check</span>
+          <span>weekly-revenue-review</span><span>weekly-competitor-intel</span>
+          <span>monthly-rate-analysis</span><span>monthly-billing-review</span>
+          <span>seasonal-rate-activation</span><span>yearly-platform-audit</span>
+        </div>
+      </div>
+      <button class="btn" id="import-workflows-btn" onclick="importWorkflows()">Install Workflows</button>
+      <div class="workflows-imported" id="workflows-imported">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        9 workflows installed — view in Scheduler
+      </div>
+    </div>
+
+    <!-- PHASE 0 -->
+    <div class="phase" id="phase-0">
+      <div class="phase-header">
+        <div class="phase-badge active">🔌</div>
+        <div>
+          <div class="phase-title">Phase 0 — Verify MCP Bridge</div>
+          <div class="phase-desc">Confirm the WBM MCP Edge servers are reachable from Agent Jumbo before starting anything else.</div>
+          <span class="phase-tag tag-required">Required first</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-0-1">
+          <div class="step-header" onclick="toggle('s-0-1')">
+            <div class="step-check" onclick="check(event,'s-0-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">0.1</span>
+            <span class="step-title">Check bridge health</span>
+            <span class="step-tool">edge_health</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Confirms the MCP edge containers are up and the staging platform API is reachable. Run this before every session.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Use the <strong>wbm-staging</strong> MCP server. Call <strong>edge_health</strong> and then <strong>platform_api_root</strong> to confirm the bridge is connected to staging.</div>
+            </div>
+            <div class="verify-block">
+              <div class="verify-label">✓ Expected result</div>
+              <div class="verify-text">Status: healthy, uptime showing, platform API root responds with version info. If error — check wbm-mcp-staging container logs: <code style="font-family:var(--mono);font-size:12px">docker logs wbm-mcp-staging</code></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 1 -->
+    <div class="phase" id="phase-1">
+      <div class="phase-header">
+        <div class="phase-badge">🏗️</div>
+        <div>
+          <div class="phase-title">Phase 1 — Bootstrap Tenant</div>
+          <div class="phase-desc">Check current onboarding status and run the tenant-onboard runbook to initialise the tenant config.</div>
+          <span class="phase-tag tag-required">Required</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-1-1">
+          <div class="step-header" onclick="toggle('s-1-1')">
+            <div class="step-check" onclick="check(event,'s-1-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">1.1</span>
+            <span class="step-title">Check onboarding status</span>
+            <span class="step-tool">onboarding_status</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Shows what's already configured and what's missing. Always run this first so you know where you are.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>onboarding_status</strong> and <strong>onboarding_workflow_summary</strong> on the wbm-staging MCP server. Give me the full checklist of what's complete and what's pending.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-1-2">
+          <div class="step-header" onclick="toggle('s-1-2')">
+            <div class="step-check" onclick="check(event,'s-1-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">1.2</span>
+            <span class="step-title">Run tenant-onboard runbook</span>
+            <span class="step-tool">config_runbook_get</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">The tenant-onboard runbook creates the initial config, enables baseline features, sets the subscription tier, and validates the result. It's the guided setup wizard.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Get the <strong>tenant-onboard</strong> runbook using <strong>config_runbook_get</strong> on wbm-staging, then walk me through each step. The property name is "West Bethel Motel", start with the Standard tier.</div>
+            </div>
+            <div class="verify-block">
+              <div class="verify-label">✓ Expected result</div>
+              <div class="verify-text">Config created, features enabled, tier set. <code style="font-family:var(--mono);font-size:12px">tenant_config_validate</code> returns no errors. <code style="font-family:var(--mono);font-size:12px">config_health</code> score ≥ 60.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 2 -->
+    <div class="phase" id="phase-2">
+      <div class="phase-header">
+        <div class="phase-badge">🏠</div>
+        <div>
+          <div class="phase-title">Phase 2 — Property Configuration</div>
+          <div class="phase-desc">Set property name, address, timezone, phone number, and branding. This populates guest-facing content.</div>
+          <span class="phase-tag tag-required">Required</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-2-1">
+          <div class="step-header" onclick="toggle('s-2-1')">
+            <div class="step-check" onclick="check(event,'s-2-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">2.1</span>
+            <span class="step-title">Set property details</span>
+            <span class="step-tool">config_patch</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Name, address, timezone, and contact phone are required before any guest-facing feature (email, voice, booking page) will work correctly.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Use <strong>config_patch</strong> on wbm-staging to set: property name = "West Bethel Motel", address = [your address], timezone = "America/New_York", phone = [your front desk number], website = [your URL].</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-2-2">
+          <div class="step-header" onclick="toggle('s-2-2')">
+            <div class="step-check" onclick="check(event,'s-2-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">2.2</span>
+            <span class="step-title">Set check-in / check-out times</span>
+            <span class="step-tool">config_patch</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">These times feed into the voice AI script, automated email confirmations, and door code scheduling.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Patch the config on wbm-staging: set check_in_time = "15:00", check_out_time = "11:00", early_check_in_fee = 25, late_checkout_fee = 30.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-2-3">
+          <div class="step-header" onclick="toggle('s-2-3')">
+            <div class="step-check" onclick="check(event,'s-2-3')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">2.3</span>
+            <span class="step-title">Validate config health</span>
+            <span class="step-tool">config_health</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Returns a scored breakdown by section. Fix any section below 80 before moving to service setup.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Run <strong>config_health</strong> and <strong>property-health-check</strong> on wbm-staging. Show me every section score and flag anything below 80.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 3 -->
+    <div class="phase" id="phase-3">
+      <div class="phase-header">
+        <div class="phase-badge">🛏️</div>
+        <div>
+          <div class="phase-title">Phase 3 — Room Inventory</div>
+          <div class="phase-desc">Create at least one room. The platform blocks booking creation until a room exists.</div>
+          <span class="phase-tag tag-required">Required (min 1 room)</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-3-1">
+          <div class="step-header" onclick="toggle('s-3-1')">
+            <div class="step-check" onclick="check(event,'s-3-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">3.1</span>
+            <span class="step-title">Create all rooms</span>
+            <span class="step-tool">rooms_create</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Each room needs: room_number, room_type (standard/deluxe/suite), nightly_rate, and capacity. Rates set here become the baseline for dynamic pricing later.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging, create rooms using <strong>rooms_create</strong>. I have [N] rooms — room numbers [list], all standard type, nightly rate $[X], capacity 2. Create them all then call <strong>rooms_list</strong> to confirm.</div>
+            </div>
+            <div class="verify-block">
+              <div class="verify-label">✓ Expected result</div>
+              <div class="verify-text">All rooms appear in rooms_list with status = available. availability_get returns correct slots.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 4 -->
+    <div class="phase" id="phase-4">
+      <div class="phase-header">
+        <div class="phase-badge">👥</div>
+        <div>
+          <div class="phase-title">Phase 4 — Staff Access</div>
+          <div class="phase-desc">Invite staff accounts. Required before onboarding can be marked complete.</div>
+          <span class="phase-tag tag-required">Required</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-4-1">
+          <div class="step-header" onclick="toggle('s-4-1')">
+            <div class="step-check" onclick="check(event,'s-4-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">4.1</span>
+            <span class="step-title">Invite manager / admin account</span>
+            <span class="step-tool">staff_invite</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">staff_invite sends a Firebase sign-in link. The recipient clicks it to set their password and gains access to the platform dashboard.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Use <strong>staff_invite</strong> on wbm-staging to invite [email address] with role = "manager". Then call <strong>staff_list</strong> to confirm the pending invite.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 5 -->
+    <div class="phase" id="phase-5">
+      <div class="phase-header">
+        <div class="phase-badge">📧</div>
+        <div>
+          <div class="phase-title">Phase 5 — Email Processing</div>
+          <div class="phase-desc">Connect Gmail or IMAP so the AI can read, categorise, and respond to guest emails automatically.</div>
+          <span class="phase-tag tag-required">Required (Standard tier)</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-5-1">
+          <div class="step-header" onclick="toggle('s-5-1')">
+            <div class="step-check" onclick="check(event,'s-5-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">5.1</span>
+            <span class="step-title">Connect email account</span>
+            <span class="step-tool">email_accounts_create</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">The platform needs Gmail OAuth or an IMAP app password. Gmail is recommended — create an app password in Google Account → Security → 2-Step Verification → App passwords.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging, call <strong>email_accounts_create</strong> with provider = "gmail", email = "[front-desk email]", app_password = "[16-char app password]". Then call <strong>email_accounts_test</strong> to verify connectivity.</div>
+            </div>
+            <div class="verify-block">
+              <div class="verify-label">✓ Expected result</div>
+              <div class="verify-text">email_accounts_test returns connected = true. email_intelligence_status shows AI processing active.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-5-2">
+          <div class="step-header" onclick="toggle('s-5-2')">
+            <div class="step-check" onclick="check(event,'s-5-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">5.2</span>
+            <span class="step-title">Import historical emails for AI training</span>
+            <span class="step-tool">email_accounts_import</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Importing past guest emails trains the AI on your property's tone, common questions, and typical requests. The more history, the better the responses.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>email_accounts_import</strong> on wbm-staging for the connected account — import the last 6 months of emails for AI training.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 6 -->
+    <div class="phase" id="phase-6">
+      <div class="phase-header">
+        <div class="phase-badge">🎙️</div>
+        <div>
+          <div class="phase-title">Phase 6 — Voice AI Agent</div>
+          <div class="phase-desc">Configure the AI phone agent that handles reservations, early check-in, late checkout, and local recommendations.</div>
+          <span class="phase-tag tag-tier">Standard+ tier</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-6-1">
+          <div class="step-header" onclick="toggle('s-6-1')">
+            <div class="step-check" onclick="check(event,'s-6-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">6.1</span>
+            <span class="step-title">Review available voices and personalities</span>
+            <span class="step-tool">voice_agent_options</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Lists available voice models (regional accents, male/female), personalities (professional, warm, efficient), and fallback options.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>voice_agent_options</strong> on wbm-staging. Show me all available voices and personalities so I can choose.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-6-2">
+          <div class="step-header" onclick="toggle('s-6-2')">
+            <div class="step-check" onclick="check(event,'s-6-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">6.2</span>
+            <span class="step-title">Configure voice agent</span>
+            <span class="step-tool">voice_agent_config_update</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Sets voice model, personality, fallback phone (if AI can't handle the call), and the property-specific greeting script.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Run the <strong>service-provision-voice-ai</strong> runbook on wbm-staging. Set personality = "warm", fallback_number = "[your cell or front desk]", greeting = "Thank you for calling West Bethel Motel, how can I help you today?"</div>
+            </div>
+            <div class="alert alert-warn" style="margin-top:12px">
+              <span>⚠️</span>
+              <span>Voice AI requires a phone number provisioned through the platform. Ask Aaron to confirm the number assigned to this property before testing.</span>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-6-3">
+          <div class="step-header" onclick="toggle('s-6-3')">
+            <div class="step-check" onclick="check(event,'s-6-3')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">6.3</span>
+            <span class="step-title">Test voice agent capabilities</span>
+            <span class="step-tool">voice_modify_reservation</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Validates that reservation modification, early check-in handling, late checkout, and local recommendation flows all respond correctly before going live.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging, simulate a guest calling to request early check-in using <strong>voice_early_checkin</strong>. Then test <strong>voice_local_recommendations</strong> to see what the AI would suggest near West Bethel, Maine.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 7 -->
+    <div class="phase" id="phase-7">
+      <div class="phase-header">
+        <div class="phase-badge">💬</div>
+        <div>
+          <div class="phase-title">Phase 7 — SMS Notifications</div>
+          <div class="phase-desc">Enable SMS for booking confirmations, check-in reminders, and door code delivery.</div>
+          <span class="phase-tag tag-required">Required (Standard tier)</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-7-1">
+          <div class="step-header" onclick="toggle('s-7-1')">
+            <div class="step-check" onclick="check(event,'s-7-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">7.1</span>
+            <span class="step-title">Enable SMS service and configure notifications</span>
+            <span class="step-tool">tenant_config_enable</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">SMS is the most reliable channel for door codes, last-minute changes, and check-in reminders. Guests read texts — not emails.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging, call <strong>tenant_config_enable</strong> with feature = "sms_notifications". Then call <strong>notifications_config_update</strong> to enable: booking_confirmation, checkin_reminder (24h before), door_code_delivery, checkout_reminder.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 8 -->
+    <div class="phase" id="phase-8">
+      <div class="phase-header">
+        <div class="phase-badge">🔐</div>
+        <div>
+          <div class="phase-title">Phase 8 — Door Codes & Hardware</div>
+          <div class="phase-desc">Register door locks, cameras, and kiosks. Configure automatic code generation and delivery.</div>
+          <span class="phase-tag tag-tier">Standard+ tier</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-8-1">
+          <div class="step-header" onclick="toggle('s-8-1')">
+            <div class="step-check" onclick="check(event,'s-8-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">8.1</span>
+            <span class="step-title">Register door locks</span>
+            <span class="step-tool">hardware-register-device</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Each room's lock gets registered once with its hardware ID. After that, the platform auto-generates unique codes per booking and sends them via SMS at check-in.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Run the <strong>hardware-register-device</strong> runbook on wbm-staging for each door lock. Device type = "door_lock", location = "Room [number]". I have [N] locks — help me register them all.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-8-2">
+          <div class="step-header" onclick="toggle('s-8-2')">
+            <div class="step-check" onclick="check(event,'s-8-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">8.2</span>
+            <span class="step-title">Set up automation rules for code delivery</span>
+            <span class="step-tool">automation_rules_list</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Automation rules trigger door code SMS automatically on check-in so you never have to manually send codes.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>automation_rules_list</strong> on wbm-staging. Create a rule: trigger = "booking_checkin_time", action = "send_door_code_sms" to the guest's phone. Enable it.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 9 -->
+    <div class="phase" id="phase-9">
+      <div class="phase-header">
+        <div class="phase-badge">💳</div>
+        <div>
+          <div class="phase-title">Phase 9 — Payment Processing</div>
+          <div class="phase-desc">Connect Stripe to accept online payments for bookings and deposits.</div>
+          <span class="phase-tag tag-required">Required</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-9-1">
+          <div class="step-header" onclick="toggle('s-9-1')">
+            <div class="step-check" onclick="check(event,'s-9-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">9.1</span>
+            <span class="step-title">Connect Stripe account</span>
+            <span class="step-tool">service-provision-stripe</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Stripe Connect links your Stripe account so payments from guests flow directly to your bank. The runbook handles the approval workflow for sensitive config changes.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Run the <strong>service-provision-stripe</strong> runbook on wbm-staging. Check <strong>stripe_connect_status</strong> first. If not connected, walk me through the connection steps.</div>
+            </div>
+            <div class="verify-block">
+              <div class="verify-label">✓ Expected result</div>
+              <div class="verify-text">stripe_connect_status returns connected = true, charges_enabled = true. stripe_processor_health = healthy.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 10 -->
+    <div class="phase" id="phase-10">
+      <div class="phase-header">
+        <div class="phase-badge">📊</div>
+        <div>
+          <div class="phase-title">Phase 10 — Occupancy & Rate Intelligence</div>
+          <div class="phase-desc">Get real-time occupancy dashboard and configure the revenue cost model.</div>
+          <span class="phase-tag tag-tier">Professional tier</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-10-1">
+          <div class="step-header" onclick="toggle('s-10-1')">
+            <div class="step-check" onclick="check(event,'s-10-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">10.1</span>
+            <span class="step-title">Pull occupancy dashboard</span>
+            <span class="step-tool">dashboard_stats</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Real-time occupancy rate, bookings today, revenue MTD, and upcoming check-ins in one call. Run this every morning during the daily brief.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>dashboard_stats</strong> and <strong>daily-operations-brief</strong> on wbm-staging. Give me current occupancy rate, today's check-ins, and revenue this month.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-10-2">
+          <div class="step-header" onclick="toggle('s-10-2')">
+            <div class="step-check" onclick="check(event,'s-10-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">10.2</span>
+            <span class="step-title">Configure cost model</span>
+            <span class="step-tool">propops_cost_model_update</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">The cost model (cleaning cost, utilities, mortgage/rent per room) is needed before the pricing engine can calculate true profit margins per booking.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>propops_cost_model_get</strong> on wbm-staging to see current values, then <strong>propops_cost_model_update</strong> to set: cleaning_cost = $[X], utilities_per_night = $[X], fixed_cost_per_night = $[X].</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 11 -->
+    <div class="phase" id="phase-11">
+      <div class="phase-header">
+        <div class="phase-badge">🔍</div>
+        <div>
+          <div class="phase-title">Phase 11 — Competitor Intelligence</div>
+          <div class="phase-desc">Understand who your competitors are and how your rates compare to the local market.</div>
+          <span class="phase-tag tag-tier">Professional tier</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-11-1">
+          <div class="step-header" onclick="toggle('s-11-1')">
+            <div class="step-check" onclick="check(event,'s-11-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">11.1</span>
+            <span class="step-title">Run competitor analysis</span>
+            <span class="step-tool">competitor-analysis</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Pulls market data for competing properties near West Bethel, Maine — their rates, occupancy signals, and positioning. Forms the baseline for dynamic pricing decisions.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>competitor-analysis</strong> on wbm-staging. Then call <strong>competitor_research</strong> for detailed data on the top 5 competitors in the Bethel, Maine area. What are their nightly rates and how do we compare?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 12 -->
+    <div class="phase" id="phase-12">
+      <div class="phase-header">
+        <div class="phase-badge">📈</div>
+        <div>
+          <div class="phase-title">Phase 12 — Dynamic Rate Management</div>
+          <div class="phase-desc">Configure seasonal rates, revenue profiles, and run what-if pricing scenarios.</div>
+          <span class="phase-tag tag-tier">Professional tier</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-12-1">
+          <div class="step-header" onclick="toggle('s-12-1')">
+            <div class="step-check" onclick="check(event,'s-12-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">12.1</span>
+            <span class="step-title">Create seasonal rate periods</span>
+            <span class="step-tool">seasonal_rates_create</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Maine has strong seasonality — ski season (winter), leaf peeping (October), summer. Define rate multipliers for each so pricing adjusts automatically.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging, call <strong>seasonal_rates_list</strong> first. Then use <strong>seasonal_rates_create</strong> to create: Summer Peak (Jun 15–Sep 1, +40%), Fall Foliage (Sep 15–Oct 31, +35%), Ski Season (Dec 15–Mar 15, +30%), Holiday (Dec 23–Jan 2, +60%).</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-12-2">
+          <div class="step-header" onclick="toggle('s-12-2')">
+            <div class="step-check" onclick="check(event,'s-12-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">12.2</span>
+            <span class="step-title">Configure revenue profile and run scenario</span>
+            <span class="step-tool">propops_scenario_run</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">A revenue profile combines occupancy target, rate floor, rate ceiling, and competitor parity rules. Run a scenario to see projected revenue before committing rates.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging: call <strong>propops_profile_configure</strong> to set occupancy_target = 75%, rate_floor = $[X], rate_ceiling = $[X]. Then run <strong>propops_scenario_run</strong> for the next 90 days and show me projected revenue vs current rates.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 13 -->
+    <div class="phase" id="phase-13">
+      <div class="phase-header">
+        <div class="phase-badge">🌐</div>
+        <div>
+          <div class="phase-title">Phase 13 — SEO & Web Presence</div>
+          <div class="phase-desc">Validate that the motel website is Google-compliant and has strong search visibility.</div>
+          <span class="phase-tag tag-optional">Via Agent Jumbo tools</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-13-1">
+          <div class="step-header" onclick="toggle('s-13-1')">
+            <div class="step-check" onclick="check(event,'s-13-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">13.1</span>
+            <span class="step-title">Full site SEO audit</span>
+            <span class="step-tool">Agent Jumbo SEO skill</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Checks title tags, meta descriptions, structured data (LocalBusiness schema), page speed, mobile-friendliness, and Core Web Vitals — all factors Google uses to rank lodging results.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Run a full SEO audit on <strong>[westbethelmotel.me]</strong>. Check: title tags, meta descriptions, LocalBusiness structured data (schema.org), page speed score, mobile viewport, canonical URLs, and sitemap. Give me a prioritised fix list.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-13-2">
+          <div class="step-header" onclick="toggle('s-13-2')">
+            <div class="step-check" onclick="check(event,'s-13-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">13.2</span>
+            <span class="step-title">Competitor content and keyword gap analysis</span>
+            <span class="step-tool">Agent Jumbo SEO skill</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Identifies what keywords competing Maine lodging sites rank for that WBM doesn't — these are content opportunities that can drive organic bookings.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Analyse competitors of West Bethel Motel for SEO. Search for "motel bethel maine", "lodging white mountains maine", "ski lodging sunday river". What keywords are competitors ranking for that our site is missing? Give me a content plan to close the gap.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-13-3">
+          <div class="step-header" onclick="toggle('s-13-3')">
+            <div class="step-check" onclick="check(event,'s-13-3')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">13.3</span>
+            <span class="step-title">Google Business Profile validation</span>
+            <span class="step-tool">Agent Jumbo web tools</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Google Business Profile directly affects the local pack (the map results shown for "motel near me"). It must have: accurate hours, address matching website, photos, review responses.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Search Google for "West Bethel Motel" and check: Is the Google Business Profile claimed? Are the hours, address, and phone correct? Are there recent review responses? What's the star rating and review count vs competitors?</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PHASE 14 -->
+    <div class="phase" id="phase-14">
+      <div class="phase-header">
+        <div class="phase-badge">✅</div>
+        <div>
+          <div class="phase-title">Phase 14 — Final Validation & Go Live</div>
+          <div class="phase-desc">Run the full health check, mark onboarding complete, and promote staging config to production.</div>
+          <span class="phase-tag tag-required">Required to go live</span>
+        </div>
+      </div>
+      <div class="steps">
+        <div class="step" id="s-14-1">
+          <div class="step-header" onclick="toggle('s-14-1')">
+            <div class="step-check" onclick="check(event,'s-14-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">14.1</span>
+            <span class="step-title">Full system health check</span>
+            <span class="step-tool">property-health-check</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">On wbm-staging: call <strong>property-health-check</strong>, <strong>platform_config_validate</strong>, <strong>config_health</strong>, and <strong>system-status</strong>. Give me a full readiness report. Flag anything blocking go-live.</div>
+            </div>
+            <div class="verify-block">
+              <div class="verify-label">✓ Go-live criteria</div>
+              <div class="verify-text">config_health ≥ 85 · All required services healthy · No pending approval requests · Rooms created · Stripe connected · At least 1 staff account active</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-14-2">
+          <div class="step-header" onclick="toggle('s-14-2')">
+            <div class="step-check" onclick="check(event,'s-14-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">14.2</span>
+            <span class="step-title">Mark onboarding complete</span>
+            <span class="step-tool">onboarding_complete</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">This unlocks guest creation, booking creation, billing tools, and runbook config tools that are blocked during onboarding.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Call <strong>onboarding_complete</strong> on wbm-staging to mark the tenant fully onboarded. Then verify <strong>onboarding_status</strong> shows complete = true.</div>
+            </div>
+          </div>
+        </div>
+        <div class="step" id="s-14-3">
+          <div class="step-header" onclick="toggle('s-14-3')">
+            <div class="step-check" onclick="check(event,'s-14-3')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+            <span class="step-num">14.3</span>
+            <span class="step-title">Promote staging config to production</span>
+            <span class="step-tool">tenant_config_clone</span>
+            <span class="step-chevron">▶</span>
+          </div>
+          <div class="step-body">
+            <div class="step-why">Once staging is validated, clone the config to the production environment so live bookings go through real Stripe, real voice AI, and real door codes.</div>
+            <div class="prompt-block">
+              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-text">Switch to the <strong>wbm-production</strong> MCP server. Clone the validated staging config using <strong>tenant_config_clone</strong>. Then run <strong>property-health-check</strong> on production to confirm the clone succeeded.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ── Bridge health polling ──
+async function checkBridge(port, dotId) {
+  try {
+    const r = await fetch(`http://localhost:${port}/health`, { signal: AbortSignal.timeout(3000) });
+    document.getElementById(dotId).className = r.ok ? 'bridge-dot ok' : 'bridge-dot err';
+  } catch { document.getElementById(dotId).className = 'bridge-dot err'; }
+}
+checkBridge(3150, 'dot-staging');
+checkBridge(3151, 'dot-prod');
+setInterval(() => { checkBridge(3150, 'dot-staging'); checkBridge(3151, 'dot-prod'); }, 30000);
+
+// ── Step toggle ──
+function toggle(id) {
+  const el = document.getElementById(id);
+  el.classList.toggle('open');
+}
+
+// ── Checkbox ──
+const STATE_KEY = 'wbm-onboarding-state';
+function loadState() { try { return JSON.parse(localStorage.getItem(STATE_KEY) || '{}'); } catch { return {}; } }
+function saveState(s) { localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
+
+function check(e, stepId) {
+  e.stopPropagation();
+  const el = document.getElementById(stepId);
+  const checkEl = el.querySelector('.step-check');
+  const state = loadState();
+  const checked = !checkEl.classList.contains('checked');
+  if (checked) checkEl.classList.add('checked'); else checkEl.classList.remove('checked');
+  state[stepId] = checked;
+  saveState(state);
+  updateProgress();
+}
+
+function updateProgress() {
+  const state = loadState();
+  const allSteps = document.querySelectorAll('.step[id]');
+  const total = allSteps.length;
+  const done = Object.values(state).filter(Boolean).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  document.getElementById('progress-pct').textContent = pct + '%';
+  document.getElementById('progress-fill').style.width = pct + '%';
+}
+
+// Restore checkbox state on load
+(function restoreState() {
+  const state = loadState();
+  Object.entries(state).forEach(([id, checked]) => {
+    if (!checked) return;
+    const el = document.getElementById(id);
+    if (el) el.querySelector('.step-check')?.classList.add('checked');
+  });
+  updateProgress();
+})();
+
+// ── Nav scroll ──
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+}
+
+// ── Copy button helper ──
+function copy(text, btn) {
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// ── Create project in Agent Jumbo ──
+async function createProject() {
+  const btn = document.getElementById('create-project-btn');
+  btn.textContent = 'Creating…';
+  btn.disabled = true;
+
+  const CSRF_TOKEN = await getCsrf();
+
+  const body = {
+    action: 'create',
+    project: {
+      name: 'west_bethel_motel',
+      title: 'West Bethel Motel',
+      description: 'Platform management for West Bethel Motel — bookings, voice AI, door codes, revenue management, SEO, and MCP bridge operations via wbm-staging and wbm-production.',
+      instructions: `You are the platform management agent for West Bethel Motel, a property in Bethel, Maine.
+
+## MCP Servers
+- wbm-staging: staging environment (port 3150) — use for testing and config changes
+- wbm-production: production environment (port 3151) — use only when validated on staging
+
+## Core Responsibilities
+- Property configuration and onboarding
+- Guest and booking management
+- Voice AI agent configuration and testing
+- Door code and hardware management
+- Revenue management and dynamic pricing
+- Competitor intelligence
+- Email and SMS automation
+- SEO and web presence monitoring
+
+## Rules
+- Always run health checks before making config changes
+- Never touch production without staging validation first
+- Request approval for sensitive config changes (payments, voice AI phone number)
+- Use config_patch for incremental changes, never config_update unless doing a full reset
+- Start every session with: onboarding_status, dashboard_stats, daily-operations-brief
+
+## Key Tools (in priority order for each session)
+1. onboarding_status — check what's complete
+2. dashboard_stats — current occupancy and revenue
+3. property-health-check — catch any degraded services
+4. Use the runbooks (config_runbooks_list) for any service provisioning task`,
+      color: '#c87941',
+      memory: 'own',
+    }
+  };
+
+  try {
+    const resp = await fetch('/projects', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF_TOKEN },
+      body: JSON.stringify(body)
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      btn.style.display = 'none';
+      document.getElementById('project-created').style.display = 'flex';
+    } else {
+      btn.textContent = 'Error — try again';
+      btn.disabled = false;
+      console.error(data);
+    }
+  } catch (err) {
+    btn.textContent = 'Error — try again';
+    btn.disabled = false;
+    console.error(err);
+  }
+}
+
+async function getCsrf() {
+  try {
+    const r = await fetch('/csrf_token');
+    const d = await r.json();
+    return d.token || '';
+  } catch { return ''; }
+}
+
+// ── Import WBM recurring workflows into Agent Jumbo Scheduler ──
+async function importWorkflows() {
+  const btn = document.getElementById('import-workflows-btn');
+  btn.textContent = 'Installing…';
+  btn.disabled = true;
+
+  const CSRF = await getCsrf();
+
+  const WBM_SYSTEM = `You are the recurring operations agent for West Bethel Motel, a property in Bethel, Maine.
+You execute scheduled operational tasks via the wbm-production MCP server.
+Always begin with edge_health to confirm the bridge is up. If the bridge is down, log the failure and exit gracefully.
+Use wbm-production for all live data. Never modify configuration during scheduled runs — read and report only unless the task explicitly calls for an update.
+Keep responses concise; include key metrics and any action items that require human review.`;
+
+  const tasks = [
+    // ── DAILY ──────────────────────────────────────────────────────────────
+    {
+      name: 'wbm-daily-ops-brief',
+      schedule: { minute: '0', hour: '7', day: '*', month: '*', weekday: '*' },
+      prompt: `Run the daily West Bethel Motel operations brief. Steps:
+1. Call edge_health to confirm the wbm-production bridge is up.
+2. Call dashboard_stats to get current occupancy rate, revenue today, and revenue MTD.
+3. Call pms_reservations_list with check_in_date = today to list all arriving guests.
+4. Call pms_reservations_list with check_out_date = today to list all departing guests.
+5. Call onboarding_status to check for any incomplete onboarding items.
+6. Summarize: occupancy %, arrivals, departures, revenue MTD, and any onboarding gaps.
+Flag any issues that need human attention.`
+    },
+    {
+      name: 'wbm-daily-checkin-scan',
+      schedule: { minute: '45', hour: '14', day: '*', month: '*', weekday: '*' },
+      prompt: `Run the West Bethel Motel afternoon check-in scan. Steps:
+1. Call edge_health to confirm bridge is up.
+2. Call pms_reservations_list with check_in_date = today and status = confirmed.
+3. For each arriving reservation, call door_codes_get_active to verify the door code is assigned and active.
+4. If any reservation is missing an active door code, call door_codes_issue to create one and log it.
+5. Call sms_send (if SMS is provisioned) to send arrival instructions to guests checking in within 2 hours.
+Report: total arrivals, codes issued, messages sent, and any failures.`
+    },
+    {
+      name: 'wbm-daily-occupancy-check',
+      schedule: { minute: '0', hour: '20', day: '*', month: '*', weekday: '*' },
+      prompt: `Run the West Bethel Motel evening occupancy and revenue check. Steps:
+1. Call edge_health.
+2. Call dashboard_stats for today's final occupancy, ADR (average daily rate), and RevPAR.
+3. Call propops_forecast_vs_actual for the next 7 days to compare bookings to forecast.
+4. If occupancy for tomorrow is under 60%, note it as a yield opportunity.
+5. Call billing_invoices to check for any unpaid balances from today's check-outs.
+Summarize today's performance in 3–5 bullet points.`
+    },
+    // ── WEEKLY ─────────────────────────────────────────────────────────────
+    {
+      name: 'wbm-weekly-revenue-review',
+      schedule: { minute: '0', hour: '8', day: '*', month: '*', weekday: '1' },
+      prompt: `Run the West Bethel Motel weekly revenue review (every Monday). Steps:
+1. Call edge_health.
+2. Call dashboard_stats for weekly revenue, occupancy rate, and ADR.
+3. Call propops_forecast_vs_actual for the next 30 days.
+4. Call propops_scenario_run with scenario = "baseline_30d" to get forward-looking revenue estimate.
+5. Compare actual ADR this week vs same period prior year if available.
+6. Identify the 3 highest-value upcoming reservations (call pms_reservations_list sorted by total_amount desc).
+Produce a concise weekly revenue memo with highlights and recommended actions.`
+    },
+    {
+      name: 'wbm-weekly-competitor-intel',
+      schedule: { minute: '0', hour: '9', day: '*', month: '*', weekday: '3' },
+      prompt: `Run the West Bethel Motel weekly competitor intelligence check (every Wednesday). Steps:
+1. Call edge_health.
+2. Call competitor_research with location = "Bethel, Maine" and dates = next_weekend to get current competitor rates.
+3. Compare competitor rates to West Bethel Motel's current rates (call seasonal_rates_list).
+4. Flag if any competitor is priced more than 20% below or above WBM for the same period.
+5. Call dynamic_pricing_suggest if a rate adjustment is warranted.
+Report: competitor rate summary, WBM vs market position, and any recommended rate changes.`
+    },
+    // ── MONTHLY ────────────────────────────────────────────────────────────
+    {
+      name: 'wbm-monthly-rate-analysis',
+      schedule: { minute: '0', hour: '8', day: '1', month: '*', weekday: '*' },
+      prompt: `Run the West Bethel Motel monthly rate analysis (1st of every month). Steps:
+1. Call edge_health.
+2. Call seasonal_rates_list to review all active rate periods.
+3. Call propops_scenario_run with scenario = "rate_sensitivity_90d" to model rate change impact.
+4. Review occupancy trend for the past 30 days (dashboard_stats with period = last_30d).
+5. Identify any upcoming seasonal period that should be activated in the next 30 days.
+6. Call dynamic_pricing_suggest for the next 60-day window.
+Produce a monthly rate memo: current rates, demand outlook, recommended adjustments, and any seasonal period to activate.`
+    },
+    {
+      name: 'wbm-monthly-billing-review',
+      schedule: { minute: '0', hour: '10', day: '2', month: '*', weekday: '*' },
+      prompt: `Run the West Bethel Motel monthly billing review (2nd of every month). Steps:
+1. Call edge_health.
+2. Call billing_invoices with status = unpaid to list all outstanding balances.
+3. Call billing_invoices with period = last_month for a revenue reconciliation summary.
+4. Check stripe_payments_list for any failed or disputed charges in the past 30 days.
+5. Flag any invoice over $500 that is more than 7 days overdue.
+Summarize: total revenue last month, outstanding balances, disputes, and items requiring follow-up.`
+    },
+    // ── SEASONAL ───────────────────────────────────────────────────────────
+    {
+      name: 'wbm-seasonal-rate-activation',
+      schedule: { minute: '0', hour: '7', day: '1', month: '3,6,9,12', weekday: '*' },
+      prompt: `Run the West Bethel Motel seasonal rate activation check (quarterly: Mar 1, Jun 1, Sep 1, Dec 1). Steps:
+1. Call edge_health.
+2. Call seasonal_rates_list to see which rate periods are active and which are upcoming.
+3. Identify the rate period for the current season (spring/summer/fall/winter).
+4. If the upcoming season's rate period is not yet active, call seasonal_rates_activate with the appropriate period ID.
+5. Call voice_ai_scripts_list to check if the seasonal greeting script needs updating for the new season.
+6. If the voice AI script references the wrong season, flag it for manual update with the correct language.
+Report: which rate period was activated, current ADR, and any voice AI script updates needed.`
+    },
+    // ── YEARLY ─────────────────────────────────────────────────────────────
+    {
+      name: 'wbm-yearly-platform-audit',
+      schedule: { minute: '0', hour: '9', day: '1', month: '1', weekday: '*' },
+      prompt: `Run the West Bethel Motel annual platform audit (January 1st). Steps:
+1. Call edge_health.
+2. Call onboarding_status to verify all 14 onboarding phases are complete.
+3. Call config_get_full to review the complete property configuration and flag any stale or missing values.
+4. Call voice_ai_status to confirm voice AI is active and the phone number is current.
+5. Call sms_status to confirm SMS provider is active.
+6. Call door_codes_audit to check for any expired or orphaned door codes.
+7. Call billing_invoices with period = last_year for annual revenue summary.
+8. Call competitor_research for current market positioning.
+9. Call seo_audit (if available) to check web presence health.
+Produce a full annual platform health report covering: all services status, annual revenue, top issues, and recommended priorities for the new year.`
+    }
+  ];
+
+  let created = 0;
+  let errors = [];
+
+  for (const t of tasks) {
+    try {
+      const resp = await fetch('/scheduler_task_create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+        body: JSON.stringify({
+          name: t.name,
+          system_prompt: WBM_SYSTEM,
+          prompt: t.prompt,
+          schedule: t.schedule,
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
+          project_name: 'west_bethel_motel'
+        })
+      });
+      const data = await resp.json();
+      if (data.ok) {
+        created++;
+      } else {
+        errors.push(t.name);
+        console.error('Failed to create', t.name, data);
+      }
+    } catch (err) {
+      errors.push(t.name);
+      console.error('Error creating', t.name, err);
+    }
+  }
+
+  if (errors.length === 0) {
+    btn.style.display = 'none';
+    document.getElementById('workflows-imported').style.display = 'flex';
+    document.getElementById('workflows-imported').textContent = `✓ ${created} workflows installed — view in Scheduler`;
+  } else {
+    btn.textContent = `${created}/${tasks.length} installed — retry?`;
+    btn.disabled = false;
+    console.warn('Failed tasks:', errors);
+  }
+}
+</script>
+
+</body>
+</html>

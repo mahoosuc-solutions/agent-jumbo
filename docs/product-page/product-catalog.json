@@ -449,9 +449,77 @@
         "task.completed"
       ],
       "icon_suggestion": "Phone handset with sound waves and a checkmark, representing automated voice conversations that convert"
+    },
+    {
+      "slug": "stayhive-hospitality",
+      "name": "StayHive Hospitality",
+      "tagline": "Turn any property into a fully automated AI-managed hospitality operation.",
+      "description": "StayHive Hospitality is a complete short-term rental and boutique hotel automation module for Stayhive.Cloud customers. Ships with a 14-phase guided onboarding workflow, 9 pre-built recurring scheduler tasks (daily ops brief, check-in scan, occupancy check, revenue review, competitor intel, rate analysis, billing review, seasonal activation, and annual audit), and full MCP bridge integration for voice AI, SMS, door codes, dynamic pricing, and SEO monitoring. Customers go from zero to fully live in one guided session. The module is distributed as a standalone add-on to any Stayhive.Cloud plan.",
+      "audience": "business",
+      "module_type": "add-on",
+      "distribution": "stayhive.cloud",
+      "onboarding_guide": "/wbm-onboarding.html",
+      "instruments": [
+        "property_manager",
+        "pms_hub",
+        "workflow_engine",
+        "stripe_payments"
+      ],
+      "tools": [
+        "property_manager_tool",
+        "pms_hub_tool",
+        "scheduler",
+        "stripe_payments",
+        "competitor_research",
+        "dynamic_pricing_suggest",
+        "seasonal_rates_list",
+        "seasonal_rates_activate",
+        "voice_ai_status",
+        "voice_ai_scripts_list",
+        "door_codes_get_active",
+        "door_codes_issue",
+        "door_codes_audit",
+        "sms_send",
+        "sms_status",
+        "onboarding_status",
+        "dashboard_stats",
+        "billing_invoices",
+        "config_get_full",
+        "config_patch",
+        "edge_health"
+      ],
+      "scheduled_workflows": [
+        "wbm-daily-ops-brief",
+        "wbm-daily-checkin-scan",
+        "wbm-daily-occupancy-check",
+        "wbm-weekly-revenue-review",
+        "wbm-weekly-competitor-intel",
+        "wbm-monthly-rate-analysis",
+        "wbm-monthly-billing-review",
+        "wbm-seasonal-rate-activation",
+        "wbm-yearly-platform-audit"
+      ],
+      "repos": [
+        "west-bethel-motel-booking-system"
+      ],
+      "integrations": [
+        "Twilio Voice AI",
+        "Twilio SMS",
+        "Stripe",
+        "Google Calendar",
+        "Airbnb / OTAs",
+        "Smart Lock / Door Codes",
+        "SEO / Google Search Console"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed",
+        "task.approval_required"
+      ],
+      "icon_suggestion": "Honeycomb cell containing a motel key and calendar, representing structured short-term rental automation"
     }
   ],
-  "naming_rationale": "Products follow three naming patterns: *Flow for process/workflow-oriented products (DevFlow, ArchitectFlow, OpsFlow, SalesFlow, HealthFlow), *Studio for creative/analysis tools (ContentStudio, PortfolioStudio), and *Bridge for integration hubs connecting external services (FinanceBridge, CommsBridge). Products that break the pattern do so intentionally: SecurityShield (evokes protection), AgentFoundry (evokes creation/forging), PropertyHub (evokes a central hub), LifeOS (mirrors the personal OS metaphor), and OutReachAI (evokes AI-powered outreach as a distinct product category). The 14 products cover all 36 instruments, 84+ tools, and 26 repos.",
+  "naming_rationale": "Products follow three naming patterns: *Flow for process/workflow-oriented products (DevFlow, ArchitectFlow, OpsFlow, SalesFlow, HealthFlow), *Studio for creative/analysis tools (ContentStudio, PortfolioStudio), and *Bridge for integration hubs connecting external services (FinanceBridge, CommsBridge). Products that break the pattern do so intentionally: SecurityShield (evokes protection), AgentFoundry (evokes creation/forging), PropertyHub (evokes a central hub), LifeOS (mirrors the personal OS metaphor), OutReachAI (evokes AI-powered outreach as a distinct product category), and StayHive Hospitality (co-branded with Stayhive.Cloud, evokes a managed hospitality hive). The 15 products cover all 36 instruments, 84+ tools, and 26 repos.",
   "interconnections": [
     {
       "from": "architect-flow",
@@ -542,6 +610,30 @@
       "to": "finance-bridge",
       "event": "task.completed",
       "description": "Closed deals from OutReachAI trigger payment setup and invoicing in FinanceBridge."
+    },
+    {
+      "from": "stayhive-hospitality",
+      "to": "comms-bridge",
+      "event": "task.assigned",
+      "description": "Guest arrival instructions, door codes, and pre-stay messages route through CommsBridge voice and SMS."
+    },
+    {
+      "from": "stayhive-hospitality",
+      "to": "finance-bridge",
+      "event": "task.completed",
+      "description": "Reservation payments, billing reconciliation, and Stripe charges sync to FinanceBridge for unified reporting."
+    },
+    {
+      "from": "stayhive-hospitality",
+      "to": "ops-flow",
+      "event": "task.assigned",
+      "description": "StayHive's 9 recurring scheduler workflows are managed and monitored by OpsFlow."
+    },
+    {
+      "from": "property-hub",
+      "to": "stayhive-hospitality",
+      "event": "task.assigned",
+      "description": "PropertyHub's PMS and rental abstraction layer provides the booking data that StayHive Hospitality acts on."
     }
   ]
 }
