@@ -67,6 +67,12 @@ export default function InstallPage() {
           <p className="text-slate-400 text-lg">
             Self-hosted. No cloud required. Runs on your machine or your server.
           </p>
+          <p className="mt-4 text-sm text-slate-500">
+            Not sure what Agent Jumbo is or how it works?{' '}
+            <Link href="/how-it-works" className="text-copper-400 hover:text-copper-300 underline underline-offset-2">
+              Read the plain-language guide first →
+            </Link>
+          </p>
         </div>
 
         {/* One-line install */}
@@ -145,7 +151,13 @@ export default function InstallPage() {
         </div>
 
         {/* Footer links */}
-        <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-800">
+        <div className="flex flex-col sm:flex-row gap-4 flex-wrap pt-4 border-t border-slate-800">
+          <Link
+            href="/how-it-works"
+            className="px-6 py-2.5 border border-copper-500/40 text-copper-300 rounded-lg font-semibold hover:bg-copper-500/10 transition text-center text-sm"
+          >
+            How It Works (Plain Language)
+          </Link>
           <Link
             href={RELEASES_URL}
             className="px-6 py-2.5 bg-copper-500 text-white rounded-lg font-semibold hover:bg-copper-400 transition text-center text-sm"

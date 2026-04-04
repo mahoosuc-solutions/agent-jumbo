@@ -36,9 +36,9 @@ export const FEATURES = [
 
 export const PUBLIC_NAVIGATION = [
   { label: 'Home', href: '/' },
+  { label: 'How It Works', href: '/how-it-works' },
   { label: 'Install', href: '/install' },
   { label: 'Documentation', href: '/documentation' },
-  { label: 'Platform', href: '/platform' },
   { label: 'Mahoosuc OS ↗', href: 'https://mahoosuc.ai', external: true },
 ]
 
