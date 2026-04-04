@@ -41,7 +41,7 @@ else
     exit 1
 fi
 
-VERSION=$(echo "${RELEASE_JSON}" | python3 -c "import sys,json; print(json.load(sys.stdin)['tag_name'].lstrip('v'))")
+VERSION=$(echo "${RELEASE_JSON}" | grep '"tag_name"' | head -1 | sed 's/.*"tag_name"[[:space:]]*:[[:space:]]*"v\{0,1\}\([^"]*\)".*/\1/')
 
 if [ -z "$VERSION" ]; then
     echo "ERROR: Failed to determine latest version" >&2
@@ -57,8 +57,11 @@ trap 'rm -rf "${TMP_DIR}"' EXIT
 echo "Downloading Agent Jumbo v${VERSION}..."
 if command -v curl &>/dev/null; then
     curl -fsSL "${DOWNLOAD_URL}" -o "${TMP_DIR}/${ARCHIVE_NAME}"
-else
+elif command -v wget &>/dev/null; then
     wget -qO "${TMP_DIR}/${ARCHIVE_NAME}" "${DOWNLOAD_URL}"
+else
+    echo "ERROR: curl or wget required to download archive" >&2
+    exit 1
 fi
 
 echo "Extracting to ${INSTALL_DIR}..."
