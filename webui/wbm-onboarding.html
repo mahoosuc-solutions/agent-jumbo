@@ -38,7 +38,7 @@
   .bridge-dot.err { background: var(--red); }
 
   /* ── Layout ── */
-  .layout { display: grid; grid-template-columns: 260px 1fr; min-height: calc(100vh - 90px); }
+  .layout { display: grid; grid-template-columns: 260px 1fr 380px; min-height: calc(100vh - 90px); }
   .nav { background: var(--bg2); border-right: 1px solid var(--border); padding: 24px 0; position: sticky; top: 0; height: calc(100vh - 90px); overflow-y: auto; }
   .nav-section { padding: 8px 20px 4px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-top: 12px; }
   .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 20px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all 0.15s; border-left: 2px solid transparent; }
@@ -173,12 +173,61 @@
   #run-suite-btn:hover:not(:disabled) { background: rgba(74,222,128,0.2); }
   #run-suite-btn:disabled { opacity: 0.5; cursor: default; }
 
+  /* ── Agent Chat Panel ── */
+  .agent-panel { background: var(--bg2); border-left: 1px solid var(--border); display: flex; flex-direction: column; height: calc(100vh - 90px); position: sticky; top: 0; }
+  .agent-panel-header { padding: 14px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 10px; flex-shrink: 0; background: var(--bg3); }
+  .agent-panel-title { font-size: 13px; font-weight: 700; flex: 1; }
+  .agent-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); flex-shrink: 0; transition: all 0.3s; }
+  .agent-status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .agent-status-dot.thinking { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 1s ease-in-out infinite; }
+  .agent-status-label { font-size: 11px; color: var(--muted); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .agent-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .agent-msg { display: flex; flex-direction: column; gap: 4px; max-width: 100%; }
+  .agent-msg-user { align-items: flex-end; }
+  .agent-msg-assistant { align-items: flex-start; }
+  .agent-bubble { padding: 10px 13px; border-radius: 10px; font-size: 13px; line-height: 1.55; word-break: break-word; white-space: pre-wrap; }
+  .agent-msg-user .agent-bubble { background: rgba(200,121,65,0.18); border: 1px solid rgba(200,121,65,0.3); color: var(--text); border-bottom-right-radius: 3px; }
+  .agent-msg-assistant .agent-bubble { background: var(--bg3); border: 1px solid var(--border2); color: var(--text); border-bottom-left-radius: 3px; }
+  .agent-msg-label { font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 0 4px; }
+  .agent-thinking { display: flex; align-items: center; gap: 5px; padding: 10px 13px; background: var(--bg3); border: 1px solid var(--border2); border-radius: 10px; border-bottom-left-radius: 3px; }
+  .agent-thinking span { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: bounce 1.2s ease-in-out infinite; }
+  .agent-thinking span:nth-child(2) { animation-delay: 0.2s; }
+  .agent-thinking span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+
+  .agent-input-area { padding: 12px; border-top: 1px solid var(--border); display: flex; gap: 8px; flex-shrink: 0; background: var(--bg2); }
+  #agent-input { flex: 1; background: var(--bg3); border: 1px solid var(--border2); border-radius: 8px; padding: 9px 12px; font-size: 13px; color: var(--text); font-family: inherit; resize: none; min-height: 38px; max-height: 120px; line-height: 1.4; outline: none; }
+  #agent-input:focus { border-color: var(--copper); }
+  #agent-input::placeholder { color: var(--muted); }
+  #agent-send-btn { background: var(--copper); color: #000; border: none; border-radius: 8px; width: 38px; height: 38px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; align-self: flex-end; }
+  #agent-send-btn:hover:not(:disabled) { background: var(--copper2); }
+  #agent-send-btn:disabled { opacity: 0.5; cursor: default; }
+
+  /* Ask Agent button on each prompt block */
+  .ask-agent-btn { display: inline-flex; align-items: center; gap: 5px; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; border: 1px solid rgba(200,121,65,0.35); background: rgba(200,121,65,0.08); color: var(--copper2); transition: all 0.15s; margin-top: 8px; }
+  .ask-agent-btn:hover { background: rgba(200,121,65,0.18); }
+
+  /* Floating toggle for narrow screens */
+  .agent-float-btn { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 100; width: 52px; height: 52px; border-radius: 50%; background: var(--copper); color: #000; border: none; cursor: pointer; font-size: 22px; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.4); transition: background 0.15s; }
+  .agent-float-btn:hover { background: var(--copper2); }
+  .agent-drawer { display: none; position: fixed; bottom: 0; right: 0; width: 360px; height: 70vh; z-index: 99; background: var(--bg2); border: 1px solid var(--border); border-bottom: none; border-radius: 12px 12px 0 0; flex-direction: column; box-shadow: 0 -4px 24px rgba(0,0,0,0.4); }
+  .agent-drawer.open { display: flex; }
+  .agent-drawer .agent-panel-header { border-radius: 12px 12px 0 0; }
+
+  @media (max-width: 1199px) {
+    .layout { grid-template-columns: 260px 1fr; }
+    .agent-panel { display: none; }
+    .agent-float-btn { display: flex; }
+  }
   @media (max-width: 768px) {
     .layout { grid-template-columns: 1fr; }
     .nav { display: none; }
     .main { padding: 24px 20px; }
     .header { padding: 20px; flex-wrap: wrap; }
     .bridge-status { margin-left: 0; width: 100%; }
+    .agent-drawer { width: 100%; }
   }
 </style>
 </head>
@@ -1032,9 +1081,303 @@
     </div>
 
   </main>
+
+  <!-- Agent Chat Panel (right column, desktop) -->
+  <aside class="agent-panel" id="agent-panel">
+    <div class="agent-panel-header">
+      <div class="agent-status-dot" id="agent-dot"></div>
+      <div>
+        <div class="agent-panel-title">WBM Setup Assistant</div>
+        <div class="agent-status-label" id="agent-status-label">Initializing…</div>
+      </div>
+    </div>
+    <div class="agent-messages" id="agent-messages"></div>
+    <div class="agent-input-area">
+      <textarea id="agent-input" placeholder="Ask about any phase, or click Ask Agent on a step…" rows="1"></textarea>
+      <button id="agent-send-btn" onclick="handleAgentSend()" title="Send">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </aside>
+</div>
+
+<!-- Floating toggle (narrow screens) -->
+<button class="agent-float-btn" id="agent-float-btn" onclick="toggleAgentDrawer()" title="Open assistant">💬</button>
+
+<!-- Agent drawer (narrow screens) -->
+<div class="agent-drawer" id="agent-drawer">
+  <div class="agent-panel-header" style="cursor:pointer" onclick="toggleAgentDrawer()">
+    <div class="agent-status-dot" id="agent-dot-drawer"></div>
+    <div>
+      <div class="agent-panel-title">WBM Setup Assistant</div>
+      <div class="agent-status-label" id="agent-status-label-drawer">Initializing…</div>
+    </div>
+    <svg style="margin-left:auto;color:var(--muted)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </div>
+  <div class="agent-messages" id="agent-messages-drawer"></div>
+  <div class="agent-input-area">
+    <textarea id="agent-input-drawer" placeholder="Ask about any phase…" rows="1"></textarea>
+    <button class="send" onclick="handleAgentSendDrawer()" style="background:var(--copper);color:#000;border:none;border-radius:8px;width:38px;height:38px;cursor:pointer;display:flex;align-items:center;justify-content:center;align-self:flex-end;flex-shrink:0">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
 </div>
 
 <script>
+// ── Agent Chat Panel ──────────────────────────────────────────────────────────
+
+const AGENT_PANEL_SYSTEM = [
+  'You are the WBM Setup Assistant, an AI agent embedded in the West Bethel Motel onboarding guide inside Agent Jumbo.',
+  '',
+  'You have access to the wbm-staging and wbm-production MCP servers via the Agent Jumbo tool system.',
+  '',
+  'Your role:',
+  '- Guide the operator through onboarding phases 0-14',
+  '- Run WBM MCP tool calls when asked — always use wbm-staging unless explicitly told otherwise',
+  '- Interpret tool results and explain what they mean in plain terms',
+  '- Tell the operator what to do next after each step',
+  '- Answer questions about what each step does and why it matters',
+  '',
+  'Rules:',
+  '- Keep responses concise and action-oriented',
+  '- Always confirm bridge health (edge_health) before running any WBM tool',
+  '- Never touch production config without staging validation first',
+  '- If a tool call fails, diagnose why and suggest a fix',
+  '',
+  'Greet the operator warmly and ask which onboarding phase they are working on today.'
+].join('\n');
+
+let agentCtx = null;
+let agentLogVersion = 0;
+let agentPollTimer = null;
+let agentThinking = false;
+let agentInitialized = false;
+const agentMessageMap = {};
+
+function setAgentStatus(state) {
+  const labels = { initializing: 'Initializing\u2026', online: 'Ready', thinking: 'Thinking\u2026' };
+  ['agent-dot', 'agent-dot-drawer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'agent-status-dot' +
+      (state === 'online' ? ' online' : state === 'thinking' ? ' thinking' : '');
+  });
+  ['agent-status-label', 'agent-status-label-drawer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = labels[state] || state;
+  });
+}
+
+function appendMsgToContainer(containerId, role, text, msgNo) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+
+  // Streaming update: if we already rendered this message no, just update text
+  const key = containerId + ':' + msgNo;
+  if (msgNo !== undefined && agentMessageMap[key]) {
+    agentMessageMap[key].textContent = text;
+    container.scrollTop = container.scrollHeight;
+    return;
+  }
+
+  const wrap = document.createElement('div');
+  wrap.className = 'agent-msg agent-msg-' + role;
+
+  const labelEl = document.createElement('div');
+  labelEl.className = 'agent-msg-label';
+  labelEl.textContent = role === 'user' ? 'You' : 'Assistant';
+
+  const bubble = document.createElement('div');
+  bubble.className = 'agent-bubble';
+  bubble.textContent = text;
+
+  wrap.appendChild(labelEl);
+  wrap.appendChild(bubble);
+  container.appendChild(wrap);
+  container.scrollTop = container.scrollHeight;
+
+  if (msgNo !== undefined) agentMessageMap[key] = bubble;
+}
+
+function appendUserBubble(text) {
+  appendMsgToContainer('agent-messages', 'user', text);
+  appendMsgToContainer('agent-messages-drawer', 'user', text);
+}
+
+function appendAgentBubble(text, msgNo) {
+  appendMsgToContainer('agent-messages', 'assistant', text, msgNo);
+  appendMsgToContainer('agent-messages-drawer', 'assistant', text, msgNo);
+}
+
+function showThinkingIndicator() {
+  ['agent-messages', 'agent-messages-drawer'].forEach(containerId => {
+    const c = document.getElementById(containerId);
+    if (!c || c.querySelector('.agent-thinking')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'agent-msg agent-msg-assistant';
+    wrap.id = containerId + '-thinking';
+    const dots = document.createElement('div');
+    dots.className = 'agent-thinking';
+    for (let i = 0; i < 3; i++) dots.appendChild(document.createElement('span'));
+    wrap.appendChild(dots);
+    c.appendChild(wrap);
+    c.scrollTop = c.scrollHeight;
+  });
+}
+
+function hideThinkingIndicator() {
+  ['agent-messages-thinking', 'agent-messages-drawer-thinking'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  });
+}
+
+async function initAgentPanel() {
+  if (agentInitialized) return;
+  agentInitialized = true;
+  setAgentStatus('initializing');
+  try {
+    const CSRF = await getCsrfCached();
+    const r = await fetch('/chat_create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+      body: JSON.stringify({})
+    });
+    const d = await r.json();
+    if (!d.context) throw new Error('no context');
+    agentCtx = d.context;
+
+    agentThinking = true;
+    setAgentStatus('thinking');
+    showThinkingIndicator();
+    await fetch('/message_async', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+      body: JSON.stringify({ text: AGENT_PANEL_SYSTEM, context: agentCtx })
+    });
+    startAgentPolling();
+  } catch {
+    setAgentStatus('initializing');
+    ['agent-messages', 'agent-messages-drawer'].forEach(id =>
+      appendMsgToContainer(id, 'assistant', 'Could not connect to Agent Jumbo. Ensure the platform is running at localhost:6274.')
+    );
+  }
+}
+
+function startAgentPolling() {
+  if (agentPollTimer) clearInterval(agentPollTimer);
+  agentPollTimer = setInterval(pollAgentPanel, 1500);
+}
+
+async function pollAgentPanel() {
+  if (!agentCtx) return;
+  try {
+    const CSRF = await getCsrfCached();
+    const r = await fetch('/poll', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+      body: JSON.stringify({ context: agentCtx, log_from: agentLogVersion, notifications_from: 0 })
+    });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (typeof d.log_version === 'number' && d.log_version !== agentLogVersion) {
+      agentLogVersion = d.log_version;
+      for (const log of (d.logs || [])) {
+        if (log.type === 'response') {
+          hideThinkingIndicator();
+          appendAgentBubble(log.content, log.no);
+        }
+      }
+    }
+    if (!d.log_progress_active && agentThinking) {
+      agentThinking = false;
+      hideThinkingIndicator();
+      setAgentStatus('online');
+    }
+  } catch { /* ignore transient poll errors */ }
+}
+
+async function sendToAgent(text) {
+  if (!text.trim() || !agentCtx || agentThinking) return;
+  appendUserBubble(text);
+  agentThinking = true;
+  setAgentStatus('thinking');
+  showThinkingIndicator();
+  const CSRF = await getCsrfCached();
+  await fetch('/message_async', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+    body: JSON.stringify({ text, context: agentCtx })
+  });
+}
+
+function handleAgentSend() {
+  const input = document.getElementById('agent-input');
+  const text = (input.value || '').trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+  sendToAgent(text);
+}
+
+function handleAgentSendDrawer() {
+  const input = document.getElementById('agent-input-drawer');
+  const text = (input.value || '').trim();
+  if (!text) return;
+  input.value = '';
+  sendToAgent(text);
+}
+
+function askAgentAboutStep(promptText) {
+  if (window.innerWidth < 1200) {
+    openAgentDrawer();
+    const inp = document.getElementById('agent-input-drawer');
+    if (inp) { inp.value = promptText; inp.focus(); }
+  } else {
+    const inp = document.getElementById('agent-input');
+    if (inp) { inp.value = promptText; inp.focus(); }
+  }
+}
+
+function openAgentDrawer() {
+  const drawer = document.getElementById('agent-drawer');
+  if (drawer) drawer.classList.add('open');
+}
+
+function toggleAgentDrawer() {
+  const drawer = document.getElementById('agent-drawer');
+  if (drawer) drawer.classList.toggle('open');
+}
+
+// Textarea auto-resize + Enter-to-send
+document.addEventListener('DOMContentLoaded', () => {
+  [['agent-input', handleAgentSend], ['agent-input-drawer', handleAgentSendDrawer]].forEach(([id, handler]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+    });
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handler(); }
+    });
+  });
+
+  // Wire "Ask Agent" buttons onto every prompt-block
+  document.querySelectorAll('.prompt-block').forEach(block => {
+    const textEl = block.querySelector('.prompt-text');
+    if (!textEl) return;
+    const promptText = (textEl.textContent || '').replace(/\s+/g, ' ').trim();
+    const btn = document.createElement('button');
+    btn.className = 'ask-agent-btn';
+    btn.textContent = '\uD83D\uDCAC Ask Agent';
+    btn.addEventListener('click', () => askAgentAboutStep(promptText));
+    block.appendChild(btn);
+  });
+
+  initAgentPanel();
+});
+
 // ── Bridge health polling ──
 async function checkBridge(port, dotId) {
   try {
