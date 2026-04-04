@@ -163,3 +163,109 @@ def test_trust_gate_creates_pending_approval(app_server, auth_cookies, observer_
     assert approval["id"].startswith("trust-")
     assert "risk" in approval
     assert approval["risk"] in ("LOW", "MEDIUM", "HIGH", "CRITICAL")
+
+
+@pytest.mark.slow
+def test_trust_gate_approve_unblocks_agent(app_server, auth_cookies, observer_trust_level):
+    """Approving a trust-gate record sets status=approved and clears pending approvals."""
+    context_id = _create_context(app_server, auth_cookies)
+
+    # Send message in background — agent blocks at trust gate
+    _send_message_background(
+        app_server,
+        auth_cookies,
+        context_id,
+        "Use the memory_load tool to recall any stored facts.",
+    )
+
+    # Wait for approval to appear
+    approval = _poll_for_pending_trust_gate(app_server, auth_cookies, context_id, timeout=45)
+    assert approval is not None, "No pending trust-gate approval appeared within 45s"
+
+    approval_id = approval["id"]
+
+    # Approve it
+    update_resp = api_post(
+        app_server,
+        auth_cookies,
+        "cowork_approvals_update",
+        {
+            "context": context_id,
+            "action": "approve",
+            "approval_id": approval_id,
+        },
+    )
+    assert "approvals" in update_resp
+
+    # Verify the record is now approved
+    approvals = update_resp["approvals"]
+    matched = next((a for a in approvals if a["id"] == approval_id), None)
+    assert matched is not None, f"Approval {approval_id} not found in response"
+    assert matched["status"] == "approved", f"Expected approved, got {matched['status']}"
+
+    # Verify no pending trust-gate approvals remain (agent is unblocked)
+    deadline = time.time() + 15
+    unblocked = False
+    while time.time() < deadline:
+        resp = api_post(app_server, auth_cookies, "cowork_approvals_list", {"context": context_id})
+        pending = [
+            a for a in resp.get("approvals", []) if a.get("source") == "trust_gate" and a.get("status") == "pending"
+        ]
+        if not pending:
+            unblocked = True
+            break
+        time.sleep(1.0)
+
+    assert unblocked, "Pending trust-gate approvals still present 15s after approval"
+
+
+@pytest.mark.slow
+def test_trust_gate_deny_resolves_approval(app_server, auth_cookies, observer_trust_level):
+    """Denying a trust-gate record sets status=denied and clears pending approvals."""
+    context_id = _create_context(app_server, auth_cookies)
+
+    _send_message_background(
+        app_server,
+        auth_cookies,
+        context_id,
+        "Use the memory_load tool to recall any stored facts.",
+    )
+
+    approval = _poll_for_pending_trust_gate(app_server, auth_cookies, context_id, timeout=45)
+    assert approval is not None, "No pending trust-gate approval appeared within 45s"
+
+    approval_id = approval["id"]
+
+    # Deny it
+    update_resp = api_post(
+        app_server,
+        auth_cookies,
+        "cowork_approvals_update",
+        {
+            "context": context_id,
+            "action": "deny",
+            "approval_id": approval_id,
+        },
+    )
+    assert "approvals" in update_resp
+
+    # Verify the record is now denied
+    approvals = update_resp["approvals"]
+    matched = next((a for a in approvals if a["id"] == approval_id), None)
+    assert matched is not None, f"Approval {approval_id} not found in response"
+    assert matched["status"] == "denied", f"Expected denied, got {matched['status']}"
+
+    # Verify no pending trust-gate approvals remain (agent received denial and continues)
+    deadline = time.time() + 15
+    unblocked = False
+    while time.time() < deadline:
+        resp = api_post(app_server, auth_cookies, "cowork_approvals_list", {"context": context_id})
+        pending = [
+            a for a in resp.get("approvals", []) if a.get("source") == "trust_gate" and a.get("status") == "pending"
+        ]
+        if not pending:
+            unblocked = True
+            break
+        time.sleep(1.0)
+
+    assert unblocked, "Pending trust-gate approvals still present 15s after denial"
