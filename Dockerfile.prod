@@ -4,11 +4,9 @@
 ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
 FROM ${BASE_IMAGE}
 
-ARG BRANCH=main
 ARG INSTALL_PLAYWRIGHT=1
 ARG RUN_PRELOAD=1
 ARG INSTALL_ADDITIONAL_TOOLS=1
-ENV BRANCH=$BRANCH
 ENV INSTALL_PLAYWRIGHT=$INSTALL_PLAYWRIGHT
 ENV RUN_PRELOAD=$RUN_PRELOAD
 ENV INSTALL_ADDITIONAL_TOOLS=$INSTALL_ADDITIONAL_TOOLS
@@ -19,26 +17,28 @@ COPY ./docker/run/fs/ /
 # pre installation steps (apt packages, system config)
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
-    bash /ins/pre_install.sh $BRANCH
+    bash /ins/pre_install.sh local
 
-# Copy full project into /aj (baked, not mounted)
+# Copy full project into /git/agent-jumbo (matches expected install path)
+# and also into /aj (runtime working directory)
+COPY . /git/agent-jumbo
 COPY . /aj
 WORKDIR /aj
 
 # Refresh apt index (base image may be stale vs Kali rolling repos)
 RUN apt-get update
 
-# Install AJ dependencies into the venv
+# Install AJ dependencies using local copy (no GitHub clone needed)
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=cache,target=/root/.cache/uv \
-    bash /ins/install_aj.sh $BRANCH
+    bash /ins/install_aj.sh local
 
 # Install additional software (playwright, etc.)
-RUN bash /ins/install_additional.sh $BRANCH
+RUN bash /ins/install_additional.sh local
 
-# Post-install cleanup and config
-RUN bash /ins/install_aj2.sh $BRANCH
-RUN bash /ins/post_install.sh $BRANCH
+# Post-install cleanup and config (local mode skips git clone in install_aj2.sh)
+RUN bash /ins/install_aj2.sh local
+RUN bash /ins/post_install.sh local
 
 EXPOSE 22 80 9000-9009
 

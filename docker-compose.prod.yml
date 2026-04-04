@@ -4,7 +4,6 @@ services:
       context: .
       dockerfile: Dockerfile.prod
       args:
-        BRANCH: main
         INSTALL_PLAYWRIGHT: 1
         RUN_PRELOAD: 1
         INSTALL_ADDITIONAL_TOOLS: 1
