@@ -12,7 +12,10 @@ services:
     container_name: agent-jumbo-production
     restart: unless-stopped
     env_file:
-      - .env
+      - path: .env
+        required: true
+      - path: .env.production
+        required: false   # gitignored runtime overrides (MOS bridge, auth, etc.)
     environment:
       AGENT_JUMBO_RUN_MODE: ${AGENT_JUMBO_RUN_MODE:-production}
       AGENT_JUMBO_LAPTOP_MODE: ${AGENT_JUMBO_LAPTOP_MODE:-false}

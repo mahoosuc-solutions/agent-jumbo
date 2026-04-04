@@ -82,6 +82,7 @@ ollama_models/blobs/
 # Sensitive files - never commit
 .env.local
 .env.*.local
+.env.production
 *.key
 *.pem
 secrets/
