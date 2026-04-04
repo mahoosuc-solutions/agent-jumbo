@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # needed for tag detection
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install zip
+        run: sudo apt-get install -y zip
+
+      - name: Build release archives
+        run: bash scripts/package-release.sh
+
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(python3 -c "
+          import tomllib
+          with open('pyproject.toml', 'rb') as f:
+              d = tomllib.load(f)
+          print(d['project']['version'])
+          ")
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Determine release type
+        id: release_type
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/v* ]]; then
+            echo "is_tag=true" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+            echo "tag=${GITHUB_REF#refs/tags/}" >> "$GITHUB_OUTPUT"
+          else
+            echo "is_tag=false" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Delete existing 'latest' pre-release (main branch only)
+        if: steps.release_type.outputs.is_tag == 'false'
+        run: |
+          gh release delete latest --yes 2>/dev/null || true
+          git push --delete origin latest 2>/dev/null || true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create or update release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release_type.outputs.tag }}
+          name: ${{ steps.release_type.outputs.is_tag == 'true' && format('Agent Jumbo v{0}', steps.version.outputs.version) || 'Agent Jumbo (latest)' }}
+          prerelease: ${{ steps.release_type.outputs.prerelease }}
+          body: |
+            ${{ steps.release_type.outputs.is_tag == 'true' && format('## Agent Jumbo v{0}\n\nSee [CHANGELOG.md](CHANGELOG.md) for changes.\n\n### Install\n```bash\ncurl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash\n```', steps.version.outputs.version) || '> ⚠️ This is a rolling pre-release tracking the `main` branch. For stable releases, use a tagged version.\n\n### Install\n```bash\ncurl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash\n```' }}
+          files: |
+            dist/agent-jumbo-${{ steps.version.outputs.version }}.tar.gz
+            dist/agent-jumbo-${{ steps.version.outputs.version }}.zip
+            install.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
