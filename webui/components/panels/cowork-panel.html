@@ -21,9 +21,13 @@
                 <div class="approval-card">
                     <div class="approval-header">
                         <span class="approval-tool" x-text="approval.tool_name"></span>
-                        <span class="approval-time" x-text="formatTime(approval.timestamp)"></span>
+                        <span x-show="approval.source === 'trust_gate'"
+                              class="risk-badge"
+                              :class="'risk-' + (approval.risk || 'MEDIUM')"
+                              x-text="approval.risk || 'MEDIUM'"></span>
+                        <span class="approval-time" x-text="formatTime(approval.timestamp || approval.created_at)"></span>
                     </div>
-                    <div class="approval-summary" x-text="truncate(approval.summary || approval.args_preview, 80)"></div>
+                    <div class="approval-summary" x-text="truncate(approval.summary || approval.args_preview || formatArgs(approval.tool_args), 80)"></div>
                     <div class="approval-actions">
                         <button class="btn-approve" @click="approveAction(approval.id)">
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
@@ -31,9 +35,14 @@
                         </button>
                         <button class="btn-reject" @click="rejectAction(approval.id)">
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                            Reject
+                            Deny
                         </button>
                     </div>
+                    <span x-show="approval.source === 'trust_gate'"
+                          class="always-approve-link"
+                          @click="alwaysApprove(approval.tool_name)">
+                        Always approve this tool →
+                    </span>
                 </div>
             </template>
         </div>
@@ -147,6 +156,47 @@ function coworkPanelData() {
         truncate(text, length) {
             if (!text) return '-';
             return text.length > length ? text.substring(0, length) + '...' : text;
+        },
+
+        formatArgs(args) {
+            if (!args || typeof args !== 'object') return '-';
+            const entries = Object.entries(args).slice(0, 2);
+            return entries.map(([k, v]) => `${k}: ${String(v).substring(0, 40)}`).join(', ') || '-';
+        },
+
+        async alwaysApprove(toolName) {
+            try {
+                const token = Alpine.store('csrfStore')?.token || '';
+                // Fetch current always-allow list
+                const getResp = await fetch('/settings_get', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+                    body: JSON.stringify({}),
+                });
+                const getData = await getResp.json();
+                const sections = getData?.settings?.sections || [];
+                let currentList = [];
+                for (const section of sections) {
+                    for (const field of (section.fields || [])) {
+                        if (field.id === 'trust_always_allow') {
+                            currentList = Array.isArray(field.value) ? field.value : [];
+                        }
+                    }
+                }
+
+                if (currentList.includes(toolName)) return; // already in list
+
+                const updatedList = [...currentList, toolName];
+                await fetch('/settings_set', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+                    body: JSON.stringify({
+                        sections: [{ fields: [{ id: 'trust_always_allow', value: updatedList }] }]
+                    }),
+                });
+            } catch (e) {
+                console.error('alwaysApprove failed:', e);
+            }
         }
     };
 }
@@ -330,4 +380,31 @@ function coworkPanelData() {
     color: var(--text-secondary, #aaa);
     font-size: 13px;
 }
+
+/* Trust gate risk badges */
+.risk-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-left: 6px;
+}
+.risk-LOW    { background: #22543d; color: #9ae6b4; }
+.risk-MEDIUM { background: #744210; color: #fbd38d; }
+.risk-HIGH   { background: #7b341e; color: #fbd38d; }
+.risk-CRITICAL { background: #63171b; color: #feb2b2; }
+
+.always-approve-link {
+    display: block;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--text-secondary, #aaa);
+    text-decoration: underline;
+    cursor: pointer;
+    text-align: center;
+}
+.always-approve-link:hover { color: var(--color-primary, #4a9eff); }
 </style>
