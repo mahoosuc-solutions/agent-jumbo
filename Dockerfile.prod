@@ -11,6 +11,12 @@ ENV INSTALL_PLAYWRIGHT=$INSTALL_PLAYWRIGHT
 ENV RUN_PRELOAD=$RUN_PRELOAD
 ENV INSTALL_ADDITIONAL_TOOLS=$INSTALL_ADDITIONAL_TOOLS
 
+# Override apt mirror: http.kali.org is unreachable from some build environments
+# (including WSL2 NAT). Use the kali.download CDN which is always available.
+RUN echo "deb https://kali.download/kali kali-rolling main contrib non-free non-free-firmware" \
+    > /etc/apt/sources.list && \
+    apt-get update -qq
+
 # Copy AJ-specific install scripts and configs
 COPY ./docker/run/fs/ /
 
