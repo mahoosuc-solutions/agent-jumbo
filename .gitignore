@@ -39,6 +39,9 @@ knowledge/**
 # Handle instruments directory
 instruments/**
 !instruments/**/
+# Allow package init files at the instruments root and custom level
+!instruments/__init__.py
+!instruments/custom/__init__.py
 # Explicitly allow the default folder in instruments
 !instruments/default/
 !instruments/default/**

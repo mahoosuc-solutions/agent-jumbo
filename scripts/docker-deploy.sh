@@ -60,9 +60,30 @@ check_mounts() {
     log_success "Mount point checks complete"
 }
 
+# Pre-deploy checks
+run_predeploy_checks() {
+    log_info "Running pre-deploy checks..."
+
+    local checks_dir="$PROJECT_ROOT/scripts/checks"
+
+    # Instrument package check
+    if [[ -x "$checks_dir/check_instrument_packages.sh" ]]; then
+        if ! bash "$checks_dir/check_instrument_packages.sh"; then
+            log_error "Pre-deploy check failed: instrument packages"
+            log_error "Run: ./scripts/checks/check_instrument_packages.sh --fix"
+            exit 1
+        fi
+    else
+        log_warn "check_instrument_packages.sh not found or not executable — skipping"
+    fi
+
+    log_success "All pre-deploy checks passed"
+}
+
 # Build the production image
 build_image() {
     log_info "Building production image..."
+    run_predeploy_checks
     check_mounts
 
     docker-compose -f "$COMPOSE_FILE" build --no-cache
@@ -73,6 +94,7 @@ build_image() {
 # Start the container
 start_container() {
     log_info "Starting Agent Jumbo production container..."
+    run_predeploy_checks
     ensure_volumes
     check_mounts
 
