@@ -50,11 +50,18 @@ def _create_context(app_server, auth_cookies) -> str:
     return resp["context"]
 
 
-def _send_message_background(app_server, auth_cookies, context_id: str, text: str) -> dict:
-    """Send a message in a background thread; return the response dict."""
-    result = {}
+def _send_message_background(app_server, auth_cookies, context_id: str, text: str) -> tuple[dict, threading.Thread]:
+    """Send a message in a background thread; return (result_dict, thread).
 
-    def _run():
+    The /message endpoint blocks while the agent is paused at the trust gate,
+    so callers should NOT join the thread eagerly. Instead, poll
+    cowork_approvals_list for the pending approval record, then approve/deny it.
+    The thread completes (with timed_out=True or a response) once the agent
+    is unblocked.
+    """
+    result: dict = {}
+
+    def _run() -> None:
         try:
             result["resp"] = api_post(
                 app_server,
@@ -67,7 +74,7 @@ def _send_message_background(app_server, auth_cookies, context_id: str, text: st
 
     t = threading.Thread(target=_run, daemon=True)
     t.start()
-    return result  # caller inspects result["resp"] after joining / polling
+    return result, t
 
 
 def _poll_for_pending_trust_gate(app_server, auth_cookies, context_id: str, timeout: float = 30.0) -> dict | None:
@@ -96,7 +103,11 @@ def observer_trust_level(app_server, auth_cookies):
     original = _get_trust_level(app_server, auth_cookies)
     _set_trust_level(app_server, auth_cookies, 1)
     yield
-    _set_trust_level(app_server, auth_cookies, original)
+    try:
+        _set_trust_level(app_server, auth_cookies, original)
+    except Exception as exc:
+        # Best-effort restore — don't fail teardown and poison subsequent tests
+        print(f"Warning: failed to restore trust_level to {original}: {exc}")
 
 
 # ── Baseline smoke tests (keep these — they verify API shape) ──────────────
