@@ -41,6 +41,7 @@ class HealthAgentmesh(ApiHandler):
         bridge = _get_bridge()
 
         # Base response from bridge.health() if available
+        base: dict[str, object]
         if bridge:
             base = {"status": "ok", **bridge.health()}
             consumer_active: bool = bridge.health().get("running", False)

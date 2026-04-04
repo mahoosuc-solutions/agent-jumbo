@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-03-23T06:16:38.882413+00:00",
+  "generated_at": "2026-04-03T23:54:29.997861+00:00",
   "platform": {
     "commands": {
       "total": 414,
       "categories": 92
     },
     "instruments": {
-      "total": 35,
-      "active": 35
+      "total": 37,
+      "active": 37
     },
     "tools": {
-      "total": 75
+      "total": 76
     },
     "api_endpoints": {
-      "total": 173
+      "total": 182
     },
     "integrations": [
       "calendar_hub",
@@ -27,10 +27,10 @@
       "telegram_orchestrator",
       "twilio_voice"
     ],
-    "helper_modules": 151
+    "helper_modules": 163
   },
   "github": {
-    "repos": 26,
+    "repos": 31,
     "verticals": [
       "ai-ops",
       "communications",

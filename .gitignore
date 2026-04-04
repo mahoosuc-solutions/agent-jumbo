@@ -125,6 +125,7 @@ firebase-debug.log
 *.temp
 .tmp/
 web/.next/
+packages/
 node_modules/
 
 # Local build cache and generated training artifacts
