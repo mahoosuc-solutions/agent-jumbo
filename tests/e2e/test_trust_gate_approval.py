@@ -276,15 +276,15 @@ def test_trust_gate_always_allow_bypasses_gate(app_server, auth_cookies, observe
     """A tool in trust_always_allow is not blocked by the trust gate."""
     context_id = _create_context(app_server, auth_cookies)
 
-    # Add memory_load to the always-allow list
-    api_post_tolerant(
-        app_server,
-        auth_cookies,
-        "settings_set",
-        {"sections": [{"fields": [{"id": "trust_always_allow", "value": ["memory_load"]}]}]},
-    )
-
     try:
+        # Add memory_load to the always-allow list
+        api_post_tolerant(
+            app_server,
+            auth_cookies,
+            "settings_set",
+            {"sections": [{"fields": [{"id": "trust_always_allow", "value": ["memory_load"]}]}]},
+        )
+
         # Send a message that would trigger memory_load — it should NOT be blocked
         _send_message_background(
             app_server,
