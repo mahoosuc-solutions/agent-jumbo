@@ -41,6 +41,22 @@ export async function sendMessage() {
     console.warn("chatInput not available, cannot send message");
     return;
   }
+
+  // First-run onboarding intercept
+  const onboardingEl = document.getElementById('onboarding-overlay');
+  if (onboardingEl && typeof Alpine !== 'undefined') {
+    const od = Alpine.$data(onboardingEl);
+    if (od && !od.isComplete()) {
+      const message = chatInputEl.value.trim();
+      if (message) {
+        od.intercept(message);
+        chatInputEl.value = "";
+        adjustTextareaHeight();
+        return;
+      }
+    }
+  }
+
   try {
     if (!getConnectionStatus()) {
       const probe = await api.probeBackendStatus();
@@ -140,6 +156,13 @@ export async function sendMessage() {
   }
 }
 globalThis.sendMessage = sendMessage;
+export async function sendMessageWithText(text) {
+  const chatInputEl = document.getElementById("chat-input");
+  if (!chatInputEl) return;
+  chatInputEl.value = text;
+  await sendMessage();
+}
+globalThis.sendMessageWithText = sendMessageWithText;
 
 export function toastFetchError(text, error) {
   console.error(text, error);

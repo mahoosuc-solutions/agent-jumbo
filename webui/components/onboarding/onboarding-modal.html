@@ -1,0 +1,191 @@
+<!-- First-run onboarding wizard — shown when trust_onboarded is not set -->
+<div id="onboarding-overlay"
+     x-data="onboardingData()"
+     x-init="init()"
+     x-show="show"
+     x-cloak
+     style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;">
+
+    <div style="background:var(--secondary-bg,#1a1a2e);border:1px solid var(--color-border,#333);border-radius:12px;padding:32px;max-width:480px;width:90%;position:relative;">
+
+        <!-- Progress dots -->
+        <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px;">
+            <template x-for="i in [1,2,3]" :key="i">
+                <div :style="`width:8px;height:8px;border-radius:50%;background:${step >= i ? 'var(--color-primary,#4a9eff)' : 'var(--color-border,#333)'}`"></div>
+            </template>
+        </div>
+
+        <!-- Step 1: Experience -->
+        <div x-show="step === 1">
+            <h2 style="margin:0 0 8px;font-size:20px;text-align:center;">👋 Welcome to Agent Jumbo</h2>
+            <p style="text-align:center;color:var(--text-secondary,#aaa);margin:0 0 24px;font-size:14px;">Let's set up how much you want the agent to do on its own</p>
+            <p style="font-weight:500;margin:0 0 16px;font-size:14px;">How would you describe your experience with AI assistants?</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <template x-for="(opt, idx) in step1Options" :key="idx">
+                    <div @click="step1Answer = opt.score; nextStep()"
+                         :style="`padding:12px 16px;border-radius:8px;cursor:pointer;font-size:13px;border:1px solid var(--color-border,#333);background:${step1Answer===opt.score ? 'var(--color-primary-bg,#1a365d)' : 'var(--tertiary-bg,#252525)'};color:${step1Answer===opt.score ? 'var(--color-primary,#4a9eff)' : 'var(--text-primary,#fff)'}`">
+                        <span x-text="opt.label"></span>
+                    </div>
+                </template>
+            </div>
+        </div>
+
+        <!-- Step 2: Comfort -->
+        <div x-show="step === 2">
+            <p style="font-weight:500;margin:0 0 16px;font-size:14px;">How comfortable are you with the agent sending messages or running code without asking?</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+                <template x-for="(opt, idx) in step2Options" :key="idx">
+                    <div @click="step2Answer = opt.score; nextStep()"
+                         :style="`padding:12px 16px;border-radius:8px;cursor:pointer;font-size:13px;border:1px solid var(--color-border,#333);background:${step2Answer===opt.score ? 'var(--color-primary-bg,#1a365d)' : 'var(--tertiary-bg,#252525)'};color:${step2Answer===opt.score ? 'var(--color-primary,#4a9eff)' : 'var(--text-primary,#fff)'}`">
+                        <span x-text="opt.label"></span>
+                    </div>
+                </template>
+            </div>
+            <button @click="step = 1" style="margin-top:16px;background:none;border:none;color:var(--text-secondary,#aaa);font-size:12px;cursor:pointer;">← Back</button>
+        </div>
+
+        <!-- Step 3: Confirmation -->
+        <div x-show="step === 3">
+            <p style="font-weight:500;margin:0 0 8px;font-size:14px;text-align:center;">We recommend:</p>
+            <div style="background:var(--tertiary-bg,#252525);border:1px solid var(--color-primary,#4a9eff);border-radius:8px;padding:16px;margin-bottom:20px;text-align:center;">
+                <div style="font-size:22px;margin-bottom:4px;" x-text="trustLevels[selectedLevel]?.icon_emoji || '🤝'"></div>
+                <div style="font-size:16px;font-weight:600;margin-bottom:4px;" x-text="trustLevels[selectedLevel]?.name"></div>
+                <div style="font-size:12px;color:var(--text-secondary,#aaa);margin-bottom:12px;" x-text="trustLevels[selectedLevel]?.description"></div>
+                <div style="font-size:11px;color:#22c55e;">✓ Auto: <span x-text="trustLevels[selectedLevel]?.auto"></span></div>
+                <div style="font-size:11px;color:var(--color-warning,#d69e2e);margin-top:4px;">⚡ Asks: <span x-text="trustLevels[selectedLevel]?.asks"></span></div>
+            </div>
+
+            <p style="font-size:12px;color:var(--text-secondary,#aaa);margin:0 0 10px;text-align:center;">Or choose a different level:</p>
+            <div style="display:flex;gap:8px;margin-bottom:20px;">
+                <template x-for="(info, lvl) in trustLevels" :key="lvl">
+                    <div @click="selectedLevel = parseInt(lvl)"
+                         :style="`flex:1;padding:8px 4px;border-radius:6px;cursor:pointer;text-align:center;border:1px solid ${selectedLevel===parseInt(lvl) ? 'var(--color-primary,#4a9eff)' : 'var(--color-border,#333)'};background:${selectedLevel===parseInt(lvl) ? 'var(--color-primary-bg,#1a365d)' : 'var(--tertiary-bg,#252525)'}`">
+                        <div style="font-size:14px;" x-text="info.icon_emoji"></div>
+                        <div style="font-size:10px;margin-top:2px;" x-text="info.name"></div>
+                    </div>
+                </template>
+            </div>
+
+            <button @click="confirm()"
+                    style="width:100%;padding:12px;background:var(--color-primary,#4a9eff);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
+                Start using Agent Jumbo →
+            </button>
+            <button @click="step = 2" style="width:100%;margin-top:8px;background:none;border:none;color:var(--text-secondary,#aaa);font-size:12px;cursor:pointer;">← Back</button>
+        </div>
+
+    </div>
+</div>
+
+<script>
+function onboardingData() {
+    return {
+        show: false,
+        step: 1,
+        step1Answer: null,
+        step2Answer: null,
+        selectedLevel: 3,
+        pendingMessage: null,
+
+        step1Options: [
+            { label: "🆕 I'm new — I want to understand what it's doing", score: 1 },
+            { label: "🧑‍💻 Some experience — I like reviewing important actions", score: 2 },
+            { label: "⚡ Experienced — let it run, I'll step in when needed", score: 3 },
+        ],
+        step2Options: [
+            { label: "🔒 I want to review everything first", score: 1 },
+            { label: "👍 Fine for most things, but ask for emails/code", score: 2 },
+            { label: "🚀 Go ahead, I trust it", score: 3 },
+        ],
+        trustLevels: {
+            1: { name: 'Observer',      icon_emoji: '👁️',  description: 'Maximum oversight. Explains every action before doing it.', auto: 'Nothing', asks: 'Everything' },
+            2: { name: 'Guided',        icon_emoji: '✋',  description: 'Handles read-only tasks, asks before modifying data.', auto: 'Read-only tasks', asks: 'Data modifications, external actions' },
+            3: { name: 'Collaborative', icon_emoji: '🤝', description: 'Works independently on most tasks, asks for high-risk actions.', auto: 'Most tasks', asks: 'Email, code execution, payments' },
+            4: { name: 'Autonomous',    icon_emoji: '🚀', description: 'Full autonomy, only pauses for critical operations.', auto: 'Everything except critical', asks: 'Deployments, deletions, payments' },
+        },
+
+        async init() {
+            // Fast check: localStorage first, then settings fallback
+            if (localStorage.getItem('trust_onboarded') === '1') return;
+            try {
+                const resp = await fetch('/settings_get', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({}),
+                });
+                const data = await resp.json();
+                const sections = data?.settings?.sections || [];
+                for (const section of sections) {
+                    for (const field of (section.fields || [])) {
+                        if (field.id === 'trust_onboarded' && field.value === true) {
+                            localStorage.setItem('trust_onboarded', '1');
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {
+                // Network error on init — don't block the user
+                return;
+            }
+            // Neither check passed — show wizard
+            this.show = true;
+        },
+
+        nextStep() {
+            if (this.step === 1 && this.step1Answer !== null) {
+                this.step = 2;
+            } else if (this.step === 2 && this.step2Answer !== null) {
+                this.selectedLevel = this.recommendLevel();
+                this.step = 3;
+            }
+        },
+
+        recommendLevel() {
+            const total = (this.step1Answer || 2) + (this.step2Answer || 2);
+            if (total <= 2) return 1; // Observer
+            if (total <= 4) return 2; // Guided
+            if (total <= 5) return 3; // Collaborative
+            return 4;                 // Autonomous
+        },
+
+        async confirm() {
+            const level = this.selectedLevel;
+            try {
+                const token = Alpine.store('csrfStore')?.token || '';
+                await fetch('/settings_set', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+                    body: JSON.stringify({
+                        sections: [{ fields: [
+                            { id: 'trust_level', value: level },
+                            { id: 'trust_onboarded', value: true },
+                        ]}]
+                    }),
+                });
+                localStorage.setItem('trust_onboarded', '1');
+            } catch (e) {
+                console.error('Onboarding confirm failed:', e);
+                // Still close the modal — don't block the user on a save failure
+            }
+            this.show = false;
+            // Deliver the intercepted first message if one was queued
+            if (this.pendingMessage && globalThis.sendMessageWithText) {
+                globalThis.sendMessageWithText(this.pendingMessage);
+                this.pendingMessage = null;
+            }
+        },
+
+        isComplete() {
+            return localStorage.getItem('trust_onboarded') === '1';
+        },
+
+        intercept(message) {
+            this.pendingMessage = message;
+            this.show = true;
+        },
+    };
+}
+</script>
+
+<style>
+[x-cloak] { display: none !important; }
+</style>
