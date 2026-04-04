@@ -52,10 +52,12 @@ def get_csrf_token_and_cookies(base_url: str, auth_cookies: dict, retries: int =
     raise AssertionError(f"CSRF token fetch failed after {retries} retries (last status: {status})")
 
 
-def api_post(app_server: str, auth_cookies: dict, endpoint: str, body: dict) -> dict:
+def api_post(app_server: str, auth_cookies: dict, endpoint: str, body: dict, timeout: int = 15) -> dict:
     """POST JSON to /<endpoint> with CSRF token and auth cookies.
 
     Captures the updated session cookie from /csrf_token so the CSRF check passes.
+    Pass a larger ``timeout`` for endpoints that may block (e.g. /message when the
+    agent is paused at a trust gate waiting for approval).
     """
     csrf, cookies = get_csrf_token_and_cookies(app_server, auth_cookies)
     payload = json.dumps(body).encode()
@@ -68,7 +70,7 @@ def api_post(app_server: str, auth_cookies: dict, endpoint: str, body: dict) -> 
     req.add_header("Content-Type", "application/json")
     req.add_header("X-CSRF-Token", csrf)
     try:
-        resp = urllib.request.urlopen(req, timeout=15)
+        resp = urllib.request.urlopen(req, timeout=timeout)
         return json.loads(resp.read().decode())
     except urllib.error.HTTPError as exc:
         exc._response_body = exc.read().decode(errors="replace")

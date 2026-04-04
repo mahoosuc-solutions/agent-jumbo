@@ -63,11 +63,14 @@ def _send_message_background(app_server, auth_cookies, context_id: str, text: st
 
     def _run() -> None:
         try:
+            # Use a long timeout — /message blocks while the agent waits at the
+            # trust gate. 120s matches the default chat_execution_timeout_seconds.
             result["resp"] = api_post(
                 app_server,
                 auth_cookies,
                 "message",
                 {"text": text, "context": context_id},
+                timeout=120,
             )
         except Exception as exc:
             result["error"] = exc

@@ -1947,24 +1947,41 @@ def convert_out(settings: Settings) -> SettingsOutput:
     trust_fields: list[SettingsField] = [
         {
             "id": "trust_level",
-            "title": "Trust Level",
-            "description": "Controls agent autonomy: 1=Observer (asks everything), 2=Guided, 3=Collaborative, 4=Autonomous",
+            "title": "Autonomy Level",
+            "description": (
+                "Controls how much the agent does without asking.\n\n"
+                "👁️  Observer — explains every action, asks before anything.\n"
+                "✋  Guided — auto for read-only tasks; asks for data changes and external actions.\n"
+                "🤝  Collaborative (default) — works independently on most tasks; asks for email, code execution, payments.\n"
+                "🚀  Autonomous — full autonomy; only pauses for deployments, deletions, and payments."
+            ),
             "type": "select",
             "value": settings.get("trust_level", 3),
             "options": [
-                {"value": 1, "label": "1 - Observer (maximum oversight)"},
-                {"value": 2, "label": "2 - Guided (asks for medium+ risk)"},
-                {"value": 3, "label": "3 - Collaborative (asks for high risk)"},
-                {"value": 4, "label": "4 - Autonomous (asks for critical only)"},
+                {"value": "1", "label": "👁️  Observer — asks before everything"},
+                {"value": "2", "label": "✋  Guided — asks for medium+ risk actions"},
+                {"value": "3", "label": "🤝  Collaborative — asks for high-risk actions (recommended)"},
+                {"value": "4", "label": "🚀  Autonomous — asks only for critical operations"},
             ],
+        },
+        {
+            "id": "trust_always_allow",
+            "title": "Always-Allow Tools",
+            "description": (
+                "Tools that are permanently exempt from the approval gate, regardless of autonomy level. "
+                "Add tool names one per line (e.g. memory_save). "
+                "The 'Always approve this tool →' link in the Approvals panel adds entries here automatically."
+            ),
+            "type": "textarea",
+            "value": "\n".join(settings.get("trust_always_allow", [])),
         },
         {
             "id": "performance_profile",
             "title": "Performance Profile",
-            "description": "Auto-set by trust level: careful, balanced, efficient, turbo",
+            "description": "Auto-set by autonomy level: careful, balanced, efficient, turbo",
             "type": "text",
             "value": settings.get("performance_profile", "efficient"),
-            "readonly": True,
+            "hidden": True,
         },
         {
             "id": "max_monologue_iterations",
@@ -1995,10 +2012,11 @@ def convert_out(settings: Settings) -> SettingsOutput:
         },
     ]
     trust_section: SettingsSection = {
-        "title": "Trust & Security",
-        "description": "Progressive trust levels and performance profiles.",
+        "id": "trust",
+        "title": "Trust & Autonomy",
+        "description": "Control how independently the agent works and which tools it can use without asking.",
         "fields": trust_fields,
-        "tab": "developer",
+        "tab": "general",
     }
 
     # Add the section to the result

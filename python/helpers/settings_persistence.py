@@ -234,6 +234,13 @@ def convert_in(settings: dict) -> Settings:
                         current[field["id"]] = _env_to_dict(field["value"])
                     elif field["id"].startswith("api_key_"):
                         current["api_keys"][field["id"]] = field["value"]
+                    elif field["id"] == "trust_always_allow":
+                        # UI sends newline-separated string; programmatic callers send list
+                        val = field["value"]
+                        if isinstance(val, str):
+                            current["trust_always_allow"] = [t for t in (v.strip() for v in val.splitlines()) if t]
+                        else:
+                            current["trust_always_allow"] = list(val) if val else []
                     else:
                         current[field["id"]] = field["value"]
     return current
