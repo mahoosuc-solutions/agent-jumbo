@@ -66,6 +66,9 @@
                 </template>
             </div>
 
+            <div x-show="saveError"
+                 style="margin-bottom:10px;padding:10px 12px;border-radius:6px;background:#3b1f1f;color:#f7c9c9;font-size:12px;"
+                 x-text="saveError"></div>
             <button @click="confirm()"
                     style="width:100%;padding:12px;background:var(--color-primary,#4a9eff);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
                 Start using Agent Jumbo →
@@ -85,6 +88,7 @@ function onboardingData() {
         step2Answer: null,
         selectedLevel: 3,
         pendingMessage: null,
+        saveError: null,
 
         step1Options: [
             { label: "🆕 I'm new — I want to understand what it's doing", score: 1 },
@@ -148,10 +152,11 @@ function onboardingData() {
         },
 
         async confirm() {
+            this.saveError = null;
             const level = this.selectedLevel;
             try {
                 const token = Alpine.store('csrfStore')?.token || '';
-                await fetch('/settings_set', {
+                const resp = await fetch('/settings_set', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
                     body: JSON.stringify({
@@ -161,10 +166,12 @@ function onboardingData() {
                         ]}]
                     }),
                 });
+                if (!resp.ok) throw new Error(`Server error ${resp.status}`);
                 localStorage.setItem('trust_onboarded', '1');
             } catch (e) {
                 console.error('Onboarding confirm failed:', e);
-                // Still close the modal — don't block the user on a save failure
+                this.saveError = 'Could not save your preference. Check your connection and try again.';
+                return; // Leave modal open so the user can retry
             }
             this.show = false;
             // Deliver the intercepted first message if one was queued
