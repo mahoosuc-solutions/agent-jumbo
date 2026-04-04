@@ -61,14 +61,45 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Compute release metadata
+        id: meta
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          if [ "${{ steps.release_type.outputs.is_tag }}" = "true" ]; then
+            echo "release_name=Agent Jumbo v${VERSION}" >> "$GITHUB_OUTPUT"
+            cat > /tmp/release_body.md << MDEOF
+          ## Agent Jumbo v${VERSION}
+
+          See [CHANGELOG.md](https://github.com/mahoosuc-solutions/agent-jumbo/blob/main/CHANGELOG.md) for changes.
+
+          ### Install
+          \`\`\`bash
+          curl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash
+          \`\`\`
+
+          ### Manual download
+          - \`agent-jumbo-${VERSION}.tar.gz\` — Linux/macOS tarball
+          - \`agent-jumbo-${VERSION}.zip\` — ZIP archive
+          MDEOF
+          else
+            echo "release_name=Agent Jumbo (latest)" >> "$GITHUB_OUTPUT"
+            cat > /tmp/release_body.md << MDEOF
+          > ⚠️ This is a rolling pre-release tracking the \`main\` branch. For stable releases, use a tagged version.
+
+          ### Install
+          \`\`\`bash
+          curl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash
+          \`\`\`
+          MDEOF
+          fi
+
       - name: Create or update release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.release_type.outputs.tag }}
-          name: ${{ steps.release_type.outputs.is_tag == 'true' && format('Agent Jumbo v{0}', steps.version.outputs.version) || 'Agent Jumbo (latest)' }}
+          name: ${{ steps.meta.outputs.release_name }}
           prerelease: ${{ steps.release_type.outputs.prerelease }}
-          body: |
-            ${{ steps.release_type.outputs.is_tag == 'true' && format('## Agent Jumbo v{0}\n\nSee [CHANGELOG.md](CHANGELOG.md) for changes.\n\n### Install\n```bash\ncurl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash\n```', steps.version.outputs.version) || '> ⚠️ This is a rolling pre-release tracking the `main` branch. For stable releases, use a tagged version.\n\n### Install\n```bash\ncurl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash\n```' }}
+          body_path: /tmp/release_body.md
           files: |
             dist/agent-jumbo-${{ steps.version.outputs.version }}.tar.gz
             dist/agent-jumbo-${{ steps.version.outputs.version }}.zip
