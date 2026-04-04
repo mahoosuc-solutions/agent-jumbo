@@ -199,3 +199,29 @@ TRUST_LEVEL_INFO = {
         "asks": "Deployments, deletions, payment processing",
     },
 }
+
+
+# ── Always-allow list ──────────────────────────────────────────────────────
+
+TRUST_ALWAYS_ALLOW_KEY = "trust_always_allow"
+
+
+def is_always_allowed(tool_name: str, settings: dict) -> bool:
+    """Return True if the tool is in the user's permanent allow list."""
+    allow_list = settings.get(TRUST_ALWAYS_ALLOW_KEY, [])
+    return tool_name in allow_list
+
+
+def get_approval_fingerprint(tool_name: str, tool_args: dict) -> str:
+    """Return a stable fingerprint for an approval record.
+
+    Format: "<tool_name>:<first_meaningful_arg_value>"
+    Used by cowork.find_matching_approval() for deduplication.
+    """
+    # Pick the first string arg value as the identifier (to, email, name, prompt)
+    first_val = ""
+    for val in tool_args.values():
+        if isinstance(val, str) and val:
+            first_val = val
+            break
+    return f"{tool_name}:{first_val}"
