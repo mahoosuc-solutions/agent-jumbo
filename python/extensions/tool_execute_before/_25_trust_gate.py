@@ -14,11 +14,10 @@ context.paused = False, resuming the agent.
 
 import uuid
 
+from agent import UserMessage
 from python.helpers import cowork, settings
-from python.helpers.errors import RepairableException
 from python.helpers.extension import Extension
 from python.helpers.trust_system import (
-    TRUST_ALWAYS_ALLOW_KEY,
     TrustLevel,
     get_approval_explanation,
     get_approval_fingerprint,
@@ -55,10 +54,7 @@ class TrustGate(Extension):
 
         agent = kwargs.get("agent")
         if agent is None:
-            # No agent context — fall back to text warning (shouldn't happen in prod)
-            raise RepairableException(
-                f"[TRUST GATE] {tool_name} requires approval but no agent context available."
-            )
+            return  # No agent context — skip silently; gate is best-effort
 
         # Build and store the approval record
         risk = get_tool_risk(tool_name)
@@ -87,7 +83,15 @@ class TrustGate(Extension):
             content=f"Risk={_RISK_LABELS.get(int(risk))} trust={TrustLevel(trust_level).name} approval_id={approval['id']}",
         )
 
-        raise RepairableException(
-            f"[TRUST GATE] {tool_name} requires approval. "
-            f"Check the Approvals panel to approve or deny this action."
+        # Use the intervention mechanism (same as _20_cowork_approvals.py) so that
+        # handle_intervention() raises InterventionException and cleanly breaks the
+        # monologue loop. RepairableException would NOT pause the agent — it is only
+        # forwarded as a warning to the LLM and execution would continue.
+        self.agent.intervention = UserMessage(
+            message=(
+                f"[TRUST GATE] {tool_name} requires approval. Check the Approvals panel to approve or deny this action."
+            ),
+            attachments=[],
+            system_message=[],
         )
+        await self.agent.handle_intervention()

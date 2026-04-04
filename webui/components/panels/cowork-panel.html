@@ -139,7 +139,7 @@ function coworkPanelData() {
                         'Content-Type': 'application/json',
                         'X-CSRF-Token': token
                     },
-                    body: JSON.stringify({ approval_id: id, status: status })
+                    body: JSON.stringify({ approval_id: id, action: status === 'approved' ? 'approve' : 'deny' })
                 });
                 await this.refresh();
             } catch (e) {
@@ -184,16 +184,25 @@ function coworkPanelData() {
                     }
                 }
 
-                if (currentList.includes(toolName)) return; // already in list
+                if (!currentList.includes(toolName)) {
+                    const updatedList = [...currentList, toolName];
+                    await fetch('/settings_set', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
+                        body: JSON.stringify({
+                            sections: [{ fields: [{ id: 'trust_always_allow', value: updatedList }] }]
+                        }),
+                    });
+                }
 
-                const updatedList = [...currentList, toolName];
-                await fetch('/settings_set', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': token },
-                    body: JSON.stringify({
-                        sections: [{ fields: [{ id: 'trust_always_allow', value: updatedList }] }]
-                    }),
-                });
+                // Also approve the pending trust-gate record for this tool so the
+                // agent is unblocked immediately (not just on the next invocation).
+                const pending = this.pendingApprovals.find(
+                    a => a.tool_name === toolName && a.source === 'trust_gate'
+                );
+                if (pending) {
+                    await this.updateApproval(pending.id, 'approved');
+                }
             } catch (e) {
                 console.error('alwaysApprove failed:', e);
             }
