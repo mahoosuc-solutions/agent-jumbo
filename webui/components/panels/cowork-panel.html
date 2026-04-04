@@ -110,7 +110,7 @@ function coworkPanelData() {
                 this.stats = {
                     pending: this.pendingApprovals.length,
                     approved: approvals.filter(a => a.status === 'approved').length,
-                    rejected: approvals.filter(a => a.status === 'rejected').length
+                    rejected: approvals.filter(a => a.status === 'denied').length
                 };
 
                 // Update tile badge
