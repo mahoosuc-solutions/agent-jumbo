@@ -269,3 +269,48 @@ def test_trust_gate_deny_resolves_approval(app_server, auth_cookies, observer_tr
         time.sleep(1.0)
 
     assert unblocked, "Pending trust-gate approvals still present 15s after denial"
+
+
+@pytest.mark.slow
+def test_trust_gate_always_allow_bypasses_gate(app_server, auth_cookies, observer_trust_level):
+    """A tool in trust_always_allow is not blocked by the trust gate."""
+    context_id = _create_context(app_server, auth_cookies)
+
+    # Add memory_load to the always-allow list
+    api_post_tolerant(
+        app_server,
+        auth_cookies,
+        "settings_set",
+        {"sections": [{"fields": [{"id": "trust_always_allow", "value": ["memory_load"]}]}]},
+    )
+
+    try:
+        # Send a message that would trigger memory_load — it should NOT be blocked
+        _send_message_background(
+            app_server,
+            auth_cookies,
+            context_id,
+            "Use the memory_load tool to recall any stored facts.",
+        )
+
+        # Give the agent time to run — if the gate fires, a pending approval would appear
+        time.sleep(10)
+
+        resp = api_post(app_server, auth_cookies, "cowork_approvals_list", {"context": context_id})
+        trust_gate_pending = [
+            a
+            for a in resp.get("approvals", [])
+            if a.get("source") == "trust_gate" and a.get("status") == "pending" and a.get("tool_name") == "memory_load"
+        ]
+        assert trust_gate_pending == [], (
+            f"Expected no pending trust-gate approval for memory_load (it is always-allowed), "
+            f"but found: {trust_gate_pending}"
+        )
+    finally:
+        # Restore always-allow list to empty
+        api_post_tolerant(
+            app_server,
+            auth_cookies,
+            "settings_set",
+            {"sections": [{"fields": [{"id": "trust_always_allow", "value": []}]}]},
+        )
