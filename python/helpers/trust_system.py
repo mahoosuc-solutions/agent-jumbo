@@ -9,7 +9,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from enum import IntEnum
+from typing import Any
 
 
 class TrustLevel(IntEnum):
@@ -206,7 +208,7 @@ TRUST_LEVEL_INFO = {
 TRUST_ALWAYS_ALLOW_KEY = "trust_always_allow"
 
 
-def is_always_allowed(tool_name: str, settings: dict) -> bool:
+def is_always_allowed(tool_name: str, settings: Mapping[str, Any]) -> bool:
     """Return True if the tool is in the user's permanent allow list."""
     allow_list = settings.get(TRUST_ALWAYS_ALLOW_KEY, [])
     return tool_name in allow_list
