@@ -16,18 +16,19 @@ fi
 
 # Extract VERSION from pyproject.toml
 # Try tomllib (Python 3.11+), fall back to tomli
-VERSION=$(python3 -c "
+VERSION=$(python3 - <<'PYEOF'
 try:
     import tomllib
-    with open('pyproject.toml', 'rb') as f:
-        data = tomllib.load(f)
-        print(data['project']['version'])
 except (ImportError, ModuleNotFoundError):
-    import tomli
-    with open('pyproject.toml', 'rb') as f:
-        data = tomli.load(f)
-        print(data['project']['version'])
-" 2>/dev/null)
+    try:
+        import tomli as tomllib
+    except ImportError:
+        import sys; sys.exit("ERROR: neither tomllib nor tomli available")
+with open("pyproject.toml", "rb") as f:
+    d = tomllib.load(f)
+print(d["project"]["version"])
+PYEOF
+)
 
 if [[ -z "${VERSION}" ]]; then
     echo "[package-release] ERROR: Could not read version from pyproject.toml" >&2
@@ -38,6 +39,8 @@ echo "[package-release] Packaging Agent Jumbo v${VERSION}..."
 
 # Create dist directory
 DIST_DIR="dist/agent-jumbo-${VERSION}"
+echo "[package-release] Cleaning previous build..."
+rm -rf "${DIST_DIR}"
 mkdir -p "${DIST_DIR}"
 
 # Copy root Python files
@@ -93,9 +96,9 @@ if [[ -f "install.sh" ]]; then
     cp install.sh "${DIST_DIR}/"
 fi
 
-# Remove user data (database files in instruments/custom/*/data/)
+# Remove all SQLite databases — user data must never ship in release archives
 echo "[package-release] Removing user data files..."
-find "${DIST_DIR}/instruments/custom" -path "*/data/*.db" -delete 2>/dev/null || true
+find "${DIST_DIR}" -name "*.db" -delete 2>/dev/null || true
 
 # Clean up Python cache and system files
 echo "[package-release] Cleaning cache and temporary files..."
@@ -106,17 +109,14 @@ find "${DIST_DIR}" -name ".DS_Store" -delete 2>/dev/null || true
 
 # Create archives
 echo "[package-release] Creating archives..."
-cd dist
+(
+  cd dist
+  tar -czf "agent-jumbo-${VERSION}.tar.gz" "agent-jumbo-${VERSION}/"
+  zip -rq "agent-jumbo-${VERSION}.zip" "agent-jumbo-${VERSION}/"
+)
 
-# Create tar.gz
-tar -czf "agent-jumbo-${VERSION}.tar.gz" "agent-jumbo-${VERSION}/"
-TARGZ_SIZE=$(du -h "agent-jumbo-${VERSION}.tar.gz" | cut -f1)
-
-# Create zip
-zip -rq "agent-jumbo-${VERSION}.zip" "agent-jumbo-${VERSION}/"
-ZIP_SIZE=$(du -h "agent-jumbo-${VERSION}.zip" | cut -f1)
-
-cd ..
+TARGZ_SIZE=$(du -h "dist/agent-jumbo-${VERSION}.tar.gz" | cut -f1)
+ZIP_SIZE=$(du -h "dist/agent-jumbo-${VERSION}.zip" | cut -f1)
 
 # Print summary
 echo ""
