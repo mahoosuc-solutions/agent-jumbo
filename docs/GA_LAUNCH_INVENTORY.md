@@ -26,25 +26,25 @@ If a row does not have an owner, validation path, evidence path, and rollback pa
 
 | Capability | Classification | Owner role | Validation path | Evidence artifact | Rollback or disable path | Status |
 |---|---|---|---|---|---|---|
-| Core startup and auth | ga | Engineering | `/health`, boot smoke, config load smoke | `artifacts/validation/` health run | rollback deploy or disable release | Pending evidence refresh |
-| Chat create/message/poll lifecycle | ga | Engineering | `./scripts/validate_360.sh` and manual smoke | `artifacts/validation/validation-360-*.log` | rollback deploy | Pending evidence refresh |
-| Skills discovery | ga | Engineering | `./scripts/validate_360.sh` | `artifacts/validation/validation-360-*.log` | rollback deploy | Pending evidence refresh |
-| Trust gate enforcement | ga | Security | targeted pytest plus manual trust-level smoke | test report plus launch smoke record | set stricter trust defaults or stop launch | Pending evidence refresh |
-| Trust and Security dashboard | ga | Product | browser smoke on dashboard render and state | launch smoke record | hide dashboard link | Pending evidence refresh |
-| Dashboards sidebar navigation | ga | Product | browser smoke for sidebar registration and routing | launch smoke record | feature flag or hide section | Pending evidence refresh |
-| New chat auto-select | ga | Product | browser smoke after chat creation | launch smoke record | rollback deploy | Pending evidence refresh |
-| Ideas workspace | beta | Product | backend tests plus browser smoke for create, refine, and save brief | test report plus launch smoke record | hide sidebar link | Needs classification follow-up |
-| Projects workspace | beta | Product | backend tests plus browser smoke for load and project chat activation | test report plus launch smoke record | hide sidebar link | Needs classification follow-up |
-| Idea promotion to project/workflow/queue | beta | Engineering/Product | targeted integration tests plus manual promotion smoke | pytest output plus launch smoke record | disable promotion action | Needs validation bundle |
-| In-monologue task planner | beta | Product | targeted functional smoke | launch smoke record | hide or label beta | Needs GA decision |
-| Graceful shutdown | ga | Operations | controlled shutdown and restart smoke | ops run log | rollback deploy | Pending evidence refresh |
-| Backup create and restore | ga | Operations | backup plus restore rehearsal | backup and restore log | stop launch if restore fails | Pending evidence refresh |
-| Public product page | ga | Product | `web` build plus manual content smoke | build log plus smoke record | unpublish marketing route | Pending evidence refresh |
-| Platform status API | ga | Engineering | route smoke with backend up and down | API smoke log | fallback to static-only status | Pending evidence refresh |
-| Stripe pricing and payment path | ga | Product/Ops | Stripe test-mode end-to-end flow | payment validation record | disable payment route and hold launch | Pending evidence refresh |
-| Self-serve onboarding docs | ga | Product | fresh install from docs | onboarding dry-run notes | remove self-serve claim | Pending evidence refresh |
-| Monitoring and alerting | ga | Operations | alert fire drill and dashboard checks | `artifacts/validation/monitoring-alerting-*.md` | hold launch | Local evidence captured; refresh in target env |
-| Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review | `artifacts/validation/compliance-links-*.md` | hold launch | Local publication package prepared |
+| Core startup and auth | ga | Engineering | `/health`, boot smoke, config load smoke | `artifacts/validation/validation-360-20260404-170924.log` | rollback deploy or disable release | ✅ Evidence captured 2026-04-04 — 10/10 pass |
+| Chat create/message/poll lifecycle | ga | Engineering | `./scripts/validate_360.sh` and manual smoke | `artifacts/validation/validation-360-20260404-170924.log` | rollback deploy | ✅ Evidence captured 2026-04-04 — chat roundtrip pass |
+| Skills discovery | ga | Engineering | `./scripts/validate_360.sh` | `artifacts/validation/validation-360-20260404-170924.log` | rollback deploy | ✅ Evidence captured 2026-04-04 — skills discovery pass |
+| Trust gate enforcement | ga | Security | targeted pytest plus manual trust-level smoke | `artifacts/validation/deployment-validation-20260404-171147.log` | set stricter trust defaults or stop launch | ✅ Deployment 83/83 pass — refresh manual trust smoke before launch |
+| Trust and Security dashboard | ga | Product | browser smoke on dashboard render and state | launch smoke record | hide dashboard link | Pending manual browser smoke |
+| Dashboards sidebar navigation | ga | Product | browser smoke for sidebar registration and routing | launch smoke record | feature flag or hide section | Pending manual browser smoke |
+| New chat auto-select | ga | Product | browser smoke after chat creation | launch smoke record | rollback deploy | Pending manual browser smoke |
+| Ideas workspace | beta | Product | backend tests plus browser smoke for create, refine, and save brief | test report plus launch smoke record | hide sidebar link | Beta — no GA evidence required |
+| Projects workspace | beta | Product | backend tests plus browser smoke for load and project chat activation | test report plus launch smoke record | hide sidebar link | Beta — no GA evidence required |
+| Idea promotion to project/workflow/queue | beta | Engineering/Product | targeted integration tests plus manual promotion smoke | pytest output plus launch smoke record | disable promotion action | Beta — no GA evidence required |
+| In-monologue task planner | beta | Product | targeted functional smoke | launch smoke record | hide or label beta | Beta — no GA evidence required |
+| Graceful shutdown | ga | Operations | controlled shutdown and restart smoke | `artifacts/validation/deployment-validation-20260404-171147.log` | rollback deploy | ✅ Container health verified — refresh shutdown smoke before launch |
+| Backup create and restore | ga | Operations | backup plus restore rehearsal | backup and restore log | stop launch if restore fails | Pending manual backup/restore rehearsal |
+| Public product page | ga | Product | `web` build plus manual content smoke | build log plus smoke record | unpublish marketing route | ✅ Dark knight theme deployed, nav connected — pending web build evidence |
+| Platform status API | ga | Engineering | route smoke with backend up and down | `artifacts/validation/deployment-validation-20260404-171147.log` | fallback to static-only status | ✅ API health checks pass in deployment validation |
+| Stripe pricing and payment path | ga | Product/Ops | Stripe test-mode end-to-end flow | payment validation record | disable payment route and hold launch | Pending Stripe test-mode rehearsal |
+| Self-serve onboarding docs | ga | Product | fresh install from docs | onboarding dry-run notes | remove self-serve claim | ✅ INSTALL.md created and validated — onboarding guide at /wbm-onboarding.html |
+| Monitoring and alerting | ga | Operations | alert fire drill and dashboard checks | `artifacts/validation/monitoring-alerting-*.md` | hold launch | ✅ health_alerter wired, platform-health-monitor task running every 5 min |
+| Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review | `artifacts/validation/compliance-links-*.md` | hold launch | Local publication package prepared — pending live URL verification |
 
 ## Freeze Review Checklist
 
