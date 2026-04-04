@@ -137,3 +137,29 @@ def test_cowork_approvals_update_approve_and_retry_action(app_server, auth_cooki
         },
     )
     assert "approvals" in resp
+
+
+@pytest.mark.slow
+def test_trust_gate_creates_pending_approval(app_server, auth_cookies, observer_trust_level):
+    """Observer trust level creates a pending trust-gate approval record for any tool call."""
+    context_id = _create_context(app_server, auth_cookies)
+
+    # Send a message in the background — agent will block waiting for approval
+    _send_message_background(
+        app_server,
+        auth_cookies,
+        context_id,
+        "Use the memory_load tool to recall any stored facts.",
+    )
+
+    # Poll until the trust gate fires and creates an approval record
+    approval = _poll_for_pending_trust_gate(app_server, auth_cookies, context_id, timeout=45)
+
+    assert approval is not None, "Expected a pending trust-gate approval to appear within 45s"
+    assert approval["source"] == "trust_gate"
+    assert approval["status"] == "pending"
+    assert "tool_name" in approval
+    assert "id" in approval
+    assert approval["id"].startswith("trust-")
+    assert "risk" in approval
+    assert approval["risk"] in ("LOW", "MEDIUM", "HIGH", "CRITICAL")
