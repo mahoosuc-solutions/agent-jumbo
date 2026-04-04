@@ -1,0 +1,47 @@
+# Production Dockerfile for Agent Jumbo
+# Bakes the entire codebase into the image at build time.
+# Only data volumes and external drive mounts are used at runtime.
+ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
+FROM ${BASE_IMAGE}
+
+ARG BRANCH=main
+ARG INSTALL_PLAYWRIGHT=1
+ARG RUN_PRELOAD=1
+ARG INSTALL_ADDITIONAL_TOOLS=1
+ENV BRANCH=$BRANCH
+ENV INSTALL_PLAYWRIGHT=$INSTALL_PLAYWRIGHT
+ENV RUN_PRELOAD=$RUN_PRELOAD
+ENV INSTALL_ADDITIONAL_TOOLS=$INSTALL_ADDITIONAL_TOOLS
+
+# Copy AJ-specific install scripts and configs
+COPY ./docker/run/fs/ /
+
+# pre installation steps (apt packages, system config)
+RUN --mount=type=cache,target=/var/cache/apt \
+    --mount=type=cache,target=/var/lib/apt \
+    bash /ins/pre_install.sh $BRANCH
+
+# Copy full project into /aj (baked, not mounted)
+COPY . /aj
+WORKDIR /aj
+
+# Refresh apt index (base image may be stale vs Kali rolling repos)
+RUN apt-get update
+
+# Install AJ dependencies into the venv
+RUN --mount=type=cache,target=/root/.cache/pip \
+    --mount=type=cache,target=/root/.cache/uv \
+    bash /ins/install_aj.sh $BRANCH
+
+# Install additional software (playwright, etc.)
+RUN bash /ins/install_additional.sh $BRANCH
+
+# Post-install cleanup and config
+RUN bash /ins/install_aj2.sh $BRANCH
+RUN bash /ins/post_install.sh $BRANCH
+
+EXPOSE 22 80 9000-9009
+
+RUN chmod +x /exe/initialize.sh /exe/run_aj.sh /exe/run_searxng.sh /exe/run_tunnel_api.sh
+
+CMD ["/exe/initialize.sh", "production"]
