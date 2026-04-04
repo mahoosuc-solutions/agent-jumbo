@@ -267,11 +267,21 @@ def apply_rate_limiter_sync(
     if not model_config:
         return
     import asyncio
+    import concurrent.futures
 
-    import nest_asyncio
-
-    nest_asyncio.apply()
-    return asyncio.run(apply_rate_limiter(model_config, input_text, rate_limiter_callback))
+    coro = apply_rate_limiter(model_config, input_text, rate_limiter_callback)
+    try:
+        # If there is already a running event loop (e.g. we're inside a subordinate
+        # agent's monologue), asyncio.run() would raise "This event loop is already
+        # running". Instead, run the coroutine in a fresh thread so it gets its own
+        # event loop and the caller's loop is not blocked.
+        asyncio.get_running_loop()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as pool:
+            future = pool.submit(asyncio.run, coro)
+            return future.result()
+    except RuntimeError:
+        # No running loop — safe to call asyncio.run() directly.
+        return asyncio.run(coro)
 
 
 class LiteLLMChatWrapper(SimpleChatModel):
