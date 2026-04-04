@@ -201,6 +201,8 @@ class Settings(TypedDict):
     # Trust & Performance
     trust_level: int
     performance_profile: str
+    trust_always_allow: list[str]   # tools permanently exempt from trust gate
+    trust_onboarded: bool           # whether first-run wizard has been completed
     max_monologue_iterations: int
     max_monologue_seconds: int
     response_style: str
@@ -585,6 +587,8 @@ def get_default_settings() -> Settings:
         # Trust & Performance
         trust_level=3,  # Collaborative
         performance_profile="efficient",
+        trust_always_allow=[],
+        trust_onboarded=False,
         max_monologue_iterations=25,
         max_monologue_seconds=1200,
         response_style="concise",
