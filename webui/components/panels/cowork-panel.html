@@ -159,7 +159,7 @@ function coworkPanelData() {
         },
 
         formatArgs(args) {
-            if (!args || typeof args !== 'object') return '-';
+            if (!args || typeof args !== 'object' || Array.isArray(args)) return '-';
             const entries = Object.entries(args).slice(0, 2);
             return entries.map(([k, v]) => `${k}: ${String(v).substring(0, 40)}`).join(', ') || '-';
         },
