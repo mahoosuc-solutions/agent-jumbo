@@ -9,7 +9,25 @@
 <body>
     <div x-data x-show="$store.welcomeStore && $store.welcomeStore.isVisible">
         <template x-if="$store.welcomeStore">
-            <div x-data="$store.welcomeStore" class="welcome-container">
+            <div x-data="{
+                    ...$store.welcomeStore,
+                    mosSetupNeeded: false,
+                    mosBannerDismissed: false,
+                    async checkMosSetup() {
+                        try {
+                            const res = await fetch('/health_agentmesh');
+                            const data = await res.json();
+                            this.mosSetupNeeded = (
+                                data.agentmesh_redis === 'unconfigured' &&
+                                !data.aios_bridge_enabled
+                            );
+                        } catch (e) {
+                            this.mosSetupNeeded = false;
+                        }
+                    }
+                }"
+                x-init="checkMosSetup()"
+                class="welcome-container">
                 <!-- Agent Jumbo Logo -->
                 <div class="welcome-logo-container">
                     <img src="./public/icon.svg" alt="Agent Jumbo Logo" class="welcome-logo" />
@@ -20,6 +38,21 @@
                 <p class="welcome-subtitle">
                     Start a new conversation or explore the features below.
                 </p>
+
+                <!-- MOS Integration Setup Banner -->
+                <div class="mos-setup-banner" x-show="mosSetupNeeded && !mosBannerDismissed" x-cloak>
+                    <div class="mos-setup-banner-content">
+                        <span class="material-symbols-outlined mos-setup-icon">hub</span>
+                        <div class="mos-setup-text">
+                            <p class="mos-setup-eyebrow">Mahoosuc OS Integration</p>
+                            <p class="mos-setup-message">Have a Mahoosuc OS subscription? Activate the Agent Mesh connection from your MOS workspace to unlock cross-platform workflows.</p>
+                        </div>
+                    </div>
+                    <div class="mos-setup-actions">
+                        <a href="https://mahoosuc.ai/agent-jumbo" target="_blank" rel="noopener noreferrer" class="mos-setup-cta">Set Up in Mahoosuc OS →</a>
+                        <button class="mos-setup-dismiss" @click.stop="mosBannerDismissed = true">Skip for now</button>
+                    </div>
+                </div>
 
                 <!-- Action Cards -->
                 <div class="welcome-actions">
@@ -64,6 +97,13 @@
                         <h3 class="welcome-action-title">Visit GitHub</h3>
                         <p class="welcome-action-description">
                             View source code and documentation
+                        </p>
+                    </div>
+                    <div class="welcome-action-card" @click="executeAction('setup-mos')" x-show="mosSetupNeeded" x-cloak>
+                        <span class="material-symbols-outlined welcome-action-icon">hub</span>
+                        <h3 class="welcome-action-title">Connect to MOS</h3>
+                        <p class="welcome-action-description">
+                            Activate your Mahoosuc OS integration
                         </p>
                     </div>
                 </div>
@@ -188,6 +228,80 @@
         .light-mode .welcome-footer {
             color: #666;
         }
+
+        /* MOS Setup Banner */
+        .mos-setup-banner {
+            width: 100%;
+            max-width: 520px;
+            margin-bottom: 1.2rem;
+            background: var(--color-panel);
+            border: 1px solid var(--color-highlight-dark);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+        }
+
+        .mos-setup-banner-content {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .mos-setup-icon {
+            font-size: 1.4rem;
+            color: var(--color-highlight-dark);
+            flex-shrink: 0;
+            margin-top: 0.1rem;
+        }
+
+        .mos-setup-eyebrow {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--color-highlight-dark);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .mos-setup-message {
+            font-size: 0.825rem;
+            color: var(--color-secondary);
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        .mos-setup-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding-left: 2.15rem;
+        }
+
+        .mos-setup-cta {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-highlight-dark);
+            text-decoration: none;
+        }
+
+        .mos-setup-cta:hover {
+            text-decoration: underline;
+        }
+
+        .mos-setup-dismiss {
+            font-size: 0.8rem;
+            color: var(--color-secondary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .mos-setup-dismiss:hover {
+            color: var(--color-text);
+        }
+
+        [x-cloak] { display: none !important; }
 
         /* Responsive design */
         @media (max-width: 768px) {

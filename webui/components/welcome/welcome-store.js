@@ -59,6 +59,9 @@ const model = {
       case "github":
         window.open("https://github.com/mahoosuc-solutions/agent-jumbo", "_blank");
         break;
+      case "setup-mos":
+        window.open("https://mahoosuc.ai/agent-jumbo", "_blank");
+        break;
     }
   },
 };
