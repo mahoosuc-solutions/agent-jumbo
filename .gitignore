@@ -8,6 +8,7 @@
 #Ignore IDE files
 .cursor/
 .windsurf/
+.superpowers/
 
 # ignore test files in root dir
 /*.test.py

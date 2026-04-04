@@ -12,8 +12,8 @@ mkdir -p "$REPORT_DIR"
 
 exec > >(tee "$REPORT_FILE") 2>&1
 
-CONTAINER="${CONTAINER:-agent-jumbo}"
-BASE_URL="${BASE_URL:-http://localhost:50080}"
+CONTAINER="${CONTAINER:-agent-jumbo-production}"
+BASE_URL="${BASE_URL:-http://localhost:6274}"
 
 # Colors
 RED='\033[0;31m'

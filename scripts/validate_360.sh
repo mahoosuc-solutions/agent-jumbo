@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODE="${1:-quick}"
-BASE_URL="${BASE_URL:-http://localhost:50080}"
+BASE_URL="${BASE_URL:-http://localhost:6274}"
 REPORT_DIR="${REPORT_DIR:-$ROOT_DIR/artifacts/validation}"
 TS="$(date +%Y%m%d-%H%M%S)"
 REPORT_FILE="$REPORT_DIR/validation-360-$TS.log"
