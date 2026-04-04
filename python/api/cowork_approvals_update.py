@@ -36,10 +36,21 @@ class CoworkApprovalsUpdate(ApiHandler):
             updated = cowork.update_approval(context, approval_id, status, resolved_by="user")
             if updated:
                 updated["inherit"] = inherit
-                if action == "approve_and_retry":
+                is_trust_gate = updated.get("source") == "trust_gate"
+
+                if action == "approve_and_retry" or is_trust_gate:
                     tool_name = updated.get("tool_name", "tool")
-                    message = f"Approval granted for {tool_name}. Retry the action now."
+                    if status == "approved":
+                        message = f"Approval granted for {tool_name}. Please retry the action now."
+                    else:
+                        message = f"User denied approval for {tool_name}. Do not attempt this action again in this session."
                     context.communicate(UserMessage(message=message, attachments=[], system_message=[]))
+
+                # Unblock the agent for trust gate records (always) and explicit approve_and_retry
+                if is_trust_gate or action == "approve_and_retry":
+                    context.paused = False
+                    context.resume_queued()
+
             return {"approvals": cowork.get_approvals(context)}
 
         return {"approvals": approvals}
