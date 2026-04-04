@@ -4,22 +4,22 @@ import AnalyticsClient from '@/components/AnalyticsClient'
 import { Providers } from './providers'
 
 export const metadata: Metadata = {
-  title: 'Agent Jumbo - Intelligent Application Operating System',
-  description: 'Build, test, and deploy AI-powered workflows that integrate with your business systems. Enterprise-grade orchestration, observability, and governance.',
+  title: 'Agent Jumbo — Your Personal AI Operating System',
+  description: 'Real estate, finances, wellness, relationships, calendar — orchestrated by specialized agents. Self-hosted. Part of the Mahoosuc OS platform.',
   icons: {
     icon: '/favicon.svg',
   },
   openGraph: {
     title: 'Agent Jumbo',
-    description: 'The Operating System for Intelligent Business Applications',
+    description: 'Your Personal AI Operating System. Part of Mahoosuc OS.',
     type: 'website',
     url: 'https://agent-jumbo.com',
     siteName: 'Agent Jumbo',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Agent Jumbo',
-    description: 'Operating System for Intelligent Business Applications',
+    title: 'Agent Jumbo — Your Personal AI Operating System',
+    description: 'Self-hosted personal OS for real estate, finances, wellness, and more. Part of Mahoosuc OS.',
   },
   robots: {
     index: true,

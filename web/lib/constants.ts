@@ -5,9 +5,10 @@ import {
 } from 'lucide-react'
 
 export const SITE_NAME = 'Agent Jumbo'
-export const SITE_DESCRIPTION = 'Intelligent multi-platform deployment orchestration for AI agents'
-export const GITHUB_REPO = 'agent-jumbo-deploy/agent-jumbo'
-export const GITHUB_URL = 'https://github.com/agent-jumbo-deploy/agent-jumbo'
+export const SITE_DESCRIPTION = 'Your Personal AI Operating System. Part of Mahoosuc OS.'
+export const GITHUB_REPO = 'mahoosuc-solutions/agent-jumbo'
+export const GITHUB_URL = 'https://github.com/mahoosuc-solutions/agent-jumbo'
+export const MAHOOSUC_URL = 'https://mahoosuc.ai'
 export const VERSION = '1.0.0-beta'
 
 export const FEATURES = [
@@ -35,12 +36,10 @@ export const FEATURES = [
 
 export const PUBLIC_NAVIGATION = [
   { label: 'Home', href: '/' },
-  { label: 'Platform', href: '/platform' },
-  { label: 'Solutions', href: '/solutions' },
-  { label: 'Portfolio', href: '/portfolio' },
-  { label: 'Pricing', href: '/pricing' },
+  { label: 'Install', href: '/install' },
   { label: 'Documentation', href: '/documentation' },
-  { label: 'Demo', href: '/demo' },
+  { label: 'Platform', href: '/platform' },
+  { label: 'Mahoosuc OS ↗', href: 'https://mahoosuc.ai', external: true },
 ]
 
 export interface NavItem {
