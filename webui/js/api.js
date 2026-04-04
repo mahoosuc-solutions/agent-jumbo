@@ -175,16 +175,20 @@ let csrfToken = null;
 async function getCsrfToken() {
   if (csrfToken) return csrfToken;
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 2000);
+  const timeout = setTimeout(() => controller.abort(), 5000);
   let response;
   try {
     response = await fetch("/csrf_token", {
       credentials: "same-origin",
       signal: controller.signal,
     });
-  } finally {
+  } catch (err) {
     clearTimeout(timeout);
+    // AbortError means the backend isn't ready yet (startup race) — let
+    // fetchApi's catch handle it silently via "CSRF token unavailable".
+    throw err;
   }
+  clearTimeout(timeout);
   if (response.redirected && response.url.endsWith("/login")) {
     // redirect to login
     window.location.href = response.url;
