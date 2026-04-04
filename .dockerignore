@@ -33,10 +33,16 @@ knowledge/**
 !knowledge/default/
 !knowledge/default/**
 
-# Instruments directory – keep only default/
+# Instruments directory – keep default/ and all custom instrument source files
+# (data/ dirs with SQLite DBs are excluded by the **/*.py[cod] rules below)
 instruments/**
+!instruments/__init__.py
 !instruments/default/
 !instruments/default/**
+!instruments/custom/
+!instruments/custom/__init__.py
+!instruments/custom/**/
+!instruments/custom/**/*.py
 
 # Keep .gitkeep markers anywhere
 !**/.gitkeep
