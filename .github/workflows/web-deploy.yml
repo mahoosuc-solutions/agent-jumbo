@@ -58,6 +58,21 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: Post-deploy health check
+        run: |
+          echo "Waiting for deployment to propagate..."
+          for i in {1..12}; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://agent-jumbo.com/health || echo "000")
+            if [ "$STATUS" = "200" ]; then
+              echo "Health check passed (attempt $i)"
+              exit 0
+            fi
+            echo "Attempt $i: status $STATUS — retrying in 5s"
+            sleep 5
+          done
+          echo "Health check failed after 60s — deployment may be unhealthy"
+          exit 1
+
       - name: Record folder workflow deploy evidence
         if: always()
         run: |

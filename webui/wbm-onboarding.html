@@ -1212,41 +1212,38 @@ Produce a full annual platform health report covering: all services status, annu
   let created = 0;
   let errors = [];
 
-  for (const t of tasks) {
-    try {
-      const resp = await fetch('/scheduler_task_create', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
-        body: JSON.stringify({
-          name: t.name,
-          system_prompt: WBM_SYSTEM,
-          prompt: t.prompt,
-          schedule: t.schedule,
-          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York',
-          project_name: 'west_bethel_motel'
-        })
-      });
-      const data = await resp.json();
-      if (data.ok) {
-        created++;
-      } else {
-        errors.push(t.name);
-        console.error('Failed to create', t.name, data);
-      }
-    } catch (err) {
-      errors.push(t.name);
-      console.error('Error creating', t.name, err);
-    }
-  }
+  const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || 'America/New_York';
+  const taskDefs = tasks.map(t => ({
+    name: t.name,
+    system_prompt: WBM_SYSTEM,
+    prompt: t.prompt,
+    schedule: t.schedule,
+    timezone: tz,
+    project_name: 'west_bethel_motel'
+  }));
 
-  if (errors.length === 0) {
-    btn.style.display = 'none';
-    document.getElementById('workflows-imported').style.display = 'flex';
-    document.getElementById('workflows-imported').textContent = `✓ ${created} workflows installed — view in Scheduler`;
-  } else {
-    btn.textContent = `${created}/${tasks.length} installed — retry?`;
+  try {
+    const resp = await fetch('/scheduler_import_tasks', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRF-Token': CSRF },
+      body: JSON.stringify({ task_definitions: taskDefs, timezone: tz })
+    });
+    const data = await resp.json();
+    if (data.ok) {
+      btn.style.display = 'none';
+      const total = data.imported + data.skipped;
+      document.getElementById('workflows-imported').style.display = 'flex';
+      document.getElementById('workflows-imported').textContent =
+        `✓ ${data.imported} installed${data.skipped ? `, ${data.skipped} already existed` : ''} — view in Scheduler`;
+    } else {
+      btn.textContent = 'Error — retry?';
+      btn.disabled = false;
+      console.error('Import failed', data);
+    }
+  } catch (err) {
+    btn.textContent = 'Error — retry?';
     btn.disabled = false;
-    console.warn('Failed tasks:', errors);
+    console.error('Import error', err);
   }
 }
 </script>

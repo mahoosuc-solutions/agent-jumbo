@@ -50,4 +50,7 @@ EXPOSE 22 80 9000-9009
 
 RUN chmod +x /exe/initialize.sh /exe/run_aj.sh /exe/run_searxng.sh /exe/run_tunnel_api.sh
 
+HEALTHCHECK --interval=30s --timeout=5s --start-period=90s --retries=3 \
+    CMD curl -fsS http://localhost:80/health | python3 -c "import sys,json; d=json.load(sys.stdin); sys.exit(0 if d.get('ok') else 1)" || exit 1
+
 CMD ["/exe/initialize.sh", "production"]
