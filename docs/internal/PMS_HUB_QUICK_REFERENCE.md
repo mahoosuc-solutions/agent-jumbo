@@ -190,8 +190,8 @@ event_bus.emit("pms.webhook.hostaway.reservation.new", {
       "enabled": true,
       "credentials": {
         "user_id": "12345",
-        "api_key": "secret_key",
-        "access_token": "oauth_token"
+        "api_key": "secret_key", # pragma: allowlist secret
+        "access_token": "oauth_token" # pragma: allowlist secret
       },
       "options": {}
     },
@@ -200,8 +200,8 @@ event_bus.emit("pms.webhook.hostaway.reservation.new", {
       "name": "Lodgify Account",
       "enabled": true,
       "credentials": {
-        "api_key": "api_key_here",
-        "api_secret": "secret_for_webhook_verification",
+        "api_key": "api_key_here", # pragma: allowlist secret
+        "api_secret": "secret_for_webhook_verification", # pragma: allowlist secret
         "account_id": "acc_123"
       },
       "options": {}

@@ -293,9 +293,9 @@ registry.register_provider(
     provider_type=ProviderType.HOSTAWAY,
     name="My Hostaway Account",
     credentials={
-        "api_key": "your_api_key",
+        "api_key": "your_api_key", # pragma: allowlist secret
         "user_id": "your_user_id",
-        "access_token": "your_access_token"
+        "access_token": "your_access_token" # pragma: allowlist secret
     }
 )
 ```
@@ -385,9 +385,9 @@ File: `~/.pms_hub/providers.json`
       "name": "Hostaway - Main Account",
       "enabled": true,
       "credentials": {
-        "api_key": "xxx",
+        "api_key": "xxx", # pragma: allowlist secret
         "user_id": "123",
-        "access_token": "token_123"
+        "access_token": "token_123" # pragma: allowlist secret
       }
     },
     "lodgify_backup": {
@@ -395,8 +395,8 @@ File: `~/.pms_hub/providers.json`
       "name": "Lodgify - Backup",
       "enabled": true,
       "credentials": {
-        "api_key": "xxx",
-        "api_secret": "xxx",
+        "api_key": "xxx", # pragma: allowlist secret
+        "api_secret": "xxx", # pragma: allowlist secret
         "account_id": "456"
       }
     }

@@ -134,7 +134,7 @@ Some servers require API keys. Add them after you obtain the keys:
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-github"],
       "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_token_here"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "ghp_your_token_here" # pragma: allowlist secret
       }
     }
   }
@@ -154,7 +154,7 @@ Some servers require API keys. Add them after you obtain the keys:
       "command": "npx",
       "args": ["-y", "@modelcontextprotocol/server-brave-search"],
       "env": {
-        "BRAVE_API_KEY": "BSA_your_key_here"
+        "BRAVE_API_KEY": "BSA_your_key_here" # pragma: allowlist secret
       }
     }
   }
@@ -254,8 +254,8 @@ After configuration and restart:
 
   ```bash
   docker run -d \
-    -e GITHUB_PERSONAL_ACCESS_TOKEN="ghp_token" \
-    -e BRAVE_API_KEY="BSA_key" \
+    -e GITHUB_PERSONAL_ACCESS_TOKEN="ghp_token" \ # pragma: allowlist secret
+    -e BRAVE_API_KEY="BSA_key" \ # pragma: allowlist secret
     ...
   ```
 

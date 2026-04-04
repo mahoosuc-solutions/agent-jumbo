@@ -34,12 +34,18 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
+      - name: Generate platform manifest
+        run: bash scripts/build-platform-manifest.sh
+
       - name: Build Project Artifacts
         run: vercel build --prod
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          NEXT_PUBLIC_GITHUB_REPO: mahoosuc-solutions/agent-jumbo
+          NEXT_PUBLIC_URL: https://agent-jumbo.com
+          NEXT_PUBLIC_API_URL: https://agent-jumbo.com/api
 
       - name: Deploy to Production
         id: deploy

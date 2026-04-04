@@ -141,7 +141,7 @@ requirements.txt                        - 6 new packages added:
 # 1. Get Gmail app password from https://myaccount.google.com/security
 # 2. Add to .env:
 GMAIL_FROM_EMAIL="your-email@gmail.com"
-GMAIL_APP_PASSWORD="xxxx xxxx xxxx xxxx"
+GMAIL_APP_PASSWORD="xxxx xxxx xxxx xxxx" # pragma: allowlist secret
 
 # 3. Test
 python3 -m pytest tests/test_email_standalone.py -v
