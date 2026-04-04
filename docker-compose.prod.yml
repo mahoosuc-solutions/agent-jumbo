@@ -55,6 +55,48 @@ services:
           cpus: '1.0'
           memory: 2G
 
+  # ── West Bethel Motel MCP Edge (staging) ────────────────────────────────
+  wbm-mcp-staging:
+    image: ${MCP_EDGE_IMAGE:-ghcr.io/webemo-aaron/west-bethel-motel-booking-system/mcp-edge}:${MCP_EDGE_TAG:-latest}
+    container_name: wbm-mcp-staging
+    restart: unless-stopped
+    env_file:
+      - path: /mnt/wdblack/dev/projects/west-bethel-motel-booking-system/mcp-edge/.env
+        required: true
+    ports:
+      - "3150:3150"
+    volumes:
+      - wbm_mcp_staging_data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3150/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+  # ── West Bethel Motel MCP Edge (production) ──────────────────────────────
+  wbm-mcp-production:
+    image: ${MCP_EDGE_IMAGE:-ghcr.io/webemo-aaron/west-bethel-motel-booking-system/mcp-edge}:${MCP_EDGE_TAG:-latest}
+    container_name: wbm-mcp-production
+    restart: unless-stopped
+    env_file:
+      - path: /mnt/wdblack/dev/projects/west-bethel-motel-booking-system/mcp-edge/.env.production
+        required: true
+    ports:
+      - "3151:3151"
+    volumes:
+      - wbm_mcp_production_data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3151/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
 volumes:
   agent_jumbo_data:
     external: true
@@ -62,3 +104,5 @@ volumes:
     external: true
   agent_jumbo_venv:
     external: true
+  wbm_mcp_staging_data:
+  wbm_mcp_production_data:
