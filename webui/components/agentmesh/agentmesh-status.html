@@ -1,0 +1,298 @@
+<html>
+
+<head>
+    <title>Agent Mesh Status</title>
+</head>
+
+<body>
+    <div class="agentmesh-status" x-data x-init="$store.agentmeshStatus.init()">
+
+        <div class="agentmesh-status-header">
+            <h3>Agent Mesh</h3>
+            <button class="agentmesh-btn agentmesh-btn-refresh"
+                    @click="$store.agentmeshStatus.refresh()"
+                    :disabled="$store.agentmeshStatus.refreshing">
+                <span class="agentmesh-spinner" x-show="$store.agentmeshStatus.refreshing"></span>
+                <span x-show="!$store.agentmeshStatus.refreshing">Refresh</span>
+            </button>
+        </div>
+
+        <!-- Overall status badge -->
+        <div class="agentmesh-status-row">
+            <span class="agentmesh-label">Status</span>
+            <span class="agentmesh-badge"
+                  :class="{
+                      'agentmesh-badge-ok':          $store.agentmeshStatus.status === 'ok',
+                      'agentmesh-badge-degraded':     $store.agentmeshStatus.status === 'degraded',
+                      'agentmesh-badge-offline':      $store.agentmeshStatus.status === 'offline',
+                      'agentmesh-badge-unconfigured': $store.agentmeshStatus.status === 'disabled' || $store.agentmeshStatus.status === 'unconfigured' || !$store.agentmeshStatus.status
+                  }"
+                  x-text="$store.agentmeshStatus.status || 'unknown'">
+            </span>
+        </div>
+
+        <!-- Redis connection status -->
+        <div class="agentmesh-status-row">
+            <span class="agentmesh-label">Redis</span>
+            <span class="agentmesh-value"
+                  :class="{
+                      'agentmesh-value-ok':     $store.agentmeshStatus.agentmesh_redis === 'connected',
+                      'agentmesh-value-warn':   $store.agentmeshStatus.agentmesh_redis === 'unconfigured',
+                      'agentmesh-value-error':  $store.agentmeshStatus.agentmesh_redis === 'unreachable'
+                  }"
+                  x-text="$store.agentmeshStatus.agentmesh_redis || '—'">
+            </span>
+        </div>
+
+        <!-- Redis URL (host only) -->
+        <div class="agentmesh-status-row" x-show="$store.agentmeshStatus.agentmesh_redis_url">
+            <span class="agentmesh-label">Redis Host</span>
+            <span class="agentmesh-mono" x-text="$store.agentmeshStatus.agentmesh_redis_url"></span>
+        </div>
+
+        <!-- AIOS bridge enabled indicator -->
+        <div class="agentmesh-status-row">
+            <span class="agentmesh-label">AIOS Bridge</span>
+            <span class="agentmesh-value"
+                  :class="{
+                      'agentmesh-value-ok':   $store.agentmeshStatus.aios_bridge_enabled,
+                      'agentmesh-value-warn': !$store.agentmeshStatus.aios_bridge_enabled
+                  }"
+                  x-text="$store.agentmeshStatus.aios_bridge_enabled ? 'enabled' : 'disabled'">
+            </span>
+        </div>
+
+        <!-- AIOS base URL (host only) -->
+        <div class="agentmesh-status-row" x-show="$store.agentmeshStatus.aios_base_url">
+            <span class="agentmesh-label">AIOS Host</span>
+            <span class="agentmesh-mono" x-text="$store.agentmeshStatus.aios_base_url"></span>
+        </div>
+
+        <!-- Consumer active -->
+        <div class="agentmesh-status-row">
+            <span class="agentmesh-label">Consumer</span>
+            <span class="agentmesh-value"
+                  :class="{
+                      'agentmesh-value-ok':   $store.agentmeshStatus.consumer_active,
+                      'agentmesh-value-warn': !$store.agentmeshStatus.consumer_active
+                  }"
+                  x-text="$store.agentmeshStatus.consumer_active ? 'active' : 'inactive'">
+            </span>
+        </div>
+
+        <!-- Last checked timestamp -->
+        <div class="agentmesh-status-row agentmesh-status-row-footer" x-show="$store.agentmeshStatus.checked_at">
+            <span class="agentmesh-label">Last checked</span>
+            <span class="agentmesh-muted" x-text="$store.agentmeshStatus.checkedAtDisplay()"></span>
+        </div>
+
+        <!-- Error message from validate call -->
+        <div class="agentmesh-error" x-show="$store.agentmeshStatus.error" x-text="$store.agentmeshStatus.error"></div>
+
+    </div>
+
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('agentmeshStatus', {
+                // Fields from /health_agentmesh
+                status: null,
+                agentmesh_redis: null,
+                agentmesh_redis_url: null,
+                aios_bridge_enabled: false,
+                aios_base_url: null,
+                consumer_active: false,
+                // Fields from /agentmesh_validate (refresh)
+                aios_bridge: null,
+                checked_at: null,
+                // UI state
+                refreshing: false,
+                error: null,
+
+                init() {
+                    this.loadHealth();
+                },
+
+                async loadHealth() {
+                    try {
+                        const resp = await fetch('/health_agentmesh');
+                        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                        const data = await resp.json();
+                        this.applyHealth(data);
+                    } catch (err) {
+                        this.error = `Failed to load health: ${err.message}`;
+                    }
+                },
+
+                applyHealth(data) {
+                    this.status              = data.status            ?? null;
+                    this.agentmesh_redis     = data.agentmesh_redis   ?? null;
+                    this.agentmesh_redis_url = data.agentmesh_redis_url ?? null;
+                    this.aios_bridge_enabled = data.aios_bridge_enabled ?? false;
+                    this.aios_base_url       = data.aios_base_url     ?? null;
+                    this.consumer_active     = data.consumer_active   ?? false;
+                },
+
+                async refresh() {
+                    if (this.refreshing) return;
+                    this.refreshing = true;
+                    this.error = null;
+                    try {
+                        const resp = await fetch('/agentmesh_validate', { method: 'POST' });
+                        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                        const data = await resp.json();
+                        // Update validate-specific fields
+                        this.status          = data.status       ?? this.status;
+                        this.agentmesh_redis = data.agentmesh_redis ?? this.agentmesh_redis;
+                        this.aios_bridge     = data.aios_bridge  ?? null;
+                        this.checked_at      = data.checked_at   ?? null;
+                        if (data.error) this.error = data.error;
+                        // Re-fetch health for the full field set
+                        await this.loadHealth();
+                    } catch (err) {
+                        this.error = `Refresh failed: ${err.message}`;
+                    } finally {
+                        this.refreshing = false;
+                    }
+                },
+
+                checkedAtDisplay() {
+                    if (!this.checked_at) return '';
+                    try {
+                        return new Date(this.checked_at).toLocaleString();
+                    } catch {
+                        return this.checked_at;
+                    }
+                },
+            });
+        });
+    </script>
+</body>
+
+<style>
+    .agentmesh-status {
+        padding: 1.25em 1.5em;
+        background: var(--c-bg-secondary, #1e1e2e);
+        border: 1px solid var(--c-border, #333);
+        border-radius: 8px;
+        color: var(--c-text, #e0e0e0);
+        font-size: 0.9em;
+    }
+
+    .agentmesh-status-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1em;
+        padding-bottom: 0.75em;
+        border-bottom: 1px solid var(--c-border, #333);
+    }
+
+    .agentmesh-status-header h3 {
+        margin: 0;
+        font-size: 1em;
+        font-weight: 600;
+        color: var(--c-text, #e0e0e0);
+    }
+
+    .agentmesh-btn-refresh {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        background: transparent;
+        border: 1px solid var(--c-border, #555);
+        border-radius: 5px;
+        color: var(--c-text, #e0e0e0);
+        font-size: 0.82em;
+        cursor: pointer;
+        transition: border-color 0.15s, opacity 0.15s;
+    }
+
+    .agentmesh-btn-refresh:hover:not(:disabled) {
+        border-color: var(--c-primary, #4a9eff);
+    }
+
+    .agentmesh-btn-refresh:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    .agentmesh-spinner {
+        display: inline-block;
+        width: 11px;
+        height: 11px;
+        border: 2px solid var(--c-border, #555);
+        border-top-color: var(--c-primary, #4a9eff);
+        border-radius: 50%;
+        animation: agentmesh-spin 0.6s linear infinite;
+    }
+
+    @keyframes agentmesh-spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .agentmesh-status-row {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75em;
+        padding: 0.35em 0;
+        border-bottom: 1px solid var(--c-border-subtle, rgba(255,255,255,0.05));
+    }
+
+    .agentmesh-status-row:last-of-type,
+    .agentmesh-status-row-footer {
+        border-bottom: none;
+    }
+
+    .agentmesh-label {
+        min-width: 90px;
+        font-size: 0.8em;
+        opacity: 0.6;
+        flex-shrink: 0;
+    }
+
+    /* Overall status badge */
+    .agentmesh-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.8em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .agentmesh-badge-ok           { background: rgba(72, 187, 120, 0.15); color: #48bb78; }
+    .agentmesh-badge-degraded     { background: rgba(246, 173, 85, 0.15); color: #f6ad55; }
+    .agentmesh-badge-offline      { background: rgba(229, 62, 62, 0.15);  color: #e53e3e; }
+    .agentmesh-badge-unconfigured { background: rgba(160, 160, 160, 0.1); color: #a0a0a0; }
+
+    /* Inline value colors */
+    .agentmesh-value-ok    { color: #48bb78; }
+    .agentmesh-value-warn  { color: #a0a0a0; }
+    .agentmesh-value-error { color: #e53e3e; }
+
+    .agentmesh-mono {
+        font-family: monospace;
+        font-size: 0.85em;
+        opacity: 0.8;
+        word-break: break-all;
+    }
+
+    .agentmesh-muted {
+        font-size: 0.8em;
+        opacity: 0.5;
+    }
+
+    .agentmesh-error {
+        margin-top: 0.75em;
+        padding: 6px 10px;
+        background: rgba(229, 62, 62, 0.1);
+        border: 1px solid rgba(229, 62, 62, 0.3);
+        border-radius: 4px;
+        color: #e53e3e;
+        font-size: 0.8em;
+    }
+</style>
+
+</html>
