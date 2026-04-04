@@ -50,11 +50,18 @@ done
 
 # Copy directories
 echo "[package-release] Copying directories..."
-for dir in python webui instruments skills knowledge/default prompts conf docker; do
+for dir in python webui instruments skills prompts conf docker; do
     if [[ -d "${dir}" ]]; then
         cp -r "${dir}" "${DIST_DIR}/"
     fi
 done
+
+# Copy knowledge directory (preserve structure)
+echo "[package-release] Copying knowledge directory..."
+if [[ -d "knowledge/default" ]]; then
+    mkdir -p "${DIST_DIR}/knowledge"
+    cp -r "knowledge/default" "${DIST_DIR}/knowledge/"
+fi
 
 # Copy Docker files
 echo "[package-release] Copying Docker configuration..."
