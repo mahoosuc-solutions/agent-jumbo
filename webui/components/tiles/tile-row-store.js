@@ -6,7 +6,7 @@
 const tileRowModel = {
     // State
     expandedTile: null,  // Currently expanded tile ID (null = all collapsed)
-    // 4 monitoring tiles - Portfolio & Tasks moved to sidebar dashboards
+    // 5 monitoring tiles - Portfolio & Tasks moved to sidebar dashboards
     tiles: [
         {
             id: 'workflows',
@@ -39,6 +39,14 @@ const tileRowModel = {
             component: 'components/panels/cowork-panel.html',
             badge: 0,
             badgeType: 'warning'
+        },
+        {
+            id: 'agentmesh',
+            icon: 'agentmesh',
+            label: 'Agent Mesh',
+            component: 'components/agentmesh/agentmesh-status.html',
+            badge: 0,
+            badgeType: 'info'
         },
     ],
     panelContent: '',
@@ -96,11 +104,12 @@ const tileRowModel = {
     // Badge management
     async loadBadges() {
         try {
-            // Load badges from various APIs (4 tiles)
+            // Load badges from various APIs (5 tiles)
             await Promise.all([
                 this.loadWorkflowBadge(),
                 this.loadRalphBadge(),
-                this.loadCoworkBadge()
+                this.loadCoworkBadge(),
+                this.loadAgentmeshBadge()
             ]);
         } catch (error) {
             console.error('Error loading badges:', error);
@@ -145,6 +154,17 @@ const tileRowModel = {
         }
     },
 
+    async loadAgentmeshBadge() {
+        try {
+            const resp = await fetch('/health_agentmesh');
+            const data = await resp.json();
+            const isConnected = data.status === 'ok' && data.agentmesh_redis === 'connected';
+            this.updateTileBadge('agentmesh', isConnected ? 0 : 1, isConnected ? null : 'warning');
+        } catch (e) {
+            // Silently fail
+        }
+    },
+
     updateTileBadge(tileId, count, type) {
         const tile = this.tiles.find(t => t.id === tileId);
         if (tile) {
@@ -182,7 +202,7 @@ const tileRowModel = {
         }
     },
 
-    // Icon mapping (4 tiles)
+    // Icon mapping (5 tiles)
     getIconSvg(iconName) {
         const icons = {
             workflow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -205,6 +225,14 @@ const tileRowModel = {
                 <circle cx="9" cy="7" r="4"/>
                 <path d="M23 21v-2a4 4 0 00-3-3.87"/>
                 <path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>`,
+            agentmesh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <circle cx="4" cy="6" r="2"/>
+                <circle cx="20" cy="6" r="2"/>
+                <circle cx="4" cy="18" r="2"/>
+                <circle cx="20" cy="18" r="2"/>
+                <path d="M6 6h4m4 0h4M6 18h4m4 0h4M12 9v6"/>
             </svg>`
         };
         return icons[iconName] || icons.workflow;
