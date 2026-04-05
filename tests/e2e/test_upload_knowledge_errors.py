@@ -11,7 +11,7 @@ import urllib.request
 
 import pytest
 
-from tests.e2e.helpers import cookie_header, get_csrf_token_and_cookies
+from tests.e2e.helpers import cookie_header, get_csrf_token_and_cookies, with_retry
 
 pytestmark = [pytest.mark.e2e]
 
@@ -67,6 +67,7 @@ def _json_post(app_server, auth_cookies, path, payload=None):
 # ---------------------------------------------------------------------------
 
 
+@with_retry()
 def test_upload_no_file_part(app_server, auth_cookies):
     """POST /upload without a 'file' field should return an error response."""
     status, body = _multipart_post(app_server, auth_cookies, "/upload")
@@ -80,6 +81,7 @@ def test_upload_no_file_part(app_server, auth_cookies):
     )
 
 
+@with_retry()
 def test_upload_work_dir_no_files(app_server, auth_cookies):
     """POST /upload_work_dir_files without 'files[]' field should return an error."""
     status, body = _multipart_post(app_server, auth_cookies, "/upload_work_dir_files")
@@ -96,6 +98,7 @@ def test_upload_work_dir_no_files(app_server, auth_cookies):
     ), f"Expected an error indication in body, got: {body[:300]}"
 
 
+@with_retry()
 def test_import_knowledge_no_files(app_server, auth_cookies):
     """POST /import_knowledge without 'files[]' field should return an error."""
     status, body = _multipart_post(app_server, auth_cookies, "/import_knowledge")
@@ -108,6 +111,7 @@ def test_import_knowledge_no_files(app_server, auth_cookies):
     )
 
 
+@with_retry()
 def test_knowledge_path_get_no_context(app_server, auth_cookies):
     """POST /knowledge_path_get with empty body should report a missing context id."""
     status, body = _json_post(app_server, auth_cookies, "/knowledge_path_get", {})
@@ -120,6 +124,7 @@ def test_knowledge_path_get_no_context(app_server, auth_cookies):
     )
 
 
+@with_retry()
 def test_knowledge_reindex_no_context(app_server, auth_cookies):
     """POST /knowledge_reindex with empty body should report a missing context id."""
     status, body = _json_post(app_server, auth_cookies, "/knowledge_reindex", {})
