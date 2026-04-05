@@ -186,6 +186,19 @@ class WorkflowEngineManager:
             first_stage = stages[0]
             self.db.update_execution(execution_id=execution_id, current_stage_id=first_stage["id"])
             self.db.update_stage_progress(execution_id=execution_id, stage_id=first_stage["id"], status="pending")
+            checkpoint = self.db.add_execution_checkpoint(
+                execution_id,
+                stage_id=first_stage["id"],
+                title="Workflow started",
+                checkpoint_type="phase_start",
+                payload={"resume_stage_id": first_stage["id"]},
+            )
+            self.db.update_execution(
+                execution_id=execution_id,
+                last_safe_checkpoint_id=str(checkpoint["checkpoint_id"]),
+                last_heartbeat_at=datetime.now().isoformat(),
+                last_recoverable_at=datetime.now().isoformat(),
+            )
 
         return {
             "execution_id": execution_id,
@@ -204,6 +217,8 @@ class WorkflowEngineManager:
         workflow = self.db.get_workflow(workflow_id=execution["workflow_id"])
         stage_progress = self.db.get_stage_progress(execution_id)
         task_progress = self.db.get_task_executions(execution_id)
+        checkpoints = self.db.list_execution_checkpoints(execution_id)
+        recovery_status = self._execution_recovery_status(execution, checkpoints)
 
         # Calculate overall progress
         definition = workflow["definition"]
@@ -225,6 +240,14 @@ class WorkflowEngineManager:
             "task_details": task_progress,
             "started_at": execution["started_at"],
             "context": execution["context"],
+            "recovery": {
+                "status": recovery_status,
+                "last_safe_checkpoint": self._last_execution_checkpoint(execution, checkpoints),
+                "pending_human_gate": execution.get("pending_human_gate", {}),
+                "resume_recommendation": self._execution_resume_recommendation(recovery_status, execution, checkpoints),
+                "browser_session_state": execution.get("browser_session_metadata", {}),
+            },
+            "checkpoints": checkpoints,
         }
 
     def advance_stage(self, execution_id: int, force: bool = False) -> dict:
@@ -257,17 +280,46 @@ class WorkflowEngineManager:
 
         # Mark current stage complete
         self.db.update_stage_progress(execution_id=execution_id, stage_id=current_stage_id, status="completed")
+        checkpoint = self.db.add_execution_checkpoint(
+            execution_id,
+            stage_id=current_stage_id,
+            title=f"Completed stage: {current_stage.get('name', current_stage_id)}",
+            checkpoint_type="stage_complete",
+            payload={"resume_stage_id": current_stage_id},
+        )
 
         # Find next stage
         current_idx = next((i for i, s in enumerate(stages) if s["id"] == current_stage_id), -1)
         if current_idx >= len(stages) - 1:
             # Workflow complete
-            self.db.update_execution(execution_id=execution_id, status="completed")
+            self.db.update_execution(
+                execution_id=execution_id,
+                status="completed",
+                recovery_status="completed",
+                last_safe_checkpoint_id=str(checkpoint["checkpoint_id"]),
+                last_heartbeat_at=datetime.now().isoformat(),
+                last_recoverable_at=datetime.now().isoformat(),
+            )
             return {"status": "workflow_completed", "execution_id": execution_id}
 
         # Advance to next stage
         next_stage = stages[current_idx + 1]
-        self.db.update_execution(execution_id=execution_id, current_stage_id=next_stage["id"], current_task_id=None)
+        next_checkpoint = self.db.add_execution_checkpoint(
+            execution_id,
+            stage_id=next_stage["id"],
+            title=f"Ready for stage: {next_stage['name']}",
+            checkpoint_type="stage_start",
+            payload={"resume_stage_id": next_stage["id"]},
+        )
+        self.db.update_execution(
+            execution_id=execution_id,
+            current_stage_id=next_stage["id"],
+            current_task_id=None,
+            recovery_status="recoverable_in_place",
+            last_safe_checkpoint_id=str(next_checkpoint["checkpoint_id"]),
+            last_heartbeat_at=datetime.now().isoformat(),
+            last_recoverable_at=datetime.now().isoformat(),
+        )
         self.db.update_stage_progress(execution_id=execution_id, stage_id=next_stage["id"], status="pending")
 
         return {
@@ -276,6 +328,60 @@ class WorkflowEngineManager:
             "current_stage": next_stage["id"],
             "stage_name": next_stage["name"],
         }
+
+    def recover_execution(self, execution_id: int) -> dict:
+        execution = self.db.get_execution(execution_id)
+        if not execution:
+            return {"error": "Execution not found"}
+        checkpoints = self.db.list_execution_checkpoints(execution_id)
+        recovery_status = self._execution_recovery_status(execution, checkpoints)
+        if recovery_status == "recoverable_in_place":
+            self.db.update_execution(
+                execution_id=execution_id,
+                status="running",
+                recovery_status="recoverable_in_place",
+                last_heartbeat_at=datetime.now().isoformat(),
+                last_recoverable_at=datetime.now().isoformat(),
+            )
+            self.db._log_event(execution_id, "execution_recovered", data={"mode": "in_place"})
+            return self.get_execution_status(execution_id)
+        checkpoint = self._last_execution_checkpoint(execution, checkpoints)
+        if checkpoint:
+            return self.restart_from_checkpoint(execution_id, int(checkpoint["checkpoint_id"]))
+        return {"error": "Execution is not recoverable"}
+
+    def restart_from_checkpoint(self, execution_id: int, checkpoint_id: int) -> dict:
+        execution = self.db.get_execution(execution_id)
+        if not execution:
+            return {"error": "Execution not found"}
+        checkpoint = self.db.get_execution_checkpoint(checkpoint_id)
+        if not checkpoint or checkpoint["execution_id"] != execution_id:
+            return {"error": "Checkpoint not found"}
+        resume_stage_id = checkpoint.get("payload", {}).get("resume_stage_id") or checkpoint.get("stage_id")
+        self.db.update_execution(
+            execution_id=execution_id,
+            status="running",
+            current_stage_id=resume_stage_id,
+            current_task_id=None,
+            recovery_status="recoverable_in_place",
+            last_safe_checkpoint_id=str(checkpoint_id),
+            pending_human_gate={},
+            browser_session_metadata={},
+            last_heartbeat_at=datetime.now().isoformat(),
+            last_recoverable_at=datetime.now().isoformat(),
+        )
+        if resume_stage_id:
+            self.db.update_stage_progress(execution_id=execution_id, stage_id=resume_stage_id, status="pending")
+        self.db._log_event(
+            execution_id,
+            "execution_restarted_from_checkpoint",
+            stage_id=resume_stage_id,
+            data={"checkpoint_id": checkpoint_id},
+        )
+        return self.get_execution_status(execution_id)
+
+    def list_execution_checkpoints(self, execution_id: int) -> list[dict]:
+        return self.db.list_execution_checkpoints(execution_id)
 
     def _check_exit_criteria(self, execution_id: int, stage: dict) -> dict:
         """Check if stage exit criteria are met"""
@@ -289,6 +395,36 @@ class WorkflowEngineManager:
         unmet = [c for c in exit_criteria if c["id"] not in exit_met]
 
         return {"met": len(unmet) == 0, "unmet": unmet}
+
+    def _execution_recovery_status(self, execution: dict, checkpoints: list[dict]) -> str:
+        if execution.get("status") == "completed":
+            return "completed"
+        browser = execution.get("browser_session_metadata") or {}
+        if browser.get("resumable") is False or browser.get("session_valid") is False:
+            return "recoverable_from_checkpoint" if checkpoints else "not_recoverable"
+        if execution.get("status") in {"failed", "cancelled"}:
+            return "recoverable_from_checkpoint" if checkpoints else "not_recoverable"
+        return "recoverable_in_place"
+
+    def _last_execution_checkpoint(self, execution: dict, checkpoints: list[dict]) -> dict | None:
+        checkpoint_id = str(execution.get("last_safe_checkpoint_id") or "")
+        if checkpoint_id:
+            checkpoint = next((item for item in checkpoints if str(item["checkpoint_id"]) == checkpoint_id), None)
+            if checkpoint:
+                return checkpoint
+        return checkpoints[-1] if checkpoints else None
+
+    def _execution_resume_recommendation(self, recovery_status: str, execution: dict, checkpoints: list[dict]) -> str:
+        if recovery_status == "recoverable_in_place":
+            stage_id = execution.get("current_stage_id") or "current stage"
+            return f"Resume from {stage_id}."
+        if recovery_status == "recoverable_from_checkpoint":
+            checkpoint = self._last_execution_checkpoint(execution, checkpoints)
+            if checkpoint:
+                return f"Restart from checkpoint: {checkpoint['title']}."
+        if recovery_status == "completed":
+            return "This workflow execution is complete."
+        return "Restart the execution."
 
     def approve_stage(self, execution_id: int, stage_id: str, approved_by: str, notes: str | None = None) -> dict:
         """Approve a stage for advancement"""

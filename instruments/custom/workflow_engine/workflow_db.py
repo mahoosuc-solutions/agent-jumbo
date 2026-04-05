@@ -32,6 +32,12 @@ class WorkflowEngineDatabase:
         conn.execute("PRAGMA journal_mode=WAL;")
         return conn
 
+    def _ensure_column(self, cursor: sqlite3.Cursor, table: str, column: str, ddl: str) -> None:
+        cursor.execute(f"PRAGMA table_info({table})")
+        columns = {row["name"] for row in cursor.fetchall()}
+        if column not in columns:
+            cursor.execute(f"ALTER TABLE {table} ADD COLUMN {ddl}")
+
     def _init_db(self):
         """Initialize database schema"""
         conn = self._get_conn()
@@ -77,8 +83,16 @@ class WorkflowEngineDatabase:
                 workflow_id INTEGER NOT NULL,
                 name TEXT,
                 status TEXT DEFAULT 'pending',
+                recovery_status TEXT DEFAULT 'recoverable_in_place',
                 current_stage_id TEXT,
                 current_task_id TEXT,
+                last_safe_checkpoint_id TEXT DEFAULT '',
+                pending_human_gate TEXT DEFAULT '{}',
+                browser_session_metadata TEXT DEFAULT '{}',
+                external_context_state TEXT DEFAULT '{}',
+                workflow_family TEXT DEFAULT 'managed_execution',
+                last_heartbeat_at TEXT,
+                last_recoverable_at TEXT,
                 started_at TEXT,
                 completed_at TEXT,
                 context TEXT DEFAULT '{}',
@@ -217,6 +231,38 @@ class WorkflowEngineDatabase:
                 FOREIGN KEY (execution_id) REFERENCES workflow_executions(execution_id)
             )
         """)
+
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS workflow_checkpoints (
+                checkpoint_id INTEGER PRIMARY KEY AUTOINCREMENT,
+                execution_id INTEGER NOT NULL,
+                stage_id TEXT,
+                title TEXT NOT NULL,
+                checkpoint_type TEXT DEFAULT 'safe',
+                payload TEXT DEFAULT '{}',
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (execution_id) REFERENCES workflow_executions(execution_id)
+            )
+        """)
+
+        self._ensure_column(
+            cursor, "workflow_executions", "recovery_status", "recovery_status TEXT DEFAULT 'recoverable_in_place'"
+        )
+        self._ensure_column(
+            cursor, "workflow_executions", "last_safe_checkpoint_id", "last_safe_checkpoint_id TEXT DEFAULT ''"
+        )
+        self._ensure_column(cursor, "workflow_executions", "pending_human_gate", "pending_human_gate TEXT DEFAULT '{}'")
+        self._ensure_column(
+            cursor, "workflow_executions", "browser_session_metadata", "browser_session_metadata TEXT DEFAULT '{}'"
+        )
+        self._ensure_column(
+            cursor, "workflow_executions", "external_context_state", "external_context_state TEXT DEFAULT '{}'"
+        )
+        self._ensure_column(
+            cursor, "workflow_executions", "workflow_family", "workflow_family TEXT DEFAULT 'managed_execution'"
+        )
+        self._ensure_column(cursor, "workflow_executions", "last_heartbeat_at", "last_heartbeat_at TEXT")
+        self._ensure_column(cursor, "workflow_executions", "last_recoverable_at", "last_recoverable_at TEXT")
 
         conn.commit()
         conn.close()
@@ -454,10 +500,19 @@ class WorkflowEngineDatabase:
 
         cursor.execute(
             """
-            INSERT INTO workflow_executions (workflow_id, name, status, started_at, context)
-            VALUES (?, ?, 'running', ?, ?)
+            INSERT INTO workflow_executions (
+                workflow_id, name, status, recovery_status, workflow_family, last_heartbeat_at, last_recoverable_at, started_at, context
+            )
+            VALUES (?, ?, 'running', 'recoverable_in_place', 'managed_execution', ?, ?, ?, ?)
         """,
-            (workflow_id, name, datetime.now().isoformat(), json.dumps(context or {})),
+            (
+                workflow_id,
+                name,
+                datetime.now().isoformat(),
+                datetime.now().isoformat(),
+                datetime.now().isoformat(),
+                json.dumps(context or {}),
+            ),
         )
 
         execution_id = cursor.lastrowid
@@ -479,6 +534,15 @@ class WorkflowEngineDatabase:
         if row:
             result = dict(row)
             result["context"] = json.loads(result["context"]) if result["context"] else {}
+            result["pending_human_gate"] = (
+                json.loads(result["pending_human_gate"]) if result.get("pending_human_gate") else {}
+            )
+            result["browser_session_metadata"] = (
+                json.loads(result["browser_session_metadata"]) if result.get("browser_session_metadata") else {}
+            )
+            result["external_context_state"] = (
+                json.loads(result["external_context_state"]) if result.get("external_context_state") else {}
+            )
             return result
         return None
 
@@ -488,6 +552,13 @@ class WorkflowEngineDatabase:
         status: str | None = None,
         current_stage_id: str | None = None,
         current_task_id: str | None = None,
+        recovery_status: str | None = None,
+        last_safe_checkpoint_id: str | None = None,
+        pending_human_gate: dict | None = None,
+        browser_session_metadata: dict | None = None,
+        external_context_state: dict | None = None,
+        last_heartbeat_at: str | None = None,
+        last_recoverable_at: str | None = None,
         context: dict | None = None,
         result: str | None = None,
         error: str | None = None,
@@ -511,6 +582,27 @@ class WorkflowEngineDatabase:
         if current_task_id:
             updates.append("current_task_id = ?")
             params.append(current_task_id)
+        if recovery_status is not None:
+            updates.append("recovery_status = ?")
+            params.append(recovery_status)
+        if last_safe_checkpoint_id is not None:
+            updates.append("last_safe_checkpoint_id = ?")
+            params.append(last_safe_checkpoint_id)
+        if pending_human_gate is not None:
+            updates.append("pending_human_gate = ?")
+            params.append(json.dumps(pending_human_gate))
+        if browser_session_metadata is not None:
+            updates.append("browser_session_metadata = ?")
+            params.append(json.dumps(browser_session_metadata))
+        if external_context_state is not None:
+            updates.append("external_context_state = ?")
+            params.append(json.dumps(external_context_state))
+        if last_heartbeat_at is not None:
+            updates.append("last_heartbeat_at = ?")
+            params.append(last_heartbeat_at)
+        if last_recoverable_at is not None:
+            updates.append("last_recoverable_at = ?")
+            params.append(last_recoverable_at)
         if context:
             updates.append("context = ?")
             params.append(json.dumps(context))
@@ -559,7 +651,65 @@ class WorkflowEngineDatabase:
         for row in rows:
             r = dict(row)
             r["context"] = json.loads(r["context"]) if r["context"] else {}
+            r["pending_human_gate"] = json.loads(r["pending_human_gate"]) if r.get("pending_human_gate") else {}
+            r["browser_session_metadata"] = (
+                json.loads(r["browser_session_metadata"]) if r.get("browser_session_metadata") else {}
+            )
+            r["external_context_state"] = (
+                json.loads(r["external_context_state"]) if r.get("external_context_state") else {}
+            )
             results.append(r)
+        return results
+
+    def add_execution_checkpoint(
+        self,
+        execution_id: int,
+        *,
+        stage_id: str | None,
+        title: str,
+        checkpoint_type: str = "safe",
+        payload: dict | None = None,
+    ) -> dict:
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO workflow_checkpoints (execution_id, stage_id, title, checkpoint_type, payload, created_at)
+            VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            (execution_id, stage_id, title, checkpoint_type, json.dumps(payload or {}), datetime.now().isoformat()),
+        )
+        checkpoint_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+        return self.get_execution_checkpoint(checkpoint_id) or {}
+
+    def get_execution_checkpoint(self, checkpoint_id: int) -> dict | None:
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM workflow_checkpoints WHERE checkpoint_id = ?", (checkpoint_id,))
+        row = cursor.fetchone()
+        conn.close()
+        if not row:
+            return None
+        result = dict(row)
+        result["payload"] = json.loads(result["payload"]) if result["payload"] else {}
+        return result
+
+    def list_execution_checkpoints(self, execution_id: int) -> list[dict]:
+        conn = self._get_conn()
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT * FROM workflow_checkpoints WHERE execution_id = ? ORDER BY created_at ASC, checkpoint_id ASC",
+            (execution_id,),
+        )
+        rows = cursor.fetchall()
+        conn.close()
+        results = []
+        for row in rows:
+            result = dict(row)
+            result["payload"] = json.loads(result["payload"]) if result["payload"] else {}
+            results.append(result)
         return results
 
     def cleanup_stale_executions(self, max_age_hours: int = 24) -> dict:

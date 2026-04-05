@@ -62,6 +62,9 @@ def test_observability_workflow_ui_smoke():
                 pytest.skip("Playwright browser not installed")
             page = browser.new_page()
             page.goto(base_url, wait_until="domcontentloaded")
+            # Dismiss first-run onboarding overlay (blocks all clicks when visible)
+            page.evaluate("() => localStorage.setItem('trust_onboarded', '1')")
+            page.reload(wait_until="domcontentloaded")
 
             page.click("button#settings")
             page.click(".settings-tab:has-text('Developer')")

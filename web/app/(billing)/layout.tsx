@@ -45,6 +45,12 @@ export default function BillingLayout({ children }: { children: React.ReactNode 
               >
                 Setup Assistant
               </Link>
+              <Link
+                href="/billing/wbm-onboarding"
+                className="px-3 py-2 text-sm text-slate-300 hover:text-white rounded-md hover:bg-slate-800 transition"
+              >
+                WBM Onboarding
+              </Link>
             </div>
             <Link href="/" className="text-xs text-slate-500 hover:text-slate-300 transition">
               ← Back to Agent Jumbo

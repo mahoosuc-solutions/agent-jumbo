@@ -1,6 +1,8 @@
 # Tenant Billing Setup Journey
 
-This document is the canonical process for guiding a tenant through a tenant-owned Stripe setup inside Mahoosuc OS.
+This document is the canonical process for guided, tenant-owned onboarding workflows inside Mahoosuc OS.
+
+Stripe billing setup is the primary billing implementation today. WBM onboarding uses the same embedded workflow shell, evidence model, recovery states, and safe-checkpoint behavior.
 
 ## Goal
 
@@ -12,6 +14,31 @@ The product should:
 2. Track readiness and blockers as structured capabilities.
 3. Keep catalog intent and operational status visible inside billing admin.
 4. Let each tenant activate, deactivate, and reprice offers before syncing them to Stripe.
+5. Preserve full workflow context across interruptions and recover safely without replaying regulated steps.
+
+## Shared Recovery Model
+
+All embedded onboarding workflows should expose the same recovery vocabulary:
+
+- `recoverable_in_place`
+- `recoverable_from_checkpoint`
+- `needs_user_reauth`
+- `not_recoverable`
+- `completed`
+
+The operator experience should:
+
+1. resume in place when the browser/session state is still valid
+2. fall back to the nearest safe checkpoint when exact resume is no longer safe
+3. never auto-replay regulated steps such as CAPTCHA, 2FA, KYC, password entry, or secret reveal
+
+Every workflow run should keep:
+
+- current phase and current step
+- structured evidence
+- pending human gate details
+- browser/session metadata when relevant
+- safe checkpoints that can be restarted intentionally
 
 ## Journey Stages
 
@@ -135,6 +162,34 @@ Process:
 3. Resume the setup journey or store updated credentials.
 4. Re-run verification until readiness returns to `ready`.
 
+### Embedded Workflow Recovery
+
+Trigger:
+
+- an onboarding workflow is interrupted mid-run
+
+Process:
+
+1. Open the workflow workspace, not a standalone document.
+2. Review the recovery panel and last safe checkpoint.
+3. Resume in place when possible.
+4. Restart from a safe checkpoint when exact recovery is not safe.
+5. Re-run validation after recovery.
+
+### WBM Onboarding
+
+Trigger:
+
+- a property is being onboarded through the embedded WBM workspace
+
+Process:
+
+1. Verify WBM bridge health.
+2. Start or resume the embedded workflow.
+3. Complete each onboarding phase from the workspace and confirm progress there.
+4. Use recovery and checkpoints rather than skipping ahead after interruptions.
+5. Finish with the final validation phase and keep the evidence trail intact.
+
 ## Product Responsibilities
 
 Mahoosuc should:
@@ -156,4 +211,4 @@ Mahoosuc should not:
 
 - Human-regulated steps remain in Stripe Dashboard.
 - Browser-assisted setup should navigate, explain, and pause cleanly when human action is required.
-- The billing setup assistant is the canonical home for this journey; chat can launch or resume it, but should not replace it.
+- The billing setup assistant and embedded onboarding workspaces are the canonical homes for these journeys; chat can launch or resume them, but should not replace them.

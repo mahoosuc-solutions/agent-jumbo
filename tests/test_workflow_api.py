@@ -208,6 +208,24 @@ class TestWorkflowEngineApi:
         assert "not found" in result["error"].lower()
 
     @pytest.mark.asyncio
+    async def test_list_checkpoints(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
+        from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
+        from python.api.workflow_engine_api import WorkflowEngineApi
+
+        manager = WorkflowEngineManager(temp_db_path)
+        wf = manager.create_workflow(name="Checkpoint WF", stages=[{"id": "s1", "name": "Stage 1"}])
+        execution = manager.start_workflow(workflow_id=wf["workflow_id"])
+
+        handler = WorkflowEngineApi(mock_flask_app, mock_thread_lock)
+        result = await handler.process(
+            {"action": "list_checkpoints", "execution_id": execution["execution_id"]},
+            MockRequest(),
+        )
+
+        assert result["success"] is True
+        assert result["checkpoints"]
+
+    @pytest.mark.asyncio
     async def test_visualize_workflow(self, mock_files_get_abs_path, temp_db_path, mock_flask_app, mock_thread_lock):
         """Test workflow visualization"""
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager

@@ -79,6 +79,28 @@ class WorkflowEngineApi(ApiHandler):
                     "status": status,
                 }
 
+            elif action == "recover_execution":
+                execution_id = input.get("execution_id")
+                if not execution_id:
+                    return {"success": False, "error": "execution_id required"}
+                status = manager.recover_execution(execution_id)
+                return {"success": "error" not in status, "status": status, "error": status.get("error")}
+
+            elif action == "restart_from_checkpoint":
+                execution_id = input.get("execution_id")
+                checkpoint_id = input.get("checkpoint_id")
+                if not execution_id or not checkpoint_id:
+                    return {"success": False, "error": "execution_id and checkpoint_id required"}
+                status = manager.restart_from_checkpoint(execution_id, checkpoint_id)
+                return {"success": "error" not in status, "status": status, "error": status.get("error")}
+
+            elif action == "list_checkpoints":
+                execution_id = input.get("execution_id")
+                if not execution_id:
+                    return {"success": False, "error": "execution_id required"}
+                checkpoints = manager.list_execution_checkpoints(execution_id)
+                return {"success": True, "checkpoints": checkpoints}
+
             elif action == "visualize_tasks":
                 workflow_id = input.get("workflow_id")
                 stage_id = input.get("stage_id")

@@ -187,3 +187,44 @@ def test_validate_workflow_creates_checkout_evidence_and_completion(tmp_path):
     completed = manager.validate_workflow(run_id=run_id, checkout_completed=True, mock=True)
     assert completed["workflow"]["checkout_state"]["status"] == "completed"
     assert any(item["evidence_type"] == "checkout_completed" for item in completed["evidence"])
+
+
+def test_workflow_recovery_uses_checkpoint_after_session_loss(tmp_path):
+    manager = build_manager(tmp_path)
+    workflow = manager.start_workflow(
+        provider="stripe",
+        business_name="Tenant Alpha",
+        email="billing@tenant.test",
+        tenant_id="tenant-alpha",
+    )
+    run_id = workflow["workflow"]["run_id"]
+
+    for _ in range(4):
+        manager.advance_workflow(run_id=run_id)
+
+    run = manager.db.get_workflow_run(run_id)
+    manager.db.update_workflow_run(
+        run_id,
+        status="failed",
+        browser_session_metadata={"resumable": False, "session_valid": False},
+    )
+
+    recovered = manager.recover_workflow(run_id=run_id)
+    assert recovered["recovery"]["status"] == "recoverable_in_place"
+    assert any(item["evidence_type"] == "workflow_restarted_from_checkpoint" for item in recovered["evidence"])
+
+
+def test_wbm_workflow_has_recovery_and_checkpoints(tmp_path, monkeypatch):
+    monkeypatch.setenv("WBM_STAGING_MCP_URL", "http://localhost:9/mcp")
+    manager = build_manager(tmp_path)
+
+    workflow = manager.start_workflow(
+        provider="wbm",
+        business_name="West Bethel Motel",
+        email="ops@wbm.test",
+        tenant_id="tenant-alpha",
+    )
+
+    assert workflow["workflow"]["workflow_type"] == "wbm_onboarding"
+    assert workflow["recovery"]["status"] in {"recoverable_in_place", "needs_user_reauth"}
+    assert workflow["checkpoints"]

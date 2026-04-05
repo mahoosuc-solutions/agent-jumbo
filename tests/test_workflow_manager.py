@@ -207,11 +207,32 @@ class TestWorkflowEngineManager:
         assert status["current_stage"] == "s1"
         assert status["progress"]["stages_total"] == 3
         assert status["progress"]["stages_completed"] == 0
+        assert status["recovery"]["status"] == "recoverable_in_place"
+        assert status["checkpoints"]
 
     def test_get_execution_status_not_found(self):
         """Test getting status of non-existent execution"""
         result = self.manager.get_execution_status(999)
         assert "error" in result
+
+    def test_recover_execution_from_checkpoint(self):
+        """Test recovering a failed execution from the last checkpoint"""
+        wf = self.manager.create_workflow(
+            name="Recovery Test",
+            stages=[{"id": "s1", "name": "Stage 1"}, {"id": "s2", "name": "Stage 2"}],
+        )
+
+        exec_result = self.manager.start_workflow(workflow_id=wf["workflow_id"])
+        execution_id = exec_result["execution_id"]
+        self.manager.db.update_execution(
+            execution_id=execution_id,
+            status="failed",
+            browser_session_metadata={"resumable": False, "session_valid": False},
+        )
+
+        recovered = self.manager.recover_execution(execution_id)
+        assert recovered["status"] == "running"
+        assert recovered["recovery"]["status"] == "recoverable_in_place"
 
     # ========== Stage Advancement Tests ==========
 

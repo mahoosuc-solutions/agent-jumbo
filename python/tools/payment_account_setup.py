@@ -44,6 +44,9 @@ class PaymentAccountSetup(Tool):
             "advance_workflow": self._advance_workflow,
             "validate_workflow": self._validate_workflow,
             "get_workflow_evidence": self._get_workflow_evidence,
+            "get_workflow_checkpoints": self._get_workflow_checkpoints,
+            "recover_workflow": self._recover_workflow,
+            "restart_workflow_from_checkpoint": self._restart_workflow_from_checkpoint,
             "get_catalog": self._get_catalog,
             "sync_catalog": self._sync_catalog,
             "verify_setup": self._verify_setup,
@@ -281,6 +284,37 @@ class PaymentAccountSetup(Tool):
             "tenant_id": run["tenant_id"],
             "evidence": self.manager.db.list_workflow_evidence(run_id),
         }
+
+    async def _get_workflow_checkpoints(self):
+        run_id = self.args.get("run_id", "")
+        if not run_id:
+            return {"error": "run_id is required"}
+        run = self.manager.db.get_workflow_run(run_id)
+        if run is None:
+            return {"error": f"Workflow run '{run_id}' not found"}
+        return {
+            "run_id": run_id,
+            "provider": run["provider"],
+            "tenant_id": run["tenant_id"],
+            "checkpoints": self.manager.list_workflow_checkpoints(run_id),
+        }
+
+    async def _recover_workflow(self):
+        run_id = self.args.get("run_id", "")
+        if not run_id:
+            return {"error": "run_id is required"}
+        return self.manager.recover_workflow(run_id=run_id, mock=bool(self.args.get("mock", False)))
+
+    async def _restart_workflow_from_checkpoint(self):
+        run_id = self.args.get("run_id", "")
+        checkpoint_id = self.args.get("checkpoint_id", "")
+        if not run_id or not checkpoint_id:
+            return {"error": "run_id and checkpoint_id are required"}
+        return self.manager.restart_workflow_from_checkpoint(
+            run_id=run_id,
+            checkpoint_id=checkpoint_id,
+            mock=bool(self.args.get("mock", False)),
+        )
 
     async def _get_catalog(self):
         tenant_id = self.args.get("tenant_id", "default")

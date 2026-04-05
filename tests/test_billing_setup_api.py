@@ -8,6 +8,9 @@ from python.api.billing_catalog_sync import BillingCatalogSync
 from python.api.billing_setup_session import BillingSetupSession
 from python.api.billing_setup_status import BillingSetupStatus
 from python.api.billing_setup_workflow_advance import BillingSetupWorkflowAdvance
+from python.api.billing_setup_workflow_checkpoints import BillingSetupWorkflowCheckpoints
+from python.api.billing_setup_workflow_recover import BillingSetupWorkflowRecover
+from python.api.billing_setup_workflow_restart import BillingSetupWorkflowRestart
 from python.api.billing_setup_workflow_start import BillingSetupWorkflowStart
 from python.api.billing_setup_workflow_status import BillingSetupWorkflowStatus
 from python.api.billing_setup_workflow_validate import BillingSetupWorkflowValidate
@@ -251,3 +254,60 @@ def test_billing_setup_workflow_validate_prepares_checkout(monkeypatch, tmp_path
     body = response.get_json()
     assert body["workflow"]["checkout_state"]["status"] == "awaiting_human_completion"
     assert body["workflow"]["validation_report"]["checkout"]["checkout_url"].startswith("https://")
+
+
+def test_billing_setup_workflow_recovery_endpoints(monkeypatch, tmp_path):
+    configure_test_db(monkeypatch, tmp_path)
+    app = Flask(__name__)
+    app.secret_key = "test-secret"  # pragma: allowlist secret
+    start_handler = BillingSetupWorkflowStart(app, threading.Lock())
+    with app.test_request_context(
+        "/billing_setup_workflow_start",
+        method="POST",
+        json={
+            "tenant_id": "test-tenant",
+            "provider": "stripe",
+            "business_name": "Test Tenant",
+            "email": "billing@test-tenant.example",
+            "country": "US",
+        },
+    ) as ctx:
+        started = asyncio.run(start_handler.handle_request(ctx.request)).get_json()
+
+    run_id = started["workflow"]["run_id"]
+    status_handler = BillingSetupWorkflowStatus(app, threading.Lock())
+    with app.test_request_context(
+        f"/billing_setup_workflow_status?run_id={run_id}",
+        method="GET",
+    ) as ctx:
+        status_response = asyncio.run(status_handler.handle_request(ctx.request))
+    assert status_response.status_code == 200
+    status_body = status_response.get_json()
+    checkpoint_id = status_body["checkpoints"][0]["checkpoint_id"]
+
+    recover_handler = BillingSetupWorkflowRecover(app, threading.Lock())
+    with app.test_request_context(
+        "/billing_setup_workflow_recover",
+        method="POST",
+        json={"run_id": run_id},
+    ) as ctx:
+        recover_response = asyncio.run(recover_handler.handle_request(ctx.request))
+    assert recover_response.status_code == 200
+
+    checkpoints_handler = BillingSetupWorkflowCheckpoints(app, threading.Lock())
+    with app.test_request_context(
+        f"/billing_setup_workflow_checkpoints?run_id={run_id}",
+        method="GET",
+    ) as ctx:
+        checkpoints_response = asyncio.run(checkpoints_handler.handle_request(ctx.request))
+    assert checkpoints_response.status_code == 200
+    assert checkpoints_response.get_json()["checkpoints"]
+
+    restart_handler = BillingSetupWorkflowRestart(app, threading.Lock())
+    with app.test_request_context(
+        "/billing_setup_workflow_restart",
+        method="POST",
+        json={"run_id": run_id, "checkpoint_id": checkpoint_id},
+    ) as ctx:
+        restart_response = asyncio.run(restart_handler.handle_request(ctx.request))
+    assert restart_response.status_code == 200

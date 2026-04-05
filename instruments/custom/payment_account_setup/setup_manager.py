@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import logging
 import os
+import urllib.request
 import uuid
 from datetime import datetime, timezone
 from typing import Any
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 _DB_PATH = os.path.join(os.path.dirname(__file__), "data", "payment_account_setup.db")
 _DEFAULT_TENANT_ID = "default"
+_RECOVERY_REAUTH_STEP_TYPES = {"human_required"}
 
 
 class PaymentAccountSetupManager:
@@ -39,8 +41,8 @@ class PaymentAccountSetupManager:
     ) -> dict[str, Any]:
         provider = provider.lower().strip()
         tenant_id = self._normalize_tenant_id(tenant_id)
-        if provider not in ("stripe", "square", "paypal"):
-            raise ValueError(f"Unsupported provider '{provider}'. Choose: stripe, square, paypal")
+        if provider not in ("stripe", "square", "paypal", "wbm"):
+            raise ValueError(f"Unsupported provider '{provider}'. Choose: stripe, square, paypal, wbm")
 
         session_id = f"{provider}_{uuid.uuid4().hex[:8]}"
         if not webhook_endpoint_url:
@@ -146,12 +148,13 @@ class PaymentAccountSetupManager:
                 "email": email,
                 "country": country,
                 "entry_point": "billing_setup",
+                "workflow_family": "guided_onboarding",
             },
         )
         self.db.add_workflow_evidence(
             run["run_id"],
             "workflow_started",
-            "Stripe onboarding workflow started.",
+            f"{provider.title()} onboarding workflow started.",
             phase="discover",
             payload={
                 "provider": provider,
@@ -159,6 +162,15 @@ class PaymentAccountSetupManager:
                 "email": email,
                 "session_id": session["session_id"],
             },
+        )
+        initial_checkpoint = self._create_workflow_checkpoint(
+            run_id=run["run_id"],
+            session=session,
+            phase="discover",
+            title="Workflow initialized",
+            checkpoint_type="phase_start",
+            resume_step_index=0,
+            resume_step_id=first_step["step_id"] if first_step else "",
         )
         if first_step:
             self.db.add_workflow_evidence(
@@ -171,6 +183,13 @@ class PaymentAccountSetupManager:
                     "automation_type": first_step["automation_type"],
                 },
             )
+        self.db.update_workflow_run(
+            run["run_id"],
+            current_step_id=first_step["step_id"] if first_step else "",
+            last_safe_checkpoint_id=initial_checkpoint.get("checkpoint_id", ""),
+            recovery_status="recoverable_in_place",
+            last_recoverable_at=datetime.now(timezone.utc).isoformat(),
+        )
         return self.get_workflow_status(run_id=run["run_id"], mock=False)
 
     def get_workflow_status(
@@ -186,7 +205,9 @@ class PaymentAccountSetupManager:
             runs = self.db.list_workflow_runs(tenant_id=tenant_id, provider=provider)
             run = runs[0] if runs else None
 
-        status = self.get_status(tenant_id=tenant_id, provider=provider, include_catalog=True, mock=mock)
+        status = self.get_status(
+            tenant_id=tenant_id, provider=provider, include_catalog=(provider == "stripe"), mock=mock
+        )
         if run is None:
             return {
                 "tenant_id": tenant_id,
@@ -198,23 +219,27 @@ class PaymentAccountSetupManager:
 
         session = self.get_session(run["session_id"]) if run.get("session_id") else None
         evidence = self.db.list_workflow_evidence(run["run_id"])
+        checkpoints = self.db.list_workflow_checkpoints(run["run_id"])
         checkout_state = self._workflow_checkout_state(evidence)
         current_phase = self._workflow_phase(status, session, checkout_state)
         run_status = self._workflow_run_status(status, session, checkout_state)
-        updated_run = (
-            self.db.update_workflow_run(
-                run["run_id"],
-                status=run_status,
-                current_phase=current_phase,
-            )
-            or run
-        )
         current_step = None
         if session and session.get("steps"):
             idx = int(session.get("current_step", 0))
             steps = session["steps"]
             if idx < len(steps):
                 current_step = steps[idx]
+        recovery_status = self._compute_recovery_status(run, session, current_step, checkpoints)
+        updated_run = (
+            self.db.update_workflow_run(
+                run["run_id"],
+                status=run_status,
+                current_phase=current_phase,
+                current_step_id=current_step["step_id"] if current_step else "",
+                recovery_status=recovery_status,
+            )
+            or run
+        )
         validation_checkout = updated_run.get("validation_report", {}).get("checkout", {})
         if checkout_state.get("status") == "not_started" and validation_checkout:
             checkout_state = {
@@ -233,6 +258,14 @@ class PaymentAccountSetupManager:
             },
             "status": status,
             "evidence": evidence,
+            "checkpoints": checkpoints,
+            "recovery": {
+                "status": recovery_status,
+                "last_safe_checkpoint": self._last_checkpoint_payload(checkpoints, updated_run),
+                "pending_human_gate": updated_run.get("pending_human_gate", {}),
+                "resume_recommendation": self._resume_recommendation(recovery_status, current_step, checkpoints),
+                "browser_session_state": updated_run.get("browser_session_metadata", {}),
+            },
         }
 
     def advance_workflow(
@@ -259,7 +292,17 @@ class PaymentAccountSetupManager:
             human_confirmed=human_confirmed,
         )
         phase = self._phase_from_step(current_step)
+        browser_session_metadata = {}
+        if isinstance(step_result, dict) and isinstance(step_result.get("browser_session_metadata"), dict):
+            browser_session_metadata = step_result["browser_session_metadata"]
         if result.get("awaiting_human"):
+            pending_human_gate = {
+                "step_id": current_step["step_id"] if current_step else "",
+                "title": current_step["title"] if current_step else "Human action required",
+                "instructions": result.get("human_instructions", ""),
+                "gate_type": current_step.get("automation_type", "") if current_step else "",
+                "regulated": self._is_regulated_human_gate(current_step),
+            }
             self.db.add_workflow_evidence(
                 run_id,
                 "human_gate",
@@ -270,6 +313,13 @@ class PaymentAccountSetupManager:
                     "instructions": result.get("human_instructions", ""),
                     "step_id": current_step["step_id"] if current_step else "",
                 },
+            )
+            self.db.update_workflow_run(
+                run_id,
+                pending_human_gate=pending_human_gate,
+                browser_session_metadata=browser_session_metadata or run.get("browser_session_metadata", {}),
+                last_heartbeat_at=datetime.now(timezone.utc).isoformat(),
+                last_recoverable_at=datetime.now(timezone.utc).isoformat(),
             )
         elif current_step:
             self.db.add_workflow_evidence(
@@ -283,6 +333,26 @@ class PaymentAccountSetupManager:
                     "step_result": self._redact_values(step_result or {}),
                     "human_confirmed": human_confirmed,
                 },
+            )
+            next_step = result.get("next_step")
+            next_phase = self._phase_from_step(next_step)
+            if next_phase != phase or next_step is None:
+                checkpoint = self._create_workflow_checkpoint(
+                    run_id=run_id,
+                    session=result.get("session") or session,
+                    phase=phase,
+                    title=f"{phase.title()} checkpoint",
+                    checkpoint_type="phase_complete",
+                    resume_step_index=(result.get("session") or session).get("current_step", 0),
+                    resume_step_id=next_step["step_id"] if next_step else "",
+                )
+                self.db.update_workflow_run(run_id, last_safe_checkpoint_id=checkpoint.get("checkpoint_id", ""))
+            self.db.update_workflow_run(
+                run_id,
+                pending_human_gate={},
+                browser_session_metadata=browser_session_metadata or run.get("browser_session_metadata", {}),
+                last_heartbeat_at=datetime.now(timezone.utc).isoformat(),
+                last_recoverable_at=datetime.now(timezone.utc).isoformat(),
             )
         if result.get("next_step"):
             self.db.add_workflow_evidence(
@@ -303,6 +373,16 @@ class PaymentAccountSetupManager:
                 phase="configure",
                 payload={"session_id": session["session_id"]},
             )
+            checkpoint = self._create_workflow_checkpoint(
+                run_id=run_id,
+                session=result.get("session") or session,
+                phase="configure",
+                title="Setup session completed",
+                checkpoint_type="phase_complete",
+                resume_step_index=(result.get("session") or session).get("current_step", 0),
+                resume_step_id="",
+            )
+            self.db.update_workflow_run(run_id, last_safe_checkpoint_id=checkpoint.get("checkpoint_id", ""))
         return self.get_workflow_status(run_id=run_id, tenant_id=run["tenant_id"], provider=run["provider"], mock=mock)
 
     def validate_workflow(
@@ -325,6 +405,43 @@ class PaymentAccountSetupManager:
             str(slug).strip() for slug in (selected_slugs or run.get("selected_slugs") or []) if str(slug).strip()
         ]
         target_slug = str(target_offer_slug or run.get("target_offer_slug") or "").strip()
+
+        if provider != "stripe":
+            verification = self.verify_setup(provider=provider, tenant_id=tenant_id, mock=mock)
+            validation_report = {
+                "verification": verification,
+                "catalog_sync": {},
+                "checkout": {},
+                "last_validated_at": datetime.now(timezone.utc).isoformat(),
+            }
+            checkpoint = self._create_workflow_checkpoint(
+                run_id=run_id,
+                session=self.get_session(run.get("session_id")) if run.get("session_id") else None,
+                phase="validate",
+                title="Validation report captured",
+                checkpoint_type="validation",
+                resume_step_index=(self.get_session(run.get("session_id")) or {}).get("current_step", 0)
+                if run.get("session_id")
+                else 0,
+                resume_step_id="",
+            )
+            self.db.add_workflow_evidence(
+                run_id,
+                "readiness_report",
+                f"{provider.title()} validation report generated.",
+                phase="validate",
+                payload={
+                    "ready": verification["summary"]["ready"],
+                    "failed": verification["summary"]["failed"],
+                },
+            )
+            self.db.update_workflow_run(
+                run_id,
+                validation_report=validation_report,
+                last_safe_checkpoint_id=checkpoint.get("checkpoint_id", ""),
+                pending_human_gate={},
+            )
+            return self.get_workflow_status(run_id=run_id, tenant_id=tenant_id, provider=provider, mock=mock)
 
         catalog_result = None
         if apply_catalog_sync:
@@ -396,13 +513,123 @@ class PaymentAccountSetupManager:
                 "checkout_status": (checkout_result or {}).get("status", ""),
             },
         )
+        checkpoint = self._create_workflow_checkpoint(
+            run_id=run_id,
+            session=self.get_session(run.get("session_id")) if run.get("session_id") else None,
+            phase="validate",
+            title="Validation report captured",
+            checkpoint_type="validation",
+            resume_step_index=(self.get_session(run.get("session_id")) or {}).get("current_step", 0)
+            if run.get("session_id")
+            else 0,
+            resume_step_id="",
+        )
         self.db.update_workflow_run(
             run_id,
             selected_slugs=selected or run.get("selected_slugs", []),
             target_offer_slug=target_slug or run.get("target_offer_slug", ""),
             validation_report=validation_report,
+            last_safe_checkpoint_id=checkpoint.get("checkpoint_id", ""),
+            pending_human_gate={}
+            if checkout_completed
+            else {
+                "step_id": "checkout_validation",
+                "title": "Complete hosted checkout",
+                "instructions": (checkout_result or {}).get("detail", ""),
+                "gate_type": "human_required",
+                "regulated": False,
+            }
+            if checkout_result and checkout_result.get("status") == "awaiting_human_completion"
+            else {},
         )
         return self.get_workflow_status(run_id=run_id, tenant_id=tenant_id, provider=provider, mock=mock)
+
+    def list_workflow_checkpoints(self, run_id: str) -> list[dict[str, Any]]:
+        run = self.db.get_workflow_run(run_id)
+        if run is None:
+            raise ValueError(f"Workflow run {run_id!r} not found.")
+        return self.db.list_workflow_checkpoints(run_id)
+
+    def recover_workflow(self, run_id: str, *, mock: bool = False) -> dict[str, Any]:
+        run = self.db.get_workflow_run(run_id)
+        if run is None:
+            raise ValueError(f"Workflow run {run_id!r} not found.")
+        status = self.get_workflow_status(
+            run_id=run_id, tenant_id=run["tenant_id"], provider=run["provider"], mock=mock
+        )
+        recovery = status.get("recovery", {})
+        recovery_status = recovery.get("status", "not_recoverable")
+        if recovery_status == "recoverable_in_place":
+            next_status = "awaiting_human" if run.get("pending_human_gate") else "in_progress"
+            self.db.update_workflow_run(
+                run_id,
+                status=next_status,
+                recovery_status="recoverable_in_place",
+                last_heartbeat_at=datetime.now(timezone.utc).isoformat(),
+                last_recoverable_at=datetime.now(timezone.utc).isoformat(),
+            )
+            self.db.add_workflow_evidence(
+                run_id,
+                "workflow_recovered",
+                "Workflow resumed in place.",
+                phase=run.get("current_phase", ""),
+                payload={"mode": "in_place"},
+            )
+            return self.get_workflow_status(
+                run_id=run_id, tenant_id=run["tenant_id"], provider=run["provider"], mock=mock
+            )
+        checkpoint = recovery.get("last_safe_checkpoint")
+        if recovery_status in {"recoverable_from_checkpoint", "needs_user_reauth"} and checkpoint:
+            return self.restart_workflow_from_checkpoint(
+                run_id,
+                checkpoint_id=str(checkpoint.get("checkpoint_id", "")),
+                mock=mock,
+            )
+        raise ValueError(f"Workflow run {run_id!r} is not currently recoverable.")
+
+    def restart_workflow_from_checkpoint(
+        self,
+        run_id: str,
+        *,
+        checkpoint_id: str,
+        mock: bool = False,
+    ) -> dict[str, Any]:
+        run = self.db.get_workflow_run(run_id)
+        if run is None:
+            raise ValueError(f"Workflow run {run_id!r} not found.")
+        checkpoints = self.db.list_workflow_checkpoints(run_id)
+        checkpoint = next((item for item in checkpoints if item["checkpoint_id"] == checkpoint_id), None)
+        if checkpoint is None:
+            raise ValueError(f"Checkpoint {checkpoint_id!r} not found for workflow {run_id!r}.")
+        session = self.get_session(run["session_id"]) if run.get("session_id") else None
+        if session is not None:
+            resume_index = self._resume_index_from_checkpoint(checkpoint, session)
+            self.db.update_session(
+                session["session_id"],
+                current_step=resume_index,
+                status="in_progress",
+                phase=checkpoint.get("phase") or session.get("phase") or "guided_setup",
+            )
+        self.db.update_workflow_run(
+            run_id,
+            status="in_progress",
+            current_phase=checkpoint.get("phase") or run.get("current_phase", "discover"),
+            current_step_id=str(checkpoint.get("payload", {}).get("resume_step_id") or ""),
+            last_safe_checkpoint_id=checkpoint_id,
+            pending_human_gate={},
+            recovery_status="recoverable_in_place",
+            browser_session_metadata={},
+            last_heartbeat_at=datetime.now(timezone.utc).isoformat(),
+            last_recoverable_at=datetime.now(timezone.utc).isoformat(),
+        )
+        self.db.add_workflow_evidence(
+            run_id,
+            "workflow_restarted_from_checkpoint",
+            f"Workflow restarted from checkpoint: {checkpoint['title']}",
+            phase=checkpoint.get("phase", ""),
+            payload={"checkpoint_id": checkpoint_id, "checkpoint_type": checkpoint.get("checkpoint_type", "")},
+        )
+        return self.get_workflow_status(run_id=run_id, tenant_id=run["tenant_id"], provider=run["provider"], mock=mock)
 
     # -- step execution ------------------------------------------------------
 
@@ -603,6 +830,8 @@ class PaymentAccountSetupManager:
     ) -> dict[str, Any]:
         tenant_id = self._normalize_tenant_id(tenant_id)
         provider = provider.lower().strip()
+        if provider == "wbm":
+            return self._verify_wbm_setup(tenant_id=tenant_id, persist=persist)
         if provider != "stripe":
             return {
                 "status": "not_implemented",
@@ -1223,6 +1452,14 @@ class PaymentAccountSetupManager:
         if not step:
             return "discover"
         title = str(step.get("title", "")).lower()
+        if any(token in title for token in ("bridge", "bootstrap", "project", "workspace")):
+            return "discover"
+        if any(token in title for token in ("property", "room", "staff", "email", "voice", "sms", "door", "payment")):
+            return "configure"
+        if any(token in title for token in ("occupancy", "competitor", "pricing", "seo")):
+            return "catalog"
+        if "validation" in title:
+            return "validate"
         if "api key" in title or "webhook" in title or "credential" in title:
             return "connect"
         if "catalog" in title:
@@ -1292,6 +1529,24 @@ class PaymentAccountSetupManager:
                     "detail": "Compare your tenant catalog against the Mahoosuc templates before syncing products and prices.",
                 },
             ]
+        if provider == "wbm":
+            return [
+                {
+                    "id": "verify_bridge",
+                    "title": "Verify WBM bridge health",
+                    "detail": "Confirm the staging MCP bridge is reachable before starting guided onboarding.",
+                },
+                {
+                    "id": "bootstrap_workspace",
+                    "title": "Bootstrap the tenant workspace",
+                    "detail": "Create the managed project and establish the baseline WBM tenant config.",
+                },
+                {
+                    "id": "resume_onboarding",
+                    "title": "Resume the embedded onboarding workflow",
+                    "detail": "Use checkpoints and recovery to continue where the operator left off.",
+                },
+            ]
         return [
             {
                 "id": "provider_pending",
@@ -1302,6 +1557,32 @@ class PaymentAccountSetupManager:
 
     def _guidance_sections(self, provider: str, checks: list[dict[str, Any]]) -> list[dict[str, Any]]:
         failures = [check for check in checks if not check["ok"]]
+        if provider == "wbm":
+            return [
+                {
+                    "id": "bridge",
+                    "title": "Bridge",
+                    "summary": "Keep the WBM MCP bridge healthy before running onboarding or validation steps.",
+                },
+                {
+                    "id": "workflow",
+                    "title": "Embedded Workflow",
+                    "summary": "Run onboarding from the app workspace so session recovery, evidence, and checkpoints stay durable.",
+                },
+                {
+                    "id": "recovery",
+                    "title": "Recovery",
+                    "summary": "Resume in place when possible; otherwise recover from the nearest safe checkpoint."
+                    + (
+                        " Current blockers: " + "; ".join(check["detail"] for check in failures[:2]) if failures else ""
+                    ),
+                },
+                {
+                    "id": "operations",
+                    "title": "Operations",
+                    "summary": "Use this workflow for initial setup, recurring validation, and managed follow-up workflows.",
+                },
+            ]
         return [
             {
                 "id": "connection",
@@ -1337,6 +1618,63 @@ class PaymentAccountSetupManager:
         active_session: dict[str, Any] | None,
         connection: dict[str, Any],
     ) -> dict[str, Any]:
+        if provider == "wbm":
+            check_map = {check["id"]: bool(check["ok"]) for check in checks}
+            session_status = active_session.get("status") if active_session else ""
+            stages = [
+                {
+                    "id": "discover",
+                    "title": "Discover",
+                    "status": "complete",
+                    "goal": "Verify bridge access, create the workspace, and understand the WBM onboarding path.",
+                    "exit_criteria": "Operator has a healthy bridge and an embedded workflow run to work from.",
+                },
+                {
+                    "id": "connect",
+                    "title": "Connect",
+                    "status": "complete" if check_map.get("bridge_staging") else "not_started",
+                    "goal": "Confirm the WBM MCP bridge is healthy and connected to the target environment.",
+                    "exit_criteria": "Bridge health succeeds for staging and the workspace can query the platform.",
+                },
+                {
+                    "id": "configure",
+                    "title": "Configure",
+                    "status": "complete"
+                    if session_status == "complete"
+                    else ("in_progress" if active_session else "not_started"),
+                    "goal": "Work through property, rooms, services, and operations configuration in the embedded workflow.",
+                    "exit_criteria": "Core setup phases have been completed or explicitly checkpointed.",
+                },
+                {
+                    "id": "catalog",
+                    "title": "Catalog",
+                    "status": "in_progress" if active_session else "not_started",
+                    "goal": "Configure rates, competitor monitoring, and pricing-intelligence related onboarding stages.",
+                    "exit_criteria": "Revenue and pricing phases have been completed in the workflow.",
+                },
+                {
+                    "id": "validate",
+                    "title": "Validate",
+                    "status": "complete"
+                    if check_map.get("bridge_staging") and session_status == "complete"
+                    else ("in_progress" if active_session else "not_started"),
+                    "goal": "Run the final validation phase and keep evidence of the onboarding state.",
+                    "exit_criteria": "Validation is complete and the workflow has a recoverable checkpoint.",
+                },
+                {
+                    "id": "operate",
+                    "title": "Operate",
+                    "status": "in_progress" if check_map.get("bridge_staging") else "not_started",
+                    "goal": "Reuse the same workflow model for ongoing WBM operations and generated support workflows.",
+                    "exit_criteria": "Operators can resume onboarding or managed workflows without losing context.",
+                },
+            ]
+            current_stage = next((stage["id"] for stage in stages if stage["status"] != "complete"), "operate")
+            return {
+                "current_stage": current_stage,
+                "stages": stages,
+                "operator_note": "WBM onboarding runs as an embedded, resumable workflow with evidence and safe checkpoints.",
+            }
         if provider != "stripe":
             return {"current_stage": "unsupported", "stages": []}
 
@@ -1409,6 +1747,31 @@ class PaymentAccountSetupManager:
         }
 
     def _process_playbooks(self, provider: str) -> list[dict[str, Any]]:
+        if provider == "wbm":
+            return [
+                {
+                    "id": "wbm_onboarding",
+                    "title": "WBM Onboarding",
+                    "trigger": "A property is being onboarded or resumed after interruption.",
+                    "steps": [
+                        "Start or resume the embedded onboarding workflow.",
+                        "Verify bridge health before continuing.",
+                        "Recover from the last safe checkpoint if the session was interrupted.",
+                        "Capture evidence as phases complete.",
+                    ],
+                },
+                {
+                    "id": "wbm_recovery",
+                    "title": "WBM Recovery",
+                    "trigger": "A browser session or operator handoff interrupts onboarding.",
+                    "steps": [
+                        "Inspect the recovery panel for the recommended resume action.",
+                        "Resume in place when the workflow is still recoverable.",
+                        "Restart from the nearest safe checkpoint when exact resume is no longer safe.",
+                        "Re-run validation after recovery.",
+                    ],
+                },
+            ]
         if provider != "stripe":
             return []
         return [
@@ -1495,6 +1858,192 @@ class PaymentAccountSetupManager:
         except Exception as exc:
             return False, {}, [], "test", str(exc)
 
+    def _verify_wbm_setup(self, tenant_id: str, persist: bool = True) -> dict[str, Any]:
+        bridge_state = self._fetch_wbm_bridge_state()
+        sessions = self.list_sessions(tenant_id=tenant_id, provider="wbm")
+        active_session = next((session for session in sessions if session.get("status") != "complete"), None)
+        checks = [
+            self._check(
+                "bridge_staging",
+                bool(bridge_state.get("staging", {}).get("ok")),
+                "WBM staging bridge is healthy.",
+                bridge_state.get("staging", {}).get("error") or "WBM staging bridge is not reachable.",
+            ),
+            self._check(
+                "bridge_production",
+                bool(bridge_state.get("production", {}).get("ok"))
+                or not bridge_state.get("production", {}).get("configured", True),
+                "WBM production bridge is healthy or not yet configured.",
+                bridge_state.get("production", {}).get("error") or "WBM production bridge is not reachable.",
+            ),
+            self._check(
+                "embedded_workflow",
+                active_session is not None or any(session.get("status") == "complete" for session in sessions),
+                "An embedded onboarding workflow exists for this tenant.",
+                "Start the embedded WBM onboarding workflow from the app workspace.",
+            ),
+        ]
+        passed = sum(1 for check in checks if check["ok"])
+        failed = len(checks) - passed
+        ready = failed == 0 and bool(sessions)
+        next_actions = [
+            self._action_from_check(check) for check in checks if not check["ok"]
+        ] or self._default_next_actions("wbm")
+        metadata = {
+            "bridge_state": bridge_state,
+            "active_session_id": active_session.get("session_id") if active_session else "",
+            "completed_sessions": len([session for session in sessions if session.get("status") == "complete"]),
+        }
+        if persist:
+            self.db.upsert_connection(
+                tenant_id=tenant_id,
+                provider="wbm",
+                display_name="WBM onboarding",
+                mode="staging",
+                account_status="connected" if bridge_state.get("staging", {}).get("ok") else "not_connected",
+                readiness_status="ready" if ready else "needs_attention",
+                provider_account_id="wbm-staging",
+                metadata=metadata,
+                capabilities=[check["id"] for check in checks if check["ok"]],
+                missing_capabilities=[check["id"] for check in checks if not check["ok"]],
+                next_actions=next_actions,
+                connected_at=datetime.now(timezone.utc).isoformat()
+                if bridge_state.get("staging", {}).get("ok")
+                else None,
+                last_verified_at=datetime.now(timezone.utc).isoformat(),
+            )
+        return {
+            "status": "ok" if ready else "attention",
+            "provider": "wbm",
+            "checks": checks,
+            "summary": {
+                "ready": ready,
+                "passed": passed,
+                "failed": failed,
+                "message": "WBM onboarding workspace is ready." if ready else "WBM onboarding still needs attention.",
+            },
+            "next_actions": next_actions,
+            "metadata": metadata,
+        }
+
+    def _fetch_wbm_bridge_state(self) -> dict[str, dict[str, Any]]:
+        return {
+            "staging": self._fetch_wbm_bridge_env("staging"),
+            "production": self._fetch_wbm_bridge_env("production"),
+        }
+
+    def _fetch_wbm_bridge_env(self, env: str) -> dict[str, Any]:
+        env_var = "WBM_PRODUCTION_MCP_URL" if env == "production" else "WBM_STAGING_MCP_URL"
+        base_url = os.environ.get(env_var, "").replace("/mcp", "")
+        if not base_url:
+            return {"ok": False, "configured": False, "error": f"{env_var} not configured"}
+        health_url = f"{base_url}/health"
+        try:
+            with urllib.request.urlopen(health_url, timeout=4) as response:  # nosec B310
+                import json as _json
+
+                body = _json.loads(response.read().decode())
+                return {"ok": True, "configured": True, **body}
+        except Exception as exc:
+            return {"ok": False, "configured": True, "error": str(exc)}
+
+    def _is_regulated_human_gate(self, step: dict[str, Any] | None) -> bool:
+        if not step:
+            return False
+        if step.get("automation_type") not in _RECOVERY_REAUTH_STEP_TYPES:
+            return False
+        text = " ".join(
+            [
+                str(step.get("title", "")),
+                str(step.get("description", "")),
+                str(step.get("human_instructions", "")),
+            ]
+        ).lower()
+        return any(token in text for token in ("captcha", "2fa", "identity", "kyc", "verification", "password"))
+
+    def _create_workflow_checkpoint(
+        self,
+        *,
+        run_id: str,
+        session: dict[str, Any] | None,
+        phase: str,
+        title: str,
+        checkpoint_type: str,
+        resume_step_index: int,
+        resume_step_id: str,
+    ) -> dict[str, Any]:
+        payload = {
+            "resume_step_index": int(resume_step_index),
+            "resume_step_id": str(resume_step_id or ""),
+            "session_id": session.get("session_id") if session else "",
+            "session_status": session.get("status") if session else "",
+        }
+        return self.db.add_workflow_checkpoint(
+            run_id,
+            title,
+            phase=phase,
+            step_id=str(resume_step_id or ""),
+            checkpoint_type=checkpoint_type,
+            payload=payload,
+        )
+
+    def _compute_recovery_status(
+        self,
+        run: dict[str, Any],
+        session: dict[str, Any] | None,
+        current_step: dict[str, Any] | None,
+        checkpoints: list[dict[str, Any]],
+    ) -> str:
+        if run.get("status") == "completed":
+            return "completed"
+        browser = run.get("browser_session_metadata") or {}
+        if browser.get("resumable") is False or browser.get("session_valid") is False:
+            return "recoverable_from_checkpoint" if checkpoints else "not_recoverable"
+        if run.get("status") == "awaiting_human" and self._is_regulated_human_gate(current_step):
+            return "needs_user_reauth"
+        if run.get("status") in {"failed", "cancelled"}:
+            return "recoverable_from_checkpoint" if checkpoints else "not_recoverable"
+        if session and session.get("status") in {"in_progress", "awaiting_human", "complete"}:
+            return "recoverable_in_place"
+        return "recoverable_from_checkpoint" if checkpoints else "not_recoverable"
+
+    def _last_checkpoint_payload(self, checkpoints: list[dict[str, Any]], run: dict[str, Any]) -> dict[str, Any] | None:
+        checkpoint_id = run.get("last_safe_checkpoint_id") or ""
+        if checkpoint_id:
+            checkpoint = next((item for item in checkpoints if item["checkpoint_id"] == checkpoint_id), None)
+            if checkpoint:
+                return checkpoint
+        return checkpoints[-1] if checkpoints else None
+
+    def _resume_recommendation(
+        self,
+        recovery_status: str,
+        current_step: dict[str, Any] | None,
+        checkpoints: list[dict[str, Any]],
+    ) -> str:
+        if recovery_status == "recoverable_in_place":
+            if current_step:
+                return f"Resume at the current step: {current_step['title']}."
+            return "Resume the workflow in place."
+        if recovery_status == "needs_user_reauth":
+            return "Resume from the last safe checkpoint and repeat the regulated human step."
+        if recovery_status == "recoverable_from_checkpoint":
+            checkpoint = checkpoints[-1] if checkpoints else None
+            if checkpoint:
+                return f"Recover from checkpoint: {checkpoint['title']}."
+        if recovery_status == "completed":
+            return "The workflow is complete."
+        return "Restart the workflow."
+
+    def _resume_index_from_checkpoint(self, checkpoint: dict[str, Any], session: dict[str, Any]) -> int:
+        payload = checkpoint.get("payload", {})
+        try:
+            index = int(payload.get("resume_step_index", 0))
+        except (TypeError, ValueError):
+            index = 0
+        steps = session.get("steps", [])
+        return max(0, min(index, len(steps)))
+
     def _load_steps(
         self,
         provider: str,
@@ -1514,4 +2063,8 @@ class PaymentAccountSetupManager:
             from instruments.custom.payment_account_setup.step_definitions.paypal_steps import get_paypal_steps
 
             return get_paypal_steps(session_id, email, webhook_endpoint_url)
+        if provider == "wbm":
+            from instruments.custom.payment_account_setup.step_definitions.wbm_steps import get_wbm_steps
+
+            return get_wbm_steps(session_id)
         raise ValueError(f"No step definitions for provider '{provider}'")

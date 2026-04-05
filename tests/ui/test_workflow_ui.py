@@ -53,8 +53,31 @@ def _start_ui_server(port: int) -> subprocess.Popen:
     )
 
 
+def _dismiss_onboarding(page):
+    """Dismiss the first-run onboarding overlay by setting localStorage before Alpine runs.
+
+    The onboarding modal checks localStorage.trust_onboarded === '1' on init.
+    Setting it before navigation prevents the overlay from ever showing.
+    If it still appears (race), force-hide it via Alpine data mutation.
+    """
+    page.evaluate("() => localStorage.setItem('trust_onboarded', '1')")
+    # Reload so Alpine picks up the localStorage value on its init pass.
+    page.reload(wait_until="domcontentloaded")
+    # Guard: if the overlay somehow appeared, close it via Alpine.
+    try:
+        overlay = page.locator("#onboarding-overlay")
+        if overlay.is_visible(timeout=1000):
+            page.evaluate(
+                "() => { const el = document.querySelector('#onboarding-overlay'); "
+                "if (el && el._x_dataStack) el._x_dataStack[0].show = false; }"
+            )
+    except Exception:
+        pass
+
+
 def _navigate_to_workflows(page):
     """Helper to navigate to the Workflows dashboard"""
+    _dismiss_onboarding(page)
     page.wait_for_function("window.Alpine && Alpine.store('dashboardRouter')", timeout=10000)
     # Navigate to Workflows dashboard from sidebar
     page.wait_for_selector(".dashboard-nav-btn:has-text('Workflows')", timeout=10000)

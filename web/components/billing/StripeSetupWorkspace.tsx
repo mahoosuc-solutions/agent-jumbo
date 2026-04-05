@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { WorkflowRecoveryPanel } from '@/components/billing/WorkflowRecoveryPanel'
 
 type Check = {
   id: string
@@ -128,6 +129,28 @@ type WorkflowPayload = {
   workflow: WorkflowRun | null
   status: EmbeddedStatus
   evidence: EvidenceItem[]
+  checkpoints: Array<{
+    checkpoint_id: string
+    phase: string
+    title: string
+    checkpoint_type: string
+    created_at: string
+  }>
+  recovery: {
+    status: string
+    resume_recommendation?: string
+    pending_human_gate?: {
+      title?: string
+      instructions?: string
+    }
+    last_safe_checkpoint?: {
+      checkpoint_id: string
+      phase: string
+      title: string
+      checkpoint_type: string
+      created_at: string
+    } | null
+  }
 }
 
 const DEFAULT_TENANT_ID = 'default'
@@ -333,6 +356,32 @@ export function StripeSetupWorkspace() {
     )
   }
 
+  async function recoverWorkflow() {
+    if (!workflow?.run_id) return
+    await runAction(
+      'recover_workflow',
+      fetch('/api/backend/billing_setup_workflow_recover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ run_id: workflow.run_id }),
+      }),
+      'Workflow recovery attempted.',
+    )
+  }
+
+  async function restartFromCheckpoint(checkpointId: string) {
+    if (!workflow?.run_id) return
+    await runAction(
+      'restart_workflow',
+      fetch('/api/backend/billing_setup_workflow_restart', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ run_id: workflow.run_id, checkpoint_id: checkpointId }),
+      }),
+      'Workflow restarted from checkpoint.',
+    )
+  }
+
   const recentEvidence = useMemo(
     () => (workflowPayload?.evidence ?? []).slice(-6).reverse(),
     [workflowPayload?.evidence],
@@ -535,6 +584,14 @@ export function StripeSetupWorkspace() {
           </div>
         </div>
       </section>
+
+      <WorkflowRecoveryPanel
+        recovery={workflowPayload?.recovery ?? null}
+        checkpoints={workflowPayload?.checkpoints ?? []}
+        busy={busy}
+        onRecover={recoverWorkflow}
+        onRestart={restartFromCheckpoint}
+      />
 
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">

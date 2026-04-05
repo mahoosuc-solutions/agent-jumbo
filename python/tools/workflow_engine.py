@@ -38,6 +38,9 @@ class WorkflowEngine(Tool):
             # Workflow Execution
             "start_workflow": self._start_workflow,
             "get_status": self._get_status,
+            "recover_execution": self._recover_execution,
+            "restart_from_checkpoint": self._restart_from_checkpoint,
+            "list_checkpoints": self._list_checkpoints,
             "advance_stage": self._advance_stage,
             "approve_stage": self._approve_stage,
             "complete_criterion": self._complete_criterion,
@@ -166,6 +169,24 @@ class WorkflowEngine(Tool):
             execution_id=self.args.get("execution_id"), force=self.args.get("force", False)
         )
         return Response(message=self._format_result(result, "Advance Stage"), break_loop=False)
+
+    async def _recover_execution(self):
+        """Recover an execution"""
+        result = self.manager.recover_execution(execution_id=self.args.get("execution_id"))
+        return Response(message=self._format_result(result, "Recover Execution"), break_loop=False)
+
+    async def _restart_from_checkpoint(self):
+        """Restart an execution from a checkpoint"""
+        result = self.manager.restart_from_checkpoint(
+            execution_id=self.args.get("execution_id"),
+            checkpoint_id=self.args.get("checkpoint_id"),
+        )
+        return Response(message=self._format_result(result, "Restart From Checkpoint"), break_loop=False)
+
+    async def _list_checkpoints(self):
+        """List execution checkpoints"""
+        result = self.manager.list_execution_checkpoints(execution_id=self.args.get("execution_id"))
+        return Response(message=self._format_result(result, "Execution Checkpoints"), break_loop=False)
 
     async def _approve_stage(self):
         """Approve a stage"""
