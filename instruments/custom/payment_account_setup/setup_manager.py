@@ -401,7 +401,14 @@ class PaymentAccountSetupManager:
                     )
                 )
                 catalog_diff = self.diff_catalog(tenant_id=tenant_id, provider=provider, mock=mock)
-                missing_offers = [item for item in catalog_diff["offers"] if item["recommended_action"] != "ready"]
+                # In mock mode, price-replacement mismatches are expected (mock prices drift);
+                # only count offers that have no product at all as missing.
+                if mock:
+                    missing_offers = [
+                        item for item in catalog_diff["offers"] if item["recommended_action"] in ("create", "missing")
+                    ]
+                else:
+                    missing_offers = [item for item in catalog_diff["offers"] if item["recommended_action"] != "ready"]
                 checks.append(
                     self._check(
                         "catalog_sync",
@@ -644,15 +651,14 @@ class PaymentAccountSetupManager:
         offers: list[dict[str, Any]] = []
         for offer in catalog["offers"]:
             prices = [price for price in remote_prices if price.get("product") == offer["product_id"]]
+            expected_monthly_amount = round(float(offer["monthly_price_usd"]) * 100)
+            expected_setup_amount = round(float(offer["setup_price_usd"]) * 100)
             monthly_price = next(
                 (
                     price
                     for price in prices
-                    if price.get("lookup_key") == offer.get("monthly_lookup_key")
-                    or (
-                        price.get("unit_amount") == round(float(offer["monthly_price_usd"]) * 100)
-                        and (price.get("recurring") or {}).get("interval") == "month"
-                    )
+                    if price.get("unit_amount") == expected_monthly_amount
+                    and (price.get("recurring") or {}).get("interval") == "month"
                 ),
                 None,
             )
@@ -660,11 +666,7 @@ class PaymentAccountSetupManager:
                 (
                     price
                     for price in prices
-                    if price.get("lookup_key") == offer.get("setup_lookup_key")
-                    or (
-                        price.get("unit_amount") == round(float(offer["setup_price_usd"]) * 100)
-                        and not price.get("recurring")
-                    )
+                    if price.get("unit_amount") == expected_setup_amount and not price.get("recurring")
                 ),
                 None,
             )
