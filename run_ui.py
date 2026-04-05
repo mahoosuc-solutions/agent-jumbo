@@ -441,6 +441,17 @@ def run():
     except Exception as _dunning_err:
         PrintStyle(font_color="yellow").print(f"[!] Dunning scheduler init skipped: {_dunning_err}")
 
+    # Seed WBM hospitality recurring tasks (9 tasks, idempotent, skipped without WBM_TENANT_ID).
+    try:
+        import asyncio as _asyncio
+
+        from python.helpers.wbm_scheduler_init import seed_wbm_tasks
+
+        _wbm_result = _asyncio.get_event_loop().run_until_complete(seed_wbm_tasks())
+        PrintStyle(font_color="green").print(f"[boot] WBM scheduler: {_wbm_result['status']}")
+    except Exception as _wbm_err:
+        PrintStyle(font_color="yellow").print(f"[!] WBM scheduler init skipped: {_wbm_err}")
+
     # Initialize AgentMesh bridge if AGENTMESH_REDIS_URL is set.
     agentmesh_url = os.environ.get("AGENTMESH_REDIS_URL")
     _agentmesh_loop = None  # Keep reference for shutdown
