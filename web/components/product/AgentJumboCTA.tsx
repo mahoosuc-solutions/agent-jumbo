@@ -8,22 +8,20 @@ export default function AgentJumboCTA() {
           Ready to run your life with AI?
         </h2>
         <p className="text-xl text-slate-300 mb-8">
-          Download Agent Jumbo, self-host in minutes, and connect to Mahoosuc OS when you&apos;re ready. No cloud lock-in. No subscriptions. Your data stays on your infrastructure.
+          Start free on our hosted cloud — no install, no credit card. Or self-host in minutes and keep your data on your own infrastructure.
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
-            href="/install"
+            href="/signup?plan=free_cloud"
             className="px-8 py-3 bg-copper-500 text-white rounded-lg font-semibold hover:bg-copper-400 transition"
           >
-            Download &amp; Install
+            Get Free Cloud Access
           </Link>
           <Link
-            href="https://mahoosuc.ai/agent-jumbo"
+            href="/install"
             className="px-8 py-3 border border-slate-700 text-slate-200 rounded-lg font-semibold hover:bg-slate-800 transition"
-            target="_blank"
-            rel="noopener noreferrer"
           >
-            See the Full Vision →
+            Self-host →
           </Link>
         </div>
         <p className="mt-6 text-sm text-slate-500">

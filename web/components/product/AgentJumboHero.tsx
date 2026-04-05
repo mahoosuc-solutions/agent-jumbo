@@ -28,18 +28,16 @@ export default function AgentJumboHero() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
             <Link
-              href="/install"
+              href="/try"
               className="px-8 py-3 bg-copper-500 text-white rounded-lg font-semibold hover:bg-copper-400 transition text-center"
             >
-              Download &amp; Install
+              Try Free — no install
             </Link>
             <Link
-              href="https://mahoosuc.ai/agent-jumbo"
+              href="/install"
               className="px-8 py-3 border border-copper-500/40 text-copper-300 rounded-lg font-semibold hover:bg-copper-500/10 transition text-center"
-              target="_blank"
-              rel="noopener noreferrer"
             >
-              Learn the Vision →
+              Self-host →
             </Link>
           </div>
         </div>
