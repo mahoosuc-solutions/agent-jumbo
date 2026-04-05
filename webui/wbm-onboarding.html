@@ -1379,15 +1379,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ── Bridge health polling ──
-async function checkBridge(port, dotId) {
+async function checkBridge(env, dotId) {
   try {
-    const r = await fetch(`http://localhost:${port}/health`, { signal: AbortSignal.timeout(3000) });
-    document.getElementById(dotId).className = r.ok ? 'bridge-dot ok' : 'bridge-dot err';
+    const r = await fetch(`/wbm_bridge_health?env=${env}`, { signal: AbortSignal.timeout(5000) });
+    const d = await r.json();
+    document.getElementById(dotId).className = (r.ok && d.ok) ? 'bridge-dot ok' : 'bridge-dot err';
   } catch { document.getElementById(dotId).className = 'bridge-dot err'; }
 }
-checkBridge(3150, 'dot-staging');
-checkBridge(3151, 'dot-prod');
-setInterval(() => { checkBridge(3150, 'dot-staging'); checkBridge(3151, 'dot-prod'); }, 30000);
+checkBridge('staging', 'dot-staging');
+checkBridge('production', 'dot-prod');
+setInterval(() => { checkBridge('staging', 'dot-staging'); checkBridge('production', 'dot-prod'); }, 30000);
 
 // ── Step toggle ──
 function toggle(id) {
