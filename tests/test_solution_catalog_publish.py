@@ -260,3 +260,58 @@ def test_proposal_data_pricing_matches_solution(tmp_path):
     data = mgr.generate_proposal_data("prop-sol")
     assert data["pricing"]["monthly"] == 750
     assert data["pricing"]["one_time_setup"] == 3500
+
+
+# ---------------------------------------------------------------------------
+# publish_to_provider (Square / PayPal abstract interface)
+# ---------------------------------------------------------------------------
+
+
+class _FakeProvider:
+    """Minimal stand-in for Square/PayPal provider — mirrors PaymentProvider interface."""
+
+    def __init__(self):
+        self.products = []
+        self.prices = []
+
+    def create_product(self, name, description, **_):
+        self.products.append({"name": name, "description": description})
+        return {"id": f"prod_{name.lower().replace(' ', '_')}"}
+
+    def create_price(self, product_id, unit_amount_cents, currency="usd", recurring_interval=None, **_):
+        self.prices.append({"product_id": product_id, "amount": unit_amount_cents, "interval": recurring_interval})
+        suffix = "monthly" if recurring_interval else "setup"
+        return {"id": f"price_{suffix}_{product_id}"}
+
+
+def test_publish_to_provider_writes_provider_ids(tmp_path):
+    solutions_dir = tmp_path / "solutions"
+    _seed_solution(solutions_dir, slug="prov-sol", monthly=200, setup=1000)
+    mgr = SolutionCatalogManager(str(solutions_dir))
+    provider = _FakeProvider()
+
+    result = mgr.publish_to_provider("prov-sol", "square", provider)
+
+    assert result["status"] == "published"
+    assert result["product_id"].startswith("prod_")
+    assert result["price_id"] is not None
+    assert result["setup_price_id"] is not None
+
+    updated = json.loads((solutions_dir / "prov-sol" / "solution.json").read_text())
+    assert "square_product_id" in updated
+    assert "square_price_id" in updated
+    assert "square_setup_price_id" in updated
+    assert updated["status"] == "published"
+
+
+def test_publish_to_provider_skips_price_when_zero(tmp_path):
+    solutions_dir = tmp_path / "solutions"
+    _seed_solution(solutions_dir, slug="free-sol", monthly=0, setup=0)
+    mgr = SolutionCatalogManager(str(solutions_dir))
+    provider = _FakeProvider()
+
+    result = mgr.publish_to_provider("free-sol", "paypal", provider)
+
+    assert result["price_id"] is None
+    assert result["setup_price_id"] is None
+    assert len(provider.prices) == 0  # no prices created for $0 solution
