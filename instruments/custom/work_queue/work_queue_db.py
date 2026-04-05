@@ -100,6 +100,14 @@ class WorkQueueDatabase:
 
         conn.commit()
 
+        # Migrations — add tags column if missing (added in Phase E)
+        try:
+            conn.execute("SELECT tags FROM work_items LIMIT 0")
+        except Exception:
+            conn.execute("ALTER TABLE work_items ADD COLUMN tags TEXT DEFAULT '[]'")
+            conn.execute("CREATE INDEX IF NOT EXISTS idx_work_items_tags ON work_items(tags)")
+            conn.commit()
+
     # ── Project operations ────────────────────────────────────────────
 
     def register_project(self, path: str, name: str) -> dict[str, Any]:
@@ -129,8 +137,8 @@ class WorkQueueDatabase:
                      file_path, line_number, url, status, priority_score, priority_raw,
                      effort_estimate, effort_minutes, project_path,
                      linear_priority, linear_state, linear_assignee, linear_labels,
-                     discovered_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+                     tags, discovered_at, updated_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
                 ON CONFLICT(source, external_id, project_path)
                 DO UPDATE SET
                     title = excluded.title,
@@ -146,6 +154,7 @@ class WorkQueueDatabase:
                     linear_state = excluded.linear_state,
                     linear_assignee = excluded.linear_assignee,
                     linear_labels = excluded.linear_labels,
+                    tags = excluded.tags,
                     updated_at = CURRENT_TIMESTAMP
                 """,
                 (
@@ -167,6 +176,7 @@ class WorkQueueDatabase:
                     item.get("linear_state"),
                     item.get("linear_assignee"),
                     json.dumps(item.get("linear_labels", [])) if item.get("linear_labels") else None,
+                    json.dumps(item.get("tags", [])),
                 ),
             )
 
@@ -269,6 +279,30 @@ class WorkQueueDatabase:
             params,
         )
 
+    def get_items_by_tag(self, tag: str, status: str | None = None) -> list[dict[str, Any]]:
+        """Return work items that have *tag* in their tags JSON array.
+
+        Uses SQLite LIKE on the JSON column: tags column stores '["marketing", "content"]',
+        so matching '%" tag "%' catches the tag reliably. Also falls back to
+        title/description keyword search for items that predate the tags column.
+        """
+        tag_pattern = f'%"{tag}"%'
+        keyword_pattern = f"%{tag}%"
+        params: list[Any] = [tag_pattern, keyword_pattern, keyword_pattern]
+        status_clause = ""
+        if status:
+            status_clause = " AND status = ?"
+            params.append(status)
+
+        return self.db.query_rows(
+            f"""
+            SELECT * FROM work_items
+            WHERE (tags LIKE ? OR title LIKE ? OR description LIKE ?){status_clause}
+            ORDER BY priority_score DESC
+            """,
+            params,
+        )
+
     def update_item_status(self, item_id: int, status: str) -> bool:
         ts_col = {
             "queued": "queued_at",
@@ -290,13 +324,21 @@ class WorkQueueDatabase:
         return True
 
     def update_item(self, item_id: int, updates: dict[str, Any]) -> bool:
-        allowed = {"status", "priority_score", "effort_estimate", "effort_minutes", "execution_id", "execution_status"}
+        allowed = {
+            "status",
+            "priority_score",
+            "effort_estimate",
+            "effort_minutes",
+            "execution_id",
+            "execution_status",
+            "tags",
+        }
         sets = []
         params: list[Any] = []
         for k, v in updates.items():
             if k in allowed:
                 sets.append(f"{k} = ?")
-                params.append(v)
+                params.append(json.dumps(v) if k == "tags" else v)
         if not sets:
             return False
         sets.append("updated_at = CURRENT_TIMESTAMP")

@@ -414,14 +414,29 @@ class WorkQueueManager:
             "last_scan": dashboard.get("last_scan"),
         }
 
-    def get_items_by_tag(self, tag: str) -> list[dict[str, Any]]:
-        """Return all work queue items whose title or description contains *tag*.
+    def get_items_by_tag(self, tag: str, status: str | None = None) -> list[dict[str, Any]]:
+        """Return all work queue items with the given tag.
 
-        Used by MOSOrchestrator.check_support_queue() to find support-tagged items.
-        Falls back to a simple keyword search via the existing search_items() method.
+        Uses structured tag matching on the tags JSON column, with fallback
+        to title/description keyword search for backwards compatibility.
         """
-        results = self.search_items(tag)
-        return results
+        return self.db.get_items_by_tag(tag, status=status)
+
+    def tag_item(self, item_id: int, tags: list[str]) -> bool:
+        """Set the tags on a work item. Replaces existing tags."""
+        return self.db.update_item(item_id, {"tags": tags})
+
+    def add_tag(self, item_id: int, tag: str) -> bool:
+        """Add a single tag to a work item (idempotent)."""
+        item = self.db.get_item(item_id)
+        if not item:
+            return False
+        import json as _json
+
+        existing = _json.loads(item.get("tags") or "[]")
+        if tag not in existing:
+            existing.append(tag)
+        return self.db.update_item(item_id, {"tags": existing})
 
     # ── Settings ──────────────────────────────────────────────────────
 
