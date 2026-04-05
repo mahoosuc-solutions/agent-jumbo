@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import PricingTierCard from '@/components/product/PricingTier'
 import { getTiers } from '@/lib/pricing'
+import { getSolutionPackages } from '@/lib/solution-packages'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 
 export default function PricingPage() {
   const tiers = getTiers()
+  const packages = getSolutionPackages()
 
   if (tiers.length === 0) {
     return (
@@ -35,6 +37,50 @@ export default function PricingPage() {
         {tiers.map((tier, i) => (<PricingTierCard key={tier.name} tier={tier} featured={i === featuredIndex} />))}
       </div>
       <p className="text-center text-xs text-slate-500 font-mono mt-8">Pricing validated by codebase cost analysis.</p>
+
+      {packages.length > 0 && (
+        <div className="mt-20 max-w-6xl mx-auto">
+          <div className="text-center mb-10">
+            <h2 className="text-3xl font-bold text-white mb-3">Solution Packages</h2>
+            <p className="text-slate-400 max-w-3xl mx-auto">
+              Named AI packages are sold separately from the core platform tiers. Each package includes a one-time setup fee and an ongoing monthly operating fee.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {packages.map((pkg) => (
+              <div key={pkg.slug} className="rounded-2xl border border-slate-800 bg-slate-950/50 p-6">
+                <div className="flex items-start justify-between gap-4 mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-white">{pkg.name}</h3>
+                    <p className="text-copper-300 text-sm mt-1">{pkg.tagline}</p>
+                  </div>
+                  <span className="text-xs font-mono px-2.5 py-1 rounded bg-slate-800 text-slate-300">
+                    {pkg.status}
+                  </span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 mb-5">
+                  <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-4">
+                    <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Setup</p>
+                    <p className="text-2xl font-bold text-white">${pkg.one_time_setup.toLocaleString()}</p>
+                  </div>
+                  <div className="rounded-xl bg-slate-900/80 border border-slate-800 p-4">
+                    <p className="text-xs uppercase tracking-widest text-slate-500 mb-1">Monthly</p>
+                    <p className="text-2xl font-bold text-white">${pkg.monthly.toLocaleString()}</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 text-xs font-mono text-slate-400 mb-5">
+                  <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800">{pkg.category}</span>
+                  <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800">{pkg.tier}</span>
+                  <span className="px-2 py-1 rounded bg-slate-900 border border-slate-800">{pkg.annual_discount_pct}% annual discount</span>
+                </div>
+                <Link href={`/solutions/${pkg.slug}`} className="text-copper-300 hover:text-copper-200 transition">
+                  View package details
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="mt-16 max-w-4xl mx-auto rounded-2xl border border-copper-500/20 bg-slate-950/60 p-8">
         <h2 className="text-2xl font-bold text-white mb-4">Support & Compliance</h2>

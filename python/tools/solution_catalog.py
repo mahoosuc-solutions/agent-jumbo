@@ -202,10 +202,10 @@ class SolutionCatalog(Tool):
 
         # Get Stripe manager from the stripe_payments instrument
         try:
-            sys.path.insert(0, str(Path(__file__).parent.parent.parent / "instruments" / "custom"))
-            from stripe_payments.stripe_manager import StripeManager
+            from instruments.custom.stripe_payments.stripe_manager import StripePaymentManager
 
-            stripe_mgr = StripeManager()
+            db_path = files.get_abs_path("./instruments/custom/stripe_payments/data/stripe_payments.db")
+            stripe_mgr = StripePaymentManager(db_path)
         except Exception as e:
             return Response(
                 message=f"Error: Could not initialize Stripe manager: {e!s}",

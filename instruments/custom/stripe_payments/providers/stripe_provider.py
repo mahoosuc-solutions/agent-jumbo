@@ -2,12 +2,13 @@ import hashlib
 import hmac
 import json
 import logging
+import os
 import time
 from typing import Any
 
 import httpx
 
-from instruments.custom.stripe_payments.providers.base import StripePaymentProvider
+from instruments.custom.stripe_payments.providers.base import PaymentProvider
 from python.helpers import settings as settings_helper
 
 logger = logging.getLogger(__name__)
@@ -41,7 +42,7 @@ def _flatten_params(data: dict[str, Any], prefix: str = "") -> list[tuple[str, s
     return pairs
 
 
-class StripePaymentProvider(StripePaymentProvider):
+class StripeProvider(PaymentProvider):
     """Real Stripe API provider using httpx (no SDK dependency).
 
     Reads ``stripe_api_key`` and ``stripe_webhook_secret`` from the
@@ -53,8 +54,8 @@ class StripePaymentProvider(StripePaymentProvider):
             config = settings_helper.get_settings()
         except Exception:
             config = {}
-        self.api_key: str | None = config.get("stripe_api_key")
-        self.webhook_secret: str | None = config.get("stripe_webhook_secret")
+        self.api_key: str | None = os.environ.get("STRIPE_API_KEY") or config.get("stripe_api_key")
+        self.webhook_secret: str | None = os.environ.get("STRIPE_WEBHOOK_SECRET") or config.get("stripe_webhook_secret")
 
     # ------------------------------------------------------------------
     # Low-level request helper
@@ -330,3 +331,50 @@ class StripePaymentProvider(StripePaymentProvider):
 
         event = json.loads(payload)
         return event
+
+    # ------------------------------------------------------------------
+    # Payment method management
+    # ------------------------------------------------------------------
+
+    def get_provider_name(self) -> str:
+        return "stripe"
+
+    def list_payment_methods(self, customer_id: str) -> list[dict]:
+        result = self._stripe_request("GET", f"customers/{customer_id}/payment_methods")
+        return result.get("data", [])
+
+    def update_customer_payment_method(self, customer_id: str, payment_method_token: str) -> dict:
+        """Attach a payment method and set it as the default for future invoices."""
+        # Attach the payment method to the customer
+        self._stripe_request(
+            "POST",
+            f"payment_methods/{payment_method_token}/attach",
+            {"customer": customer_id},
+        )
+        # Set as default for invoices
+        return self._stripe_request(
+            "POST",
+            f"customers/{customer_id}",
+            {"invoice_settings": {"default_payment_method": payment_method_token}},
+        )
+
+    def retry_payment(self, payment_id: str) -> dict:
+        """Pay a past-due invoice immediately (Stripe invoice ID expected)."""
+        return self._stripe_request("POST", f"invoices/{payment_id}/pay")
+
+    # ------------------------------------------------------------------
+    # Billing portal
+    # ------------------------------------------------------------------
+
+    def create_billing_portal_session(self, customer_id: str, return_url: str) -> dict:
+        """Create a Stripe Billing Portal session for self-service subscription management."""
+        result = self._stripe_request(
+            "POST",
+            "billing_portal/sessions",
+            {"customer": customer_id, "return_url": return_url},
+        )
+        return {"url": result.get("url", ""), "session_id": result.get("id", ""), "provider": "stripe"}
+
+
+# Backwards-compatible alias
+StripePaymentProvider = StripeProvider

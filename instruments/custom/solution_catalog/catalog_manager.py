@@ -184,18 +184,18 @@ class SolutionCatalogManager:
         price = None
         if monthly > 0:
             price = stripe_manager.create_price(
-                product_id=product["id"],
-                unit_amount=int(monthly * 100),  # cents
+                stripe_product_id=product["id"],
+                amount_cents=int(monthly * 100),
                 currency="usd",
-                recurring={"interval": "month"},
+                recurring_interval="month",
             )
 
         # Create one-time setup price if setup > 0
         setup_price = None
         if setup > 0:
             setup_price = stripe_manager.create_price(
-                product_id=product["id"],
-                unit_amount=int(setup * 100),
+                stripe_product_id=product["id"],
+                amount_cents=int(setup * 100),
                 currency="usd",
             )
 
@@ -212,6 +212,60 @@ class SolutionCatalogManager:
             "stripe_product_id": product["id"],
             "stripe_price_id": price["id"] if price else None,
             "stripe_setup_price_id": setup_price["id"] if setup_price else None,
+            "status": "published",
+        }
+
+    def publish_to_provider(self, slug: str, provider_name: str, provider) -> dict:
+        """Sync solution to any payment provider (Square, PayPal, etc.) using the abstract PaymentProvider interface."""
+        data = self._read_solution_json(slug)
+        if data is None:
+            raise FileNotFoundError(f"Solution '{slug}' not found")
+
+        pricing = data.get("pricing", {})
+        monthly = float(pricing.get("monthly", 0) or 0)
+        setup = float(pricing.get("one_time_setup", 0) or 0)
+
+        product = provider.create_product(
+            name=data["name"],
+            description=data.get("tagline") or data.get("description", ""),
+        )
+        product_id = product.get("id", "")
+
+        price_id = None
+        if monthly > 0:
+            price = provider.create_price(
+                product_id=product_id,
+                unit_amount_cents=int(monthly * 100),
+                currency="usd",
+                recurring_interval="month",
+            )
+            price_id = price.get("id")
+
+        setup_price_id = None
+        if setup > 0:
+            setup_price = provider.create_price(
+                product_id=product_id,
+                unit_amount_cents=int(setup * 100),
+                currency="usd",
+                recurring_interval=None,
+            )
+            setup_price_id = setup_price.get("id")
+
+        # Store provider-specific IDs in solution.json
+        provider_key = provider_name.lower()
+        data[f"{provider_key}_product_id"] = product_id
+        if price_id:
+            data[f"{provider_key}_price_id"] = price_id
+        if setup_price_id:
+            data[f"{provider_key}_setup_price_id"] = setup_price_id
+        data["status"] = "published"
+
+        self._write_solution_json(slug, data)
+        return {
+            "provider": provider_name,
+            "product_id": product_id,
+            "price_id": price_id,
+            "setup_price_id": setup_price_id,
             "status": "published",
         }
 
