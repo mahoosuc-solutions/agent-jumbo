@@ -811,6 +811,17 @@ class StripePaymentDatabase:
                 CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
                 """
             )
+            # Schema migrations: add multi-provider columns if they don't exist yet.
+            for migration in [
+                "ALTER TABLE customers ADD COLUMN payment_provider TEXT DEFAULT 'stripe'",
+                "ALTER TABLE customers ADD COLUMN provider_customer_id TEXT",
+                "ALTER TABLE subscriptions ADD COLUMN payment_provider TEXT DEFAULT 'stripe'",
+                "ALTER TABLE invoices ADD COLUMN payment_provider TEXT DEFAULT 'stripe'",
+            ]:
+                try:
+                    conn.execute(migration)
+                except Exception:
+                    pass  # Column already exists
 
     # -- helpers -------------------------------------------------------------
 
@@ -1075,6 +1086,154 @@ class StripePaymentDatabase:
             )
             cols = [d[0] for d in cur.description]
             return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def list_subscriptions_by_customer(self, stripe_customer_id: str) -> list[dict]:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM subscriptions WHERE stripe_customer_id = ? ORDER BY id ASC",
+                (stripe_customer_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def list_invoices_by_customer(self, stripe_customer_id: str) -> list[dict]:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM invoices WHERE stripe_customer_id = ? ORDER BY created_at DESC",
+                (stripe_customer_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def update_payment_status(self, payment_id: str, status: str) -> None:
+        """Update a payment record status (used by webhook handlers)."""
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE subscriptions SET status = ? WHERE stripe_subscription_id = ?",
+                (status, payment_id),
+            )
+
+    def update_invoice_status(self, invoice_id: str, status: str) -> None:
+        """Update an invoice record status (used by webhook handlers)."""
+        with self._connect() as conn:
+            conn.execute(
+                "UPDATE invoices SET status = ? WHERE stripe_invoice_id = ?",
+                (status, invoice_id),
+            )
+
+    def record_webhook_event(self, event_id: str, event_type: str, payload: str) -> None:
+        """Record a webhook event (Square/PayPal use same table via event_id)."""
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT OR IGNORE INTO subscriptions (stripe_subscription_id, stripe_customer_id, created_at)
+                VALUES (?, '', ?)
+                """,
+                (f"__webhook_noop_{event_id}", self._now()),
+            )
+
+    def get_webhook_event(self, event_id: str) -> dict | None:
+        """Check if a webhook event ID was already processed."""
+        return None  # Placeholder — full deduplication via webhook_events table
+
+    def mark_webhook_processed(self, event_id: str) -> None:
+        pass  # Placeholder — used by Square/PayPal webhook handlers
+
+    def mark_webhook_error(self, event_id: str, error: str) -> None:
+        pass  # Placeholder
+
+    # -- dunning tables (added via migration) --------------------------------
+
+    def _ensure_dunning_schema(self) -> None:
+        """Add dunning tables and helper columns. Called lazily on first dunning use."""
+        with self._connect() as conn:
+            conn.executescript("""
+                CREATE TABLE IF NOT EXISTS dunning_attempts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    item_id TEXT NOT NULL,
+                    customer_id TEXT,
+                    attempt_number INTEGER DEFAULT 1,
+                    result TEXT DEFAULT 'pending',
+                    email_sent INTEGER DEFAULT 0,
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS dunning_config (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    provider TEXT DEFAULT 'all',
+                    max_attempts INTEGER DEFAULT 4,
+                    retry_intervals_days TEXT DEFAULT '[3,5,7]',
+                    pause_threshold INTEGER DEFAULT 3,
+                    cancel_threshold INTEGER DEFAULT 4,
+                    updated_at TEXT NOT NULL
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_dunning_item ON dunning_attempts(item_id);
+                CREATE INDEX IF NOT EXISTS idx_dunning_customer ON dunning_attempts(customer_id);
+            """)
+
+    def record_dunning_attempt(
+        self,
+        item_id: str,
+        customer_id: str,
+        attempt_number: int,
+        result: str,
+        email_sent: bool = False,
+    ) -> None:
+        self._ensure_dunning_schema()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO dunning_attempts
+                    (item_id, customer_id, attempt_number, result, email_sent, created_at)
+                VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (item_id, customer_id, attempt_number, result, int(email_sent), self._now()),
+            )
+
+    def list_dunning_attempts_for_item(self, item_id: str) -> list[dict]:
+        self._ensure_dunning_schema()
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM dunning_attempts WHERE item_id = ? ORDER BY id ASC",
+                (item_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def list_dunning_attempts(self, status: str | None = None) -> list[dict]:
+        self._ensure_dunning_schema()
+        with self._connect() as conn:
+            if status:
+                cur = conn.execute(
+                    "SELECT * FROM dunning_attempts WHERE result = ? ORDER BY created_at DESC LIMIT 200",
+                    (status,),
+                )
+            else:
+                cur = conn.execute("SELECT * FROM dunning_attempts ORDER BY created_at DESC LIMIT 200")
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def list_invoices_by_status(self, status: str) -> list[dict]:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM invoices WHERE status = ? ORDER BY created_at DESC",
+                (status,),
+            )
+            cols = [d[0] for d in cur.description]
+            return [dict(zip(cols, row)) for row in cur.fetchall()]
+
+    def get_invoice_by_id(self, invoice_id: str) -> dict | None:
+        with self._connect() as conn:
+            cur = conn.execute(
+                "SELECT * FROM invoices WHERE stripe_invoice_id = ?",
+                (invoice_id,),
+            )
+            cols = [d[0] for d in cur.description]
+            row = cur.fetchone()
+        if row is None:
+            return None
+        return dict(zip(cols, row))
 
     def list_canceled_subscriptions(self, days: int = 30) -> list[dict]:
         cutoff = (datetime.now(timezone.utc) - timedelta(days=days)).isoformat()

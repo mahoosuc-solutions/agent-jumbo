@@ -33,16 +33,16 @@ class StripePaymentManager:
     # Provider helpers
     # ------------------------------------------------------------------
 
-    def _get_provider(self, mock: bool = False):
-        """Return a mock or real Stripe provider instance."""
-        if mock:
-            from instruments.custom.stripe_payments.providers.mock_provider import MockStripeProvider
+    def _get_provider(self, provider: str = "stripe", mock: bool = False):
+        """Return a payment provider instance.
 
-            return MockStripeProvider()
+        Args:
+            provider: Provider name — ``"stripe"``, ``"square"``, or ``"paypal"``.
+            mock: If True, return the mock variant of the requested provider.
+        """
+        from instruments.custom.stripe_payments.payment_router import PaymentRouter
 
-        from instruments.custom.stripe_payments.providers.stripe_provider import StripePaymentProvider
-
-        return StripePaymentProvider()
+        return PaymentRouter.get_provider(provider, mock=mock)
 
     # ------------------------------------------------------------------
     # Phase 1 — Customers
@@ -56,7 +56,7 @@ class StripePaymentManager:
         mock: bool = False,
     ) -> dict[str, Any]:
         """Create a customer in Stripe and store locally."""
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         result = provider.create_customer(email, name, metadata)
         local_id = self.db.add_customer(
             stripe_customer_id=result["id"],
@@ -90,7 +90,7 @@ class StripePaymentManager:
         mock: bool = False,
     ) -> dict[str, Any]:
         """Create a product in Stripe and store locally."""
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         result = provider.create_product(name, description, metadata)
         local_id = self.db.add_product(
             stripe_product_id=result["id"],
@@ -109,7 +109,7 @@ class StripePaymentManager:
         mock: bool = False,
     ) -> dict[str, Any]:
         """Create a Stripe Price for an existing product and update local record."""
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         result = provider.create_price(stripe_product_id, amount_cents, currency, recurring_interval)
 
         # Update the local product record with the new price info
@@ -212,7 +212,7 @@ class StripePaymentManager:
         if portfolio is None:
             return {"status": "error", "message": f"Portfolio product {portfolio_product_id} not found"}
 
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
 
         # Create the Stripe product
         stripe_product = provider.create_product(
@@ -338,7 +338,7 @@ class StripePaymentManager:
         if lifecycle is None:
             return {"status": "error", "message": f"Lifecycle customer {lifecycle_customer_id} not found"}
 
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         email = lifecycle.get("email") or f"customer-{lifecycle_customer_id}@placeholder.local"
         name = lifecycle.get("name", "Unknown")
 
@@ -413,7 +413,7 @@ class StripePaymentManager:
                 }
             )
 
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
 
         invoice = provider.create_invoice(
             customer_id=stripe_customer_id,
@@ -485,7 +485,7 @@ class StripePaymentManager:
         price_model = local_product.get("price_model", "one-time") if local_product else "one-time"
         mode = "subscription" if price_model == "subscription" else "payment"
 
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         session = provider.create_checkout_session(
             price_id=stripe_price_id,
             customer_id=stripe_customer_id,
@@ -512,7 +512,7 @@ class StripePaymentManager:
         mock: bool = False,
     ) -> dict[str, Any]:
         """Create a subscription in Stripe and store locally."""
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         result = provider.create_subscription(
             customer_id=stripe_customer_id,
             price_id=stripe_price_id,
@@ -551,7 +551,7 @@ class StripePaymentManager:
         """Cancel a subscription. By default cancels at period end."""
         # Determine mock from stored sub — always use real if we have a real sub ID
         mock = subscription_id.startswith("sub_mock_")
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         result = provider.cancel_subscription(subscription_id, at_period_end)
 
         self.db.update_subscription(
@@ -570,7 +570,7 @@ class StripePaymentManager:
     ) -> dict[str, Any]:
         """Update a subscription to a new price."""
         mock = subscription_id.startswith("sub_mock_")
-        provider = self._get_provider(mock)
+        provider = self._get_provider(mock=mock)
         result = provider.update_subscription(subscription_id, new_price_id)
 
         self.db.update_subscription(
@@ -580,6 +580,18 @@ class StripePaymentManager:
         )
 
         return result
+
+    # ------------------------------------------------------------------
+    # Billing portal helpers
+    # ------------------------------------------------------------------
+
+    def list_subscriptions(self, stripe_customer_id: str) -> list[dict]:
+        """List all subscriptions for a specific customer."""
+        return self.db.list_subscriptions_by_customer(stripe_customer_id)
+
+    def list_invoices(self, stripe_customer_id: str) -> list[dict]:
+        """List all invoices for a specific customer."""
+        return self.db.list_invoices_by_customer(stripe_customer_id)
 
     # ------------------------------------------------------------------
     # Phase 6 — Reporting
@@ -668,5 +680,95 @@ class StripePaymentManager:
             "churn_rate": churn_rate,
             "churn_rate_pct": round(churn_rate * 100, 2),
             "lost_mrr": lost_mrr,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+    def get_provider_breakdown(self) -> dict[str, Any]:
+        """Break down active subscriptions and MRR by payment provider.
+
+        Reads the ``payment_provider`` column added in Phase 1 migration.
+        Falls back to 'stripe' for legacy rows without the column.
+        """
+        active_subs = self.db.list_subscriptions(status="active")
+        trialing_subs = self.db.list_subscriptions(status="trialing")
+        all_subs = active_subs + trialing_subs
+
+        breakdown: dict[str, dict[str, Any]] = {}
+        for sub in all_subs:
+            provider = sub.get("payment_provider") or "stripe"
+            if provider not in breakdown:
+                breakdown[provider] = {"subscription_count": 0, "mrr_cents": 0.0}
+            breakdown[provider]["subscription_count"] += 1
+            amount = sub.get("amount_cents") or 0
+            interval = sub.get("recurring_interval", "month")
+            if interval == "year":
+                breakdown[provider]["mrr_cents"] += amount / 12
+            elif interval == "week":
+                breakdown[provider]["mrr_cents"] += amount * 4.33
+            else:
+                breakdown[provider]["mrr_cents"] += amount
+
+        result = {}
+        total_mrr = 0.0
+        for provider, data in breakdown.items():
+            mrr = round(data["mrr_cents"] / 100, 2)
+            total_mrr += mrr
+            result[provider] = {
+                "subscription_count": data["subscription_count"],
+                "mrr": mrr,
+            }
+
+        return {
+            "providers": result,
+            "total_mrr": round(total_mrr, 2),
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+    def get_at_risk_revenue(self) -> dict[str, Any]:
+        """Return past-due subscriptions and the MRR at risk from failed payments."""
+        past_due = self.db.list_subscriptions(status="past_due")
+
+        at_risk_cents = 0.0
+        for sub in past_due:
+            amount = sub.get("amount_cents") or 0
+            interval = sub.get("recurring_interval", "month")
+            if interval == "year":
+                at_risk_cents += amount / 12
+            elif interval == "week":
+                at_risk_cents += amount * 4.33
+            else:
+                at_risk_cents += amount
+
+        mrr = self.get_mrr()
+        at_risk_mrr = round(at_risk_cents / 100, 2)
+        at_risk_pct = round(at_risk_mrr / mrr * 100, 2) if mrr > 0 else 0.0
+
+        return {
+            "past_due_count": len(past_due),
+            "at_risk_mrr": at_risk_mrr,
+            "total_mrr": mrr,
+            "at_risk_pct": at_risk_pct,
+            "generated_at": datetime.now(timezone.utc).isoformat(),
+        }
+
+    def get_dunning_impact(self) -> dict[str, Any]:
+        """Summarize dunning activity: recoveries, failures, and recovered MRR."""
+        try:
+            all_attempts = self.db.list_dunning_attempts()
+        except Exception:
+            return {"error": "Dunning schema not initialised — run a dunning cycle first"}
+
+        succeeded = [a for a in all_attempts if a.get("result") == "succeeded"]
+        canceled = [a for a in all_attempts if a.get("result") == "canceled"]
+        pending = [a for a in all_attempts if not a.get("result")]
+
+        recovered_cents = sum(int(a.get("amount_cents") or 0) for a in succeeded)
+
+        return {
+            "total_attempts": len(all_attempts),
+            "recovered_count": len(succeeded),
+            "canceled_count": len(canceled),
+            "pending_count": len(pending),
+            "recovered_mrr": round(recovered_cents / 100, 2),
             "generated_at": datetime.now(timezone.utc).isoformat(),
         }

@@ -26,6 +26,11 @@ class StripeWebhookHandler:
             "customer.subscription.deleted": self._handle_subscription_deleted,
             "invoice.paid": self._handle_invoice_paid,
             "invoice.payment_failed": self._handle_invoice_payment_failed,
+            # Dunning triggers
+            "invoice.payment_action_required": self._handle_payment_action_required,
+            # Lifecycle notifications
+            "customer.subscription.trial_will_end": self._handle_trial_will_end,
+            "invoice.upcoming": self._handle_upcoming_invoice,
         }
 
     def handle_event(self, event_id: str, event_type: str, data: dict[str, Any]) -> dict[str, Any]:
@@ -386,6 +391,39 @@ class StripeWebhookHandler:
             "amount_due": amount_due,
             "attempt_count": attempt_count,
         }
+
+    def _handle_payment_action_required(self, data: dict[str, Any]) -> dict[str, Any]:
+        """Invoice requires additional customer action (3DS). Treat as payment failure for dunning."""
+        invoice_id = data.get("id", "")
+        customer_id = data.get("customer", "")
+        logger.warning("Payment action required for invoice %s customer %s — marking past_due", invoice_id, customer_id)
+        try:
+            self.manager.db.update_invoice_status(invoice_id, "past_due")
+        except Exception as exc:
+            logger.debug("update_invoice_status: %s", exc)
+        return {"invoice_id": invoice_id, "customer_id": customer_id, "status": "past_due"}
+
+    def _handle_trial_will_end(self, data: dict[str, Any]) -> dict[str, Any]:
+        """Subscription trial ending in 3 days. Log for notification pipeline."""
+        sub_id = data.get("id", "")
+        customer_id = data.get("customer", "")
+        trial_end = data.get("trial_end", "")
+        logger.info("Trial ending soon: subscription=%s customer=%s trial_end=%s", sub_id, customer_id, trial_end)
+        # Future: hook into email notification system
+        return {"subscription_id": sub_id, "customer_id": customer_id, "trial_end": trial_end}
+
+    def _handle_upcoming_invoice(self, data: dict[str, Any]) -> dict[str, Any]:
+        """Upcoming invoice notification. Log for advance billing notification."""
+        customer_id = data.get("customer", "")
+        amount_due = data.get("amount_due", 0)
+        next_payment_attempt = data.get("next_payment_attempt", "")
+        logger.info(
+            "Upcoming invoice: customer=%s amount=%d due=%s",
+            customer_id,
+            amount_due,
+            next_payment_attempt,
+        )
+        return {"customer_id": customer_id, "amount_due": amount_due}
 
     # ------------------------------------------------------------------
     # Cross-system helpers

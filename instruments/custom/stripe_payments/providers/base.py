@@ -2,8 +2,18 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class StripePaymentProvider(ABC):
-    """Abstract base class for Stripe payment operations."""
+class PaymentProvider(ABC):
+    """Abstract base class for payment provider operations.
+
+    Concrete implementations exist for Stripe, Square, and PayPal.
+    All providers must implement every method so callers can treat them
+    interchangeably regardless of the underlying payment platform.
+    """
+
+    @abstractmethod
+    def get_provider_name(self) -> str:
+        """Return the canonical provider identifier (e.g. 'stripe', 'square', 'paypal')."""
+        raise NotImplementedError
 
     @abstractmethod
     def create_customer(self, email: str, name: str, metadata: dict[str, Any] | None = None) -> dict:
@@ -73,3 +83,31 @@ class StripePaymentProvider(ABC):
     @abstractmethod
     def construct_webhook_event(self, payload: str, sig_header: str, secret: str) -> dict:
         raise NotImplementedError
+
+    @abstractmethod
+    def list_payment_methods(self, customer_id: str) -> list[dict]:
+        """List saved payment methods for a customer."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def update_customer_payment_method(self, customer_id: str, payment_method_token: str) -> dict:
+        """Set or update the default payment method for a customer."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def retry_payment(self, payment_id: str) -> dict:
+        """Attempt to collect payment on a past-due invoice or payment intent."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def create_billing_portal_session(self, customer_id: str, return_url: str) -> dict:
+        """Create a customer-facing billing management session.
+
+        Returns a dict with at minimum a ``url`` key pointing to the
+        provider's billing portal or account management page.
+        """
+        raise NotImplementedError
+
+
+# Backwards-compatible alias — remove once all import sites are updated.
+StripePaymentProvider = PaymentProvider

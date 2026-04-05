@@ -4,7 +4,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
-from instruments.custom.stripe_payments.providers.base import StripePaymentProvider
+from instruments.custom.stripe_payments.providers.base import PaymentProvider
 
 
 def _mock_id(prefix: str) -> str:
@@ -19,7 +19,7 @@ def _future_iso(days: int = 30) -> str:
     return (datetime.now(timezone.utc) + timedelta(days=days)).isoformat()
 
 
-class MockStripeProvider(StripePaymentProvider):
+class MockStripeProvider(PaymentProvider):
     """Deterministic mock implementation of the Stripe payment provider.
 
     Returns realistic response shapes with fake data. No external dependencies.
@@ -206,6 +206,43 @@ class MockStripeProvider(StripePaymentProvider):
             "current_period_end": _future_iso(30),
             "cancel_at_period_end": False,
             "livemode": False,
+        }
+
+    def get_provider_name(self) -> str:
+        return "stripe"
+
+    def list_payment_methods(self, customer_id: str) -> list[dict]:
+        return [
+            {
+                "id": _mock_id("pm"),
+                "object": "payment_method",
+                "type": "card",
+                "card": {"brand": "visa", "last4": "4242", "exp_month": 12, "exp_year": 2030},
+                "customer": customer_id,
+            }
+        ]
+
+    def update_customer_payment_method(self, customer_id: str, payment_method_token: str) -> dict:
+        return {
+            "id": customer_id,
+            "object": "customer",
+            "invoice_settings": {"default_payment_method": payment_method_token},
+        }
+
+    def retry_payment(self, payment_id: str) -> dict:
+        return {
+            "id": payment_id,
+            "object": "invoice",
+            "status": "paid",
+            "amount_paid": 5000,
+            "paid": True,
+        }
+
+    def create_billing_portal_session(self, customer_id: str, return_url: str) -> dict:
+        return {
+            "url": f"https://billing.stripe.com/mock/p/{_mock_id('bps')}",
+            "session_id": _mock_id("bps"),
+            "provider": "stripe",
         }
 
     def construct_webhook_event(self, payload: str, sig_header: str, secret: str) -> dict:
