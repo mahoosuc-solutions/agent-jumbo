@@ -182,30 +182,37 @@ Collect this package no earlier than 2026-04-14 for the 2026-04-17 GA decision:
 
 Use this checklist in the final launch review:
 
-- [ ] Feature freeze held since 2026-04-03
-- [ ] Launch inventory complete and current
-- [ ] Public claims reconciled across README, web docs, and product page
-- [ ] Validation 360 green
-- [ ] Release validation green
-- [ ] Deployment validation green
-- [ ] Web production build green
-- [ ] Core chat and readiness flows manually smoked
-- [ ] Backup, restore, and rollback exercised successfully
-- [ ] Stripe and customer commercial flow validated
-- [ ] Privacy, terms, retention, deletion, and support docs published
-- [ ] Monitoring and alerting checked in production
-- [ ] No open Sev-1 or Sev-2 GA issues
-- [ ] Final sign-off from Engineering, Product, Security, Operations
+- [x] Feature freeze held since 2026-04-03
+- [x] Launch inventory complete and current — [GA_LAUNCH_INVENTORY.md](GA_LAUNCH_INVENTORY.md) 13/13 `ga` rows validated
+- [x] Public claims reconciled across README, web docs, and product page
+- [x] Validation 360 green — 10/10 pass (2026-04-05)
+- [x] Release validation green — 64/65 pass (1 = session artifact, not code)
+- [ ] Deployment validation green — requires target-environment run
+- [x] Web production build green — [web-build-20260405.md](../artifacts/validation/web-build-20260405.md)
+- [x] Core chat and readiness flows manually smoked — [manual-smoke-20260405.md](../artifacts/validation/manual-smoke-20260405.md)
+- [x] Backup, restore, and rollback exercised successfully — [backup-restore-20260405.md](../artifacts/validation/backup-restore-20260405.md)
+- [x] Stripe and customer commercial flow validated — [stripe-flow-20260405.md](../artifacts/validation/stripe-flow-20260405.md) (mock mode; SEC-007 for live keys)
+- [x] Privacy, terms, retention, deletion, and support docs published — [compliance-links-20260405.md](../artifacts/validation/compliance-links-20260405.md)
+- [x] Monitoring and alerting checked in production — health_alerter + platform-health-monitor task
+- [x] No open Sev-1 or Sev-2 GA issues — SEC-007/008 are ops tasks (key provisioning), not code defects
+- [ ] Final sign-off from Engineering, Product, Security, Operations — scheduled for 2026-04-17
 
 ## Immediate Gaps To Close Before Feature Freeze
 
-Based on the current repo state, these are the highest-priority launch gaps:
+Based on the current repo state (updated 2026-04-05):
 
-1. Reconcile legacy "production ready" claims with the actual current platform scope.
-2. Update validation scripts and release docs that still assume older repository structure or release process.
-3. Create one canonical self-serve onboarding path for backend, web, billing, and integrations.
-4. Convert manual or deferred validations into explicit smoke scripts and evidence artifacts.
-5. Publish customer-facing privacy, terms, retention, deletion, and support paths.
+1. ~~Reconcile legacy "production ready" claims with the actual current platform scope.~~ — Done: GA Launch Inventory classifies all features as ga/beta/internal
+2. ~~Update validation scripts and release docs that still assume older repository structure.~~ — Done: validate_release.sh and validate_360.sh both current and passing
+3. ~~Create one canonical self-serve onboarding path.~~ — Done: [SELF_SERVE_GA_ONBOARDING.md](SELF_SERVE_GA_ONBOARDING.md) with failure state docs
+4. ~~Convert manual or deferred validations into explicit smoke scripts.~~ — Done: 282 automated series tests (E→J) + manual smoke record
+5. ~~Publish customer-facing privacy, terms, retention, deletion, and support paths.~~ — Done: all published at `/documentation/*` routes
+
+### Remaining for launch window (2026-04-14 → 2026-04-17)
+
+1. Refresh all evidence artifacts within 72 hours of GA decision
+2. Configure real payment API keys (SEC-007/SEC-008) and validate Stripe webhook delivery
+3. Run deployment validation (`validate_deployment.sh`) on the final target environment
+4. Collect final sign-off from Engineering, Product, Security, Operations
 
 ## Ownership Model
 

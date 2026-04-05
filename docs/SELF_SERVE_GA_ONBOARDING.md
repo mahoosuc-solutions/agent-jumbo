@@ -169,11 +169,57 @@ Use [Customer Support](CUSTOMER_SUPPORT.md) as the canonical support, incident, 
 - [ ] Support, privacy, and terms links provided
 - [ ] Customer support path provided from the canonical support document
 
-## Current Known Gaps
+## Troubleshooting: Common Failure States
 
-As of 2026-03-24, these items still need completion before self-serve GA is credible:
+### Missing or invalid API keys
 
-- customer-facing privacy, terms, retention, and deletion publication package
-- final support and escalation contact path
-- fresh manual smoke evidence for March platform features
-- Python 3.11+ release environment baseline everywhere the release gate is run
+If `CHAT_MODEL_PROVIDER` or `CHAT_MODEL_NAME` is unset or invalid:
+
+- `/chat_readiness` will report `not_ready` with a message identifying the missing key
+- Chat creation will succeed but message delivery will fail
+- **Fix:** Set the correct API key and restart the backend
+
+If `FLASK_SECRET_KEY` is unset:
+
+- The backend will start but sessions will not persist across restarts
+- **Fix:** Set a strong, random secret key and restart
+
+### Invalid credentials
+
+If `AUTH_LOGIN` or `AUTH_PASSWORD` is incorrect or unset:
+
+- Login will fail with a generic error message (no credential leak)
+- **Fix:** Set the correct credentials in the environment and restart
+
+### Backend unreachable
+
+If the frontend cannot reach `NEXT_PUBLIC_API_URL`:
+
+- Health checks will fail
+- Chat and dashboard features will show connection errors
+- **Fix:** Verify the backend is running, the URL is correct, and there are no firewall/proxy issues
+
+### Stripe / payment failures
+
+If `STRIPE_API_KEY` is invalid or unset:
+
+- Payment-related tools will return errors but will not crash the platform
+- The billing portal will render but cannot process payments
+- **Fix:** Configure a valid Stripe API key (test or live) and set `STRIPE_WEBHOOK_SECRET`
+
+### Degraded status API
+
+If the backend is down but the frontend is deployed:
+
+- The platform status API will return a connection error
+- The product page will fall back to static-only display
+- **Fix:** Restore the backend and verify `/health` returns green
+
+## Resolved Known Gaps
+
+The following items from the 2026-03-24 review are now resolved:
+
+- ~~customer-facing privacy, terms, retention, and deletion publication package~~ — Published at `/documentation/PRIVACY_POLICY`, `/documentation/TERMS_OF_USE`, `/documentation/DATA_RETENTION_POLICY`, `/documentation/DATA_DELETION_POLICY` (verified 2026-04-05)
+- ~~final support and escalation contact path~~ — Published at `/documentation/CUSTOMER_SUPPORT` and linked from pricing page (verified 2026-04-05)
+- ~~fresh manual smoke evidence for March platform features~~ — Manual smoke record captured 2026-04-05 covering health, scheduler, dashboards, chat, and trust UX
+- ~~Python 3.11+ release environment baseline~~ — Confirmed in `validate_release.sh` and `pyproject.toml`

@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added — K-series: GA Readiness & Documentation (2026-04-05)
+
+- K1: Self-serve onboarding failure states — missing API keys, invalid creds, Stripe, backend unreachable
+- K2: Evidence package refresh — I+J series evidence record with 282 test results and benchmarks
+- K3: Onboarding known gaps closed — all 4 gaps from 2026-03-24 resolved with evidence
+- K4: GA evidence package updated — compliance surface verified, monitoring evidence linked
+- K5: Go/No-Go checklist — 12/14 items checked with evidence links (2 remain: deployment validation + final sign-off)
+- K6: GA documentation chain validated — 6 GA docs exist and cross-reference, 13/13 inventory rows ✅
+
 ### Added — J-series: System-Wide Validation & Trust (2026-04-05)
 
 - J1: C-Suite persona smoke tests — 4 personas (COO/CSO/CMO/CFO) manifest validation, tool boundaries, AgentMesh routing

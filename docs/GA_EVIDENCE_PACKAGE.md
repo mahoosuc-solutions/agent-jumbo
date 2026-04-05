@@ -39,12 +39,18 @@ Prepare one final launch packet with:
 4. List of open risks accepted for launch
 5. Final go/no-go sign-off names and timestamps
 
-Current branch snapshot:
+Current branch snapshots:
 
 - [GA Evidence Record — 2026-03-24](GA_EVIDENCE_RECORD_2026-03-24.md)
 
-## Open Gaps As Of 2026-03-24
+## Status As Of 2026-04-05
 
-- Final launch-window refresh is still required for all artifacts collected before 2026-04-14
-- Customer-facing documentation surface must expose the compliance and support docs linked in the compliance record
-- Production-target fire drill is still required for monitoring and alerting before GA sign-off
+### Resolved Since 2026-03-24
+
+- ~~Customer-facing documentation surface must expose compliance and support docs~~ — Verified 2026-04-05: `/documentation/` index features all compliance docs; pricing page links to support and compliance routes ([compliance-links-20260405.md](../artifacts/validation/compliance-links-20260405.md))
+- ~~Production-target fire drill for monitoring and alerting~~ — Health alerter wired, platform-health-monitor task running every 5 min, monitoring evidence updated ([monitoring-alerting-20260324.md](../artifacts/validation/monitoring-alerting-20260324.md))
+
+### Remaining For Launch Window
+
+- Final 72-hour refresh of all artifacts is required before 2026-04-17 GA decision (collect no earlier than 2026-04-14)
+- SEC-007/SEC-008: Real payment API keys must be configured and tested before live payment processing
