@@ -18,9 +18,12 @@ Pipeline (full action):
 
 from __future__ import annotations
 
+import logging
 import time
 from dataclasses import asdict, dataclass, field
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from python.helpers.complexity_classifier import TIER_MODEL_MAP, ComplexityClassifier, ComplexityTier
 from python.helpers.parallel_executor import ExecutionResult, ParallelExecutor
@@ -344,8 +347,13 @@ class TaskCycle(Tool):
                     user_message=prompt,
                 )
                 return response
-            except Exception:
-                # Fall back to agent utility model if tier model unavailable
+            except Exception as exc:
+                logger.warning(
+                    "Tier model %s/%s unavailable (%s) — falling back to utility model",
+                    tier_provider,
+                    tier_model_name,
+                    exc,
+                )
                 return await self.agent.call_utility_model(system=system, message=prompt)
 
         return await executor.execute(subtasks, call_fn)

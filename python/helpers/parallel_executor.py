@@ -48,8 +48,11 @@ class ParallelExecutor:
             ready = [st for st in pending.values() if all(dep in completed for dep in st.dependencies)]
 
             if not ready:
-                logger.error("Deadlock: no ready tasks but %d pending", len(pending))
-                break
+                pending_ids = list(pending.keys())
+                raise RuntimeError(
+                    f"ParallelExecutor deadlock: {len(pending)} task(s) have unresolvable "
+                    f"dependencies and cannot execute. Pending: {pending_ids}"
+                )
 
             # Execute ready tasks concurrently
             tasks = [self._execute_one(st, call_fn) for st in ready]

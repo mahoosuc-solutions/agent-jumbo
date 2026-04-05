@@ -23,11 +23,14 @@ Actions:
 from __future__ import annotations
 
 import fnmatch
+import logging
 from typing import Any
 
 from git import GitCommandError, InvalidGitRepositoryError, Repo
 
 from python.helpers.tool import Response, Tool
+
+logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
 # Secret-file patterns that must never be staged
@@ -112,15 +115,17 @@ def git_add(repo: Repo, paths: list[str]) -> dict[str, Any]:
             accepted.append(path)
 
     if refused:
+        logger.warning("git_add: refused secret file(s): %s", refused)
         return {
             "status": "error",
-            "error": f"Refused to stage secret files: {refused}",
+            "error": f"Refused to stage secret files: {refused}. Remove them from the paths list.",
             "refused": refused,
             "staged": [],
         }
 
     if accepted:
         repo.index.add(accepted)
+        logger.info("git_add: staged %d file(s): %s", len(accepted), accepted)
 
     return {"status": "ok", "staged": accepted}
 

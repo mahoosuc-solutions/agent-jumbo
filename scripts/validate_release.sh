@@ -122,7 +122,19 @@ check_core_python_compile() {
         python/helpers/tool.py \
         python/api/message.py \
         python/api/message_async.py \
-        python/helpers/skill_registry.py
+        python/helpers/skill_registry.py \
+        python/tools/task_cycle.py \
+        python/tools/git_tool.py \
+        python/tools/code_review.py \
+        python/helpers/complexity_classifier.py \
+        python/helpers/parallel_executor.py
+}
+
+check_code_review_runtime_deps() {
+    # Verify subprocess tools required by code_review are declared in requirements.txt
+    grep -q "^ruff" requirements.txt || return 1
+    grep -q "^mypy" requirements.txt || return 1
+    grep -q "^bandit" requirements.txt || return 1
 }
 
 echo "Agent Jumbo Release Validation"
@@ -202,6 +214,7 @@ echo "Python Validation:"
 check_cmd "Python 3.11+ available for release tooling" check_python_release_version
 check_text "pyproject declares Python 3.11+" '^requires-python = ">=3.11"$' "pyproject.toml"
 check_cmd "Core files compile" check_core_python_compile
+check_cmd "Code review runtime deps in requirements.txt" check_code_review_runtime_deps
 
 echo ""
 echo "Web Validation:"

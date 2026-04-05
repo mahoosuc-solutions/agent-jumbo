@@ -14,12 +14,15 @@ Grades output on a 0–100 composite score:
 from __future__ import annotations
 
 import json
+import logging
 import os
 import re
 import subprocess
 from dataclasses import dataclass, field
 
 from python.helpers.tool import Response, Tool
+
+logger = logging.getLogger(__name__)
 
 # Scoring weights (deductions from 100)
 _RUFF_ISSUE_DEDUCTION = 3  # per ruff violation
@@ -90,6 +93,7 @@ class GradeResult:
 
 def _run(cmd: list[str], cwd: str | None = None, timeout: int = 60) -> tuple[int, str, str]:
     """Run a subprocess and return (returncode, stdout, stderr)."""
+    logger.debug("Running: %s (timeout=%ds)", " ".join(cmd), timeout)
     try:
         result = subprocess.run(
             cmd,
@@ -100,8 +104,10 @@ def _run(cmd: list[str], cwd: str | None = None, timeout: int = 60) -> tuple[int
         )
         return result.returncode, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
+        logger.warning("Command timed out after %ds: %s", timeout, " ".join(cmd))
         return 1, "", f"Command timed out after {timeout}s: {' '.join(cmd)}"
     except FileNotFoundError:
+        logger.warning("Command not found: %s (install it or add to requirements.txt)", cmd[0])
         return 1, "", f"Command not found: {cmd[0]}"
 
 
@@ -175,6 +181,10 @@ def _grade_code(path: str) -> GradeResult:
             pytest_passed = False
             pytest_output = combined
             score -= _PYTEST_FAIL_DEDUCTION
+    else:
+        module_name = os.path.splitext(os.path.basename(path))[0]
+        logger.info("pytest: skipped — no test file found for %s (expected tests/test_%s.py)", path, module_name)
+        tools_run.append(f"pytest:skipped(no tests/test_{module_name}.py)")
 
     # ------------------------------------------------------------------
     # 3. mypy
