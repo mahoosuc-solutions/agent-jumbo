@@ -15,6 +15,16 @@ if [ "${INSTALL_ADDITIONAL_TOOLS:-1}" = "1" ]; then
     npm install -g @mermaid-js/mermaid-cli
 
     echo "Diagram tools installation complete."
+
+    # Install Claude Code CLI (authenticates via host credential store)
+    echo "Installing Claude Code CLI..."
+    npm install -g @anthropic-ai/claude-code
+    echo "Claude Code CLI installation complete."
+
+    # Install Codex CLI (authenticates via host credential store)
+    echo "Installing Codex CLI..."
+    npm install -g @openai/codex
+    echo "Codex CLI installation complete."
 else
     echo "Skipping additional tool install because INSTALL_ADDITIONAL_TOOLS=${INSTALL_ADDITIONAL_TOOLS}"
 fi

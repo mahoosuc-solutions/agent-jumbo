@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__wbm-staging__*",
+      "mcp__wbm-production__*"
+    ]
+  }
+}

@@ -260,25 +260,44 @@ class Message(ApiHandler):
             user_msg = UserMessage(message, attachment_paths)
             chat_provider = str(cfg.get("chat_model_provider", "") or "").strip().lower()
 
-            # Fail fast when configured cloud provider has no API key.
-            if self._provider_requires_api_key(chat_provider):
+            # External CLI backends (claude_code, codex) don't use the chat model provider key.
+            # Only validate the provider key for the native runtime.
+            if backend not in {"claude_code", "codex"} and self._provider_requires_api_key(chat_provider):
                 provider_key = ""
                 api_keys = cfg.get("api_keys", {}) or {}
                 if isinstance(api_keys, dict):
                     provider_key = str(api_keys.get(chat_provider, "") or "").strip()
                 resolved_key = provider_key or str(models.get_api_key(chat_provider) or "").strip()
                 if self._is_missing_key(resolved_key):
-                    guidance = (
-                        f"Chat provider '{chat_provider}' has no API key configured. "
-                        "Open Settings > API Keys and set the key, or switch chat model provider "
-                        "to a local option like Ollama."
-                    )
-                    context.log.log(
-                        type="warning",
-                        heading="chat configuration missing API key",
-                        content=guidance,
-                    )
-                    raise RuntimeError(guidance)
+                    # Attempt router fallback before giving up.
+                    try:
+                        from python.helpers.llm_router import RoutingPriority, get_router
+
+                        router = get_router()
+                        alt = router.select_model(role="chat", priority=RoutingPriority.BALANCED)
+                    except Exception:
+                        alt = None
+                    if alt:
+                        context.log.log(
+                            type="warning",
+                            heading="chat provider key missing — using router fallback",
+                            content=f"Provider '{chat_provider}' has no API key. LLM router selected {alt.provider}/{alt.name}.",
+                        )
+                        # Persist the router's choice so agent init picks it up.
+                        settings.set_settings_delta({"chat_model_provider": alt.provider, "chat_model_name": alt.name})
+                    else:
+                        guidance = (
+                            f"Chat provider '{chat_provider}' has no API key configured and "
+                            "no router fallback is available. "
+                            "Open Settings > API Keys and set the key, or switch chat model provider "
+                            "to a local option like Ollama."
+                        )
+                        context.log.log(
+                            type="warning",
+                            heading="chat configuration missing API key",
+                            content=guidance,
+                        )
+                        raise RuntimeError(guidance)
 
             if backend in {"claude_code", "codex"}:
                 task = context.run_task(
@@ -423,7 +442,15 @@ class Message(ApiHandler):
 
         executable = self._resolve_external_executable(backend)
         if backend == "claude_code":
-            cmd = [executable, "-p", prompt, "--output-format", "text"]
+            cmd = [
+                executable,
+                "-p",
+                prompt,
+                "--output-format",
+                "text",
+                "--allowedTools",
+                "mcp__wbm-staging__*,mcp__wbm-production__*,Bash,Read,Write,Edit",
+            ]
         elif backend == "codex":
             cmd = [
                 executable,
