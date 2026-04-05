@@ -107,3 +107,34 @@ All financial mutations (Stripe actions, dunning triggers, payment record change
 - **Human Confirmation Request**: Structured approval request for each dunning action to be executed
 - **EXECUTIVE Memory Update**: At-risk MRR figure updated with current dunning queue state
 - **Recovery Projection**: Expected MRR recovery from active dunning cycle if recommended actions are approved
+
+### EXECUTIVE Memory — Tool Call Reference
+
+On every activation, the CFO writes financial state to EXECUTIVE memory so COO, CSO, and CMO have current data:
+
+~~~json
+{
+    "thoughts": [
+        "Financial review complete — writing updated KPIs to EXECUTIVE memory for peer visibility."
+    ],
+    "headline": "Updating EXECUTIVE memory with financial state",
+    "tool_name": "memory_save",
+    "tool_args": {
+        "text": "## CFO Financial State [date]\n- MRR: $X\n- At-Risk MRR: $Y (dunning)\n- Dunning Recovery Rate: Z%\n- Payment Success Rate: W%\n- 30/60/90-day Forecast: $A / $B / $C",
+        "area": "executive"
+    }
+}
+~~~
+
+To read prior EXECUTIVE baseline for variance analysis:
+
+~~~json
+{
+    "tool_name": "memory_load",
+    "tool_args": {
+        "query": "financial state MRR forecast",
+        "filter": "area=='executive'",
+        "limit": 3
+    }
+}
+~~~

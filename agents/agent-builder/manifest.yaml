@@ -4,6 +4,12 @@ description: >
   Creates and configures new agent profiles. Meta-level: onboarding,
   scoping, and assembling customized profiles with modular skills.
 
+display:
+  display_name: Agent Builder
+  icon: 🛠️
+  tier: utility
+  selectable: true
+
 capabilities:
   - agent_configuration
   - file_management

@@ -54,6 +54,7 @@ class Memory:
         FRAGMENTS = "fragments"
         SOLUTIONS = "solutions"
         INSTRUMENTS = "instruments"
+        EXECUTIVE = "executive"
 
     index: dict[str, "MyFaiss"] = {}
 

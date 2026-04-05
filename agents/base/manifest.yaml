@@ -4,6 +4,12 @@ description: >
   Minimal base profile for modular orchestration. Routes tasks to
   specialized actor agents, composes outputs, enforces shared standards.
 
+display:
+  display_name: Base
+  icon: 📦
+  tier: internal
+  selectable: false
+
 capabilities:
   - orchestration
   - conversation

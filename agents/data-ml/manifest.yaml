@@ -3,6 +3,12 @@ version: 1.0.0
 description: Data engineering, machine learning, and MLOps specialist for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Data & ML
+  icon: 🧠
+  tier: specialist
+  selectable: true
+
 capabilities:
   - data_pipeline_design
   - ml_experimentation

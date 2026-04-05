@@ -3,6 +3,12 @@ version: 1.0.0
 description: Solution design and architecture specialist for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Solution Architect
+  icon: 🏗️
+  tier: specialist
+  selectable: true
+
 capabilities:
   - architecture_design
   - system_design

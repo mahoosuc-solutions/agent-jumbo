@@ -3,6 +3,12 @@ version: 1.0.0
 description: Customer support triage, knowledge synthesis, and escalation routing for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Customer Support
+  icon: 🎧
+  tier: specialist
+  selectable: true
+
 capabilities:
   - ticket_triage
   - knowledge_lookup

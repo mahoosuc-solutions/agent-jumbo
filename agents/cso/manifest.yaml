@@ -3,6 +3,12 @@ version: 1.0.0
 description: Chief Sales Officer — revenue pipeline, proposal strategy, lead qualification, and sales operations for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Chief Sales Officer
+  icon: 📈
+  tier: executive
+  selectable: true
+
 capabilities:
   - pipeline_management
   - lead_qualification

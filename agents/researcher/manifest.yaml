@@ -3,6 +3,12 @@ version: 1.0.0
 description: Research, data analysis, and reporting specialist.
 inherits: default
 
+display:
+  display_name: Researcher
+  icon: 🔬
+  tier: specialist
+  selectable: true
+
 capabilities:
   - web_search
   - data_analysis

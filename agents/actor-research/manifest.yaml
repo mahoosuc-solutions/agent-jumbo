@@ -5,6 +5,12 @@ description: >
   evidence summaries.
 inherits: base
 
+display:
+  display_name: Actor Research
+  icon: 🎭
+  tier: internal
+  selectable: false
+
 capabilities:
   - research
   - data_analysis

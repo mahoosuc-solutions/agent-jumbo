@@ -9,6 +9,12 @@ description: >
   Template manifest with comments explaining each field.
   Copy this file when creating a new agent profile.
 
+display:
+  display_name: Example Template
+  icon: 📋
+  tier: internal
+  selectable: false
+
 # Optional: inherit all settings from another profile.
 # Inherited values are merged; this profile's values take precedence.
 # inherits: default

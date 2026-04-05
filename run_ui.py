@@ -452,6 +452,17 @@ def run():
     except Exception as _wbm_err:
         PrintStyle(font_color="yellow").print(f"[!] WBM scheduler init skipped: {_wbm_err}")
 
+    # Seed MOS cross-system sync tasks (4 tasks, idempotent).
+    try:
+        import asyncio as _asyncio
+
+        from python.helpers.mos_scheduler_init import seed_mos_tasks
+
+        _mos_result = _asyncio.get_event_loop().run_until_complete(seed_mos_tasks())
+        PrintStyle(font_color="green").print(f"[boot] MOS scheduler: {_mos_result['status']}")
+    except Exception as _mos_err:
+        PrintStyle(font_color="yellow").print(f"[!] MOS scheduler init skipped: {_mos_err}")
+
     # Initialize AgentMesh bridge if AGENTMESH_REDIS_URL is set.
     agentmesh_url = os.environ.get("AGENTMESH_REDIS_URL")
     _agentmesh_loop = None  # Keep reference for shutdown

@@ -4,6 +4,12 @@ description: >
   Root orchestrator agent. Full capabilities, no exclusions.
   Communicates with users, delegates to subordinates, general purpose.
 
+display:
+  display_name: Agent Jumbo
+  icon: 🐘
+  tier: orchestrator
+  selectable: true
+
 capabilities:
   - code_execution
   - file_management

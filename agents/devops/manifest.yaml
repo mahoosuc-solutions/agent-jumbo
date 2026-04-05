@@ -3,6 +3,12 @@ version: 1.0.0
 description: DevOps, deployment, infrastructure, and incident response for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: DevOps
+  icon: 🔧
+  tier: specialist
+  selectable: true
+
 capabilities:
   - deployment
   - infrastructure_automation

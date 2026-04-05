@@ -3,6 +3,12 @@ version: 1.0.0
 description: Analytics, reporting, and business intelligence specialist for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Analytics Specialist
+  icon: 📊
+  tier: specialist
+  selectable: true
+
 capabilities:
   - data_analysis
   - dashboard_design

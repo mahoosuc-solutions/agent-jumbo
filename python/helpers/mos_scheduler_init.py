@@ -1,114 +1,114 @@
 """
-MOS Scheduler Init — auto-registers MOS cron tasks on startup.
+MOS Scheduler Init — seeds MOS cross-system sync tasks at boot.
 
-Called during app initialization to schedule cross-system sync jobs.
-Uses the existing task_scheduler infrastructure if available,
-otherwise falls back to a simple asyncio-based scheduler.
+Registers 4 MOS operational tasks in the persisted TaskScheduler if they do not
+already exist. All tasks are idempotent: existing tasks (matched by name) are not
+re-added. Silently skipped if TaskScheduler is unavailable.
+
+Task schedule:
+  3x/day weekdays: mos-linear-to-motion (8am, 12pm, 5pm Mon–Fri)
+  Daily (1):       mos-linear-activity-digest (6am)
+  Daily (1):       mos-analytics-daily-digest (7am)
+  Hourly (1):      mos-support-queue-check (top of every hour)
 """
 
-import traceback
-from typing import Any
+from __future__ import annotations
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+_SYSTEM_PROMPT = (
+    "You are the MOS operations orchestrator. "
+    "You execute cross-system sync jobs, generate operational digests, "
+    "and monitor support queues. Be concise and actionable."
+)
+
+_MOS_TASKS = [
+    {
+        "name": "mos-linear-to-motion",
+        "schedule": {"minute": "0", "hour": "8,12,17", "day": "*", "month": "*", "weekday": "1-5"},
+        "prompt": (
+            "Sync P0/P1 Linear issues to Motion time blocks. "
+            "Use the MOS orchestrator sync_linear_to_motion method. "
+            "Report any sync failures or missing API keys."
+        ),
+    },
+    {
+        "name": "mos-linear-activity-digest",
+        "schedule": {"minute": "0", "hour": "6", "day": "*", "month": "*", "weekday": "*"},
+        "prompt": (
+            "Fetch recent Linear changes for the daily digest. "
+            "Use the MOS orchestrator sync_linear_activity_to_digest method. "
+            "Summarize new issues, state changes, and completions from the past 24 hours."
+        ),
+    },
+    {
+        "name": "mos-analytics-daily-digest",
+        "schedule": {"minute": "0", "hour": "7", "day": "*", "month": "*", "weekday": "*"},
+        "prompt": (
+            "Generate the daily MOS analytics digest. "
+            "Use the MOS orchestrator generate_analytics_digest method. "
+            "Include work queue summary and Linear activity from the past 24 hours."
+        ),
+    },
+    {
+        "name": "mos-support-queue-check",
+        "schedule": {"minute": "0", "hour": "*", "day": "*", "month": "*", "weekday": "*"},
+        "prompt": (
+            "Check the MOS work queue for open support-tagged items. "
+            "Use the MOS orchestrator check_support_queue method. "
+            "Escalate any items older than 4 hours or with severity >= high."
+        ),
+    },
+]
 
 
-def register_mos_schedules() -> dict[str, Any]:
-    """Register MOS sync jobs. Safe to call multiple times (idempotent)."""
-    registered = []
-    status = "skipped"
-    reason = ""
+async def seed_mos_tasks() -> dict:
+    """Seed MOS scheduler tasks. Idempotent — skips existing tasks."""
+    try:
+        from python.helpers.task_scheduler import ScheduledTask, TaskSchedule, TaskScheduler
+    except ImportError as e:
+        return {"status": "skipped", "reason": f"TaskScheduler unavailable: {e}"}
 
     try:
-        # This module was written for an older callback-based scheduler API.
-        # The current persisted scheduler uses task models instead of handler callbacks.
-        from python.helpers.task_scheduler import TaskScheduler
+        scheduler = TaskScheduler.get()
+        await scheduler.reload()
 
-        has_legacy_api = hasattr(TaskScheduler, "get_instance")
-        scheduler = TaskScheduler.get() if hasattr(TaskScheduler, "get") else None
-        can_register_callbacks = scheduler is not None and hasattr(scheduler, "register_task")
+        existing_names = {t.name for t in scheduler.get_tasks()}
+        registered = []
+        skipped = []
 
-        if has_legacy_api and can_register_callbacks:
-            legacy_scheduler = TaskScheduler.get_instance()
+        for task_def in _MOS_TASKS:
+            if task_def["name"] in existing_names:
+                skipped.append(task_def["name"])
+                continue
 
-            legacy_scheduler.register_task(
-                name="mos_linear_to_motion",
-                cron="0 8,12,17 * * 1-5",
-                handler=_run_linear_to_motion,
+            sched = task_def["schedule"]
+            schedule = TaskSchedule(
+                minute=sched["minute"],
+                hour=sched["hour"],
+                day=sched["day"],
+                month=sched["month"],
+                weekday=sched["weekday"],
             )
-            registered.append("mos_linear_to_motion")
-
-            legacy_scheduler.register_task(
-                name="mos_linear_activity_digest",
-                cron="0 6 * * *",
-                handler=_run_linear_activity_digest,
+            task = ScheduledTask.create(
+                name=task_def["name"],
+                system_prompt=_SYSTEM_PROMPT,
+                prompt=task_def["prompt"],
+                schedule=schedule,
             )
-            registered.append("mos_linear_activity_digest")
+            await scheduler.add_task(task)
+            registered.append(task_def["name"])
+            logger.info("[mos-init] Seeded %s", task_def["name"])
 
-            legacy_scheduler.register_task(
-                name="mos_analytics_daily_digest",
-                cron="0 7 * * *",
-                handler=_run_analytics_digest,
-            )
-            registered.append("mos_analytics_daily_digest")
-
-            legacy_scheduler.register_task(
-                name="mos_support_queue_check",
-                cron="0 * * * *",
-                handler=_run_support_queue_check,
-            )
-            registered.append("mos_support_queue_check")
-
-            status = "registered"
-        else:
-            reason = "current scheduler does not expose the legacy callback registration API"
+        return {
+            "status": "ok",
+            "registered": registered,
+            "skipped_existing": skipped,
+            "total": len(_MOS_TASKS),
+        }
 
     except Exception as e:
-        status = "error"
-        reason = str(e)
-        traceback.print_exc()
-
-    return {
-        "registered": registered,
-        "count": len(registered),
-        "status": status,
-        "reason": reason,
-        "skipped_reason": reason if status == "skipped" else "",
-    }
-
-
-async def _run_linear_to_motion() -> None:
-    """Wrapper for scheduler callback."""
-    try:
-        from python.helpers.mos_orchestrator import MOSOrchestrator
-
-        await MOSOrchestrator.sync_linear_to_motion()
-    except Exception:
-        traceback.print_exc()
-
-
-async def _run_linear_activity_digest() -> None:
-    """Wrapper for scheduler callback."""
-    try:
-        from python.helpers.mos_orchestrator import MOSOrchestrator
-
-        await MOSOrchestrator.sync_linear_activity_to_digest()
-    except Exception:
-        traceback.print_exc()
-
-
-async def _run_analytics_digest() -> None:
-    """Wrapper for analytics daily digest scheduler callback."""
-    try:
-        from python.helpers.mos_orchestrator import MOSOrchestrator
-
-        await MOSOrchestrator.generate_analytics_digest()
-    except Exception:
-        traceback.print_exc()
-
-
-async def _run_support_queue_check() -> None:
-    """Wrapper for hourly support queue check scheduler callback."""
-    try:
-        from python.helpers.mos_orchestrator import MOSOrchestrator
-
-        await MOSOrchestrator.check_support_queue()
-    except Exception:
-        traceback.print_exc()
+        logger.warning("[mos-init] Failed to seed MOS tasks: %s", e)
+        return {"status": "error", "reason": str(e)}

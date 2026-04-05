@@ -4,6 +4,12 @@ description: >
   Digital clone for solution architecture review, continuous knowledge
   aggregation, and actionable tech/business digests via Telegram.
 
+display:
+  display_name: Digital Clone
+  icon: 🤖
+  tier: utility
+  selectable: true
+
 capabilities:
   - conversation
   - personality_mirroring

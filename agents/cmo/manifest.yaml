@@ -3,6 +3,12 @@ version: 1.0.0
 description: Chief Marketing Officer — brand integrity, content strategy, campaign tracking, solution positioning, and web presence for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Chief Marketing Officer
+  icon: 📣
+  tier: executive
+  selectable: true
+
 capabilities:
   - brand_management
   - content_strategy

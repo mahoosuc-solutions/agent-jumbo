@@ -3,6 +3,12 @@ version: 1.0.0
 description: Chief Financial Officer — Stripe payment operations, revenue reporting, financial health monitoring, dunning management, and financial forecasting for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Chief Financial Officer
+  icon: 💰
+  tier: executive
+  selectable: true
+
 capabilities:
   - payment_operations
   - revenue_reporting

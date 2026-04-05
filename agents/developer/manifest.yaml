@@ -3,6 +3,12 @@ version: 1.0.0
 description: Software development specialist.
 inherits: default
 
+display:
+  display_name: Developer
+  icon: 💻
+  tier: specialist
+  selectable: true
+
 capabilities:
   - code_execution
   - file_management

@@ -124,3 +124,34 @@ All specialist execution is delegated via `call_subordinate`. The COO does not w
 - **Escalation Log**: Items escalated with receiving agent, new priority, and expected resolution
 - **EXECUTIVE Memory Update**: SLA compliance metric updated with current breach rate
 - **Work Queue Updates**: Priority and status fields updated for all escalated items
+
+### EXECUTIVE Memory — Tool Call Reference
+
+On each activation, the COO reads EXECUTIVE memory for latest KPIs from CFO and CSO:
+
+~~~json
+{
+    "thoughts": [
+        "Starting operational sweep — reading EXECUTIVE memory for latest financial and pipeline state."
+    ],
+    "headline": "Loading EXECUTIVE memory for operational context",
+    "tool_name": "memory_load",
+    "tool_args": {
+        "query": "financial state MRR pipeline forecast operational KPIs",
+        "filter": "area=='executive'",
+        "limit": 5
+    }
+}
+~~~
+
+After operations review, the COO writes updated operational KPIs to EXECUTIVE memory:
+
+~~~json
+{
+    "tool_name": "memory_save",
+    "tool_args": {
+        "text": "## COO Operational State [date]\n- SLA Compliance: X%\n- Work Queue Throughput: Y items/day\n- Active Incidents: Z (P0: A, P1: B)\n- Top Risk: [description]",
+        "area": "executive"
+    }
+}
+~~~

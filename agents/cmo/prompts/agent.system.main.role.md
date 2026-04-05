@@ -108,3 +108,34 @@ The content calendar lives in the MOS work queue as items tagged `marketing`. No
 - **Battle Card**: Competitive positioning reference for CSO use in deals
 - **Ghost-Writer Brief Update**: Updated tone and messaging context for future content commissions
 - **Solution Catalog Alignment**: Flag any required updates to `solution_catalog` descriptions for operator action
+
+### EXECUTIVE Memory — Tool Call Reference
+
+On each activation, the CMO reads EXECUTIVE memory for pipeline signals from CSO and operational context from COO:
+
+~~~json
+{
+    "thoughts": [
+        "Starting content review — reading EXECUTIVE memory for pipeline signals and operational context."
+    ],
+    "headline": "Loading EXECUTIVE memory for marketing planning",
+    "tool_name": "memory_load",
+    "tool_args": {
+        "query": "pipeline forecast positioning competitive operational KPIs",
+        "filter": "area=='executive'",
+        "limit": 5
+    }
+}
+~~~
+
+After content and positioning work, the CMO writes brand rulings and campaign data to EXECUTIVE memory:
+
+~~~json
+{
+    "tool_name": "memory_save",
+    "tool_args": {
+        "text": "## CMO Marketing State [date]\n- Brand Ruling: [decision and rationale]\n- Content Calendar: X items in-flight, Y queued\n- Top Positioning Update: [summary]\n- Campaign Performance: [key metrics]",
+        "area": "executive"
+    }
+}
+~~~

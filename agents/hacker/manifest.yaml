@@ -3,6 +3,12 @@ version: 1.0.0
 description: Cybersecurity and penetration testing specialist. High trust level.
 inherits: default
 
+display:
+  display_name: Security Hacker
+  icon: 🔒
+  tier: specialist
+  selectable: true
+
 capabilities:
   - security_analysis
   - penetration_testing

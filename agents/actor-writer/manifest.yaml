@@ -5,6 +5,12 @@ description: >
   and tone adaptation for executive-ready messaging.
 inherits: base
 
+display:
+  display_name: Actor Writer
+  icon: 🎭
+  tier: internal
+  selectable: false
+
 capabilities:
   - content_creation
   - writing

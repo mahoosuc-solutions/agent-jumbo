@@ -4,6 +4,12 @@ description: >
   DevOps, deployment, monitoring, and infrastructure operations actor.
 inherits: base
 
+display:
+  display_name: Actor Ops
+  icon: 🎭
+  tier: internal
+  selectable: false
+
 capabilities:
   - devops
   - deployment

@@ -96,10 +96,11 @@ class TestMOSOrchestrator:
 
 
 class TestMOSSchedulerInit:
-    def test_register_returns_dict(self):
-        from python.helpers.mos_scheduler_init import register_mos_schedules
+    def test_seed_returns_dict(self):
+        import asyncio
 
-        # Should not crash even without TaskScheduler
-        result = register_mos_schedules()
-        assert "registered" in result
-        assert "count" in result
+        from python.helpers.mos_scheduler_init import seed_mos_tasks
+
+        result = asyncio.run(seed_mos_tasks())
+        assert "status" in result
+        assert "total" in result

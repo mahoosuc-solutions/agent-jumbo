@@ -7,8 +7,13 @@ import json
 
 from python.helpers import files
 from python.helpers.life_events import emit_event
-from python.helpers.notification import AgentNotification
+from python.helpers.memory import Memory
+from python.helpers.notification import NotificationManager, NotificationPriority, NotificationType
+from python.helpers.print_style import PrintStyle
 from python.helpers.tool import Response, Tool
+
+# Profiles that trigger EXECUTIVE memory writes
+_EXECUTIVE_PROFILES = {"cfo", "coo", "cso", "cmo"}
 
 
 class FinanceManagerTool(Tool):
@@ -18,6 +23,24 @@ class FinanceManagerTool(Tool):
 
         db_path = files.get_abs_path("./instruments/custom/finance_manager/data/finance_manager.db")
         self.manager = FinanceManager(db_path)
+
+    async def _save_to_executive(self, action: str, result: dict) -> None:
+        """Write a financial summary to EXECUTIVE memory for C-suite visibility."""
+        profile = getattr(self.agent.config, "profile", "")
+        if profile not in _EXECUTIVE_PROFILES:
+            return
+        try:
+            summary_parts = [f"## CFO Financial Update — {action}"]
+            for key, value in result.items():
+                if key.startswith("_"):
+                    continue
+                summary_parts.append(f"- **{key}**: {value}")
+            summary = "\n".join(summary_parts)
+            db = await Memory.get(self.agent)
+            await db.insert_text(summary, {"area": "executive", "source": "finance_manager", "action": action})
+            PrintStyle.standard("EXECUTIVE memory updated by finance_manager")
+        except Exception as exc:
+            PrintStyle.error(f"Failed to write EXECUTIVE memory: {exc}")
 
     async def execute(self, **kwargs):
         action = (self.args.get("action") or "").lower()
@@ -62,7 +85,13 @@ class FinanceManagerTool(Tool):
             result = self.manager.generate_report(period, account_id=account_id)
             emit_event("finance.report_generated", {"period": period, "account_id": account_id})
             if result.get("total_amount", 0) < 0:
-                AgentNotification.warning("Expenses exceed income for the period", "Finance")
+                NotificationManager.send_notification(
+                    type=NotificationType.WARNING,
+                    priority=NotificationPriority.NORMAL,
+                    message="Expenses exceed income for the period",
+                    title="Finance",
+                )
+            await self._save_to_executive("generate_report", result)
             return Response(message=json.dumps(result, indent=4), break_loop=False)
 
         if action == "estimate_tax":
@@ -70,7 +99,12 @@ class FinanceManagerTool(Tool):
             account_id = self.args.get("account_id")
             result = self.manager.estimate_tax(period, account_id=account_id)
             emit_event("finance.tax_estimated", {"period": period, "account_id": account_id})
-            AgentNotification.info("Tax estimate generated", "Finance")
+            NotificationManager.send_notification(
+                type=NotificationType.INFO,
+                priority=NotificationPriority.NORMAL,
+                message="Tax estimate generated",
+                title="Finance",
+            )
             return Response(message=json.dumps(result, indent=4), break_loop=False)
 
         if action == "roi_snapshot":
@@ -78,6 +112,7 @@ class FinanceManagerTool(Tool):
             account_id = self.args.get("account_id")
             result = self.manager.roi_snapshot(period, account_id=account_id)
             emit_event("finance.roi_snapshot", {"period": period, "account_id": account_id})
+            await self._save_to_executive("roi_snapshot", result)
             return Response(message=json.dumps(result, indent=4), break_loop=False)
 
         if action == "export_business_xray":
@@ -85,6 +120,7 @@ class FinanceManagerTool(Tool):
             account_id = self.args.get("account_id")
             result = self.manager.export_business_xray_data(period, account_id=account_id)
             emit_event("finance.business_xray_export", {"period": period, "account_id": account_id})
+            await self._save_to_executive("export_business_xray", result)
             return Response(message=json.dumps(result, indent=4), break_loop=False)
 
         if action == "link_property_expense":

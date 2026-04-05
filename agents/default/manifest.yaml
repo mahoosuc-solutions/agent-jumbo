@@ -4,6 +4,12 @@ description: >
   Standard user-facing agent with general capabilities.
   Default prompt templates; inherited and overridden by specialized profiles.
 
+display:
+  display_name: Default
+  icon: 🔵
+  tier: internal
+  selectable: false
+
 capabilities:
   - code_execution
   - file_management

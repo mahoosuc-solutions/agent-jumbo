@@ -11,6 +11,9 @@ get memory content as metadata key-value pairs
 - threshold: 0=any 1=exact 0.7=default
 - limit: max results default=5
 - filter: python syntax using metadata keys
+  - filter by area: `area=='executive'`
+  - filter by source: `source=='finance_manager'`
+  - combine: `area=='executive' and source=='mos_orchestrator'`
 usage:
 
 ~~~json
@@ -29,9 +32,35 @@ usage:
 }
 ~~~
 
+loading EXECUTIVE area data (C-suite shared KPIs):
+
+~~~json
+{
+    "thoughts": [
+        "Reading latest financial KPIs from EXECUTIVE memory for operational planning.",
+    ],
+    "headline": "Loading financial state from EXECUTIVE memory",
+    "tool_name": "memory_load",
+    "tool_args": {
+        "query": "financial snapshot MRR revenue forecast",
+        "threshold": 0.5,
+        "limit": 3,
+        "filter": "area=='executive'"
+    }
+}
+~~~
+
 ### memory_save
 
 save text to memory returns ID
+optional `area` arg targets a specific memory area:
+
+- `main` (default) — general knowledge and facts
+- `solutions` — code patterns and fixes
+- `fragments` — scratchpad / intermediate results
+- `instruments` — instrument documentation
+- `executive` — shared C-suite KPIs, forecasts, brand rulings (visible to all executive peers)
+
 usage:
 
 ~~~json
@@ -43,6 +72,22 @@ usage:
     "tool_name": "memory_save",
     "tool_args": {
         "text": "# To compress...",
+    }
+}
+~~~
+
+saving to EXECUTIVE area (C-suite shared data):
+
+~~~json
+{
+    "thoughts": [
+        "Financial report complete — writing KPIs to EXECUTIVE memory for peer visibility.",
+    ],
+    "headline": "Updating EXECUTIVE memory with financial KPIs",
+    "tool_name": "memory_save",
+    "tool_args": {
+        "text": "## Financial Snapshot 2025-04-05\n- MRR: $12,400\n- At-Risk MRR: $800\n- Dunning Recovery Rate: 72%\n- 30-day Forecast: $13,100",
+        "area": "executive"
     }
 }
 ~~~

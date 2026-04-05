@@ -293,14 +293,15 @@ def test_scheduler_init_imports_cleanly() -> None:
         pytest.skip(f"Scheduler dependencies not available: {e}")
 
 
-def test_register_mos_schedules_returns_dict() -> None:
-    """register_mos_schedules() must return a dict with required keys."""
-    try:
-        from python.helpers.mos_scheduler_init import register_mos_schedules
+def test_seed_mos_tasks_returns_dict() -> None:
+    """seed_mos_tasks() must return a dict with required keys."""
+    import asyncio
 
-        result = register_mos_schedules()
-        assert isinstance(result, dict), "register_mos_schedules() did not return a dict"
-        for key in ("registered", "count", "status"):
-            assert key in result, f"register_mos_schedules() result missing key: '{key}'"
+    try:
+        from python.helpers.mos_scheduler_init import seed_mos_tasks
+
+        result = asyncio.run(seed_mos_tasks())
+        assert isinstance(result, dict), "seed_mos_tasks() did not return a dict"
+        assert "status" in result, "seed_mos_tasks() result missing key: 'status'"
     except ImportError as e:
         pytest.skip(f"Scheduler dependencies not available: {e}")

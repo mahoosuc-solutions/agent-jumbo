@@ -8,6 +8,7 @@ Used by:
 All methods are fire-and-forget safe: wrapped in try/except, never crash the caller.
 """
 
+import json
 import logging
 import os
 from typing import Any
@@ -37,6 +38,19 @@ def _resolve_keys(*names: str) -> dict[str, str]:
     for name in names:
         result[name] = settings.get(name, "") or os.getenv(env_map.get(name, ""), "")
     return result
+
+
+async def _save_digest_to_executive(source: str, digest: dict[str, Any]) -> None:
+    """Save a digest summary to EXECUTIVE memory (best-effort, non-blocking)."""
+    try:
+        from python.helpers.memory import Memory
+
+        db = await Memory.get_by_subdir("default")
+        summary = f"## MOS Digest — {source}\n```json\n{json.dumps(digest, default=str, indent=2)}\n```"
+        await db.insert_text(summary, {"area": "executive", "source": source})
+        logger.info("EXECUTIVE memory updated by %s", source)
+    except Exception:
+        logger.warning("Failed to write EXECUTIVE memory from %s", source, exc_info=True)
 
 
 class MOSOrchestrator:
@@ -85,6 +99,7 @@ class MOSOrchestrator:
             logger.info("sync_linear_activity_to_digest: starting")
             result = await manager.sync_pipeline()
             logger.info("sync_linear_activity_to_digest: completed — %s", result)
+            await _save_digest_to_executive("sync_linear_activity_to_digest", result)
             return result
         except Exception:
             logger.exception("sync_linear_activity_to_digest failed")
@@ -129,6 +144,7 @@ class MOSOrchestrator:
                 "status": "completed",
             }
             logger.info("generate_analytics_digest: completed")
+            await _save_digest_to_executive("generate_analytics_digest", digest)
             return digest
         except Exception:
             logger.exception("generate_analytics_digest failed")

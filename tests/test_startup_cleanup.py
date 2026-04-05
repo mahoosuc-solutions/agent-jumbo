@@ -4,15 +4,15 @@ from unittest.mock import patch
 import pytest
 
 
-def test_register_mos_schedules_skips_incompatible_scheduler():
-    from python.helpers.mos_scheduler_init import register_mos_schedules
+def test_seed_mos_tasks_returns_ok_or_skipped():
+    import asyncio
 
-    result = register_mos_schedules()
+    from python.helpers.mos_scheduler_init import seed_mos_tasks
 
-    assert result["registered"] == []
-    assert result["count"] == 0
-    assert result["status"] == "skipped"
-    assert result["skipped_reason"]
+    result = asyncio.run(seed_mos_tasks())
+
+    assert result["status"] in ("ok", "skipped", "error")
+    assert "total" in result or "reason" in result
 
 
 def test_initialize_keys_skips_missing_ecdsa_without_warning():

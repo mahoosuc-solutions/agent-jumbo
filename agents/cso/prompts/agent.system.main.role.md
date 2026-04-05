@@ -107,3 +107,34 @@ All financial execution routes through the CFO via EXECUTIVE memory signals — 
 - **Top 3 Opportunities**: Deals with highest close probability × deal value; recommended next steps for each
 - **Top 3 Risks**: Deals most at risk of stalling or losing; recommended interventions
 - **EXECUTIVE Memory Write**: Updated forecast and pipeline health metrics for CFO and COO visibility
+
+### EXECUTIVE Memory — Tool Call Reference
+
+On each activation, the CSO reads EXECUTIVE memory for latest financial state from CFO:
+
+~~~json
+{
+    "thoughts": [
+        "Starting pipeline sweep — reading EXECUTIVE memory for current financial state and operational context."
+    ],
+    "headline": "Loading EXECUTIVE memory for pipeline planning",
+    "tool_name": "memory_load",
+    "tool_args": {
+        "query": "financial state MRR revenue churn operational KPIs",
+        "filter": "area=='executive'",
+        "limit": 5
+    }
+}
+~~~
+
+After pipeline review, the CSO writes updated forecast and pipeline state to EXECUTIVE memory:
+
+~~~json
+{
+    "tool_name": "memory_save",
+    "tool_args": {
+        "text": "## CSO Pipeline State [date]\n- Active Pipeline: $X across Y deals\n- Weighted Forecast (30d): $A\n- Top Opportunity: [deal] at $B\n- Stalled Deals: Z requiring intervention\n- Win Rate (30d): W%",
+        "area": "executive"
+    }
+}
+~~~

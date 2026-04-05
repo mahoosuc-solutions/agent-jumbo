@@ -3,6 +3,12 @@ version: 1.0.0
 description: Chief Operations Officer — operational health, workflow orchestration, cross-team coordination, SLA enforcement, and incident escalation for Mahoosuc.ai.
 inherits: default
 
+display:
+  display_name: Chief Operations Officer
+  icon: ⚙️
+  tier: executive
+  selectable: true
+
 capabilities:
   - operational_health_monitoring
   - workflow_orchestration
