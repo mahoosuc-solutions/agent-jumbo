@@ -57,6 +57,23 @@ type StatusPayload = {
   credentials: Record<string, string | null>
   checks: Check[]
   next_actions: ActionItem[]
+  journey: {
+    current_stage: string
+    operator_note: string
+    stages: Array<{
+      id: string
+      title: string
+      status: string
+      goal: string
+      exit_criteria: string
+    }>
+  }
+  process_playbooks: Array<{
+    id: string
+    title: string
+    trigger: string
+    steps: string[]
+  }>
   active_session: SetupSession | null
   guidance_sections: Array<{
     id: string
@@ -312,6 +329,41 @@ export function StripeSetupWorkspace() {
         </div>
       </section>
 
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Customer Journey</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              The billing assistant manages a defined journey from discovery through ongoing operations so operators know what to do next.
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-300">
+            Current stage: <span className="font-medium text-white">{status?.journey.current_stage ?? 'discover'}</span>
+          </div>
+        </div>
+        <p className="mt-4 text-sm text-slate-400">{status?.journey.operator_note}</p>
+        <div className="mt-5 grid gap-4 xl:grid-cols-3">
+          {(status?.journey.stages ?? []).map((stage) => (
+            <div key={stage.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-sm font-medium text-white">{stage.title}</div>
+                <span className={`rounded-full px-2 py-0.5 text-[11px] uppercase tracking-wide ${
+                  stage.status === 'complete'
+                    ? 'bg-green-900/30 text-green-300'
+                    : stage.status === 'in_progress'
+                    ? 'bg-copper-900/30 text-copper-300'
+                    : 'bg-slate-800 text-slate-400'
+                }`}>
+                  {stage.status.replace('_', ' ')}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-slate-400">{stage.goal}</p>
+              <p className="mt-3 text-xs text-slate-500">Exit criteria: {stage.exit_criteria}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
       <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center justify-between">
@@ -494,6 +546,29 @@ export function StripeSetupWorkspace() {
             <div className="mt-2 text-sm text-slate-400">{section.summary}</div>
           </div>
         ))}
+      </section>
+
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <h2 className="text-lg font-semibold text-white">Defined Processes</h2>
+        <p className="mt-1 text-sm text-slate-400">
+          These operator playbooks define how to manage onboarding, catalog changes, and recovery without guessing.
+        </p>
+        <div className="mt-5 grid gap-4 lg:grid-cols-3">
+          {(status?.process_playbooks ?? []).map((playbook) => (
+            <div key={playbook.id} className="rounded-xl border border-slate-800 bg-slate-950 p-5">
+              <div className="text-sm font-medium text-white">{playbook.title}</div>
+              <p className="mt-2 text-sm text-slate-400">{playbook.trigger}</p>
+              <ol className="mt-4 space-y-2 text-sm text-slate-300">
+                {playbook.steps.map((step, index) => (
+                  <li key={`${playbook.id}-${index}`} className="flex gap-2">
+                    <span className="text-slate-500">{index + 1}.</span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
       </section>
     </div>
   )

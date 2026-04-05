@@ -55,3 +55,5 @@ def test_verify_setup_reports_ready_after_mock_sync(tmp_path):
     assert status["connection"]["readiness_status"] == "ready"
     assert status["credentials"]["stripe_secret_key"].startswith("sk_test_")
     assert status["summary"]["ready"] is True
+    assert status["journey"]["current_stage"] == "operate"
+    assert any(playbook["id"] == "catalog_change" for playbook in status["process_playbooks"])
