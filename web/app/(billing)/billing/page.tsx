@@ -34,8 +34,25 @@ export default async function BillingPage() {
       <div>
         <h1 className="text-2xl font-bold text-white">Billing</h1>
         <p className="text-slate-400 text-sm mt-1">
-          Manage your subscription, invoices, and payment method.
+          Manage your subscription, invoices, payment method, and tenant billing setup.
         </p>
+      </div>
+
+      <div className="rounded-xl border border-slate-800 bg-slate-900 p-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Billing Admin Setup</h2>
+            <p className="text-slate-400 text-sm mt-1">
+              Connect a tenant-owned Stripe account, guide dashboard setup, and keep the product catalog healthy.
+            </p>
+          </div>
+          <a
+            href="/billing/setup"
+            className="inline-flex items-center rounded-lg bg-copper-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-copper-500"
+          >
+            Open Setup Assistant →
+          </a>
+        </div>
       </div>
 
       {/* Subscription card */}

@@ -49,13 +49,15 @@ class StripeProvider(PaymentProvider):
     application settings loaded via ``python.helpers.settings``.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, api_key: str | None = None, webhook_secret: str | None = None) -> None:
         try:
             config = settings_helper.get_settings()
         except Exception:
             config = {}
-        self.api_key: str | None = os.environ.get("STRIPE_API_KEY") or config.get("stripe_api_key")
-        self.webhook_secret: str | None = os.environ.get("STRIPE_WEBHOOK_SECRET") or config.get("stripe_webhook_secret")
+        self.api_key: str | None = api_key or os.environ.get("STRIPE_API_KEY") or config.get("stripe_api_key")
+        self.webhook_secret: str | None = (
+            webhook_secret or os.environ.get("STRIPE_WEBHOOK_SECRET") or config.get("stripe_webhook_secret")
+        )
 
     # ------------------------------------------------------------------
     # Low-level request helper
@@ -177,6 +179,55 @@ class StripeProvider(PaymentProvider):
         if recurring_interval:
             params["recurring"] = {"interval": recurring_interval}
         return self._stripe_request("POST", "prices", params)
+
+    def list_products(self, active: bool | None = None, limit: int = 100) -> list[dict[str, Any]]:
+        params = [f"limit={limit}"]
+        if active is not None:
+            params.append(f"active={'true' if active else 'false'}")
+        result = self._stripe_request("GET", f"products?{'&'.join(params)}")
+        return result.get("data", [])
+
+    def list_prices(
+        self,
+        product_id: str | None = None,
+        active: bool | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
+        params = [f"limit={limit}"]
+        if product_id:
+            params.append(f"product={product_id}")
+        if active is not None:
+            params.append(f"active={'true' if active else 'false'}")
+        result = self._stripe_request("GET", f"prices?{'&'.join(params)}")
+        return result.get("data", [])
+
+    def list_webhook_endpoints(self, limit: int = 100) -> list[dict[str, Any]]:
+        result = self._stripe_request("GET", f"webhook_endpoints?limit={limit}")
+        return result.get("data", [])
+
+    def create_webhook_endpoint(
+        self,
+        url: str,
+        enabled_events: list[str] | None = None,
+        description: str = "",
+    ) -> dict[str, Any]:
+        params: dict[str, Any] = {
+            "url": url,
+            "enabled_events": enabled_events
+            or [
+                "checkout.session.completed",
+                "customer.subscription.updated",
+                "customer.subscription.deleted",
+                "invoice.paid",
+                "invoice.payment_failed",
+            ],
+        }
+        if description:
+            params["description"] = description
+        return self._stripe_request("POST", "webhook_endpoints", params)
+
+    def get_account(self) -> dict[str, Any]:
+        return self._stripe_request("GET", "account")
 
     # ------------------------------------------------------------------
     # Checkout

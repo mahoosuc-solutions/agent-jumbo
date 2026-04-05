@@ -184,7 +184,13 @@ class PaymentAccountSetup(Tool):
         tenant_id = self.args.get("tenant_id", "default")
         provider = self.args.get("provider", "stripe")
         include_catalog = bool(self.args.get("include_catalog", False))
-        return self.manager.get_status(tenant_id=tenant_id, provider=provider, include_catalog=include_catalog)
+        mock = bool(self.args.get("mock", False))
+        return self.manager.get_status(
+            tenant_id=tenant_id,
+            provider=provider,
+            include_catalog=include_catalog,
+            mock=mock,
+        )
 
     async def _get_catalog(self):
         tenant_id = self.args.get("tenant_id", "default")

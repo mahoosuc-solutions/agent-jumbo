@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-04-05T05:45:23.401343+00:00",
+  "generated_at": "2026-04-05T13:39:22.386304+00:00",
   "platform": {
     "commands": {
       "total": 414,
       "categories": 92
     },
     "instruments": {
-      "total": 38,
-      "active": 38
+      "total": 39,
+      "active": 39
     },
     "tools": {
-      "total": 76
+      "total": 78
     },
     "api_endpoints": {
-      "total": 187
+      "total": 198
     },
     "integrations": [
       "calendar_hub",

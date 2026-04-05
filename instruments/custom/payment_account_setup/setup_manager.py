@@ -259,9 +259,10 @@ class PaymentAccountSetupManager:
         tenant_id: str = _DEFAULT_TENANT_ID,
         provider: str = "stripe",
         include_catalog: bool = False,
+        mock: bool = False,
     ) -> dict[str, Any]:
         tenant_id = self._normalize_tenant_id(tenant_id)
-        checks_payload = self.verify_setup(provider=provider, tenant_id=tenant_id, persist=False)
+        checks_payload = self.verify_setup(provider=provider, tenant_id=tenant_id, persist=False, mock=mock)
         sessions = self.list_sessions(tenant_id=tenant_id, provider=provider)
         active_session = next(
             (session for session in sessions if session.get("status") in {"pending", "in_progress", "awaiting_human"}),
@@ -496,6 +497,8 @@ class PaymentAccountSetupManager:
             merged["monthly_price_id"] = record.get("provider_monthly_price_id") if record else None
             merged["setup_price_id"] = record.get("provider_setup_price_id") if record else None
             merged["provider_metadata"] = record.get("provider_metadata", {}) if record else {}
+            merged["is_free"] = offer.is_free
+            merged["is_custom_quote"] = offer.is_custom_quote
             offers.append(merged)
             if not record:
                 self.db.upsert_catalog_item(
@@ -575,13 +578,13 @@ class PaymentAccountSetupManager:
                 ),
                 None,
             )
-            product_exists = offer["product_id"] in remote_products
+            product_exists = offer["product_id"] in remote_products or bool(offer.get("provider_product_id"))
             recommended_action = "ready"
             if not product_exists and not offer["is_free"] and not offer["is_custom_quote"]:
                 recommended_action = "create_product"
-            elif offer.get("monthly_lookup_key") and not monthly_price:
+            elif offer.get("monthly_lookup_key") and not (monthly_price or offer.get("monthly_price_id")):
                 recommended_action = "create_monthly_price"
-            elif offer.get("setup_lookup_key") and not setup_price:
+            elif offer.get("setup_lookup_key") and not (setup_price or offer.get("setup_price_id")):
                 recommended_action = "create_setup_price"
 
             offers.append(
@@ -805,10 +808,23 @@ class PaymentAccountSetupManager:
         webhook_secret: str | None,
         mock: bool = False,
     ) -> tuple[bool, dict[str, Any], list[dict[str, Any]], str, str]:
-        client = self._stripe_provider(api_key=api_key, webhook_secret=webhook_secret, mock=mock)
+        if mock:
+            mode = "live" if str(api_key).startswith("sk_live_") else "test"
+            mock_account = {
+                "id": "acct_mock",
+                "email": "mock@example.com",
+                "details_submitted": True,
+                "charges_enabled": True,
+                "payouts_enabled": True,
+                "requirements": {"currently_due": []},
+            }
+            webhook_url = os.environ.get("STRIPE_WEBHOOK_ENDPOINT_URL", "http://localhost:6274/api/stripe/webhook")
+            mock_endpoints = [{"url": webhook_url, "status": "enabled"}]
+            return True, mock_account, mock_endpoints, mode, ""
+        client = self._stripe_provider(api_key=api_key, webhook_secret=webhook_secret, mock=False)
         try:
-            account = client.get_account()
-            endpoints = client.list_webhook_endpoints()
+            account = client.get_account() if hasattr(client, "get_account") else {}
+            endpoints = client.list_webhook_endpoints() if hasattr(client, "list_webhook_endpoints") else []
             mode = "live" if str(api_key).startswith("sk_live_") else "test"
             return True, account, endpoints, mode, ""
         except Exception as exc:

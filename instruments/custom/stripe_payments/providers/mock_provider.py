@@ -94,6 +94,89 @@ class MockStripeProvider(PaymentProvider):
             }
         return price
 
+    def list_products(self, active: bool | None = None, limit: int = 100) -> list[dict]:
+        products = [
+            {
+                "id": "mahoosuc_platform_tier_pro",
+                "object": "product",
+                "name": "Pro",
+                "description": "Managed routing tier",
+                "active": True,
+                "metadata": {"slug": "pro", "catalog_family": "platform_tier"},
+            }
+        ]
+        if active is None:
+            return products[:limit]
+        return [product for product in products[:limit] if bool(product.get("active")) is active]
+
+    def list_prices(
+        self,
+        product_id: str | None = None,
+        active: bool | None = None,
+        limit: int = 100,
+    ) -> list[dict]:
+        prices = [
+            {
+                "id": "price_mock_pro_monthly",
+                "object": "price",
+                "product": "mahoosuc_platform_tier_pro",
+                "unit_amount": 3900,
+                "currency": "usd",
+                "active": True,
+                "recurring": {"interval": "month"},
+                "lookup_key": "mahoosuc_platform_tier_pro_monthly",
+            }
+        ]
+        filtered = prices
+        if product_id:
+            filtered = [price for price in filtered if price.get("product") == product_id]
+        if active is not None:
+            filtered = [price for price in filtered if bool(price.get("active")) is active]
+        return filtered[:limit]
+
+    def list_webhook_endpoints(self, limit: int = 100) -> list[dict]:
+        return [
+            {
+                "id": "we_mock_123",
+                "object": "webhook_endpoint",
+                "url": "http://localhost:6274/api/stripe/webhook",
+                "status": "enabled",
+                "enabled_events": [
+                    "checkout.session.completed",
+                    "customer.subscription.updated",
+                    "customer.subscription.deleted",
+                    "invoice.paid",
+                    "invoice.payment_failed",
+                ],
+            }
+        ][:limit]
+
+    def create_webhook_endpoint(
+        self,
+        url: str,
+        enabled_events: list[str] | None = None,
+        description: str = "",
+    ) -> dict:
+        return {
+            "id": _mock_id("we"),
+            "object": "webhook_endpoint",
+            "url": url,
+            "status": "enabled",
+            "description": description,
+            "enabled_events": enabled_events or [],
+            "secret": "whsec_mock_secret",  # pragma: allowlist secret
+        }
+
+    def get_account(self) -> dict:
+        return {
+            "id": "acct_mock_123",
+            "business_profile": {"name": "Mock Tenant"},
+            "details_submitted": True,
+            "charges_enabled": True,
+            "payouts_enabled": True,
+            "requirements": {"currently_due": []},
+        }
+
     def create_checkout_session(
         self,
         price_id: str,

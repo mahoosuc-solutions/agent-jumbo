@@ -8,6 +8,9 @@ export interface PricingTier {
   includes: string[]
   limits: Record<string, number | string>
   cost_basis: string
+  description?: string
+  price_cents?: number
+  stripe_price_id?: string
 }
 
 export interface PricingModel {
@@ -41,5 +44,9 @@ export function getPricingModel(): PricingModel {
 }
 
 export function getTiers(): PricingTier[] {
-  return getPricingModel().tiers || []
+  return (getPricingModel().tiers || []).map((tier) => ({
+    ...tier,
+    description: tier.description ?? tier.cost_basis,
+    price_cents: tier.price_cents ?? Math.round((tier.price_monthly || 0) * 100),
+  }))
 }

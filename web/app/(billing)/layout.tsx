@@ -39,6 +39,12 @@ export default function BillingLayout({ children }: { children: React.ReactNode 
               >
                 Payment Method
               </Link>
+              <Link
+                href="/billing/setup"
+                className="px-3 py-2 text-sm text-slate-300 hover:text-white rounded-md hover:bg-slate-800 transition"
+              >
+                Setup Assistant
+              </Link>
             </div>
             <Link href="/" className="text-xs text-slate-500 hover:text-slate-300 transition">
               ← Back to Agent Jumbo
