@@ -35,7 +35,7 @@ Or use the tool directly:
 {"action": "start_setup", "provider": "stripe", "business_name": "Mahoosuc Solutions", "email": "billing@mahoosuc.com", "country": "US"}
 ```
 
-Available providers: `stripe`, `square`, `paypal`
+Available providers: `stripe`, `square`, `paypal`, `wbm`
 
 ## Setup Steps by Provider
 
@@ -94,6 +94,93 @@ Available providers: `stripe`, `square`, `paypal`
 | 10 | automated | Create webhook subscription |
 | 11 | automated | Extract webhook ID |
 | 12 | automated | Store credentials and run dry-run |
+
+### WBM (15 steps — all human-required)
+
+The WBM provider runs an operator-guided onboarding across 15 phases. The agent tracks each
+phase, captures evidence, and creates a safe checkpoint after each one. All steps are
+`human_required` — the agent prompts you through each phase and waits for confirmation.
+
+| # | Phase | Goal |
+|---|-------|------|
+| 0 | Verify MCP Bridge | Confirm bridge health before changing tenant state |
+| 1 | Bootstrap Tenant | Run onboarding summary and tenant bootstrap |
+| 2 | Property Configuration | Set identity, contact, timezone, guest-facing defaults |
+| 3 | Room Inventory | Create and validate room inventory |
+| 4 | Staff Access | Configure staff roles and operator permissions |
+| 5 | Email | Configure guest communication flows |
+| 6 | Voice AI | Configure voice assistant path |
+| 7 | SMS | Enable SMS messaging |
+| 8 | Door Codes | Wire code issuance with check-in settings |
+| 9 | Payments | Confirm billing integration points |
+| 10 | Occupancy & Rates | Configure occupancy baselines and rate inputs |
+| 11 | Competitor Intel | Set up competitive monitoring |
+| 12 | Dynamic Pricing | Configure pricing automation guardrails |
+| 13 | SEO & Web Presence | Set listing and discoverability details |
+| 14 | Final Validation | Run validation suite and capture evidence |
+
+Access the WBM onboarding UI at `/billing/wbm-onboarding`.
+
+## Workflow Recovery and Restart
+
+If a setup session is interrupted (network drop, browser crash, provider timeout), you can
+resume without starting over.
+
+### Resume In Place
+
+Resume where the workflow left off:
+
+```json
+{"action": "recover_workflow", "run_id": "stripe_workflow_abc123"}
+```
+
+Use this when:
+
+- The browser session is still open or can be restored
+- The interrupted step was a human gate (you can just confirm it)
+- The provider's state matches where the workflow paused
+
+### Restart From Checkpoint
+
+Restart from the last safe checkpoint if exact recovery is no longer safe:
+
+```json
+{"action": "restart_workflow_from_checkpoint", "run_id": "stripe_workflow_abc123", "checkpoint_id": "cp_abc"}
+```
+
+Use this when:
+
+- The browser session is gone and the provider may have partial state
+- A form submission partially completed and you need a clean retry
+- The workflow advanced past a non-idempotent step that failed midway
+
+### Choosing Between Resume and Restart
+
+| Situation | Recommendation |
+|-----------|---------------|
+| Human gate interrupted — just confirm it | Resume in place |
+| Automated step partially completed | Restart from last checkpoint |
+| Provider shows partial account creation | Restart from last checkpoint |
+| Only a heartbeat gap — no real failure | Resume in place |
+| Webhook registration step failed | Restart from last checkpoint |
+
+### Viewing Checkpoints
+
+```json
+{"action": "get_workflow_checkpoints", "run_id": "stripe_workflow_abc123"}
+```
+
+The UI at `/billing/wbm-onboarding` also surfaces checkpoints and recovery controls in
+the Recovery panel that appears when a run is interrupted.
+
+### When to Redo Manually
+
+If neither resume nor restart succeeds (e.g., the provider locked the account after repeated
+attempts), complete the affected step manually in the provider's dashboard, then:
+
+1. Call `confirm_human_step` to advance the session past the failed step
+2. Provide any extracted values (API key, webhook secret) as `credentials`
+3. Continue with `next_step` or let the agent proceed
 
 ## Human-in-the-Loop Checkpoints
 
@@ -193,10 +280,16 @@ In Claude Code, enable the plugin via `/plugin install playwright`.
 **Step stuck at CAPTCHA** — complete the CAPTCHA manually and tell the agent to continue.
 The agent cannot solve CAPTCHAs by design.
 
-**Session `failed` status** — check the step error message. You can restart from scratch:
+**Session `failed` status** — try recovery first (`recover_workflow`). If the provider's
+state is inconsistent, restart from the last safe checkpoint (`restart_workflow_from_checkpoint`).
+If both fail, start a new session:
 
 ```json
 {"action": "start_setup", "provider": "stripe", "business_name": "...", "email": "..."}
 ```
 
 Each `start_setup` creates a new independent session.
+
+**`internal_shell` step fails** — steps with `automation_type: automated` and `action.tool: internal_shell`
+run a subprocess automatically. If the command fails (non-zero exit), the step is still marked
+complete with the error captured in evidence. Check the `output` field in step evidence to diagnose.

@@ -662,6 +662,11 @@ class PaymentAccountSetupManager:
                 ),
             }
 
+        # Auto-execute internal_shell steps; result overrides caller-supplied step_result.
+        action_tool = current_step.get("action", {}).get("tool", "")
+        if action_tool == "internal_shell" and not step_result:
+            step_result = self._run_internal_shell(current_step)
+
         self.db.update_step(current_step["step_id"], status="completed", result_data=step_result or {})
 
         extracted = session.get("extracted_credentials", {})
@@ -670,7 +675,7 @@ class PaymentAccountSetupManager:
                 if step_result.get(field):
                     extracted[field] = step_result[field]
 
-        if current_step.get("action", {}).get("tool") == "internal_store_credentials":
+        if action_tool == "internal_store_credentials":
             provider = current_step["action"]["args"].get("provider", session["provider"])
             self.store_credentials(
                 provider=provider,
@@ -711,6 +716,34 @@ class PaymentAccountSetupManager:
             self.db.update_step(steps[current_idx]["step_id"], status="failed", error=error)
         self.db.update_session(session_id, status="failed", notes=error)
         return self.get_session(session_id)
+
+    # -- internal action execution -------------------------------------------
+
+    def _run_internal_shell(self, step: dict[str, Any]) -> dict[str, Any]:
+        """Run an internal_shell step action as a subprocess and return its output."""
+        import subprocess
+
+        command = step.get("action", {}).get("args", {}).get("command", "")
+        if not command:
+            return {"error": "internal_shell step has no command"}
+        try:
+            proc = subprocess.run(  # nosec B602 B603 — command is from step definitions, not user input
+                command,
+                shell=True,
+                capture_output=True,
+                text=True,
+                timeout=120,
+            )
+            output = (proc.stdout or "") + (proc.stderr or "")
+            return {
+                "returncode": proc.returncode,
+                "output": output[:4096],
+                "ok": proc.returncode == 0,
+            }
+        except subprocess.TimeoutExpired:
+            return {"error": "command timed out", "ok": False}
+        except Exception as exc:
+            return {"error": str(exc), "ok": False}
 
     # -- credential management -----------------------------------------------
 
