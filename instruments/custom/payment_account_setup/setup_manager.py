@@ -288,9 +288,11 @@ class PaymentAccountSetupManager:
             "checks": checks_payload["checks"],
             "summary": checks_payload["summary"],
             "next_actions": checks_payload["next_actions"],
+            "journey": self._customer_journey(provider, checks_payload["checks"], active_session, connection),
             "active_session": self.get_session(active_session["session_id"]) if active_session else None,
             "recent_sessions": sessions[:5],
             "guidance_sections": self._guidance_sections(provider, checks_payload["checks"]),
+            "process_playbooks": self._process_playbooks(provider),
         }
         if include_catalog:
             payload["catalog"] = self.get_catalog(tenant_id=tenant_id, provider=provider)
@@ -779,6 +781,123 @@ class PaymentAccountSetupManager:
                 "id": "catalog",
                 "title": "Catalog",
                 "summary": "Start from Mahoosuc templates, then sync only the offers you want in the tenant Stripe account.",
+            },
+        ]
+
+    def _customer_journey(
+        self,
+        provider: str,
+        checks: list[dict[str, Any]],
+        active_session: dict[str, Any] | None,
+        connection: dict[str, Any],
+    ) -> dict[str, Any]:
+        if provider != "stripe":
+            return {"current_stage": "unsupported", "stages": []}
+
+        check_map = {check["id"]: bool(check["ok"]) for check in checks}
+        has_active_session = bool(active_session)
+        stages = [
+            {
+                "id": "discover",
+                "title": "Discover",
+                "status": "complete",
+                "goal": "Understand what Stripe needs and why each setup step matters.",
+                "exit_criteria": "Operator has the billing setup workspace, guidance, and next actions.",
+            },
+            {
+                "id": "connect",
+                "title": "Connect",
+                "status": "complete"
+                if check_map.get("api_key") and check_map.get("webhook_secret")
+                else ("in_progress" if has_active_session else "not_started"),
+                "goal": "Capture tenant-owned Stripe credentials and register a webhook endpoint.",
+                "exit_criteria": "API key and webhook secret stored for the tenant.",
+            },
+            {
+                "id": "configure",
+                "title": "Configure",
+                "status": "complete"
+                if check_map.get("business_profile") and check_map.get("webhook_endpoint")
+                else ("in_progress" if has_active_session or check_map.get("api_auth") else "not_started"),
+                "goal": "Complete dashboard setup tasks like business profile, KYC, payouts, and webhook registration.",
+                "exit_criteria": "Business profile submitted, webhook endpoint registered, and dashboard blockers known.",
+            },
+            {
+                "id": "catalog",
+                "title": "Catalog",
+                "status": "complete"
+                if check_map.get("catalog_sync")
+                else ("in_progress" if check_map.get("api_auth") else "not_started"),
+                "goal": "Review Mahoosuc templates and sync the right products and prices into the tenant Stripe account.",
+                "exit_criteria": "Required offers exist in Stripe and at least one billable price is ready for testing.",
+            },
+            {
+                "id": "validate",
+                "title": "Validate",
+                "status": "complete"
+                if check_map.get("api_auth")
+                and check_map.get("test_checkout_ready")
+                and check_map.get("charges_enabled")
+                else ("in_progress" if check_map.get("api_auth") else "not_started"),
+                "goal": "Run readiness checks and prove the tenant can execute a billing flow safely.",
+                "exit_criteria": "API auth succeeds, payouts/charges are enabled, and a test checkout path is available.",
+            },
+            {
+                "id": "operate",
+                "title": "Operate",
+                "status": "complete"
+                if connection.get("readiness_status") == "ready"
+                else ("in_progress" if check_map.get("api_auth") else "not_started"),
+                "goal": "Use the setup assistant as an ongoing copilot for catalog changes, webhook recovery, and operational health.",
+                "exit_criteria": "Tenant billing admin is healthy and operators know which process to run for common changes.",
+            },
+        ]
+        current_stage = next((stage["id"] for stage in stages if stage["status"] != "complete"), "operate")
+        return {
+            "current_stage": current_stage,
+            "stages": stages,
+            "operator_note": (
+                "Human-regulated tasks stay in Stripe Dashboard. "
+                "Mahoosuc tracks readiness, guidance, and catalog intent around those tasks."
+            ),
+        }
+
+    def _process_playbooks(self, provider: str) -> list[dict[str, Any]]:
+        if provider != "stripe":
+            return []
+        return [
+            {
+                "id": "new_tenant_onboarding",
+                "title": "New Tenant Onboarding",
+                "trigger": "A tenant is connecting Stripe for the first time.",
+                "steps": [
+                    "Start a guided setup session.",
+                    "Capture API key and webhook secret in tenant storage.",
+                    "Run health verification to surface KYC, payouts, and webhook blockers.",
+                    "Review the starter catalog before sync.",
+                ],
+            },
+            {
+                "id": "catalog_change",
+                "title": "Catalog Change",
+                "trigger": "A tenant wants to add, remove, or reprice products.",
+                "steps": [
+                    "Refresh catalog diff.",
+                    "Review recommended actions instead of editing active prices in place.",
+                    "Sync selected offers.",
+                    "Re-run health verification and confirm at least one test checkout path remains valid.",
+                ],
+            },
+            {
+                "id": "billing_recovery",
+                "title": "Billing Recovery",
+                "trigger": "Webhook delivery, payouts, or readiness checks regress after a dashboard change.",
+                "steps": [
+                    "Run health verification.",
+                    "Open the failing capability card to identify the Stripe dashboard area involved.",
+                    "Resume the guided setup flow or store updated credentials if secrets changed.",
+                    "Re-run verification until readiness returns to ready.",
+                ],
             },
         ]
 
