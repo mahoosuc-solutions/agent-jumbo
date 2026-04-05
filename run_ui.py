@@ -430,6 +430,17 @@ def run():
         except Exception as e:
             PrintStyle(font_color="yellow").print(f"[!] Gateway init skipped: {e}")
 
+    # Seed payment dunning cron task (daily 03:00, idempotent, skipped without STRIPE_API_KEY).
+    try:
+        import asyncio as _asyncio
+
+        from python.helpers.dunning_scheduler_init import seed_dunning_task
+
+        _dunning_result = _asyncio.get_event_loop().run_until_complete(seed_dunning_task())
+        PrintStyle(font_color="green").print(f"[boot] Dunning scheduler: {_dunning_result['status']}")
+    except Exception as _dunning_err:
+        PrintStyle(font_color="yellow").print(f"[!] Dunning scheduler init skipped: {_dunning_err}")
+
     # Initialize AgentMesh bridge if AGENTMESH_REDIS_URL is set.
     agentmesh_url = os.environ.get("AGENTMESH_REDIS_URL")
     _agentmesh_loop = None  # Keep reference for shutdown
