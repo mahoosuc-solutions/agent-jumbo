@@ -11,6 +11,7 @@ The product should:
 1. Guide the tenant through the right Stripe dashboard tasks at the right time.
 2. Track readiness and blockers as structured capabilities.
 3. Keep catalog intent and operational status visible inside billing admin.
+4. Let each tenant activate, deactivate, and reprice offers before syncing them to Stripe.
 
 ## Journey Stages
 
@@ -103,7 +104,8 @@ Process:
 2. Capture the tenant’s Stripe API key and webhook secret.
 3. Run health verification to expose missing KYC, payouts, or webhook work.
 4. Review starter catalog offers before syncing them.
-5. Re-run readiness until the tenant reaches `ready`.
+5. Disable offers that should stay out of the tenant account and save any tenant-specific price overrides.
+6. Re-run readiness until the tenant reaches `ready`.
 
 ### Catalog Change
 
@@ -115,9 +117,10 @@ Process:
 
 1. Refresh the catalog diff.
 2. Review recommended actions rather than editing active prices in place.
-3. Sync the intended offers.
-4. Re-run readiness checks.
-5. Confirm at least one valid test checkout path still exists.
+3. Save tenant-specific price overrides or deactivate offers in billing admin.
+4. Sync the intended offers.
+5. Re-run readiness checks.
+6. Confirm at least one valid test checkout path still exists.
 
 ### Billing Recovery
 
@@ -140,6 +143,7 @@ Mahoosuc should:
 - store tenant-scoped secrets
 - guide the operator through Stripe-hosted tasks
 - track structured readiness
+- let tenants manage offer activation and pricing safely before sync
 - sync catalog intent into Stripe when asked
 
 Mahoosuc should not:
