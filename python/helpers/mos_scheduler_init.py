@@ -1,7 +1,7 @@
 """
 MOS Scheduler Init — seeds MOS cross-system sync tasks at boot.
 
-Registers 4 MOS operational tasks in the persisted TaskScheduler if they do not
+Registers 5 MOS operational tasks in the persisted TaskScheduler if they do not
 already exist. All tasks are idempotent: existing tasks (matched by name) are not
 re-added. Silently skipped if TaskScheduler is unavailable.
 
@@ -10,6 +10,7 @@ Task schedule:
   Daily (1):       mos-linear-activity-digest (6am)
   Daily (1):       mos-analytics-daily-digest (7am)
   Hourly (1):      mos-support-queue-check (top of every hour)
+  Weekly (1):      mos-memory-consolidation (Sunday 3am)
 """
 
 from __future__ import annotations
@@ -59,6 +60,17 @@ _MOS_TASKS = [
             "Check the MOS work queue for open support-tagged items. "
             "Use the MOS orchestrator check_support_queue method. "
             "Escalate any items older than 4 hours or with severity >= high."
+        ),
+    },
+    {
+        "name": "mos-memory-consolidation",
+        "schedule": {"minute": "0", "hour": "3", "day": "*", "month": "*", "weekday": "0"},
+        "prompt": (
+            "Run weekly memory consolidation. "
+            "Use memory_load to get stats for the default memory subdir. "
+            "Then run consolidation on the executive area with similarity_threshold=0.95. "
+            "Apply 90-day retention on the executive area. "
+            "Report: documents before, duplicates removed, aged-out entries, documents after."
         ),
     },
 ]

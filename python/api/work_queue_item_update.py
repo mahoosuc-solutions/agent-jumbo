@@ -37,7 +37,23 @@ class WorkQueueItemUpdate(ApiHandler):
                 for key in ("priority_score", "effort_estimate", "effort_minutes", "execution_id", "execution_status"):
                     if key in input:
                         updates[key] = input[key]
+                if "tags" in input:
+                    updates["tags"] = input["tags"]
                 ok = manager.update_item(int(item_id), updates)
+                return {"success": ok}
+
+            if action == "add_tag":
+                tag = input.get("tag", "")
+                if not tag:
+                    return {"success": False, "error": "tag is required"}
+                ok = manager.add_tag(int(item_id), tag)
+                return {"success": ok}
+
+            if action == "set_tags":
+                tags = input.get("tags", [])
+                if not isinstance(tags, list):
+                    return {"success": False, "error": "tags must be a list"}
+                ok = manager.tag_item(int(item_id), tags)
                 return {"success": ok}
 
             return {"success": False, "error": f"Unknown action: {action}"}

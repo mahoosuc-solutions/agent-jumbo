@@ -30,10 +30,10 @@ class TestMosSchedulerInit:
             result = asyncio.run(mos_init.seed_mos_tasks())
 
         assert result["status"] == "ok"
-        assert result["total"] == 4
-        assert len(result["registered"]) == 4
+        assert result["total"] == 5
+        assert len(result["registered"]) == 5
         assert result["skipped_existing"] == []
-        assert mock_scheduler.add_task.call_count == 4
+        assert mock_scheduler.add_task.call_count == 5
 
     def test_skips_existing_tasks(self):
         existing = MagicMock()
@@ -62,8 +62,8 @@ class TestMosSchedulerInit:
 
         assert result["status"] == "ok"
         assert "mos-linear-to-motion" in result["skipped_existing"]
-        assert len(result["registered"]) == 3
-        assert mock_scheduler.add_task.call_count == 3
+        assert len(result["registered"]) == 4
+        assert mock_scheduler.add_task.call_count == 4
 
     def test_idempotent_when_all_exist(self):
         existing_tasks = [
@@ -73,6 +73,7 @@ class TestMosSchedulerInit:
                 "mos-linear-activity-digest",
                 "mos-analytics-daily-digest",
                 "mos-support-queue-check",
+                "mos-memory-consolidation",
             ]
         ]
         # MagicMock name= sets the mock name, need to set .name attribute
@@ -83,6 +84,7 @@ class TestMosSchedulerInit:
                 "mos-linear-activity-digest",
                 "mos-analytics-daily-digest",
                 "mos-support-queue-check",
+                "mos-memory-consolidation",
             ],
         ):
             task.name = name
@@ -110,7 +112,7 @@ class TestMosSchedulerInit:
 
         assert result["status"] == "ok"
         assert len(result["registered"]) == 0
-        assert len(result["skipped_existing"]) == 4
+        assert len(result["skipped_existing"]) == 5
         assert mock_scheduler.add_task.call_count == 0
 
     def test_task_names_are_unique(self):
