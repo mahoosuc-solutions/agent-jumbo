@@ -69,6 +69,8 @@
       "name": "Community (Free)",
       "price_monthly": 0,
       "tagline": "Full-power self-hosted AI orchestration, no strings attached",
+      "cta_label": "Read Install Guide",
+      "cta_href": "/install",
       "includes": [
         "Complete platform (all 36 instruments)",
         "LLM Router with 18 chat providers + 9 embedding providers",
@@ -90,9 +92,37 @@
       "cost_basis": "Zero marginal cost to us. User self-hosts on their own hardware and provides their own API keys. All LLM, Twilio, Stripe costs are pass-through to the user's own accounts. Our cost is only open-source maintenance, amortized across the community. This is the genuine open-core model: the full product is free and usable."
     },
     {
+      "name": "Free Cloud",
+      "price_monthly": 0,
+      "tagline": "Hosted trial with a real token budget — no install, no keys, no credit card",
+      "cta_label": "Start Free",
+      "cta_href": "/signup",
+      "highlight": "Try it instantly",
+      "includes": [
+        "Fully managed cloud deployment (no Docker, no server)",
+        "$2/mo included cloud token budget (Claude Haiku, Gemini Flash, GPT-4o Mini)",
+        "Full Web UI — chat, task scheduler, dashboards",
+        "All 36 instruments available (read-only in sensitive areas)",
+        "30-day trial of one Solution Package of your choice",
+        "Community support (GitHub Issues, Discord)",
+        "One-click upgrade to Pro when ready"
+      ],
+      "limits": {
+        "agents": "unlimited",
+        "instruments": "36 (read access to sensitive integrations)",
+        "cloud_llm_routing": "$2/mo included token budget",
+        "support": "community only",
+        "businesses": "1 hosted instance",
+        "trial_duration": "30 days, then convert or export"
+      },
+      "cost_basis": "We absorb ~$2 in token costs per active free user. Hosting a lightweight instance costs ~$1-2/mo on shared infrastructure. Total COGS ~$3-4/active user. Conversion target: 15-20% to Pro within 30 days. Break-even at ~$0.60 CAC per converted user assuming 15% conversion."
+    },
+    {
       "name": "Pro",
       "price_monthly": 39,
       "tagline": "Managed routing, usage insights, and priority support for serious operators",
+      "cta_label": "Get Pro",
+      "cta_href": "/signup?plan=pro",
       "includes": [
         "Everything in Community",
         "Managed LLM proxy with $10/mo included cloud token budget (via Agent Jumbo Venice.ai endpoint)",
@@ -117,6 +147,8 @@
       "name": "Enterprise",
       "price_monthly": 149,
       "tagline": "Multi-business orchestration with premium support and governance controls",
+      "cta_label": "Get Enterprise",
+      "cta_href": "/signup?plan=enterprise",
       "includes": [
         "Everything in Pro",
         "$50/mo included cloud token budget",
@@ -142,6 +174,8 @@
       "name": "Enterprise Custom",
       "price_monthly": 0,
       "tagline": "Custom deployments, dedicated support, and white-label options -- contact us",
+      "cta_label": "Contact Sales",
+      "cta_href": "/demo",
       "includes": [
         "Everything in Enterprise",
         "Unlimited business instances",

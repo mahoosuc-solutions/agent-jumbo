@@ -36,6 +36,8 @@ export const FEATURES = [
 
 export const PUBLIC_NAVIGATION = [
   { label: 'Home', href: '/' },
+  { label: 'Try Free', href: '/try' },
+  { label: 'Pricing', href: '/pricing' },
   { label: 'How It Works', href: '/how-it-works' },
   { label: 'Install', href: '/install' },
   { label: 'Documentation', href: '/documentation' },

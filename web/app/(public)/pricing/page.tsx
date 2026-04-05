@@ -23,19 +23,48 @@ export default function PricingPage() {
     )
   }
 
-  const featuredIndex = Math.min(1, tiers.length - 1)
+  // Segment tiers: primary conversion tiers get prominent treatment, bookend tiers (self-hosted free / custom) are secondary
+  const primarySlugs = ['Free Cloud', 'Pro', 'Enterprise']
+  const primaryTiers = tiers.filter((t) => primarySlugs.includes(t.name))
+  const bookendTiers = tiers.filter((t) => !primarySlugs.includes(t.name))
+
+  // Free Cloud is the featured card (index 0 of primary)
+  const featuredName = 'Free Cloud'
 
   return (
     <div className="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
       <div className="text-center mb-16">
         <h1 className="text-4xl font-bold text-white mb-4">Pricing</h1>
-        <p className="text-xl text-slate-400 max-w-2xl mx-auto">Every tier is grounded in real cost modeling -- LLM tokens, compute, storage, and integration fees. No hidden costs.</p>
+        <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+          Every tier is grounded in real cost modeling — LLM tokens, compute, storage, and integration fees. No hidden costs.
+        </p>
+        <p className="mt-4 text-sm text-copper-300">
+          Start free in the cloud — no install, no credit card. Upgrade when you need more.
+        </p>
       </div>
-      <div className={`grid grid-cols-1 gap-8 max-w-5xl mx-auto ${
-        tiers.length >= 3 ? 'md:grid-cols-3' : tiers.length === 2 ? 'md:grid-cols-2' : ''
-      }`}>
-        {tiers.map((tier, i) => (<PricingTierCard key={tier.name} tier={tier} featured={i === featuredIndex} />))}
-      </div>
+
+      {/* Primary tiers */}
+      {primaryTiers.length > 0 && (
+        <div className={`grid grid-cols-1 gap-8 max-w-5xl mx-auto ${
+          primaryTiers.length >= 3 ? 'md:grid-cols-3' : primaryTiers.length === 2 ? 'md:grid-cols-2' : ''
+        }`}>
+          {primaryTiers.map((tier) => (
+            <PricingTierCard key={tier.name} tier={tier} featured={tier.name === featuredName} />
+          ))}
+        </div>
+      )}
+
+      {/* Bookend tiers: self-hosted free + custom enterprise */}
+      {bookendTiers.length > 0 && (
+        <div className={`grid grid-cols-1 gap-6 max-w-5xl mx-auto mt-8 ${
+          bookendTiers.length >= 2 ? 'md:grid-cols-2' : ''
+        }`}>
+          {bookendTiers.map((tier) => (
+            <PricingTierCard key={tier.name} tier={tier} featured={false} />
+          ))}
+        </div>
+      )}
+
       <p className="text-center text-xs text-slate-500 font-mono mt-8">Pricing validated by codebase cost analysis.</p>
 
       {packages.length > 0 && (

@@ -10,7 +10,7 @@ def test_get_catalog_bootstraps_template_offers(tmp_path):
 
     catalog = manager.get_catalog(tenant_id="tenant-alpha", provider="stripe")
 
-    assert catalog["offer_count"] == 9
+    assert catalog["offer_count"] == 10  # 4 platform tiers + 1 free_cloud + 5 solution packages
     assert any(offer["slug"] == "pro" for offer in catalog["offers"])
     assert any(offer["slug"] == "ai-customer-support" for offer in catalog["offers"])
 

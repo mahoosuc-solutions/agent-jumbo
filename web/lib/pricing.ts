@@ -11,6 +11,9 @@ export interface PricingTier {
   description?: string
   price_cents?: number
   stripe_price_id?: string
+  cta_label?: string
+  cta_href?: string
+  highlight?: string
 }
 
 export interface PricingModel {

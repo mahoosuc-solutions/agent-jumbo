@@ -42,6 +42,13 @@ export default function Header() {
             </li>
           ))}
         </ul>
+        <Link
+          href="/try"
+          className="hidden md:inline-block px-4 py-1.5 rounded-lg bg-copper-500 text-white text-sm font-semibold hover:bg-copper-400 transition"
+          onClick={() => trackNavClick('Try Free CTA')}
+        >
+          Try Free
+        </Link>
         <button
           onClick={() => setIsOpen(!isOpen)}
           className="md:hidden p-2"
