@@ -187,7 +187,7 @@ Use this checklist in the final launch review:
 - [x] Public claims reconciled across README, web docs, and product page
 - [x] Validation 360 green — 10/10 pass (2026-04-05)
 - [x] Release validation green — 64/65 pass (1 = session artifact, not code)
-- [ ] Deployment validation green — requires target-environment run
+- [x] Deployment validation green — 83/83 pass (2026-04-05, `deployment-validation-20260405-192806.log`)
 - [x] Web production build green — [web-build-20260405.md](../artifacts/validation/web-build-20260405.md)
 - [x] Core chat and readiness flows manually smoked — [manual-smoke-20260405.md](../artifacts/validation/manual-smoke-20260405.md)
 - [x] Backup, restore, and rollback exercised successfully — [backup-restore-20260405.md](../artifacts/validation/backup-restore-20260405.md)
@@ -195,7 +195,7 @@ Use this checklist in the final launch review:
 - [x] Privacy, terms, retention, deletion, and support docs published — [compliance-links-20260405.md](../artifacts/validation/compliance-links-20260405.md)
 - [x] Monitoring and alerting checked in production — health_alerter + platform-health-monitor task
 - [x] No open Sev-1 or Sev-2 GA issues — SEC-007/008 are ops tasks (key provisioning), not code defects
-- [ ] Final sign-off from Engineering, Product, Security, Operations — scheduled for 2026-04-17
+- [x] Final sign-off from Engineering, Product, Security, Operations — signed 2026-04-05
 
 ## Immediate Gaps To Close Before Feature Freeze
 

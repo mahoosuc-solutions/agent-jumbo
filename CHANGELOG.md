@@ -5,7 +5,12 @@ All notable changes to Agent Jumbo DevOps will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-04-05 — Production GA
+
+### Release Summary
+
+Production GA release of Agent Jumbo AI Architect Platform. All 5 GA gates green.
+Validation: 330 series tests (E→K), 83 deployment checks, 10 platform checks, 65 release checks — all pass.
 
 ### Added — K-series: GA Readiness & Documentation (2026-04-05)
 
