@@ -347,3 +347,73 @@ Extensions can be found in `python/extensions` directory:
 > [!NOTE]
 > Consider contributing valuable custom components to the main repository.
 > See [Contributing](contribution.md) for more information.
+
+---
+
+## Agentic Task Cycle Pipeline
+
+Agent Jumbo includes a self-contained end-to-end pipeline for taking a task from natural language description to graded, committed code output. The pipeline wires together four components:
+
+```
+task_cycle(task)
+     │
+     ▼
+[1] ComplexityClassifier.score(task)
+     → tier: SIMPLE | EASY | MEDIUM | HARD
+     → recommended model + token budget
+     │
+     ▼
+[2] TaskDecomposer.decompose_simple(task)
+     → list[SubTask] with DAG dependencies
+     │
+     ▼
+[3] ParallelExecutor.execute(subtasks, call_fn)
+     → list[ExecutionResult] with output + latency
+     │
+     ▼
+[4] _grade_code(extracted_python)  [if code produced]
+     → GradeResult: score 0–100, ruff/pytest/mypy/bandit findings
+     │
+     ▼
+[5] ShipDecision
+     → score ≥ 90: SHIP (commit recommended)
+     → score 70–89: SHIP with warnings
+     → score 40–69: PIVOT (revise and re-grade)
+     → score < 40: ESCALATE (human review)
+```
+
+### Key Files
+
+| File | Role |
+|------|------|
+| `python/tools/task_cycle.py` | Orchestrator tool — exposes `plan/execute/grade/full/ship` actions |
+| `python/helpers/complexity_classifier.py` | Maps task prompts to complexity tiers and model assignments |
+| `python/helpers/task_decomposer.py` | Decomposes tasks into subtasks with dependency DAG |
+| `python/helpers/parallel_executor.py` | Executes subtasks concurrently; respects DAG ordering |
+| `python/tools/code_review.py` | Real grader — runs ruff, pytest, mypy, bandit via subprocess |
+| `python/tools/git_tool.py` | Git write operations with unconditional safety guards |
+
+### Safety Invariants
+
+- The `ship` action (commit) is always a separate, explicit call — never auto-invoked by `full`
+- The `push` action (git_tool) requires `confirmed=true` — never auto-invoked by task_cycle
+- Secret files (`.env`, `*.pem`, `*.key`, etc.) are refused at the `git_tool add` level
+- Grade scores are computed from real subprocess output — never hardcoded or templated
+
+### Complexity Tier → Model Routing
+
+| Tier | Keywords | Model |
+|------|---------|-------|
+| SIMPLE | list, show, what is, read | ollama/llama3.2 |
+| EASY | fix, add, update, rename | google/gemini-2.0-flash |
+| MEDIUM | implement, refactor, integrate | anthropic/claude-sonnet-4-6 |
+| HARD | architect, rewrite, migrate entire | anthropic/claude-opus-4-6 |
+
+### Architectural Decision Records
+
+See `/knowledge/custom/architectural_patterns/adrs/` for the full rationale behind each design decision:
+
+- `ADR-TASK-CYCLE-PIPELINE.md` — end-to-end pipeline design
+- `ADR-COMPLEXITY-CLASSIFIER.md` — keyword-based tier routing
+- `ADR-CODE-REVIEW-GRADING.md` — subprocess grader and scoring weights
+- `ADR-GIT-TOOL-SAFETY.md` — safety guards for write operations
