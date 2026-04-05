@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-04-05T14:07:46.364329+00:00",
+  "generated_at": "2026-04-05T14:17:41.039161+00:00",
   "platform": {
     "commands": {
       "total": 414,
@@ -13,7 +13,7 @@
       "total": 78
     },
     "api_endpoints": {
-      "total": 201
+      "total": 202
     },
     "integrations": [
       "calendar_hub",

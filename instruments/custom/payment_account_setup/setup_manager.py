@@ -493,6 +493,14 @@ class PaymentAccountSetupManager:
         for slug, offer in templates.items():
             record = stored.get(slug)
             merged = offer.to_dict()
+            if record:
+                merged["name"] = record.get("name") or merged["name"]
+                merged["tagline"] = record.get("tagline") or merged["tagline"]
+                merged["description"] = record.get("description") or merged["description"]
+                merged["billing_mode"] = record.get("billing_mode") or merged["billing_mode"]
+                merged["monthly_price_usd"] = float(record.get("monthly_price_usd", merged["monthly_price_usd"]) or 0)
+                merged["setup_price_usd"] = float(record.get("setup_price_usd", merged["setup_price_usd"]) or 0)
+                merged["active"] = bool(record.get("active", merged["active"]))
             merged["source_kind"] = record.get("source_kind", "template") if record else "template"
             merged["sync_status"] = record.get("sync_status", "pending") if record else "pending"
             merged["provider_product_id"] = record.get("provider_product_id") if record else None
@@ -526,6 +534,86 @@ class PaymentAccountSetupManager:
             "provider": provider,
             "offer_count": len(offers),
             "offers": sorted(offers, key=lambda item: (item["catalog_family"], item["slug"])),
+        }
+
+    def update_catalog_offer(
+        self,
+        tenant_id: str = _DEFAULT_TENANT_ID,
+        provider: str = "stripe",
+        slug: str = "",
+        *,
+        active: bool | None = None,
+        monthly_price_usd: float | None = None,
+        setup_price_usd: float | None = None,
+        name: str | None = None,
+        tagline: str | None = None,
+        description: str | None = None,
+    ) -> dict[str, Any]:
+        tenant_id = self._normalize_tenant_id(tenant_id)
+        slug = str(slug).strip()
+        if not slug:
+            raise ValueError("Catalog slug is required.")
+
+        catalog = self.get_catalog(tenant_id=tenant_id, provider=provider)
+        offer = next((item for item in catalog["offers"] if item["slug"] == slug), None)
+        if offer is None:
+            raise ValueError(f"Catalog offer {slug!r} not found.")
+
+        template = next((item for item in load_commercial_catalog() if item.slug == slug), None)
+        if template is None:
+            raise ValueError(f"Template offer {slug!r} not found.")
+
+        next_monthly = float(offer["monthly_price_usd"] if monthly_price_usd is None else monthly_price_usd)
+        next_setup = float(offer["setup_price_usd"] if setup_price_usd is None else setup_price_usd)
+        if next_monthly < 0 or next_setup < 0:
+            raise ValueError("Catalog prices cannot be negative.")
+
+        next_active = bool(offer["active"] if active is None else active)
+        next_name = str(offer["name"] if name is None else name).strip()
+        next_tagline = str(offer["tagline"] if tagline is None else tagline).strip()
+        next_description = str(offer["description"] if description is None else description).strip()
+
+        customized = any(
+            [
+                next_active != bool(template.active),
+                next_name != template.name,
+                next_tagline != template.tagline,
+                next_description != template.description,
+                next_monthly != float(template.monthly_price_usd),
+                next_setup != float(template.setup_price_usd),
+            ]
+        )
+
+        updated = self.db.upsert_catalog_item(
+            tenant_id=tenant_id,
+            provider=provider,
+            catalog_family=offer["catalog_family"],
+            slug=slug,
+            name=next_name,
+            tagline=next_tagline,
+            description=next_description,
+            billing_mode=offer["billing_mode"],
+            monthly_price_usd=next_monthly,
+            setup_price_usd=next_setup,
+            active=next_active,
+            source_kind="customized" if customized else "template",
+            source_path=offer["source_path"],
+            metadata=offer["metadata"],
+            provider_product_id=offer.get("provider_product_id"),
+            provider_monthly_price_id=offer.get("monthly_price_id"),
+            provider_setup_price_id=offer.get("setup_price_id"),
+            sync_status="pending" if next_active else "inactive",
+            provider_metadata=offer.get("provider_metadata", {}),
+            last_synced_at=offer.get("last_synced_at"),
+        )
+        refreshed = self.get_catalog(tenant_id=tenant_id, provider=provider)
+        refreshed_offer = next(item for item in refreshed["offers"] if item["slug"] == slug)
+        return {
+            "status": "updated",
+            "provider": provider,
+            "tenant_id": tenant_id,
+            "offer": refreshed_offer,
+            "record": updated,
         }
 
     def diff_catalog(
@@ -581,18 +669,28 @@ class PaymentAccountSetupManager:
                 None,
             )
             product_exists = offer["product_id"] in remote_products or bool(offer.get("provider_product_id"))
+            monthly_price_matches = bool(monthly_price) if offer.get("monthly_lookup_key") else True
+            setup_price_matches = bool(setup_price) if offer.get("setup_lookup_key") else True
             recommended_action = "ready"
-            if not product_exists and not offer["is_free"] and not offer["is_custom_quote"]:
+            if not offer.get("active", True):
+                recommended_action = "inactive"
+            elif not product_exists and not offer["is_free"] and not offer["is_custom_quote"]:
                 recommended_action = "create_product"
-            elif offer.get("monthly_lookup_key") and not (monthly_price or offer.get("monthly_price_id")):
-                recommended_action = "create_monthly_price"
-            elif offer.get("setup_lookup_key") and not (setup_price or offer.get("setup_price_id")):
-                recommended_action = "create_setup_price"
+            elif offer.get("monthly_lookup_key") and not monthly_price_matches:
+                recommended_action = (
+                    "replace_monthly_price" if prices or offer.get("monthly_price_id") else "create_monthly_price"
+                )
+            elif offer.get("setup_lookup_key") and not setup_price_matches:
+                recommended_action = (
+                    "replace_setup_price" if prices or offer.get("setup_price_id") else "create_setup_price"
+                )
 
             offers.append(
                 {
                     **offer,
                     "product_exists": product_exists,
+                    "monthly_price_matches": monthly_price_matches,
+                    "setup_price_matches": setup_price_matches,
                     "monthly_price_id": monthly_price.get("id") if monthly_price else offer.get("monthly_price_id"),
                     "setup_price_id": setup_price.get("id") if setup_price else offer.get("setup_price_id"),
                     "recommended_action": recommended_action,
@@ -631,6 +729,31 @@ class PaymentAccountSetupManager:
         )
         synced: list[dict[str, Any]] = []
         for offer in offers:
+            if not offer.get("active", True):
+                self.db.upsert_catalog_item(
+                    tenant_id=tenant_id,
+                    provider=provider,
+                    catalog_family=offer["catalog_family"],
+                    slug=offer["slug"],
+                    name=offer["name"],
+                    tagline=offer["tagline"],
+                    description=offer["description"],
+                    billing_mode=offer["billing_mode"],
+                    monthly_price_usd=float(offer["monthly_price_usd"]),
+                    setup_price_usd=float(offer["setup_price_usd"]),
+                    active=False,
+                    source_kind=offer.get("source_kind", "customized"),
+                    source_path=offer["source_path"],
+                    metadata=offer["metadata"],
+                    provider_product_id=offer.get("provider_product_id"),
+                    provider_monthly_price_id=offer.get("monthly_price_id"),
+                    provider_setup_price_id=offer.get("setup_price_id"),
+                    sync_status="inactive",
+                    provider_metadata=offer.get("provider_metadata", {}),
+                    last_synced_at=offer.get("last_synced_at"),
+                )
+                synced.append({**offer, "sync_status": "inactive"})
+                continue
             if offer["is_free"] or offer["is_custom_quote"]:
                 self.db.upsert_catalog_item(
                     tenant_id=tenant_id,
@@ -662,10 +785,10 @@ class PaymentAccountSetupManager:
                     metadata=offer["metadata"],
                 )
                 product_id = product.get("id", product_id)
-            if offer.get("monthly_lookup_key") and not monthly_price_id:
+            if offer.get("monthly_lookup_key") and not offer.get("monthly_price_matches", False):
                 price = client.create_price(product_id, round(float(offer["monthly_price_usd"]) * 100), "usd", "month")
                 monthly_price_id = price.get("id")
-            if offer.get("setup_lookup_key") and not setup_price_id:
+            if offer.get("setup_lookup_key") and not offer.get("setup_price_matches", False):
                 price = client.create_price(product_id, round(float(offer["setup_price_usd"]) * 100))
                 setup_price_id = price.get("id")
 
@@ -681,7 +804,7 @@ class PaymentAccountSetupManager:
                 monthly_price_usd=float(offer["monthly_price_usd"]),
                 setup_price_usd=float(offer["setup_price_usd"]),
                 active=bool(offer["active"]),
-                source_kind="template",
+                source_kind=offer.get("source_kind", "template"),
                 source_path=offer["source_path"],
                 metadata=offer["metadata"],
                 provider_product_id=product_id,
