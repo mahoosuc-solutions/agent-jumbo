@@ -13,6 +13,7 @@ import { store as chatTopStore } from "/components/chat/top-section/chat-top-sto
 import { store as passkeyStore } from "/components/settings/external/passkey-auth-store.js";
 import { store as serviceProfileStore } from "/components/modals/service-profile/service-profile-store.js";
 import { store as agentProfileStore } from "/components/modals/service-profile/agent-profile-store.js";
+import { store as contentCalendarStore } from "/components/content-calendar/content-calendar-store.js";
 
 globalThis.fetchApi = api.fetchApi; // TODO - backward compatibility for non-modular scripts, remove once refactored to alpine
 

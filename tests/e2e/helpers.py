@@ -4,10 +4,41 @@ Provides CSRF token management, cookie handling, and JSON API call wrappers
 used across all E2E test modules.
 """
 
+import functools
 import json
 import time
 import urllib.error
 import urllib.request
+
+
+def with_retry(retries: int = 3, backoff: float = 5.0, retry_on: tuple = (429,)):
+    """Decorator that retries a test function on HTTP rate-limit (429) errors.
+
+    Usage::
+
+        @with_retry(retries=3, backoff=5.0)
+        def test_something(app_server, auth_cookies):
+            ...
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            last_exc = None
+            for attempt in range(retries):
+                try:
+                    return func(*args, **kwargs)
+                except urllib.error.HTTPError as exc:
+                    if exc.code in retry_on and attempt < retries - 1:
+                        last_exc = exc
+                        time.sleep(backoff * (attempt + 1))
+                        continue
+                    raise
+            raise last_exc  # type: ignore[misc]
+
+        return wrapper
+
+    return decorator
 
 
 def cookie_header(cookies: dict) -> str:
@@ -103,3 +134,22 @@ def api_get(app_server: str, auth_cookies: dict, endpoint: str) -> dict:
     req.add_header("Cookie", cookie_header(auth_cookies))
     resp = urllib.request.urlopen(req, timeout=15)
     return json.loads(resp.read().decode())
+
+
+def api_get_tolerant(
+    app_server: str,
+    auth_cookies: dict,
+    endpoint: str,
+    retries: int = 3,
+    backoff: float = 5.0,
+) -> dict:
+    """GET with retry on 429 rate-limit responses."""
+    for attempt in range(retries):
+        try:
+            return api_get(app_server, auth_cookies, endpoint)
+        except urllib.error.HTTPError as exc:
+            if exc.code == 429 and attempt < retries - 1:
+                time.sleep(backoff * (attempt + 1))
+                continue
+            raise
+    raise AssertionError(f"api_get_tolerant failed after {retries} retries")

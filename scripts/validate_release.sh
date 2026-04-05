@@ -161,6 +161,30 @@ check_csuite_personas() {
     done
 }
 
+check_docker_config() {
+    # Verify Docker compose and Dockerfile are consistent and valid
+    [[ -f "docker-compose.yml" ]] || return 1
+    [[ -f "DockerfileLocal" ]] || return 1
+    # Health check endpoint is defined
+    grep -q 'healthcheck' "docker-compose.yml" || return 1
+    grep -q '/health' "docker-compose.yml" || return 1
+    # Port mapping exists
+    grep -q 'ports:' "docker-compose.yml" || return 1
+}
+
+check_docker_runtime() {
+    # Verify Docker daemon is running and image can be inspected
+    command -v docker >/dev/null 2>&1 || return 1
+    docker info >/dev/null 2>&1 || return 1
+}
+
+check_wbm_tags_support() {
+    # Verify WBM tag infrastructure is present
+    grep -q 'tags' "instruments/custom/work_queue/work_queue_db.py" || return 1
+    grep -q 'get_items_by_tag' "instruments/custom/work_queue/work_queue_manager.py" || return 1
+    grep -q 'tag_item\|add_tag' "instruments/custom/work_queue/work_queue_manager.py" || return 1
+}
+
 echo "Agent Jumbo Release Validation"
 echo "=============================="
 echo "Report: $REPORT_FILE"
@@ -241,6 +265,12 @@ check_cmd "Core files compile" check_core_python_compile
 check_cmd "Code review runtime deps in requirements.txt" check_code_review_runtime_deps
 check_cmd "MOS agent personas complete" check_mos_personas
 check_cmd "C-suite agent personas complete" check_csuite_personas
+check_cmd "WBM tag infrastructure present" check_wbm_tags_support
+
+echo ""
+echo "Docker Validation:"
+check_cmd "Docker config files valid" check_docker_config
+check_cmd "Docker daemon available" check_docker_runtime
 
 echo ""
 echo "Web Validation:"

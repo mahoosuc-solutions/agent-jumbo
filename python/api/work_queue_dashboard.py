@@ -43,6 +43,14 @@ class WorkQueueDashboard(ApiHandler):
                 items = manager.search_items(query, input.get("project_path"))
                 return {"success": True, "items": items, "total": len(items)}
 
+            if action == "by_tag":
+                tag = input.get("tag", "")
+                if not tag:
+                    return {"success": False, "error": "tag is required"}
+                status = input.get("status")
+                items = manager.get_items_by_tag(tag, status=status)
+                return {"success": True, "items": items, "total": len(items), "tag": tag}
+
             return {"success": False, "error": f"Unknown action: {action}"}
 
         except Exception as e:

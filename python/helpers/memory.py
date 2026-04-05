@@ -491,6 +491,141 @@ class Memory:
     def get_timestamp():
         return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
+    # ── Consolidation & Stats ──────────────────────────────────────────
+
+    def get_stats(self) -> dict[str, Any]:
+        """Return memory statistics: document count, areas, oldest/newest."""
+        all_docs = self.db.get_all_docs()
+        if not all_docs:
+            return {"total_documents": 0, "by_area": {}, "memory_subdir": self.memory_subdir}
+
+        by_area: dict[str, int] = {}
+        timestamps: list[str] = []
+        for doc in all_docs.values():
+            area = doc.metadata.get("area", Memory.Area.MAIN.value)
+            by_area[area] = by_area.get(area, 0) + 1
+            ts = doc.metadata.get("timestamp")
+            if ts:
+                timestamps.append(ts)
+
+        return {
+            "total_documents": len(all_docs),
+            "by_area": by_area,
+            "memory_subdir": self.memory_subdir,
+            "oldest": min(timestamps) if timestamps else None,
+            "newest": max(timestamps) if timestamps else None,
+        }
+
+    async def consolidate(
+        self,
+        area: str | None = None,
+        similarity_threshold: float = 0.95,
+        dry_run: bool = False,
+    ) -> dict[str, Any]:
+        """Deduplicate near-identical documents within an area.
+
+        Finds pairs of documents with cosine similarity >= threshold and
+        keeps the newer one (by timestamp). Returns stats about what was
+        (or would be) removed.
+        """
+        all_docs = self.db.get_all_docs()
+        if not all_docs:
+            return {"removed": 0, "kept": len(all_docs), "area": area}
+
+        # Filter by area if specified
+        candidates = {}
+        for doc_id, doc in all_docs.items():
+            doc_area = doc.metadata.get("area", Memory.Area.MAIN.value)
+            if area is None or doc_area == area:
+                candidates[doc_id] = doc
+
+        if len(candidates) < 2:
+            return {"removed": 0, "kept": len(candidates), "area": area}
+
+        # Find near-duplicates by searching each doc against the index
+        to_remove: set[str] = set()
+        checked: set[frozenset[str]] = set()
+
+        for doc_id, doc in candidates.items():
+            if doc_id in to_remove:
+                continue
+
+            try:
+                results = await self.db.asearch(
+                    doc.page_content,
+                    search_type="similarity_score_threshold",
+                    k=10,
+                    score_threshold=similarity_threshold,
+                )
+            except Exception:
+                continue
+
+            for result_doc in results:
+                other_id = result_doc.metadata.get("id")
+                if not other_id or other_id == doc_id or other_id in to_remove:
+                    continue
+                if other_id not in candidates:
+                    continue
+
+                pair = frozenset([doc_id, other_id])
+                if pair in checked:
+                    continue
+                checked.add(pair)
+
+                # Keep the newer document
+                ts1 = doc.metadata.get("timestamp", "")
+                ts2 = result_doc.metadata.get("timestamp", "")
+                remove_id = doc_id if ts1 < ts2 else other_id
+                to_remove.add(remove_id)
+
+        if to_remove and not dry_run:
+            await self.db.adelete(ids=list(to_remove))
+            self._save_db()
+
+        return {
+            "removed": len(to_remove),
+            "kept": len(candidates) - len(to_remove),
+            "area": area,
+            "dry_run": dry_run,
+        }
+
+    async def apply_retention(
+        self,
+        area: str,
+        max_age_days: int,
+        dry_run: bool = False,
+    ) -> dict[str, Any]:
+        """Remove documents older than max_age_days in the specified area."""
+        all_docs = self.db.get_all_docs()
+        cutoff = datetime.now()
+        to_remove = []
+
+        for doc_id, doc in all_docs.items():
+            doc_area = doc.metadata.get("area", Memory.Area.MAIN.value)
+            if doc_area != area:
+                continue
+            ts = doc.metadata.get("timestamp")
+            if not ts:
+                continue
+            try:
+                doc_time = datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+                age_days = (cutoff - doc_time).days
+                if age_days > max_age_days:
+                    to_remove.append(doc_id)
+            except ValueError:
+                continue
+
+        if to_remove and not dry_run:
+            await self.db.adelete(ids=to_remove)
+            self._save_db()
+
+        return {
+            "removed": len(to_remove),
+            "area": area,
+            "max_age_days": max_age_days,
+            "dry_run": dry_run,
+        }
+
 
 def get_custom_knowledge_subdir_abs(agent: Agent) -> str:
     for dir in agent.config.knowledge_subdirs:

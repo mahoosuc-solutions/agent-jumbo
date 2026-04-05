@@ -1,0 +1,106 @@
+<!-- Content Calendar Panel — marketing-tagged WBM items -->
+<div x-data x-init="$store.contentCalendar.init()" class="content-calendar-panel"
+     style="padding: 16px; font-family: var(--font-family, system-ui);">
+
+  <!-- Header -->
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span style="font-size: 20px;">📅</span>
+      <h3 style="margin: 0; font-size: 16px; font-weight: 600; color: var(--text-primary, #e0e0e0);">
+        Content Calendar
+      </h3>
+      <span x-show="$store.contentCalendar.total > 0"
+            style="background: rgba(0,145,255,0.18); color: var(--text-secondary, #aaa); padding: 2px 8px; border-radius: 10px; font-size: 12px;"
+            x-text="$store.contentCalendar.total + ' items'"></span>
+    </div>
+    <button @click="$store.contentCalendar.refresh()"
+            :disabled="$store.contentCalendar.loading"
+            style="background: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; color: var(--text-secondary, #aaa); cursor: pointer; font-size: 12px;">
+      <span x-show="!$store.contentCalendar.loading">↻ Refresh</span>
+      <span x-show="$store.contentCalendar.loading">Loading…</span>
+    </button>
+  </div>
+
+  <!-- Tag Tabs -->
+  <div style="display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;">
+    <template x-for="tag in ['marketing', 'content', 'social', 'case-study', 'linkedin']">
+      <button @click="$store.contentCalendar.setTag(tag)"
+              :style="{
+                padding: '4px 12px',
+                borderRadius: '14px',
+                border: $store.contentCalendar.activeTag === tag ? '1px solid rgba(0,145,255,0.5)' : '1px solid rgba(255,255,255,0.1)',
+                background: $store.contentCalendar.activeTag === tag ? 'rgba(0,145,255,0.18)' : 'transparent',
+                color: 'var(--text-secondary, #aaa)',
+                cursor: 'pointer',
+                fontSize: '12px',
+              }"
+              x-text="tag"></button>
+    </template>
+  </div>
+
+  <!-- Status Filter Pills -->
+  <div style="display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap;">
+    <template x-for="status in ['queued', 'in_progress', 'done', 'blocked']">
+      <button @click="$store.contentCalendar.setStatusFilter(status)"
+              :style="{
+                padding: '3px 10px',
+                borderRadius: '10px',
+                border: '1px solid rgba(255,255,255,0.08)',
+                background: $store.contentCalendar.statusFilter === status ? $store.contentCalendar.statusColor(status) : 'transparent',
+                color: 'var(--text-secondary, #aaa)',
+                cursor: 'pointer',
+                fontSize: '11px',
+              }">
+        <span x-text="$store.contentCalendar.statusLabel(status)"></span>
+        <span x-show="$store.contentCalendar.byStatus[status]"
+              x-text="'(' + ($store.contentCalendar.byStatus[status] || 0) + ')'"
+              style="opacity: 0.7;"></span>
+      </button>
+    </template>
+  </div>
+
+  <!-- Error Banner -->
+  <div x-show="$store.contentCalendar.error"
+       style="background: rgba(255,60,60,0.12); border: 1px solid rgba(255,60,60,0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; color: #ff6b6b; font-size: 13px;"
+       x-text="$store.contentCalendar.error"></div>
+
+  <!-- Empty State -->
+  <div x-show="!$store.contentCalendar.loading && $store.contentCalendar.items.length === 0 && !$store.contentCalendar.error"
+       style="text-align: center; padding: 32px 16px; color: var(--text-muted, #666);">
+    <div style="font-size: 28px; margin-bottom: 8px;">📭</div>
+    <div style="font-size: 13px;">No <span x-text="$store.contentCalendar.activeTag"></span> items found.</div>
+    <div style="font-size: 12px; margin-top: 4px; opacity: 0.7;">Tag work items with "<span x-text="$store.contentCalendar.activeTag"></span>" to populate this calendar.</div>
+  </div>
+
+  <!-- Item Cards -->
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <template x-for="item in $store.contentCalendar.filteredItems" :key="item.id">
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; padding: 12px 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;">
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-size: 13px; font-weight: 500; color: var(--text-primary, #e0e0e0); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                 x-text="item.title"></div>
+            <div x-show="item.description"
+                 style="font-size: 12px; color: var(--text-secondary, #aaa); margin-top: 4px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;"
+                 x-text="item.description"></div>
+          </div>
+          <span :style="{
+                  padding: '2px 8px',
+                  borderRadius: '10px',
+                  fontSize: '11px',
+                  fontWeight: '500',
+                  whiteSpace: 'nowrap',
+                  background: $store.contentCalendar.statusColor(item.status),
+                  color: 'var(--text-secondary, #aaa)',
+                }"
+                x-text="$store.contentCalendar.statusLabel(item.status)"></span>
+        </div>
+        <div style="display: flex; gap: 12px; margin-top: 8px; font-size: 11px; color: var(--text-muted, #666);">
+          <span x-show="item.source" x-text="'via ' + item.source"></span>
+          <span x-text="$store.contentCalendar.formatDate(item.updated_at)"></span>
+          <span x-show="item.priority_score" x-text="'P' + item.priority_score"></span>
+        </div>
+      </div>
+    </template>
+  </div>
+</div>

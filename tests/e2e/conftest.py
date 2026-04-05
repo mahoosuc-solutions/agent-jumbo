@@ -150,9 +150,9 @@ def warmup(app_server: str, auth_cookies: dict):
 
 @pytest.fixture(autouse=True, scope="module")
 def _rate_limit_cooldown():
-    """Brief cooldown between test modules to avoid rate-limiter buildup."""
+    """Cooldown between test modules to avoid rate-limiter buildup."""
     yield
-    time.sleep(1)
+    time.sleep(2)
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

@@ -30,6 +30,18 @@ CATEGORY_PROFILE_MAP: dict[str, str] = {
     "architecture": "developer",
     "workflow": "actor-ops",
     "general": "base",
+    # C-suite executive routing
+    "financial_report": "cfo",
+    "revenue_analysis": "cfo",
+    "payment_dunning": "cfo",
+    "ops_digest": "coo",
+    "sla_enforcement": "coo",
+    "devops": "coo",
+    "sales_pipeline": "cso",
+    "proposal_generation": "cso",
+    "brand_review": "cmo",
+    "content_calendar": "cmo",
+    "marketing": "cmo",
 }
 
 
@@ -37,6 +49,11 @@ def register_task_handlers(bridge: AgentMeshBridge) -> None:
     """Register all AgentMesh task event handlers on the bridge."""
     bridge.on("task.assigned", _handle_task_assigned)
     bridge.on("task.approval_resolved", _handle_approval_resolved)
+    # C-suite executive event handlers
+    bridge.on("executive.financial_report", _handle_task_assigned)
+    bridge.on("executive.ops_digest", _handle_task_assigned)
+    bridge.on("executive.sales_update", _handle_task_assigned)
+    bridge.on("executive.brand_review", _handle_task_assigned)
 
 
 async def _handle_task_assigned(event: AgentMeshEvent) -> None:
