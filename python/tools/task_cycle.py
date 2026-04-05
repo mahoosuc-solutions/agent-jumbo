@@ -98,6 +98,26 @@ def _ship_decision(grade_result, results: list[ExecutionResult]) -> tuple[str, l
     return "escalate", steps
 
 
+def _extract_python_blocks(text: str) -> list[str]:
+    """Extract all ```python ... ``` fenced code blocks from a string."""
+    blocks: list[str] = []
+    lines = text.splitlines()
+    current: list[str] = []
+    in_block = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped.startswith("```python"):
+            in_block = True
+            current = []
+        elif in_block and stripped == "```":
+            in_block = False
+            if current:
+                blocks.append("\n".join(current))
+        elif in_block:
+            current.append(line)
+    return blocks
+
+
 # ---------------------------------------------------------------------------
 # TaskCycle Tool
 # ---------------------------------------------------------------------------
@@ -275,18 +295,28 @@ class TaskCycle(Tool):
     # ------------------------------------------------------------------
 
     async def _run_subtasks(self, subtasks: list[SubTask], complexity) -> list[ExecutionResult]:
-        """Dispatch subtasks via ParallelExecutor using agent's utility model."""
+        """Dispatch subtasks via ParallelExecutor.
+
+        Uses the tier-resolved model when API keys are available; falls back to the
+        agent's utility model if the tier-selected provider is not reachable.
+        """
         executor = ParallelExecutor(timeout_seconds=120)
+        tier_provider, tier_model_name = TIER_MODEL_MAP[complexity.tier]
 
         async def call_fn(prompt: str, provider: str, model: str | None) -> str:
-            from python.helpers.call_llm import call_llm
+            system = "You are a helpful assistant. Complete the following task concisely and accurately."
+            try:
+                from models import get_chat_model
 
-            llm = self.agent.config.utility_model.create_model()
-            return await call_llm(
-                system="You are a helpful assistant. Complete the following task concisely.",
-                model=llm,
-                message=prompt,
-            )
+                llm = get_chat_model(tier_provider, tier_model_name)
+                response, _ = await llm.unified_call(
+                    system_message=system,
+                    user_message=prompt,
+                )
+                return response
+            except Exception:
+                # Fall back to agent utility model if tier model unavailable
+                return await self.agent.call_utility_model(system=system, message=prompt)
 
         return await executor.execute(subtasks, call_fn)
 
@@ -345,22 +375,20 @@ class TaskCycle(Tool):
         )
 
     def _extract_code_output(self, results: list[ExecutionResult]) -> str | None:
-        """Return combined Python code from results that contain code blocks."""
-        code_lines: list[str] = []
-        in_block = False
+        """Return all Python code extracted from completed subtask results.
+
+        Collects every ```python ... ``` block across all results and concatenates
+        them with a blank separator so the grader sees the full code surface.
+        """
+        all_blocks: list[str] = []
         for r in results:
             if r.status != "completed":
                 continue
-            for line in r.result.splitlines():
-                if line.strip().startswith("```python"):
-                    in_block = True
-                    continue
-                if in_block and line.strip() == "```":
-                    in_block = False
-                    continue
-                if in_block:
-                    code_lines.append(line)
-        return "\n".join(code_lines) if code_lines else None
+            blocks = _extract_python_blocks(r.result)
+            all_blocks.extend(blocks)
+        if not all_blocks:
+            return None
+        return "\n\n".join(all_blocks)
 
     def _format_full(self, result: CycleResult) -> Response:
         decision_emoji = {"ship": "✅", "pivot": "🔄", "escalate": "🚨", "no_grade": "📋"}.get(result.decision, "?")
