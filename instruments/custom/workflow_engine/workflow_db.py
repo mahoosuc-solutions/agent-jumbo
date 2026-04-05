@@ -8,13 +8,22 @@ import os
 import sqlite3
 from datetime import datetime
 
+from python.helpers import files
+from python.helpers.db_paths import db_path as get_db_path, migrate_db_if_needed
+
 
 class WorkflowEngineDatabase:
     """Database operations for workflow engine"""
 
-    def __init__(self, db_path: str):
-        self.db_path = db_path
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    def __init__(self, db_path: str | None = None):
+        # If no path provided, use centralized location
+        resolved: str = db_path if db_path is not None else get_db_path("workflow.db")
+        # Migration: if old instrument-local DB exists, copy to new location
+        old_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
+        migrate_db_if_needed(old_path, "workflow.db")
+
+        self.db_path = resolved
+        os.makedirs(os.path.dirname(resolved), exist_ok=True)
         self._init_db()
 
     def _get_conn(self) -> sqlite3.Connection:

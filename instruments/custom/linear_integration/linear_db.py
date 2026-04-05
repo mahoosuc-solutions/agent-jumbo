@@ -7,14 +7,22 @@ Mirrors Linear state for fast dashboard queries and offline resilience.
 import json
 from typing import Any
 
+from python.helpers import files
 from python.helpers.db_connection import DatabaseConnection, SyncLogMixin
+from python.helpers.db_paths import db_path as get_db_path, migrate_db_if_needed
 
 
 class LinearDatabase(SyncLogMixin):
     """Local cache for Linear issues, projects, and sync state."""
 
-    def __init__(self, db_path: str = "data/linear_integration.db"):
-        self.db = DatabaseConnection(db_path)
+    def __init__(self, db_path: str | None = None):
+        # If no path provided, use centralized location
+        resolved: str = db_path if db_path is not None else get_db_path("linear_integration.db")
+        # Migration: if old instrument-local DB exists, copy to new location
+        old_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
+        migrate_db_if_needed(old_path, "linear_integration.db")
+
+        self.db = DatabaseConnection(resolved)
         self.init_database()
 
     def init_database(self) -> None:

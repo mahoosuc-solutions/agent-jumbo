@@ -7,14 +7,14 @@ from __future__ import annotations
 import sqlite3
 import traceback
 
-from python.helpers import files
 from python.helpers.api import ApiHandler
+from python.helpers.db_paths import db_path
 
-# Integration -> relative DB path
+# Integration -> DB name
 _DB_PATHS: dict[str, str] = {
-    "linear": "instruments/custom/linear_integration/data/linear_integration.db",
-    "motion": "instruments/custom/motion_integration/data/motion_integration.db",
-    "notion": "instruments/custom/notion_integration/data/notion_integration.db",
+    "linear": "linear_integration.db",
+    "motion": "motion_integration.db",
+    "notion": "notion_integration.db",
 }
 
 
@@ -33,8 +33,8 @@ class MOSSyncHistory(ApiHandler):
             limit = max(1, min(int(input.get("limit", 20)), 100))
             offset = max(0, int(input.get("offset", 0)))
 
-            db_path = files.get_abs_path(f"./{_DB_PATHS[integration]}")
-            conn = sqlite3.connect(db_path)
+            db_file = db_path(_DB_PATHS[integration])
+            conn = sqlite3.connect(db_file)
             conn.row_factory = sqlite3.Row
 
             # Total count

@@ -235,6 +235,13 @@ def initialize_chats():
 
     async def initialize_chats_async():
         persist_chat.load_tmp_chats()
+        # Sync core projects to portfolio after chats load
+        try:
+            from python.helpers.portfolio_sync import sync_core_projects_to_portfolio
+
+            sync_core_projects_to_portfolio()
+        except Exception as e:
+            print(f"[portfolio sync] skipped: {e}")
 
     return defer.DeferredTask().start_task(initialize_chats_async)
 

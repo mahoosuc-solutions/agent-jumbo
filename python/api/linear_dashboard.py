@@ -7,7 +7,6 @@ from __future__ import annotations
 import os
 import traceback
 
-from python.helpers import files
 from python.helpers.api import ApiHandler
 
 
@@ -17,8 +16,6 @@ class LinearDashboard(ApiHandler):
     async def process(self, input: dict, request) -> dict:
         try:
             from instruments.custom.linear_integration.linear_manager import LinearManager
-
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
 
             api_key = None
             try:
@@ -30,7 +27,7 @@ class LinearDashboard(ApiHandler):
             if not api_key:
                 api_key = os.getenv("LINEAR_API_KEY", "")
 
-            manager = LinearManager(db_path, api_key=api_key or None)
+            manager = LinearManager(api_key=api_key or None)
 
             action = input.get("action", "dashboard")
 

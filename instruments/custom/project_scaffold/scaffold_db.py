@@ -7,15 +7,23 @@ import json
 import sqlite3
 from pathlib import Path
 
+from python.helpers import files
 from python.helpers.datetime_utils import isoformat_z, utc_now
+from python.helpers.db_paths import db_path as get_db_path, migrate_db_if_needed
 
 
 class ScaffoldDatabase:
     """SQLite database for managing project templates and generated projects"""
 
-    def __init__(self, db_path: str):
-        self.db_path = db_path
-        Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+    def __init__(self, db_path: str | None = None):
+        # If no path provided, use centralized location
+        resolved: str = db_path if db_path is not None else get_db_path("project_scaffold.db")
+        # Migration: if old instrument-local DB exists, copy to new location
+        old_path = files.get_abs_path("./instruments/custom/project_scaffold/data/project_scaffold.db")
+        migrate_db_if_needed(old_path, "project_scaffold.db")
+
+        self.db_path = resolved
+        Path(resolved).parent.mkdir(parents=True, exist_ok=True)
         self._init_db()
 
     def _connect(self) -> sqlite3.Connection:

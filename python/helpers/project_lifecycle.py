@@ -206,7 +206,6 @@ def _run_async(coro):
 def _get_linear_manager():
     from instruments.custom.linear_integration.linear_manager import LinearManager
 
-    db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
     api_key = ""
     try:
         from python.helpers.settings import get_settings
@@ -216,7 +215,7 @@ def _get_linear_manager():
         pass
     if not api_key:
         api_key = os.getenv("LINEAR_API_KEY", "")
-    return LinearManager(db_path, api_key=api_key or None)
+    return LinearManager(api_key=api_key or None)
 
 
 def _get_linear_team_id() -> str:
@@ -405,8 +404,7 @@ def _resolve_template_path(template_id: str) -> str:
 def _get_workflow_manager():
     from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
 
-    db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-    return WorkflowEngineManager(db_path)
+    return WorkflowEngineManager()
 
 
 def _run_visual_validation_if_configured(

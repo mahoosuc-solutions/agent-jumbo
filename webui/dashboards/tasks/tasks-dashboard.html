@@ -1,19 +1,8 @@
-<html>
-
-<head>
-  <title>Task Dashboard</title>
-  <script type="module">
-    import { store } from "/dashboards/tasks/tasks-store.js";
-  </script>
-</head>
-
-<body>
-  <div x-data>
-    <template x-if="$store.tasksDashboard">
-      <div class="tasks-dashboard dashboard-page"
-           data-testid="tasks-dashboard"
-           x-create="$store.tasksDashboard.onOpen()"
-           x-destroy="$store.tasksDashboard.cleanup()">
+<div class="tasks-dashboard dashboard-page"
+     data-testid="tasks-dashboard"
+     x-data
+     x-init="$store.tasksDashboard?.onOpen()"
+     x-destroy="$store.tasksDashboard?.cleanup()">
 
         <!-- Dashboard Header -->
         <div class="dashboard-header">
@@ -173,8 +162,6 @@
           <p>Try selecting a different filter or create tasks in Settings</p>
         </div>
 
-      </div>
-    </template>
   </div>
 
   <style>
@@ -553,6 +540,4 @@
       .td-card-actions { flex-direction: column; }
     }
   </style>
-</body>
-
-</html>
+</div>

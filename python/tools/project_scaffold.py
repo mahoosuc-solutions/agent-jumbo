@@ -22,9 +22,8 @@ class ProjectScaffold(Tool):
         from instruments.custom.project_scaffold.scaffold_manager import ScaffoldManager
 
         # Initialize manager
-        db_path = files.get_abs_path("./instruments/custom/project_scaffold/data/project_scaffold.db")
         templates_dir = files.get_abs_path("./instruments/custom/project_scaffold/templates")
-        self.manager = ScaffoldManager(db_path, templates_dir)
+        self.manager = ScaffoldManager(templates_dir=templates_dir)
 
     async def execute(self, **kwargs):
         """Execute project scaffold action"""

@@ -47,6 +47,19 @@ def sync_core_projects_to_portfolio(
         meta = _read_project_meta(entry_path)
         title = meta.get("title") or entry
         description = meta.get("description", "")
+        color = meta.get("color", "")
+        memory_mode = meta.get("memory", "own")
+        instructions = meta.get("instructions", "")
+
+        # Determine which meta_dir exists
+        meta_dir = ".ajproj"
+        for candidate in (".a0proj", ".ajproj"):
+            if os.path.isdir(os.path.join(entry_path, candidate)):
+                meta_dir = candidate
+                break
+
+        # Read lifecycle metadata
+        lifecycle = _read_lifecycle_meta(entry_path, meta_dir)
 
         try:
             existing = db.get_project_by_path(entry_path)
@@ -55,6 +68,13 @@ def sync_core_projects_to_portfolio(
                     existing["id"],
                     description=description,
                     status=existing.get("status", "draft"),
+                    color=color,
+                    memory_mode=memory_mode,
+                    instructions=instructions,
+                    meta_dir=meta_dir,
+                    lifecycle_phase=lifecycle["lifecycle_phase"],
+                    lifecycle_model=lifecycle["lifecycle_model"],
+                    lifecycle_updated_at=lifecycle["lifecycle_updated_at"],
                 )
                 updated += 1
             else:
@@ -63,6 +83,13 @@ def sync_core_projects_to_portfolio(
                     path=entry_path,
                     description=description,
                     status="draft",
+                    color=color,
+                    memory_mode=memory_mode,
+                    instructions=instructions,
+                    meta_dir=meta_dir,
+                    lifecycle_phase=lifecycle["lifecycle_phase"],
+                    lifecycle_model=lifecycle["lifecycle_model"],
+                    lifecycle_updated_at=lifecycle["lifecycle_updated_at"],
                 )
                 added += 1
         except Exception:
@@ -74,6 +101,23 @@ def sync_core_projects_to_portfolio(
         "total": added + updated,
         "errors": errors,
     }
+
+
+def _read_lifecycle_meta(project_path: str, meta_dir: str) -> dict:
+    """Read lifecycle metadata from lifecycle.json if it exists"""
+    lifecycle_file = os.path.join(project_path, meta_dir, "lifecycle", "lifecycle.json")
+    if os.path.isfile(lifecycle_file):
+        try:
+            with open(lifecycle_file, encoding="utf-8") as f:
+                lc = json.load(f)
+            return {
+                "lifecycle_phase": lc.get("current_phase", ""),
+                "lifecycle_model": lc.get("lifecycle_model", ""),
+                "lifecycle_updated_at": lc.get("updated_at", ""),
+            }
+        except Exception:
+            pass
+    return {"lifecycle_phase": "", "lifecycle_model": "", "lifecycle_updated_at": None}
 
 
 def _read_project_meta(project_path: str) -> dict:

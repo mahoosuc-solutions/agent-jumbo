@@ -8,7 +8,6 @@ search_issues, get_project_issues, sync_pipeline, get_dashboard.
 import json
 import os
 
-from python.helpers import files
 from python.helpers.tool import Response, Tool
 
 
@@ -19,8 +18,6 @@ class LinearIntegration(Tool):
         super().__init__(agent, name, method, args, message, loop_data, **kwargs)
 
         from instruments.custom.linear_integration.linear_manager import LinearManager
-
-        db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
 
         # Resolve API key from settings or env
         api_key = None
@@ -33,7 +30,7 @@ class LinearIntegration(Tool):
         if not api_key:
             api_key = os.getenv("LINEAR_API_KEY", "")
 
-        self.manager = LinearManager(db_path, api_key=api_key or None)
+        self.manager = LinearManager(api_key=api_key or None)
 
     async def execute(self, **kwargs):
         action = (self.args.get("action") or "").lower()

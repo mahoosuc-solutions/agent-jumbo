@@ -38,10 +38,7 @@ class LifeOS(Tool):
             try:
                 from instruments.custom.linear_integration.linear_db import LinearDatabase
 
-                linear_db_path = files.get_abs_path(
-                    "./instruments/custom/linear_integration/data/linear_integration.db"
-                )
-                linear_db = LinearDatabase(linear_db_path)
+                linear_db = LinearDatabase()
                 linear_items = linear_db.get_issues(state_name="In Progress", limit=10)
                 if linear_items:
                     result["linear_cycle_items"] = [

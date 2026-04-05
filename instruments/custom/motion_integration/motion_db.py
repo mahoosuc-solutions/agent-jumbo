@@ -5,13 +5,22 @@ Motion Integration Database — local SQLite cache for Motion tasks and mappings
 import json
 from typing import Any
 
+from python.helpers import files
 from python.helpers.db_connection import DatabaseConnection, SyncLogMixin
+from python.helpers.db_paths import db_path as get_db_path, migrate_db_if_needed
 
 
 class MotionDatabase(SyncLogMixin):
     """Local cache for Motion tasks and Linear<>Motion mappings."""
 
-    def __init__(self, db_path: str = "data/motion_integration.db"):
+    def __init__(self, db_path: str | None = None):
+        # If no path provided, use centralized location
+        if db_path is None:
+            db_path = get_db_path("motion_integration.db")
+        # Migration: if old instrument-local DB exists, copy to new location
+        old_path = files.get_abs_path("./instruments/custom/motion_integration/data/motion_integration.db")
+        migrate_db_if_needed(old_path, "motion_integration.db")
+
         self.db = DatabaseConnection(db_path)
         self.init_database()
 

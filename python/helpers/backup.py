@@ -73,9 +73,11 @@ class BackupService:
 {agent_root}/.env
 {agent_root}/tmp/settings.json
 {agent_root}/tmp/secrets.env
-{agent_root}/tmp/chats/**
 {agent_root}/tmp/scheduler/**
 {agent_root}/tmp/uploads/**
+
+# Centralized data directory (DBs, chats)
+{agent_root}/data/**
 
 # User data
 {agent_root}/usr/**

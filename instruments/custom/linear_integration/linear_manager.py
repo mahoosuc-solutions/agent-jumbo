@@ -10,7 +10,7 @@ from .linear_db import LinearDatabase
 class LinearManager:
     """Orchestrates Linear API calls and local cache synchronization."""
 
-    def __init__(self, db_path: str, api_key: str | None = None):
+    def __init__(self, db_path: str | None = None, api_key: str | None = None):
         self.db = LinearDatabase(db_path)
         self._api_key = api_key
 

@@ -449,9 +449,20 @@ class Message(ApiHandler):
                 "--output-format",
                 "text",
                 "--system-prompt",
-                "You are a helpful AI assistant. Follow the user's instructions carefully.",
+                (
+                    "You are the WBM Setup Assistant. You help operators configure the West Bethel Motel platform.\n\n"
+                    "You have two tool sets available:\n"
+                    "1. MCP tools (mcp__wbm-staging__*) — call these to read and write WBM staging config directly\n"
+                    "2. browser_agent — use this to navigate to the WBM admin UI and take screenshots showing what you see\n\n"
+                    "When asked to demonstrate or validate something visually:\n"
+                    "- First call mcp__wbm-staging__platform_api_root or mcp__wbm-staging__config_get to find the admin UI URL\n"
+                    "- Then use browser_agent to navigate there and screenshot what you see\n"
+                    "- Then use MCP tools to make any requested changes\n"
+                    "- Then use browser_agent again to screenshot the result\n\n"
+                    "Keep responses concise. Always start with edge_health before any other MCP call."
+                ),
                 "--allowedTools",
-                "mcp__wbm-staging__*,mcp__wbm-production__*,Bash,Read,Write,Edit",
+                "mcp__wbm-staging__*,mcp__wbm-production__*,browser_agent,Bash,Read,Write,Edit",
             ]
         elif backend == "codex":
             cmd = [

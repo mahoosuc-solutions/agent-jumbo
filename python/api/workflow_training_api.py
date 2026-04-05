@@ -3,9 +3,6 @@ API endpoint for Workflow Training operations.
 Handles skills, learning paths, and training modules.
 """
 
-import os
-
-from python.helpers import files
 from python.helpers.api import ApiHandler, Request, Response
 
 
@@ -24,16 +21,8 @@ class WorkflowTrainingApi(ApiHandler):
                 WorkflowVisualizer,
             )
 
-            # Get database path
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-
-            # Ensure data directory exists
-            data_dir = os.path.dirname(db_path)
-            if not os.path.exists(data_dir):
-                os.makedirs(data_dir, exist_ok=True)
-
             # Initialize manager and visualizer
-            manager = WorkflowEngineManager(db_path)
+            manager = WorkflowEngineManager()
             visualizer = WorkflowVisualizer()
 
             # Route to appropriate handler

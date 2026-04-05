@@ -69,6 +69,24 @@ class Tool:
         PrintStyle(font_color="#85C1E9").print(text)
         self.log.update(content=text)
 
+        # Log tool use to agent journal (never fail)
+        try:
+            from python.helpers import agent_journal
+
+            project_name = getattr(getattr(self.agent, "active_project", None), "name", None)
+            ctx_id = getattr(self.agent, "id", "") or ""
+            session_id = agent_journal.get_or_create_session(ctx_id, project_name)
+            agent_journal.log_tool_use(
+                session_id=session_id,
+                tool_name=self.name,
+                description=f"{self.name} called",
+                outcome=text[:500] if text else None,
+                context_id=ctx_id,
+                project_name=project_name,
+            )
+        except Exception:
+            pass
+
     def get_log_object(self):
         if self.method:
             heading = f"icon://construction {self.agent.agent_name}: Using tool '{self.name}:{self.method}'"

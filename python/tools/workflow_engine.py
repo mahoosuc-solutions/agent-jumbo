@@ -5,7 +5,6 @@ Manages workflow execution from design through production and support phases
 
 from typing import Any
 
-from python.helpers import files
 from python.helpers.tool import Response, Tool
 
 
@@ -22,8 +21,7 @@ class WorkflowEngine(Tool):
 
         from instruments.custom.workflow_engine.workflow_manager import WorkflowEngineManager
 
-        db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-        self.manager = WorkflowEngineManager(db_path)
+        self.manager = WorkflowEngineManager()
 
     async def execute(self, **kwargs):
         action = self.args.get("action", "").lower()

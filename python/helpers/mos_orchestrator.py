@@ -50,7 +50,6 @@ class MOSOrchestrator:
         Scheduled: 8am, 12pm, 5pm weekdays."""
         try:
             from instruments.custom.motion_integration.motion_manager import MotionManager
-            from python.helpers import files
 
             keys = _resolve_keys("motion_api_key", "linear_api_key", "motion_workspace_id")
             if not all(keys.values()):
@@ -58,8 +57,7 @@ class MOSOrchestrator:
                 logger.info("sync_linear_to_motion skipped: missing %s", missing)
                 return {"skipped": True, "reason": f"Missing: {', '.join(missing)}"}
 
-            db_path = files.get_abs_path("./instruments/custom/motion_integration/data/motion_integration.db")
-            manager = MotionManager(db_path, api_key=keys["motion_api_key"])
+            manager = MotionManager(api_key=keys["motion_api_key"])
             logger.info("sync_linear_to_motion: starting")
             result = await manager.sync_from_linear(
                 workspace_id=keys["motion_workspace_id"],
@@ -77,15 +75,13 @@ class MOSOrchestrator:
         Scheduled: 6am daily."""
         try:
             from instruments.custom.linear_integration.linear_manager import LinearManager
-            from python.helpers import files
 
             keys = _resolve_keys("linear_api_key")
             if not keys["linear_api_key"]:
                 logger.info("sync_linear_activity_to_digest skipped: no LINEAR_API_KEY")
                 return {"skipped": True, "reason": "No LINEAR_API_KEY"}
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            manager = LinearManager(db_path, api_key=keys["linear_api_key"])
+            manager = LinearManager(api_key=keys["linear_api_key"])
             logger.info("sync_linear_activity_to_digest: starting")
             result = await manager.sync_pipeline()
             logger.info("sync_linear_activity_to_digest: completed — %s", result)
@@ -105,14 +101,12 @@ class MOSOrchestrator:
         """Hook: customer_lifecycle.capture_lead → create Linear issue."""
         try:
             from instruments.custom.linear_integration.linear_manager import LinearManager
-            from python.helpers import files
 
             keys = _resolve_keys("linear_api_key", "linear_default_team_id")
             if not keys["linear_api_key"] or not keys["linear_default_team_id"]:
                 return
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            manager = LinearManager(db_path, api_key=keys["linear_api_key"])
+            manager = LinearManager(api_key=keys["linear_api_key"])
             title = f"New Lead: {customer_name}" + (f" ({company})" if company else "")
             logger.info("on_lead_captured: creating Linear issue — %s", title)
             await manager.create_issue(
@@ -135,14 +129,12 @@ class MOSOrchestrator:
                 return
 
             from instruments.custom.linear_integration.linear_manager import LinearManager
-            from python.helpers import files
 
             keys = _resolve_keys("linear_api_key", "linear_default_team_id")
             if not keys["linear_api_key"]:
                 return
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            manager = LinearManager(db_path, api_key=keys["linear_api_key"])
+            manager = LinearManager(api_key=keys["linear_api_key"])
             client = manager._get_client()
 
             team_id = keys["linear_default_team_id"]

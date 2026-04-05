@@ -49,7 +49,11 @@ def get_projects_parent_folder():
 
 
 def get_project_folder(name: str):
-    return files.get_abs_path(get_projects_parent_folder(), name)
+    parent = os.path.realpath(files.get_abs_path(PROJECTS_PARENT_DIR))
+    target = os.path.realpath(os.path.join(parent, name))
+    if not target.startswith(parent + os.sep) and target != parent:
+        raise ValueError(f"Project name escapes projects directory: {name!r}")
+    return target
 
 
 def get_project_meta_folder(name: str, *sub_dirs: str):

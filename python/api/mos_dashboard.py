@@ -44,8 +44,7 @@ class MOSDashboard(ApiHandler):
         try:
             from instruments.custom.linear_integration.linear_db import LinearDatabase
 
-            db_path = files.get_abs_path("./instruments/custom/linear_integration/data/linear_integration.db")
-            db = LinearDatabase(db_path)
+            db = LinearDatabase()
             return db.get_dashboard_data()
         except Exception as e:
             return {"error": str(e)}

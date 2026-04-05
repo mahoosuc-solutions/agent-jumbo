@@ -10,25 +10,16 @@ import sqlite3
 import traceback
 from datetime import datetime, timezone
 
-from python.helpers import files
 from python.helpers.api import ApiHandler
+from python.helpers.db_paths import db_path
 from python.helpers.defer import DeferredTask
 from python.helpers.print_style import PrintStyle
 
-# Maps integration name -> (db relative path, integration label)
+# Maps integration name -> (db name, integration label)
 _INTEGRATION_META: dict[str, tuple[str, str]] = {
-    "linear": (
-        "instruments/custom/linear_integration/data/linear_integration.db",
-        "linear_integration",
-    ),
-    "motion": (
-        "instruments/custom/motion_integration/data/motion_integration.db",
-        "motion_integration",
-    ),
-    "notion": (
-        "instruments/custom/notion_integration/data/notion_integration.db",
-        "notion_integration",
-    ),
+    "linear": ("linear_integration.db", "linear_integration"),
+    "motion": ("motion_integration.db", "motion_integration"),
+    "notion": ("notion_integration.db", "notion_integration"),
 }
 
 
@@ -67,12 +58,12 @@ class MOSSyncStatus(ApiHandler):
 
     def _start_background_sync(self, integration: str) -> int:
         """Insert a ``started`` row, then spawn the sync on a DeferredTask."""
-        db_rel, _label = _INTEGRATION_META[integration]
-        db_path = files.get_abs_path(f"./{db_rel}")
-        self._ensure_sync_log_table(db_path)
+        db_name, _label = _INTEGRATION_META[integration]
+        db_file = db_path(db_name)
+        self._ensure_sync_log_table(db_file)
 
         now = datetime.now(timezone.utc).isoformat()
-        conn = sqlite3.connect(db_path)
+        conn = sqlite3.connect(db_file)
         try:
             cursor = conn.execute(
                 "INSERT INTO sync_log (sync_type, started_at, status) VALUES (?, ?, ?)",
@@ -85,7 +76,7 @@ class MOSSyncStatus(ApiHandler):
 
         # Fire-and-forget via DeferredTask
         task = DeferredTask(thread_name=f"mos-sync-{integration}-{sync_id}")
-        task.start_task(self._run_sync, integration, db_path, sync_id)
+        task.start_task(self._run_sync, integration, db_file, sync_id)
 
         return sync_id
 
@@ -193,10 +184,10 @@ class MOSSyncStatus(ApiHandler):
         conn.commit()
         conn.close()
 
-    def _get_sync_status(self, relative_db_path: str, integration_name: str) -> dict:
+    def _get_sync_status(self, db_name: str, integration_name: str) -> dict:
         try:
-            db_path = files.get_abs_path(f"./{relative_db_path}")
-            conn = sqlite3.connect(db_path)
+            db_file = db_path(db_name)
+            conn = sqlite3.connect(db_file)
 
             # Last sync
             cursor = conn.execute("SELECT * FROM sync_log ORDER BY id DESC LIMIT 1")

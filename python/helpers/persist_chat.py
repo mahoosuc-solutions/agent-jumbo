@@ -1,4 +1,5 @@
 import json
+import os
 import uuid
 from collections import OrderedDict
 from datetime import datetime
@@ -9,7 +10,7 @@ from initialize import initialize_agent
 from python.helpers import files, history
 from python.helpers.log import Log, LogItem
 
-CHATS_FOLDER = "tmp/chats"
+CHATS_FOLDER = "data/chats"
 LOG_SIZE = 1000
 CHAT_FILE_NAME = "chat.json"
 
@@ -43,6 +44,15 @@ def save_tmp_chat(context: AgentContext):
     js = _safe_json_serialize(data, ensure_ascii=False)
     files.write_file(path, js)
 
+    # Integrate with agent journal (never fail on journal errors)
+    try:
+        from python.helpers import agent_journal
+
+        project_name = getattr(getattr(context, "active_project", None), "name", None)
+        agent_journal.get_or_create_session(context.id, project_name)
+    except Exception:
+        pass
+
 
 def save_tmp_chats():
     """Save all contexts to the chats folder"""
@@ -53,8 +63,48 @@ def save_tmp_chats():
         save_tmp_chat(context)
 
 
+def _migrate_chats_tmp_to_data():
+    """Migrate chats from tmp/chats to data/chats if they exist"""
+    old_chats_folder = files.get_abs_path("tmp/chats")
+    new_chats_folder = files.get_abs_path(CHATS_FOLDER)
+
+    # Check if old folder exists and has subdirectories
+    if not os.path.isdir(old_chats_folder):
+        return
+
+    try:
+        subdirs = [d for d in os.listdir(old_chats_folder) if os.path.isdir(os.path.join(old_chats_folder, d))]
+        if not subdirs:
+            return
+
+        # Ensure new folder exists
+        os.makedirs(new_chats_folder, exist_ok=True)
+
+        migrated = 0
+        for subdir in subdirs:
+            old_path = os.path.join(old_chats_folder, subdir)
+            new_path = os.path.join(new_chats_folder, subdir)
+
+            # Skip if already exists at destination
+            if os.path.exists(new_path):
+                continue
+
+            # Move the directory
+            try:
+                files.move_file(old_path, new_path)
+                migrated += 1
+            except Exception as e:
+                print(f"Failed to migrate chat {subdir}: {e}")
+
+        if migrated > 0:
+            print(f"Migrated {migrated} chat(s) from tmp/chats to data/chats")
+    except Exception as e:
+        print(f"Error during chat migration: {e}")
+
+
 def load_tmp_chats():
     """Load all contexts from the chats folder"""
+    _migrate_chats_tmp_to_data()
     _convert_v080_chats()
     folders = files.list_files(CHATS_FOLDER, "*")
     json_files = []
@@ -107,6 +157,21 @@ def export_json_chat(context: AgentContext):
 
 def remove_chat(ctxid):
     """Remove a chat or task context"""
+    # Mark work session as completed before removing chat
+    try:
+        from python.helpers import agent_journal
+
+        db = agent_journal._get_db()
+        agent_journal._ensure_schema(db)
+        row = db.fetch_one(
+            "SELECT id FROM work_sessions WHERE context_id=? AND status='active' ORDER BY started_at DESC LIMIT 1",
+            (ctxid,),
+        )
+        if row:
+            agent_journal.end_session(row["id"], status="completed")
+    except Exception:
+        pass
+
     path = get_chat_folder_path(ctxid)
     files.delete_dir(path)
 

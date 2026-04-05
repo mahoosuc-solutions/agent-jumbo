@@ -16,7 +16,7 @@ from .scaffold_db import ScaffoldDatabase
 class ScaffoldManager:
     """Manages project scaffolding from templates"""
 
-    def __init__(self, db_path: str, templates_dir: str | None = None):
+    def __init__(self, db_path: str | None = None, templates_dir: str | None = None):
         self.db = ScaffoldDatabase(db_path)
         self.templates_dir = templates_dir or str(Path(__file__).parent / "templates")
 

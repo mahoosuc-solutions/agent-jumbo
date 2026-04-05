@@ -138,6 +138,8 @@ class LLMRouterDatabase:
     def _init_db(self):
         """Initialize database schema"""
         with sqlite3.connect(self.db_path) as conn:
+            conn.execute("PRAGMA journal_mode=WAL")
+            conn.execute("PRAGMA busy_timeout=5000")
             conn.executescript("""
                 -- Available models registry
                 CREATE TABLE IF NOT EXISTS models (

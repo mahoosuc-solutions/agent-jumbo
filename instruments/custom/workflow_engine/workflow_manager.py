@@ -18,7 +18,7 @@ from .workflow_db import WorkflowEngineDatabase
 class WorkflowEngineManager:
     """Manager for workflow orchestration and training"""
 
-    def __init__(self, db_path: str):
+    def __init__(self, db_path: str | None = None):
         self.db = WorkflowEngineDatabase(db_path)
         self._schema_cache = {}
         self._load_schemas()

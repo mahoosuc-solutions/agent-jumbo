@@ -182,6 +182,12 @@
   .agent-status-dot.thinking { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); animation: pulse 1s ease-in-out infinite; }
   .agent-status-label { font-size: 11px; color: var(--muted); }
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .demo-btn { font-size: 11px; padding: 4px 8px; border-radius: 4px; background: var(--copper); color: #000; border: none; cursor: pointer; font-weight: 700; flex-shrink: 0; }
+  .demo-btn:hover:not(:disabled) { background: var(--copper2, #d4a853); }
+  .demo-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .agent-panel-footer { padding: 6px 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); text-align: center; flex-shrink: 0; }
+  .agent-panel-footer a { color: var(--copper); text-decoration: none; }
+  .agent-panel-footer a:hover { text-decoration: underline; }
 
   .agent-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
   .agent-msg { display: flex; flex-direction: column; gap: 4px; max-width: 100%; }
@@ -1090,6 +1096,7 @@
         <div class="agent-panel-title">WBM Setup Assistant</div>
         <div class="agent-status-label" id="agent-status-label">Initializing…</div>
       </div>
+      <button class="demo-btn" id="demo-btn" onclick="runAgentDemo()" title="Run two-screen demo">▶ Demo</button>
     </div>
     <div class="agent-messages" id="agent-messages"></div>
     <div class="agent-input-area">
@@ -1098,6 +1105,7 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
       </button>
     </div>
+    <div class="agent-panel-footer">Demo requires Trust Level ≥ Co-Worker in <a href="/" target="_blank">Settings</a></div>
   </aside>
 </div>
 
@@ -1106,13 +1114,14 @@
 
 <!-- Agent drawer (narrow screens) -->
 <div class="agent-drawer" id="agent-drawer">
-  <div class="agent-panel-header" style="cursor:pointer" onclick="toggleAgentDrawer()">
+  <div class="agent-panel-header">
     <div class="agent-status-dot" id="agent-dot-drawer"></div>
-    <div>
+    <div style="cursor:pointer;flex:1" onclick="toggleAgentDrawer()">
       <div class="agent-panel-title">WBM Setup Assistant</div>
       <div class="agent-status-label" id="agent-status-label-drawer">Initializing…</div>
     </div>
-    <svg style="margin-left:auto;color:var(--muted)" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <button class="demo-btn" id="demo-btn-drawer" onclick="runAgentDemo()" title="Run two-screen demo">▶ Demo</button>
+    <svg style="color:var(--muted);cursor:pointer;flex-shrink:0" onclick="toggleAgentDrawer()" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
   </div>
   <div class="agent-messages" id="agent-messages-drawer"></div>
   <div class="agent-input-area">
@@ -1166,6 +1175,35 @@ function setAgentStatus(state) {
     const el = document.getElementById(id);
     if (el) el.textContent = labels[state] || state;
   });
+  const busy = state === 'thinking' || state === 'initializing';
+  ['demo-btn', 'demo-btn-drawer'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = busy;
+  });
+}
+
+function runAgentDemo() {
+  if (agentThinking) return;
+  const prompt = [
+    'Run the two-screen WBM demo:',
+    '1. Call mcp__wbm-staging__edge_health to confirm the bridge is up',
+    '2. Call mcp__wbm-staging__platform_api_root or mcp__wbm-staging__config_get to find the WBM staging admin UI URL',
+    '3. Use browser_agent to navigate to that URL and take a screenshot',
+    '4. Call mcp__wbm-staging__config_get to read the current property configuration (name, address, check_in_time, check_out_time)',
+    '5. Report what you see on both the screenshot and in the config',
+    'The human operator has the WBM admin UI open in a separate browser window — your browser_agent screenshots and their live browser should show the same thing.'
+  ].join('\n');
+  const isNarrow = window.innerWidth < 1200;
+  if (isNarrow) {
+    openAgentDrawer();
+    const inp = document.getElementById('agent-input-drawer');
+    if (inp) inp.value = prompt;
+    handleAgentSendDrawer();
+  } else {
+    const inp = document.getElementById('agent-input');
+    if (inp) inp.value = prompt;
+    handleAgentSend();
+  }
 }
 
 function appendMsgToContainer(containerId, role, text, msgNo) {

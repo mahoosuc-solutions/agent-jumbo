@@ -3,9 +3,6 @@ API endpoint for the Workflow Dashboard UI.
 Provides aggregated data for workflows, executions, skills, and learning paths.
 """
 
-import os
-
-from python.helpers import files
 from python.helpers.api import ApiHandler, Request, Response
 
 
@@ -19,16 +16,8 @@ class WorkflowDashboard(ApiHandler):
                 WorkflowEngineManager,
             )
 
-            # Get database path
-            db_path = files.get_abs_path("./instruments/custom/workflow_engine/data/workflow.db")
-
-            # Ensure data directory exists
-            data_dir = os.path.dirname(db_path)
-            if not os.path.exists(data_dir):
-                os.makedirs(data_dir, exist_ok=True)
-
             # Initialize manager
-            manager = WorkflowEngineManager(db_path)
+            manager = WorkflowEngineManager()
 
             # Get statistics
             stats = manager.get_stats()

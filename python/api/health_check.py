@@ -7,13 +7,14 @@ import shutil
 import sqlite3
 
 from python.helpers.api import ApiHandler, Request, Response
+from python.helpers.db_paths import db_path
 from python.helpers.files import get_abs_path
 from python.helpers.llm_router import get_router
 
 # SQLite databases to check
 _DB_PATHS = [
-    "instruments/custom/workflow_engine/data/workflow.db",
-    "instruments/custom/work_queue/data/work_queue.db",
+    db_path("workflow.db"),
+    db_path("work_queue.db"),
 ]
 
 
@@ -21,8 +22,7 @@ def _check_databases() -> dict:
     """Try SELECT 1 on each critical SQLite database."""
     accessible: list[str] = []
     errors: list[str] = []
-    for rel_path in _DB_PATHS:
-        db_file = get_abs_path(rel_path)
+    for db_file in _DB_PATHS:
         db_name = os.path.basename(db_file)
         try:
             conn = sqlite3.connect(db_file, timeout=3)

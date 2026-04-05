@@ -125,6 +125,23 @@ class PortfolioDatabase:
         """Initialize database schema"""
         with self.db.cursor() as cur:
             cur.executescript(self.SCHEMA)
+            self._migrate_schema(cur)
+
+    def _migrate_schema(self, cur) -> None:
+        """Add new columns to projects table if they don't exist"""
+        existing = {row[1] for row in cur.execute("PRAGMA table_info(projects)").fetchall()}
+        migrations = [
+            ("color", "TEXT DEFAULT ''"),
+            ("memory_mode", "TEXT DEFAULT 'own'"),
+            ("instructions", "TEXT DEFAULT ''"),
+            ("lifecycle_phase", "TEXT DEFAULT ''"),
+            ("lifecycle_model", "TEXT DEFAULT ''"),
+            ("lifecycle_updated_at", "TEXT"),
+            ("meta_dir", "TEXT DEFAULT '.ajproj'"),
+        ]
+        for col, typedef in migrations:
+            if col not in existing:
+                cur.execute(f"ALTER TABLE projects ADD COLUMN {col} {typedef}")
 
     # Project operations
     def add_project(self, name: str, path: str, **kwargs) -> int:
@@ -139,6 +156,13 @@ class PortfolioDatabase:
             "version": kwargs.get("version"),
             "license": kwargs.get("license"),
             "status": kwargs.get("status", "draft"),
+            "color": kwargs.get("color", ""),
+            "memory_mode": kwargs.get("memory_mode", "own"),
+            "instructions": kwargs.get("instructions", ""),
+            "lifecycle_phase": kwargs.get("lifecycle_phase", ""),
+            "lifecycle_model": kwargs.get("lifecycle_model", ""),
+            "lifecycle_updated_at": kwargs.get("lifecycle_updated_at"),
+            "meta_dir": kwargs.get("meta_dir", ".ajproj"),
             "created_at": now,
             "updated_at": now,
         }

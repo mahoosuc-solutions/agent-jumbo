@@ -1,8 +1,13 @@
 # Production Dockerfile for Agent Jumbo
-# Bakes the entire codebase into the image at build time.
-# Only data volumes and external drive mounts are used at runtime.
+#
+# Two-stage layer strategy:
+#   deps  — apt packages, pip installs, playwright, preload (slow; cached unless requirements change)
+#   app   — project source copy + post-install wiring (fast; rebuilds on every code change)
+#
+# First build after this change is full-length. Subsequent code-only rebuilds skip all deps.
+
 ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
-FROM ${BASE_IMAGE}
+FROM ${BASE_IMAGE} AS deps
 
 ARG INSTALL_PLAYWRIGHT=1
 ARG RUN_PRELOAD=1
@@ -20,31 +25,63 @@ RUN echo "deb https://kali.download/kali kali-rolling main contrib non-free non-
 # Copy AJ-specific install scripts and configs
 COPY ./docker/run/fs/ /
 
-# pre installation steps (apt packages, system config)
+# Pre-installation steps (apt packages, system config)
 RUN --mount=type=cache,target=/var/cache/apt \
     --mount=type=cache,target=/var/lib/apt \
     bash /ins/pre_install.sh local
 
-# Copy full project into /git/agent-jumbo (matches expected install path)
-# and also into /aj (runtime working directory)
-COPY . /git/agent-jumbo
-COPY . /aj
-WORKDIR /aj
+# Copy ONLY the dependency manifests — not the full source.
+# This layer only invalidates when requirements actually change.
+RUN mkdir -p /git/agent-jumbo
+COPY requirements.txt requirements2.txt /git/agent-jumbo/
 
 # Refresh apt index (base image may be stale vs Kali rolling repos)
 RUN apt-get update
 
-# Install AJ dependencies using local copy (no GitHub clone needed)
+# Install Python dependencies
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=cache,target=/root/.cache/uv \
-    bash /ins/install_aj.sh local
+    bash -c '. /ins/setup_venv.sh local && \
+    uv pip install -r /git/agent-jumbo/requirements.txt && \
+    uv pip install -r /git/agent-jumbo/requirements2.txt'
 
-# Install additional software (playwright, etc.)
+# Install playwright browsers into a stable path (not inside /aj which is copied later)
+ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
+RUN bash -c 'if [ "${INSTALL_PLAYWRIGHT:-1}" = "1" ]; then \
+        . /ins/setup_venv.sh local && \
+        uv pip install playwright && \
+        apt-get install -y fonts-unifont libnss3 libnspr4 libatk1.0-0 libatspi2.0-0 \
+            libxcomposite1 libxdamage1 libatk-bridge2.0-0 libcups2 && \
+        playwright install chromium --only-shell; \
+    else \
+        echo "Skipping Playwright install (INSTALL_PLAYWRIGHT=${INSTALL_PLAYWRIGHT})"; \
+    fi'
+
+# Install additional tools (runs against the deps layer, cached separately)
 RUN bash /ins/install_additional.sh local
 
-# Post-install cleanup and config (local mode skips git clone in install_aj2.sh)
-RUN bash /ins/install_aj2.sh local
-RUN bash /ins/post_install.sh local
+# App stage — only this layer rebuilds on code changes
+FROM deps AS app
+
+# Copy full project source
+COPY . /git/agent-jumbo
+COPY . /aj
+WORKDIR /aj
+
+# usr/projects is excluded from the image (large user data) but lives on the host
+# bind-mounted at /mnt/wdblack. Symlink so relative path resolution finds it.
+RUN ln -sf /mnt/wdblack/dev/projects/agent-jumbo/usr/projects /aj/usr/projects
+
+# Preload models (runs after source is present; skip with RUN_PRELOAD=0 for fast iteration)
+RUN bash -c 'if [ "${RUN_PRELOAD:-1}" = "1" ]; then \
+        . /ins/setup_venv.sh local && \
+        python /git/agent-jumbo/preload.py --dockerized=true; \
+    else \
+        echo "Skipping preload (RUN_PRELOAD=${RUN_PRELOAD})"; \
+    fi'
+
+# Cleanup package lists
+RUN rm -rf /var/lib/apt/lists/* && apt-get clean
 
 EXPOSE 22 80 9000-9009
 

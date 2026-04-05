@@ -47,6 +47,7 @@ class MessageStore:
         self._persistent_conn: sqlite3.Connection | None = None
         if self._db_path == ":memory:":
             self._persistent_conn = sqlite3.connect(":memory:")
+            self._persistent_conn.execute("PRAGMA busy_timeout=5000")
             self._persistent_conn.row_factory = sqlite3.Row
         self._ensure_tables()
 
@@ -144,6 +145,8 @@ class MessageStore:
         if self._persistent_conn is not None:
             return self._persistent_conn
         conn = sqlite3.connect(self._db_path)
+        conn.execute("PRAGMA journal_mode=WAL")
+        conn.execute("PRAGMA busy_timeout=5000")
         conn.row_factory = sqlite3.Row
         return conn
 

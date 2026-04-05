@@ -1,19 +1,8 @@
-<html>
-
-<head>
-  <title>Work Queue</title>
-  <script type="module">
-    import { store } from "/dashboards/work-queue/work-queue-store.js";
-  </script>
-</head>
-
-<body>
-  <div x-data>
-    <template x-if="$store.workQueueStore">
-      <div class="wq-dashboard dashboard-page"
-           data-testid="work-queue-dashboard"
-           x-create="$store.workQueueStore.onOpen()"
-           x-destroy="$store.workQueueStore.cleanup()">
+<div class="wq-dashboard dashboard-page"
+     data-testid="work-queue-dashboard"
+     x-data
+     x-init="$store.workQueueStore?.onOpen()"
+     x-destroy="$store.workQueueStore?.cleanup()">
 
         <!-- Dashboard Header -->
         <div class="dashboard-header">
@@ -313,8 +302,6 @@
           </div>
         </div>
 
-      </div>
-    </template>
   </div>
 
   <style>
@@ -915,6 +902,4 @@
       .wq-filters input { min-width: unset; width: 100%; }
     }
   </style>
-</body>
-
-</html>
+</div>

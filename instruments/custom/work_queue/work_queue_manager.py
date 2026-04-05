@@ -14,7 +14,7 @@ from .work_queue_db import WorkQueueDatabase
 class WorkQueueManager:
     """Orchestrates codebase scanning, Linear sync, scoring, and execution."""
 
-    def __init__(self, db_path: str, linear_api_key: str | None = None):
+    def __init__(self, db_path: str | None = None, linear_api_key: str | None = None):
         self.db = WorkQueueDatabase(db_path)
         self._linear_api_key = linear_api_key
 

@@ -7,7 +7,6 @@ from __future__ import annotations
 import json
 import traceback
 
-from python.helpers import files
 from python.helpers.api import ApiHandler
 
 
@@ -18,8 +17,7 @@ class WorkQueueSettings(ApiHandler):
         try:
             from instruments.custom.work_queue.work_queue_manager import WorkQueueManager
 
-            db_path = files.get_abs_path("./instruments/custom/work_queue/data/work_queue.db")
-            manager = WorkQueueManager(db_path)
+            manager = WorkQueueManager()
 
             action = input.get("action", "get")
 

@@ -10,7 +10,7 @@ from .motion_db import MotionDatabase
 class MotionManager:
     """Orchestrates Motion API calls, caching, and Linear sync."""
 
-    def __init__(self, db_path: str, api_key: str | None = None):
+    def __init__(self, db_path: str | None = None, api_key: str | None = None):
         self.db = MotionDatabase(db_path)
         self._api_key = api_key
 
