@@ -137,6 +137,19 @@ check_code_review_runtime_deps() {
     grep -q "^bandit" requirements.txt || return 1
 }
 
+check_mos_personas() {
+    # Verify all five MOS-integrated agent persona directories are present and complete
+    for persona in solution-design devops data-ml analytics customer-support; do
+        [[ -f "agents/${persona}/manifest.yaml" ]] || return 1
+        [[ -f "agents/${persona}/_context.md" ]] || return 1
+        [[ -f "agents/${persona}/prompts/agent.system.main.role.md" ]] || return 1
+        # Verify manifest declares the persona name correctly
+        grep -q "^name: ${persona}$" "agents/${persona}/manifest.yaml" || return 1
+        # Verify manifest inherits from a valid base profile
+        grep -q "^inherits:" "agents/${persona}/manifest.yaml" || return 1
+    done
+}
+
 echo "Agent Jumbo Release Validation"
 echo "=============================="
 echo "Report: $REPORT_FILE"
@@ -215,6 +228,7 @@ check_cmd "Python 3.11+ available for release tooling" check_python_release_vers
 check_text "pyproject declares Python 3.11+" '^requires-python = ">=3.11"$' "pyproject.toml"
 check_cmd "Core files compile" check_core_python_compile
 check_cmd "Code review runtime deps in requirements.txt" check_code_review_runtime_deps
+check_cmd "MOS agent personas complete" check_mos_personas
 
 echo ""
 echo "Web Validation:"

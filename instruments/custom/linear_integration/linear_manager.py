@@ -180,3 +180,18 @@ class LinearManager:
     def get_dashboard(self) -> dict[str, Any]:
         """Get aggregated dashboard data from local cache."""
         return self.db.get_dashboard_data()
+
+    def get_activity_summary(self, hours: int = 24) -> dict[str, Any]:
+        """Return a lightweight Linear activity summary for the past N hours.
+
+        Delegates to get_dashboard() for aggregate counts and layers in
+        a time-window label.  Called by MOSOrchestrator.generate_analytics_digest().
+        """
+        dashboard = self.get_dashboard()
+        return {
+            "period_hours": hours,
+            "total_issues": dashboard.get("total_issues", 0),
+            "total_projects": dashboard.get("total_projects", 0),
+            "last_sync": dashboard.get("last_sync"),
+            "syncs": dashboard.get("syncs", []),
+        }

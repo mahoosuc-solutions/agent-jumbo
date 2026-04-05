@@ -397,6 +397,34 @@ class WorkQueueManager:
 
     # ── Settings ──────────────────────────────────────────────────────
 
+    # ── Analytics helpers (used by MOS orchestrator) ──────────────────
+
+    def get_summary(self, hours: int = 24) -> dict[str, Any]:
+        """Return a lightweight work queue summary for the past N hours.
+
+        Delegates to get_dashboard() for aggregate counts and layers in
+        a time-window label.  Called by MOSOrchestrator.generate_analytics_digest().
+        """
+        dashboard = self.get_dashboard()
+        return {
+            "period_hours": hours,
+            "total": dashboard.get("total", 0),
+            "by_status": dashboard.get("by_status", {}),
+            "by_severity": dashboard.get("by_severity", {}),
+            "last_scan": dashboard.get("last_scan"),
+        }
+
+    def get_items_by_tag(self, tag: str) -> list[dict[str, Any]]:
+        """Return all work queue items whose title or description contains *tag*.
+
+        Used by MOSOrchestrator.check_support_queue() to find support-tagged items.
+        Falls back to a simple keyword search via the existing search_items() method.
+        """
+        results = self.search_items(tag)
+        return results
+
+    # ── Settings ──────────────────────────────────────────────────────
+
     def get_settings(self) -> dict[str, str]:
         return self.db.get_all_settings()
 
