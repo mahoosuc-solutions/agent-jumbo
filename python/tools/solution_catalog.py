@@ -1,6 +1,6 @@
 """
 Solution Catalog Tool
-Manages the AI infrastructure solution catalog — list, create, update, publish to Stripe.
+Manages the AI infrastructure solution catalog — list, create, update, publish to Stripe/Square/PayPal.
 """
 
 import sys
@@ -42,6 +42,7 @@ class SolutionCatalog(Tool):
             "create": self._create_solution,
             "update": self._update_solution,
             "publish": self._publish_to_stripe,
+            "publish_to_provider": self._publish_to_provider,
             "dashboard": self._dashboard,
             "proposal_data": self._proposal_data,
         }
@@ -218,6 +219,38 @@ class SolutionCatalog(Tool):
             f"- Product ID: `{result['stripe_product_id']}`\n"
             f"- Price ID: `{result.get('stripe_price_id', 'N/A')}`\n"
             f"- Setup Price ID: `{result.get('stripe_setup_price_id', 'N/A')}`\n"
+            f"- Status: {result['status']}",
+            break_loop=False,
+        )
+
+    async def _publish_to_provider(self) -> Response:
+        """Publish solution to any payment provider (square, paypal, stripe) via PaymentRouter."""
+        slug = self.args.get("slug")
+        provider_name = (self.args.get("provider") or "stripe").lower()
+        if not slug:
+            return Response(
+                message="Error: 'slug' is required for publish_to_provider action.",
+                break_loop=False,
+            )
+
+        mock = bool(self.args.get("mock", False))
+
+        try:
+            from instruments.custom.stripe_payments.payment_router import PaymentRouter
+
+            provider = PaymentRouter.get_provider(provider_name, mock=mock)
+        except Exception as e:
+            return Response(
+                message=f"Error: Could not initialize {provider_name} provider: {e!s}",
+                break_loop=False,
+            )
+
+        result = self.manager.publish_to_provider(slug, provider_name, provider)
+        return Response(
+            message=f"Solution published to {provider_name.title()}.\n"
+            f"- Product ID: `{result['product_id']}`\n"
+            f"- Price ID: `{result.get('price_id') or 'N/A'}`\n"
+            f"- Setup Price ID: `{result.get('setup_price_id') or 'N/A'}`\n"
             f"- Status: {result['status']}",
             break_loop=False,
         )
