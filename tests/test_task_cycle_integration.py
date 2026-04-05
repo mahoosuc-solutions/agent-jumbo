@@ -437,7 +437,9 @@ class TestGradeActionIntegration:
         """grade action on a lint-clean file should score ≥ 70."""
         path, _ = _clean_python(tmp_path)
         tool = _make_tool({"action": "grade", "path": path})
-        response = await tool.execute()
+        # Mock _repo_path so the path-traversal guard accepts tmp_path
+        with patch("python.tools.task_cycle._repo_path", return_value=str(tmp_path)):
+            response = await tool.execute()
         assert response.additional["score"] >= 70
 
     @pytest.mark.asyncio
@@ -449,8 +451,9 @@ class TestGradeActionIntegration:
         tool_clean = _make_tool({"action": "grade", "path": clean_path})
         tool_flawed = _make_tool({"action": "grade", "path": flawed_path})
 
-        clean_resp = await tool_clean.execute()
-        flawed_resp = await tool_flawed.execute()
+        with patch("python.tools.task_cycle._repo_path", return_value=str(tmp_path)):
+            clean_resp = await tool_clean.execute()
+            flawed_resp = await tool_flawed.execute()
 
         assert flawed_resp.additional["score"] < clean_resp.additional["score"]
 
@@ -459,6 +462,7 @@ class TestGradeActionIntegration:
         """grade action response message should include the decision string."""
         path, _ = _clean_python(tmp_path)
         tool = _make_tool({"action": "grade", "path": path})
-        response = await tool.execute()
+        with patch("python.tools.task_cycle._repo_path", return_value=str(tmp_path)):
+            response = await tool.execute()
         # Decision should appear in the markdown report
         assert any(d in response.message.upper() for d in ("SHIP", "PIVOT", "ESCALATE"))

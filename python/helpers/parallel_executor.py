@@ -35,6 +35,9 @@ class ParallelExecutor:
 
         call_fn: async function(prompt, provider, model) -> str
         """
+        # Clear instance results so reused executors don't leak prior state
+        self._results = {}
+
         # Build dependency graph
         pending = {st.id: st for st in subtasks}
         completed: set[str] = set()

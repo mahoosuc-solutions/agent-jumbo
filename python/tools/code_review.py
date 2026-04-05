@@ -281,18 +281,25 @@ def _grade_diff(diff: str) -> GradeResult:
             tools_run=[],
         )
 
-    # Grade the first changed Python file (representative sample)
-    first_file, added_lines = next(iter(changed_files.items()))
-    with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False) as tmp:
-        tmp.write("\n".join(added_lines))
-        tmp_path = tmp.name
+    # Grade all changed Python files and merge results (worst score wins)
+    worst: GradeResult | None = None
+    for file_name, added_lines in changed_files.items():
+        with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False) as tmp:
+            tmp.write("\n".join(added_lines))
+            tmp_path = tmp.name
+        try:
+            result = _grade_code(tmp_path)
+            result.summary = f"Diff review ({file_name}): {result.summary}"
+            if worst is None or result.score < worst.score:
+                worst = result
+        finally:
+            try:
+                os.unlink(tmp_path)
+            except OSError:
+                pass
 
-    try:
-        result = _grade_code(tmp_path)
-        result.summary = f"Diff review ({first_file}): {result.summary}"
-        return result
-    finally:
-        os.unlink(tmp_path)
+    assert worst is not None  # changed_files is non-empty at this point
+    return worst
 
 
 class CodeReview(Tool):

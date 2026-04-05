@@ -23,7 +23,6 @@ Actions:
 from __future__ import annotations
 
 import fnmatch
-import os
 from typing import Any
 
 from git import GitCommandError, InvalidGitRepositoryError, Repo
@@ -55,9 +54,13 @@ _MIN_COMMIT_MESSAGE_LEN = 10
 
 
 def _is_secret_file(path: str) -> bool:
-    """Return True if *path* matches any known secret-file pattern."""
-    basename = os.path.basename(path)
-    return any(fnmatch.fnmatch(basename.lower(), pattern.lower()) for pattern in _SECRET_PATTERNS)
+    """Return True if *any component* of path matches a secret-file pattern.
+
+    Checks all path components (not just the basename) so that files inside
+    directories named 'credentials/' or 'secrets/' are also caught.
+    """
+    parts = path.replace("\\", "/").split("/")
+    return any(fnmatch.fnmatch(part.lower(), pattern.lower()) for part in parts for pattern in _SECRET_PATTERNS)
 
 
 def _open_repo(repo_path: str) -> Repo:
@@ -178,7 +181,7 @@ def git_branch(repo: Repo, name: str | None = None, create: bool = False) -> dic
 def git_log(repo: Repo, n: int = 10) -> dict[str, Any]:
     """Return the last *n* commits as a list of dicts."""
     commits = []
-    for commit in list(repo.iter_commits())[:n]:
+    for commit in repo.iter_commits(max_count=n):
         commits.append(
             {
                 "sha": commit.hexsha[:7],

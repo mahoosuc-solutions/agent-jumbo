@@ -72,8 +72,8 @@ class ComplexityScore:
 _HARD_PATTERNS = [
     r"\b(architect|rewrite|migrate entire|rebuild|overhaul|redesign|rearchitect)\b",
     r"\b(build from scratch|greenfield|full system|end.to.end|across (all|multiple) (services|systems|repos))\b",
-    r"\b(large.scale|enterprise.grade|enterprise.grade|production.ready|high.availability)\b",
-    r"\b(enterprise.grade|full.stack|platform.wide|cross.team)\b",
+    r"\b(large.scale|enterprise.grade|production.ready|high.availability)\b",
+    r"\b(full.stack|platform.wide|cross.team)\b",
     r"\b(security (audit|review) of|threat model|penetration test)\b",
 ]
 

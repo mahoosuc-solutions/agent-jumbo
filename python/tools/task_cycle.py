@@ -99,7 +99,15 @@ def _ship_decision(grade_result, results: list[ExecutionResult]) -> tuple[str, l
 
 
 def _extract_python_blocks(text: str) -> list[str]:
-    """Extract all ```python ... ``` fenced code blocks from a string."""
+    """Extract all ```python ... ``` fenced code blocks from a string.
+
+    Logs a warning when an unclosed code fence is detected so callers know
+    that code may have been silently dropped.
+    """
+    import logging
+
+    logger = logging.getLogger(__name__)
+
     blocks: list[str] = []
     lines = text.splitlines()
     current: list[str] = []
@@ -115,6 +123,14 @@ def _extract_python_blocks(text: str) -> list[str]:
                 blocks.append("\n".join(current))
         elif in_block:
             current.append(line)
+
+    if in_block:
+        logger.warning(
+            "_extract_python_blocks: unclosed ```python fence detected — "
+            "%d accumulated lines will be dropped from grading",
+            len(current),
+        )
+
     return blocks
 
 
@@ -235,14 +251,28 @@ class TaskCycle(Tool):
         )
 
     async def _action_grade(self) -> Response:
+        import os
+
         path = self.args.get("path", "").strip()
         if not path:
             return Response(message="Missing `path` argument for grade action.", break_loop=False)
-        import os
 
-        if not os.path.exists(path):
-            return Response(message=f"File not found: {path}", break_loop=False)
-        grade = _grade_code(path)
+        # Resolve and confine to repo root (prevent path traversal)
+        try:
+            repo_root = os.path.realpath(_repo_path())
+            abs_path = os.path.realpath(path)
+        except Exception as exc:
+            return Response(message=f"Failed to resolve path: {exc}", break_loop=False)
+
+        if not abs_path.startswith(repo_root + os.sep) and abs_path != repo_root:
+            return Response(message="Path is outside the repository root.", break_loop=False)
+
+        if not os.path.isfile(abs_path):
+            return Response(
+                message=f"Path is not a file (or does not exist): {path}",
+                break_loop=False,
+            )
+        grade = _grade_code(abs_path)
         return Response(
             message=grade.to_markdown(path),
             break_loop=False,
@@ -340,7 +370,12 @@ class TaskCycle(Tool):
             import os
             import tempfile
 
-            with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False) as tmp:
+            # Write temp file into repo root so ruff/mypy pick up project config
+            try:
+                repo_root = _repo_path()
+            except Exception:
+                repo_root = None
+            with tempfile.NamedTemporaryFile(suffix=".py", mode="w", delete=False, dir=repo_root) as tmp:
                 tmp.write(code_output)
                 tmp_path = tmp.name
             try:
@@ -353,7 +388,10 @@ class TaskCycle(Tool):
                 }
                 decision, next_steps = _ship_decision(grade, exec_results)
             finally:
-                os.unlink(tmp_path)
+                try:
+                    os.unlink(tmp_path)
+                except OSError:
+                    pass
         else:
             # No code to grade — surface results for human review
             decision = "no_grade"

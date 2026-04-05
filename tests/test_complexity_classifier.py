@@ -107,7 +107,7 @@ class TestHardTier:
             "Rewrite the entire authentication system",
             "Migrate entire database schema to a new provider",
             "Redesign the agent orchestration layer",
-            "Build an enterprise-grade deployment pipeline",
+            "Overhaul the entire enterprise-grade authentication service",
         ],
     )
     def test_hard_prompts_classified_as_hard(self, prompt):

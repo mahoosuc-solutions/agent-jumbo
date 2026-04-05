@@ -193,19 +193,27 @@ async def test_grade_action_missing_path():
 
 
 @pytest.mark.asyncio
-async def test_grade_action_nonexistent_file():
-    tool = _make_tool({"action": "grade", "path": "/nonexistent/file.py"})
-    response = await tool.execute()
-    assert "not found" in response.message.lower()
+async def test_grade_action_nonexistent_file(tmp_path):
+    # Path must be inside repo root to pass traversal guard, but not exist as a file
+    repo_root = str(tmp_path)
+    nonexistent = str(tmp_path / "nonexistent.py")
+    tool = _make_tool({"action": "grade", "path": nonexistent})
+    with patch("python.tools.task_cycle._repo_path", return_value=repo_root):
+        response = await tool.execute()
+    assert "not found" in response.message.lower() or "does not exist" in response.message.lower()
 
 
 @pytest.mark.asyncio
 async def test_grade_action_returns_score(tmp_path):
     p = tmp_path / "sample.py"
     p.write_text('"""Sample."""\n\ndef hello() -> str:\n    return "hello"\n')
+    repo_root = str(tmp_path)
     fake_grade = _make_grade(88, "ship_with_warnings")
     tool = _make_tool({"action": "grade", "path": str(p)})
-    with patch("python.tools.task_cycle._grade_code", return_value=fake_grade):
+    with (
+        patch("python.tools.task_cycle._repo_path", return_value=repo_root),
+        patch("python.tools.task_cycle._grade_code", return_value=fake_grade),
+    ):
         response = await tool.execute()
     assert response.additional is not None
     assert response.additional["score"] == 88
