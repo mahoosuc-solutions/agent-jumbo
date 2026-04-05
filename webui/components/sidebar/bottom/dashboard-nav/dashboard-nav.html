@@ -111,6 +111,21 @@
             </svg>
             <span>Trust</span>
           </button>
+
+          <!-- Memory Stats Dashboard Button -->
+          <button
+            class="dashboard-nav-btn"
+            :class="{ 'active': $store.dashboardRouter && $store.dashboardRouter.isDashboardActive('memory') }"
+            @click="$store.dashboardRouter && $store.dashboardRouter.showDashboard('memory')"
+            title="Memory Stats & Consolidation">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2a4 4 0 014 4c0 1.1-.45 2.1-1.17 2.83L12 12l-2.83-3.17A4 4 0 0112 2z"/>
+              <path d="M12 12v10"/>
+              <path d="M8 16h8"/>
+              <path d="M6 20h12"/>
+            </svg>
+            <span>Memory</span>
+          </button>
         </div>
         </div><!-- collapse wrapper -->
       </div>

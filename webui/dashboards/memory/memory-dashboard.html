@@ -1,0 +1,122 @@
+<div class="memory-dashboard dashboard-page"
+     data-testid="memory-dashboard"
+     x-data
+     x-init="$store.memoryDashboard?.init()">
+
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <div class="dashboard-title-section">
+      <button class="dashboard-back-btn" @click="$store.dashboardRouter?.closeDashboard()" title="Back to Chat">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+      </button>
+      <h1 class="dashboard-title">🧠 Memory Stats</h1>
+    </div>
+    <div class="dashboard-actions">
+      <button class="btn" @click="$store.memoryDashboard.loadStats()" :disabled="$store.memoryDashboard.loading">
+        ↻ Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Subdir Selector -->
+  <div style="display: flex; gap: 6px; margin: 12px 0; flex-wrap: wrap;">
+    <template x-for="sub in $store.memoryDashboard.subdirs" :key="sub">
+      <button @click="$store.memoryDashboard.selectSubdir(sub)"
+              class="btn"
+              :class="{ 'btn-primary': $store.memoryDashboard.selectedSubdir === sub }"
+              style="font-size: 12px; padding: 4px 10px;"
+              x-text="sub"></button>
+    </template>
+  </div>
+
+  <!-- Loading State -->
+  <div x-show="$store.memoryDashboard.loading" style="text-align: center; padding: 40px; color: var(--text-muted, #666);">
+    Loading memory statistics…
+  </div>
+
+  <!-- Error Banner -->
+  <div x-show="$store.memoryDashboard.error"
+       style="background: rgba(255,60,60,0.12); border: 1px solid rgba(255,60,60,0.25); border-radius: 8px; padding: 10px 14px; margin-bottom: 12px; color: #ff6b6b; font-size: 13px;"
+       x-text="$store.memoryDashboard.error"></div>
+
+  <!-- Stats Cards -->
+  <div x-show="$store.memoryDashboard.stats && !$store.memoryDashboard.loading"
+       style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 16px;">
+
+    <!-- Total Documents -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px;">
+      <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted, #666); margin-bottom: 4px;">Total Documents</div>
+      <div style="font-size: 24px; font-weight: 600; color: var(--text-primary, #e0e0e0);"
+           x-text="$store.memoryDashboard.formatNumber($store.memoryDashboard.stats?.total_documents)"></div>
+    </div>
+
+    <!-- Subdir -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px;">
+      <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted, #666); margin-bottom: 4px;">Memory Subdir</div>
+      <div style="font-size: 16px; font-weight: 500; color: var(--text-primary, #e0e0e0);"
+           x-text="$store.memoryDashboard.selectedSubdir"></div>
+      <div style="font-size: 11px; color: var(--text-muted, #666); margin-top: 2px;"
+           x-text="$store.memoryDashboard.stats?.loaded ? 'Loaded' : 'Not loaded'"></div>
+    </div>
+
+    <!-- Oldest -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px;">
+      <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted, #666); margin-bottom: 4px;">Oldest Entry</div>
+      <div style="font-size: 14px; color: var(--text-primary, #e0e0e0);"
+           x-text="$store.memoryDashboard.stats?.oldest_timestamp || '—'"></div>
+    </div>
+
+    <!-- Newest -->
+    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 16px;">
+      <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted, #666); margin-bottom: 4px;">Newest Entry</div>
+      <div style="font-size: 14px; color: var(--text-primary, #e0e0e0);"
+           x-text="$store.memoryDashboard.stats?.newest_timestamp || '—'"></div>
+    </div>
+  </div>
+
+  <!-- By Area Breakdown -->
+  <div x-show="$store.memoryDashboard.stats?.by_area && Object.keys($store.memoryDashboard.stats.by_area).length > 0"
+       style="margin-bottom: 16px;">
+    <h3 style="font-size: 14px; font-weight: 500; color: var(--text-primary, #e0e0e0); margin-bottom: 8px;">Documents by Area</h3>
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <template x-for="[area, count] in Object.entries($store.memoryDashboard.stats?.by_area || {})" :key="area">
+        <div style="display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 6px; padding: 8px 12px;">
+          <span style="font-size: 13px; font-weight: 500; color: var(--text-primary, #e0e0e0); min-width: 100px;" x-text="area"></span>
+          <div style="flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden;">
+            <div style="height: 100%; background: #4a9eff; border-radius: 3px; transition: width 0.3s;"
+                 :style="{ width: Math.min(100, (count / Math.max($store.memoryDashboard.stats.total_documents, 1)) * 100) + '%' }"></div>
+          </div>
+          <span style="font-size: 12px; color: var(--text-secondary, #aaa); min-width: 40px; text-align: right;" x-text="count"></span>
+          <button @click="$store.memoryDashboard.consolidateDryRun(area)"
+                  :disabled="$store.memoryDashboard.consolidating"
+                  style="background: rgba(255,184,0,0.12); border: 1px solid rgba(255,184,0,0.25); border-radius: 5px; padding: 2px 8px; color: #fbbf24; cursor: pointer; font-size: 10px;">
+            Analyze
+          </button>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <!-- Consolidation Result -->
+  <div x-show="$store.memoryDashboard.consolidateResult"
+       style="background: rgba(0,195,64,0.06); border: 1px solid rgba(0,195,64,0.2); border-radius: 8px; padding: 12px 14px; margin-bottom: 12px;">
+    <div style="font-size: 13px; font-weight: 500; color: var(--text-primary, #e0e0e0); margin-bottom: 6px;">
+      Consolidation Preview
+      <span style="font-size: 11px; color: var(--text-muted, #666);">(dry run)</span>
+    </div>
+    <div style="font-size: 12px; color: var(--text-secondary, #aaa);">
+      Area: <span x-text="$store.memoryDashboard.consolidateResult?.area" style="color: #4a9eff;"></span> ·
+      Would remove: <span x-text="$store.memoryDashboard.consolidateResult?.removed || 0" style="color: #fbbf24;"></span> duplicates
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div x-show="!$store.memoryDashboard.loading && (!$store.memoryDashboard.stats || $store.memoryDashboard.stats.total_documents === 0)"
+       style="text-align: center; padding: 40px; color: var(--text-muted, #666);">
+    <div style="font-size: 32px; margin-bottom: 8px;">🧠</div>
+    <div style="font-size: 14px;">No memories stored yet.</div>
+    <div style="font-size: 12px; margin-top: 4px; opacity: 0.7;">Memory will accumulate as the agent processes tasks.</div>
+  </div>
+</div>

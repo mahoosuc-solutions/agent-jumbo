@@ -13,12 +13,46 @@
             style="background: rgba(0,145,255,0.18); color: var(--text-secondary, #aaa); padding: 2px 8px; border-radius: 10px; font-size: 12px;"
             x-text="$store.contentCalendar.total + ' items'"></span>
     </div>
-    <button @click="$store.contentCalendar.refresh()"
-            :disabled="$store.contentCalendar.loading"
-            style="background: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; color: var(--text-secondary, #aaa); cursor: pointer; font-size: 12px;">
-      <span x-show="!$store.contentCalendar.loading">↻ Refresh</span>
-      <span x-show="$store.contentCalendar.loading">Loading…</span>
-    </button>
+    <div style="display: flex; gap: 6px;">
+      <button @click="$store.contentCalendar.showCreateForm = !$store.contentCalendar.showCreateForm"
+              style="background: rgba(0,145,255,0.18); border: 1px solid rgba(0,145,255,0.35); border-radius: 6px; padding: 4px 10px; color: #4a9eff; cursor: pointer; font-size: 12px; font-weight: 500;">
+        + New Item
+      </button>
+      <button @click="$store.contentCalendar.refresh()"
+              :disabled="$store.contentCalendar.loading"
+              style="background: none; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 4px 10px; color: var(--text-secondary, #aaa); cursor: pointer; font-size: 12px;">
+        <span x-show="!$store.contentCalendar.loading">↻ Refresh</span>
+        <span x-show="$store.contentCalendar.loading">Loading…</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Create Form -->
+  <div x-show="$store.contentCalendar.showCreateForm"
+       x-transition
+       style="background: rgba(0,145,255,0.06); border: 1px solid rgba(0,145,255,0.2); border-radius: 8px; padding: 12px; margin-bottom: 12px;">
+    <input type="text" placeholder="Item title…"
+           x-model="$store.contentCalendar.newItemTitle"
+           @keydown.enter="$store.contentCalendar.createItem()"
+           style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 10px; color: var(--text-primary, #e0e0e0); font-size: 13px; margin-bottom: 8px; box-sizing: border-box;" />
+    <textarea placeholder="Description (optional)…"
+              x-model="$store.contentCalendar.newItemDescription"
+              rows="2"
+              style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 8px 10px; color: var(--text-primary, #e0e0e0); font-size: 12px; margin-bottom: 8px; resize: vertical; box-sizing: border-box;"></textarea>
+    <div style="display: flex; justify-content: flex-end; gap: 6px;">
+      <button @click="$store.contentCalendar.showCreateForm = false"
+              style="background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 4px 12px; color: var(--text-secondary, #aaa); cursor: pointer; font-size: 12px;">
+        Cancel
+      </button>
+      <button @click="$store.contentCalendar.createItem()"
+              :disabled="!$store.contentCalendar.newItemTitle.trim()"
+              style="background: rgba(0,145,255,0.25); border: 1px solid rgba(0,145,255,0.4); border-radius: 6px; padding: 4px 12px; color: #4a9eff; cursor: pointer; font-size: 12px; font-weight: 500;">
+        Create
+      </button>
+    </div>
+    <div style="font-size: 11px; color: var(--text-muted, #666); margin-top: 6px;">
+      Auto-tagged: <span x-text="$store.contentCalendar.activeTag" style="color: #4a9eff;"></span>
+    </div>
   </div>
 
   <!-- Tag Tabs -->
@@ -95,10 +129,19 @@
                 }"
                 x-text="$store.contentCalendar.statusLabel(item.status)"></span>
         </div>
-        <div style="display: flex; gap: 12px; margin-top: 8px; font-size: 11px; color: var(--text-muted, #666);">
-          <span x-show="item.source" x-text="'via ' + item.source"></span>
-          <span x-text="$store.contentCalendar.formatDate(item.updated_at)"></span>
-          <span x-show="item.priority_score" x-text="'P' + item.priority_score"></span>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+          <div style="display: flex; gap: 12px; font-size: 11px; color: var(--text-muted, #666);">
+            <span x-show="item.source" x-text="'via ' + item.source"></span>
+            <span x-text="$store.contentCalendar.formatDate(item.updated_at)"></span>
+            <span x-show="item.priority_score" x-text="'P' + item.priority_score"></span>
+          </div>
+          <div x-show="$store.contentCalendar.nextStatus(item.status)"
+               style="flex-shrink: 0;">
+            <button @click="$store.contentCalendar.transitionStatus(item.id, $store.contentCalendar.nextStatus(item.status))"
+                    style="background: rgba(0,195,64,0.12); border: 1px solid rgba(0,195,64,0.25); border-radius: 5px; padding: 2px 8px; color: #4ade80; cursor: pointer; font-size: 10px; font-weight: 500;">
+              → <span x-text="$store.contentCalendar.statusLabel($store.contentCalendar.nextStatus(item.status))"></span>
+            </button>
+          </div>
         </div>
       </div>
     </template>

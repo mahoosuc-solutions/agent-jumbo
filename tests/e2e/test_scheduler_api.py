@@ -7,7 +7,7 @@ import urllib.error
 
 import pytest
 
-from tests.e2e.helpers import api_post
+from tests.e2e.helpers import api_post_tolerant as api_post
 
 pytestmark = [pytest.mark.e2e]
 

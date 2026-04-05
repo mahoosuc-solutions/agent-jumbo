@@ -10,7 +10,7 @@ import urllib.request
 
 import pytest
 
-from tests.e2e.helpers import api_post, cookie_header
+from tests.e2e.helpers import api_post_tolerant as api_post, cookie_header
 
 pytestmark = [pytest.mark.e2e]
 

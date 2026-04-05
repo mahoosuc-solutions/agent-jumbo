@@ -12,6 +12,8 @@ const STATUS_COLORS = {
   blocked: { bg: "rgba(255, 60, 60, 0.18)", label: "Blocked" },
 };
 
+const STATUS_FLOW = ["queued", "in_progress", "review", "done"];
+
 const model = {
   initialized: false,
   loading: false,
@@ -20,6 +22,9 @@ const model = {
   activeTag: "marketing",
   statusFilter: "",
   error: "",
+  showCreateForm: false,
+  newItemTitle: "",
+  newItemDescription: "",
 
   get filteredItems() {
     return this.items;
@@ -95,6 +100,52 @@ const model = {
       });
     } catch {
       return dateStr;
+    }
+  },
+
+  nextStatus(currentStatus) {
+    const idx = STATUS_FLOW.indexOf(currentStatus);
+    if (idx < 0 || idx >= STATUS_FLOW.length - 1) return null;
+    return STATUS_FLOW[idx + 1];
+  },
+
+  async transitionStatus(itemId, newStatus) {
+    try {
+      const data = await api.callJsonApi("/work_queue_item_update", {
+        item_id: itemId,
+        action: "update_status",
+        status: newStatus,
+      });
+      if (data.success) {
+        await this.refresh();
+      } else {
+        this.error = data.error || "Status update failed";
+      }
+    } catch (err) {
+      this.error = err?.message || String(err);
+    }
+  },
+
+  async createItem() {
+    if (!this.newItemTitle.trim()) return;
+    try {
+      const data = await api.callJsonApi("/work_queue_dashboard", {
+        action: "add",
+        title: this.newItemTitle.trim(),
+        description: this.newItemDescription.trim(),
+        tags: [this.activeTag],
+        source: "content-calendar",
+      });
+      if (data.success) {
+        this.newItemTitle = "";
+        this.newItemDescription = "";
+        this.showCreateForm = false;
+        await this.refresh();
+      } else {
+        this.error = data.error || "Create failed";
+      }
+    } catch (err) {
+      this.error = err?.message || String(err);
     }
   },
 };

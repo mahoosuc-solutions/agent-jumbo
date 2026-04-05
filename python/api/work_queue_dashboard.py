@@ -51,6 +51,23 @@ class WorkQueueDashboard(ApiHandler):
                 items = manager.get_items_by_tag(tag, status=status)
                 return {"success": True, "items": items, "total": len(items), "tag": tag}
 
+            if action == "add":
+                title = input.get("title", "").strip()
+                if not title:
+                    return {"success": False, "error": "title is required"}
+                import json
+
+                tags = input.get("tags", [])
+                item_id = manager.db.upsert_item(
+                    title=title,
+                    description=input.get("description", ""),
+                    source=input.get("source", "manual"),
+                    source_type="manual",
+                    status="queued",
+                    tags=json.dumps(tags) if isinstance(tags, list) else tags,
+                )
+                return {"success": True, "item_id": item_id}
+
             return {"success": False, "error": f"Unknown action: {action}"}
 
         except Exception as e:

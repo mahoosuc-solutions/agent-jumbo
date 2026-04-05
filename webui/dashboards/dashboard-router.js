@@ -52,6 +52,18 @@ const dashboardRouterModel = {
             label: 'Portfolio Rollout',
             icon: 'rollout',
             component: 'dashboards/rollout/rollout-dashboard.html'
+        },
+        contentCalendar: {
+            id: 'contentCalendar',
+            label: 'Content Calendar',
+            icon: 'calendar',
+            component: 'components/content-calendar/content-calendar.html'
+        },
+        memory: {
+            id: 'memory',
+            label: 'Memory Stats',
+            icon: 'memory',
+            component: 'dashboards/memory/memory-dashboard.html'
         }
     },
 
@@ -80,7 +92,9 @@ const dashboardRouterModel = {
                 tasks: () => import('/dashboards/tasks/tasks-store.js'),
                 workQueue: () => import('/dashboards/work-queue/work-queue-store.js'),
                 trust: () => import('/dashboards/trust/trust-store.js'),
-                rollout: () => import('/dashboards/rollout/rollout-store.js')
+                rollout: () => import('/dashboards/rollout/rollout-store.js'),
+                contentCalendar: () => import('/components/content-calendar/content-calendar-store.js'),
+                memory: () => import('/dashboards/memory/memory-store.js')
             }[dashboardId];
             if (storeLoader) {
                 await storeLoader();
