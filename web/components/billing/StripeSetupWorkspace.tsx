@@ -250,6 +250,20 @@ export function StripeSetupWorkspace() {
             <p className="mt-2 max-w-3xl text-sm text-slate-400">
               Guide tenants through Stripe Dashboard setup, capture billing readiness, and keep the product catalog in sync without making Mahoosuc the billing intermediary.
             </p>
+            <div className="mt-3 flex flex-wrap gap-3 text-sm">
+              <a
+                href="/documentation/BILLING_SETUP_JOURNEY" // pragma: allowlist secret
+                className="text-copper-300 transition hover:text-copper-200 hover:underline"
+              >
+                Billing journey guide
+              </a>
+              <a
+                href="/documentation/BROWSER_ACCOUNT_SETUP" // pragma: allowlist secret
+                className="text-copper-300 transition hover:text-copper-200 hover:underline"
+              >
+                Browser setup reference
+              </a>
+            </div>
           </div>
           <div className={`rounded-xl border px-4 py-3 text-sm ${status?.summary.ready ? 'border-green-800 bg-green-900/20 text-green-300' : 'border-amber-800 bg-amber-900/20 text-amber-200'}`}>
             <div className="font-medium">{status?.summary.ready ? 'Ready' : 'Needs attention'}</div>
