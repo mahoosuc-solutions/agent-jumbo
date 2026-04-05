@@ -150,11 +150,19 @@ class SetupDatabase:
                     workflow_type TEXT NOT NULL,
                     session_id TEXT,
                     status TEXT DEFAULT 'pending',
+                    recovery_status TEXT DEFAULT 'recoverable_in_place',
                     current_phase TEXT DEFAULT 'discover',
+                    current_step_id TEXT DEFAULT '',
+                    last_safe_checkpoint_id TEXT DEFAULT '',
+                    pending_human_gate TEXT DEFAULT '{}',
                     target_offer_slug TEXT DEFAULT '',
                     selected_slugs TEXT DEFAULT '[]',
                     validation_report TEXT DEFAULT '{}',
+                    browser_session_metadata TEXT DEFAULT '{}',
+                    external_context_state TEXT DEFAULT '{}',
                     workflow_metadata TEXT DEFAULT '{}',
+                    last_heartbeat_at TEXT,
+                    last_recoverable_at TEXT,
                     created_at TEXT NOT NULL,
                     updated_at TEXT NOT NULL
                 );
@@ -166,6 +174,18 @@ class SetupDatabase:
                     evidence_type TEXT NOT NULL,
                     title TEXT NOT NULL,
                     status TEXT DEFAULT 'captured',
+                    payload TEXT DEFAULT '{}',
+                    created_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS billing_workflow_checkpoints (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    checkpoint_id TEXT UNIQUE NOT NULL,
+                    run_id TEXT NOT NULL,
+                    phase TEXT DEFAULT '',
+                    step_id TEXT DEFAULT '',
+                    title TEXT NOT NULL,
+                    checkpoint_type TEXT DEFAULT 'safe',
                     payload TEXT DEFAULT '{}',
                     created_at TEXT NOT NULL
                 );
@@ -182,6 +202,8 @@ class SetupDatabase:
                 ON billing_workflow_runs(tenant_id, provider);
                 CREATE INDEX IF NOT EXISTS idx_workflow_evidence_run
                 ON billing_workflow_evidence(run_id);
+                CREATE INDEX IF NOT EXISTS idx_workflow_checkpoints_run
+                ON billing_workflow_checkpoints(run_id);
                 """
             )
             self._ensure_column(conn, "setup_sessions", "tenant_id", "tenant_id TEXT DEFAULT 'default'")
@@ -558,19 +580,30 @@ class SetupDatabase:
         session_id: str | None = None,
         status: str = "pending",
         current_phase: str = "discover",
+        current_step_id: str = "",
+        recovery_status: str = "recoverable_in_place",
+        last_safe_checkpoint_id: str = "",
+        pending_human_gate: dict[str, Any] | None = None,
         target_offer_slug: str = "",
         selected_slugs: list[str] | None = None,
         validation_report: dict[str, Any] | None = None,
+        browser_session_metadata: dict[str, Any] | None = None,
+        external_context_state: dict[str, Any] | None = None,
         workflow_metadata: dict[str, Any] | None = None,
+        last_heartbeat_at: str | None = None,
+        last_recoverable_at: str | None = None,
     ) -> dict:
         now = self._now()
         with self._connect() as conn:
             conn.execute(
                 """
                 INSERT INTO billing_workflow_runs (
-                    run_id, tenant_id, provider, workflow_type, session_id, status, current_phase,
-                    target_offer_slug, selected_slugs, validation_report, workflow_metadata, created_at, updated_at
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    run_id, tenant_id, provider, workflow_type, session_id, status, recovery_status,
+                    current_phase, current_step_id, last_safe_checkpoint_id, pending_human_gate,
+                    target_offer_slug, selected_slugs, validation_report, browser_session_metadata,
+                    external_context_state, workflow_metadata, last_heartbeat_at, last_recoverable_at,
+                    created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """,
                 (
                     run_id,
@@ -579,11 +612,19 @@ class SetupDatabase:
                     workflow_type,
                     session_id,
                     status,
+                    recovery_status,
                     current_phase,
+                    current_step_id,
+                    last_safe_checkpoint_id,
+                    json.dumps(pending_human_gate or {}),
                     target_offer_slug,
                     json.dumps(selected_slugs or []),
                     json.dumps(validation_report or {}),
+                    json.dumps(browser_session_metadata or {}),
+                    json.dumps(external_context_state or {}),
                     json.dumps(workflow_metadata or {}),
+                    last_heartbeat_at,
+                    last_recoverable_at,
                     now,
                     now,
                 ),
@@ -596,11 +637,19 @@ class SetupDatabase:
         *,
         session_id: str | None = None,
         status: str | None = None,
+        recovery_status: str | None = None,
         current_phase: str | None = None,
+        current_step_id: str | None = None,
+        last_safe_checkpoint_id: str | None = None,
+        pending_human_gate: dict[str, Any] | None = None,
         target_offer_slug: str | None = None,
         selected_slugs: list[str] | None = None,
         validation_report: dict[str, Any] | None = None,
+        browser_session_metadata: dict[str, Any] | None = None,
+        external_context_state: dict[str, Any] | None = None,
         workflow_metadata: dict[str, Any] | None = None,
+        last_heartbeat_at: str | None = None,
+        last_recoverable_at: str | None = None,
     ) -> dict | None:
         fields: list[str] = ["updated_at = ?"]
         params: list[Any] = [self._now()]
@@ -610,9 +659,21 @@ class SetupDatabase:
         if status is not None:
             fields.append("status = ?")
             params.append(status)
+        if recovery_status is not None:
+            fields.append("recovery_status = ?")
+            params.append(recovery_status)
         if current_phase is not None:
             fields.append("current_phase = ?")
             params.append(current_phase)
+        if current_step_id is not None:
+            fields.append("current_step_id = ?")
+            params.append(current_step_id)
+        if last_safe_checkpoint_id is not None:
+            fields.append("last_safe_checkpoint_id = ?")
+            params.append(last_safe_checkpoint_id)
+        if pending_human_gate is not None:
+            fields.append("pending_human_gate = ?")
+            params.append(json.dumps(pending_human_gate))
         if target_offer_slug is not None:
             fields.append("target_offer_slug = ?")
             params.append(target_offer_slug)
@@ -622,9 +683,21 @@ class SetupDatabase:
         if validation_report is not None:
             fields.append("validation_report = ?")
             params.append(json.dumps(validation_report))
+        if browser_session_metadata is not None:
+            fields.append("browser_session_metadata = ?")
+            params.append(json.dumps(browser_session_metadata))
+        if external_context_state is not None:
+            fields.append("external_context_state = ?")
+            params.append(json.dumps(external_context_state))
         if workflow_metadata is not None:
             fields.append("workflow_metadata = ?")
             params.append(json.dumps(workflow_metadata))
+        if last_heartbeat_at is not None:
+            fields.append("last_heartbeat_at = ?")
+            params.append(last_heartbeat_at)
+        if last_recoverable_at is not None:
+            fields.append("last_recoverable_at = ?")
+            params.append(last_recoverable_at)
         params.append(run_id)
         with self._connect() as conn:
             conn.execute(f"UPDATE billing_workflow_runs SET {', '.join(fields)} WHERE run_id = ?", params)
@@ -678,6 +751,39 @@ class SetupDatabase:
             ).fetchall()
         return [self._decode_workflow_evidence_row(row) for row in rows]
 
+    def add_workflow_checkpoint(
+        self,
+        run_id: str,
+        title: str,
+        *,
+        phase: str = "",
+        step_id: str = "",
+        checkpoint_type: str = "safe",
+        payload: dict[str, Any] | None = None,
+    ) -> dict:
+        checkpoint_id = f"{run_id}_cp_{uuid4_hex()}"
+        now = self._now()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO billing_workflow_checkpoints (checkpoint_id, run_id, phase, step_id, title, checkpoint_type, payload, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (checkpoint_id, run_id, phase, step_id, title, checkpoint_type, json.dumps(payload or {}), now),
+            )
+            row = conn.execute(
+                "SELECT * FROM billing_workflow_checkpoints WHERE checkpoint_id = ?", (checkpoint_id,)
+            ).fetchone()
+        return self._decode_workflow_checkpoint_row(row) if row is not None else {}
+
+    def list_workflow_checkpoints(self, run_id: str) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM billing_workflow_checkpoints WHERE run_id = ? ORDER BY created_at ASC, id ASC",
+                (run_id,),
+            ).fetchall()
+        return [self._decode_workflow_checkpoint_row(row) for row in rows]
+
     def _decode_session_row(self, row: sqlite3.Row) -> dict:
         result = dict(row)
         result["extracted_credentials"] = self._decode_json(result.get("extracted_credentials"), {})
@@ -710,6 +816,9 @@ class SetupDatabase:
         result = dict(row)
         result["selected_slugs"] = self._decode_json(result.get("selected_slugs"), [])
         result["validation_report"] = self._decode_json(result.get("validation_report"), {})
+        result["pending_human_gate"] = self._decode_json(result.get("pending_human_gate"), {})
+        result["browser_session_metadata"] = self._decode_json(result.get("browser_session_metadata"), {})
+        result["external_context_state"] = self._decode_json(result.get("external_context_state"), {})
         result["workflow_metadata"] = self._decode_json(result.get("workflow_metadata"), {})
         return result
 
@@ -717,3 +826,14 @@ class SetupDatabase:
         result = dict(row)
         result["payload"] = self._decode_json(result.get("payload"), {})
         return result
+
+    def _decode_workflow_checkpoint_row(self, row: sqlite3.Row) -> dict:
+        result = dict(row)
+        result["payload"] = self._decode_json(result.get("payload"), {})
+        return result
+
+
+def uuid4_hex() -> str:
+    import uuid
+
+    return uuid.uuid4().hex[:8]

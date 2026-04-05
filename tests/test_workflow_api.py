@@ -52,8 +52,13 @@ def temp_db_path(tmp_path):
 
 @pytest.fixture
 def mock_files_get_abs_path(temp_db_path):
-    """Mock files.get_abs_path to use temp database"""
-    with patch("python.helpers.files.get_abs_path") as mock:
+    """Redirect WorkflowEngineDatabase to use a temp database.
+
+    WorkflowEngineDatabase resolves its path via db_paths.db_path (imported as
+    get_db_path inside workflow_db.py), not via python.helpers.files.get_abs_path.
+    Patching at the use-site is required so the mock intercepts the actual call.
+    """
+    with patch("instruments.custom.workflow_engine.workflow_db.get_db_path") as mock:
         mock.return_value = temp_db_path
         yield mock
 

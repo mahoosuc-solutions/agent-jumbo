@@ -12,6 +12,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from python.helpers import project_lifecycle
+
 AUTOMATION_ACTOR = "system"
 
 
@@ -61,8 +63,6 @@ def _resolve_run_binding(artifact_root: Path) -> dict[str, str]:
 
 
 def _run_ci_mode(binding: dict[str, str], args, event_payload: dict[str, Any]) -> dict[str, Any]:
-    from python.helpers import project_lifecycle
-
     project_name = binding["project_name"]
     run_id = binding["run_id"]
     results: dict[str, Any] = {"project_name": project_name, "run_id": run_id, "mode": "ci"}
@@ -104,8 +104,6 @@ def _run_ci_mode(binding: dict[str, str], args, event_payload: dict[str, Any]) -
 
 
 def _run_deploy_mode(binding: dict[str, str], args) -> dict[str, Any]:
-    from python.helpers import project_lifecycle
-
     project_name = binding["project_name"]
     run_id = binding["run_id"]
     environment = str(args.environment or os.getenv("GITHUB_REF_NAME") or "").strip()

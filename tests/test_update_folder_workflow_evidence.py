@@ -3,6 +3,7 @@ from __future__ import annotations
 import importlib.util
 import json
 from pathlib import Path
+from unittest.mock import MagicMock
 
 MODULE_PATH = Path(__file__).resolve().parents[1] / "scripts" / "ci" / "update_folder_workflow_evidence.py"
 SPEC = importlib.util.spec_from_file_location("update_folder_workflow_evidence", MODULE_PATH)
@@ -28,7 +29,7 @@ def test_update_folder_workflow_evidence_ci_mode(monkeypatch, tmp_path):
     event_path = tmp_path / "event.json"
     event_path.write_text(json.dumps({"pull_request": {"number": 17}}), encoding="utf-8")
 
-    calls: dict[str, object] = {}
+    calls: dict[str, dict] = {}
 
     def fake_sync_folder_linear_plan(**kwargs):
         calls["linear"] = kwargs
@@ -44,14 +45,13 @@ def test_update_folder_workflow_evidence_ci_mode(monkeypatch, tmp_path):
 
     monkeypatch.setenv("LINEAR_API_KEY", "test-key")
     monkeypatch.setenv("GITHUB_SHA", "abc123")
-    monkeypatch.setattr(
-        update_folder_workflow_evidence.project_lifecycle, "sync_folder_linear_plan", fake_sync_folder_linear_plan
-    )
-    monkeypatch.setattr(
-        update_folder_workflow_evidence.project_lifecycle,
-        "build_folder_release_bundle",
-        fake_build_folder_release_bundle,
-    )
+
+    # project_lifecycle is now imported at module level in the script, so patching the
+    # module attribute directly intercepts all calls regardless of module caching order.
+    mock_pl = MagicMock()
+    mock_pl.sync_folder_linear_plan.side_effect = fake_sync_folder_linear_plan
+    mock_pl.build_folder_release_bundle.side_effect = fake_build_folder_release_bundle
+    monkeypatch.setattr(update_folder_workflow_evidence, "project_lifecycle", mock_pl)
 
     result = update_folder_workflow_evidence.main(
         [
@@ -79,7 +79,7 @@ def test_update_folder_workflow_evidence_deploy_mode(monkeypatch, tmp_path):
     artifact_root.mkdir(parents=True, exist_ok=True)
     _write_run_record(artifact_root, "demo_project", "fdw_456")
 
-    calls: dict[str, object] = {}
+    calls: dict[str, dict] = {}
 
     def fake_record_folder_deploy_run(**kwargs):
         calls["deploy"] = kwargs
@@ -95,11 +95,10 @@ def test_update_folder_workflow_evidence_deploy_mode(monkeypatch, tmp_path):
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "3")
     monkeypatch.setenv("GITHUB_REPOSITORY", "owner/repo")
     monkeypatch.setenv("GITHUB_WORKFLOW", "Web Deploy")
-    monkeypatch.setattr(
-        update_folder_workflow_evidence.project_lifecycle,
-        "record_folder_deploy_run",
-        fake_record_folder_deploy_run,
-    )
+
+    mock_pl = MagicMock()
+    mock_pl.record_folder_deploy_run.side_effect = fake_record_folder_deploy_run
+    monkeypatch.setattr(update_folder_workflow_evidence, "project_lifecycle", mock_pl)
 
     result = update_folder_workflow_evidence.main(
         [
