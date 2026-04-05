@@ -139,6 +139,7 @@ Mark non-GA features as `beta` or `internal`, hide them, or remove the claim fro
 - Secret handling is verified across logs, settings, test fixtures, and examples.
 - Trust enforcement has no known bypass in GA scope.
 - Privacy policy, terms, retention policy, and deletion policy exist and are linked from customer-facing surfaces.
+- A canonical customer-facing support path exists and is linked from customer-facing surfaces.
 - Data collected through chat, billing, email, and integrations has documented retention and deletion behavior.
 - Only launch integrations whose auth model, permissions, and failure behavior are documented for self-serve use.
 - Security review sign-off exists with owner, date, and any accepted residual risks.
@@ -174,7 +175,7 @@ Collect this package no earlier than 2026-04-14 for the 2026-04-17 GA decision:
 | Web build evidence | Production build passes for `web/` | Engineering |
 | Manual smoke record | Product page, dashboards, trust UX, backup/restore, Stripe flow | Product |
 | Security review | Open issues triaged, no launch-blocking findings | Security |
-| Legal/compliance packet | Privacy, terms, retention, deletion published | Product/Ops |
+| Legal/compliance packet | Privacy, terms, retention, deletion, and support path published | Product/Ops |
 | Launch runbook | Final version linked and reviewed | Operations |
 
 ## Go/No-Go Checklist
@@ -191,7 +192,7 @@ Use this checklist in the final launch review:
 - [ ] Core chat and readiness flows manually smoked
 - [ ] Backup, restore, and rollback exercised successfully
 - [ ] Stripe and customer commercial flow validated
-- [ ] Privacy, terms, and retention docs published
+- [ ] Privacy, terms, retention, deletion, and support docs published
 - [ ] Monitoring and alerting checked in production
 - [ ] No open Sev-1 or Sev-2 GA issues
 - [ ] Final sign-off from Engineering, Product, Security, Operations

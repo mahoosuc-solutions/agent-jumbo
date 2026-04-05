@@ -49,3 +49,4 @@ Enterprise or regulated customers may require stricter retention windows. Those 
 
 - [Privacy Policy](PRIVACY_POLICY.md)
 - [Data Deletion Policy](DATA_DELETION_POLICY.md)
+- [Customer Support](CUSTOMER_SUPPORT.md)

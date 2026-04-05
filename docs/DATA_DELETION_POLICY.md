@@ -56,3 +56,4 @@ Deletion workflows should be tested during launch readiness and documented in th
 
 - [Privacy Policy](PRIVACY_POLICY.md)
 - [Data Retention Policy](DATA_RETENTION_POLICY.md)
+- [Customer Support](CUSTOMER_SUPPORT.md)

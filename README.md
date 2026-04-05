@@ -19,6 +19,8 @@ Agent Jumbo DevOps provides production-grade deployment automation across Kubern
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete deployment instructions for Vercel
 - **[Setup Guide](docs/SETUP-GUIDE.md)** - Team setup and development guide
 - **[Vercel Configuration](web/README-VERCEL.md)** - Vercel-specific setup details
+- **[Production GA Definition of Done](docs/PRODUCTION_GA_DEFINITION_OF_DONE.md)** - Launch source of truth for current self-serve scope
+- **[Customer Support](docs/CUSTOMER_SUPPORT.md)** - Canonical support, billing, and incident path
 
 ### Get Started with Agent Jumbo
 
@@ -258,6 +260,8 @@ Apache License 2.0 - See [LICENSE](LICENSE) file for details.
 ## Support
 
 - 📖 [Documentation](docs/)
+- 🚦 [Launch Readiness](docs/PRODUCTION_GA_DEFINITION_OF_DONE.md)
+- 🛟 [Customer Support](docs/CUSTOMER_SUPPORT.md)
 - 🐛 [Report Issues](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/issues)
 - 💬 [Discussions](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/discussions)
 

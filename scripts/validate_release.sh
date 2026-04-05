@@ -73,6 +73,17 @@ check_dir_has_files() {
     fi
 }
 
+check_dir_has_pattern() {
+    local label="$1"
+    local path="$2"
+    local pattern="$3"
+    if find "$ROOT_DIR/$path" -maxdepth 1 -type f -name "$pattern" | grep -q .; then
+        pass "$label"
+    else
+        fail "$label"
+    fi
+}
+
 check_text() {
     local label="$1"
     local pattern="$2"
@@ -143,6 +154,7 @@ check_file "GA launch inventory exists" "docs/GA_LAUNCH_INVENTORY.md"
 check_file "GA evidence package exists" "docs/GA_EVIDENCE_PACKAGE.md"
 check_file "Self-serve onboarding exists" "docs/SELF_SERVE_GA_ONBOARDING.md"
 check_file "GA launch runbook exists" "docs/GA_LAUNCH_RUNBOOK.md"
+check_file "Customer support doc exists" "docs/CUSTOMER_SUPPORT.md"
 
 echo ""
 echo "Workflow and Script Checks:"
@@ -150,6 +162,9 @@ check_dir_has_files "GitHub workflows exist" ".github/workflows"
 check_file "Validation 360 script exists" "scripts/validate_360.sh"
 check_file "Release validation script exists" "scripts/validate_release.sh"
 check_file "Deployment validation script exists" "scripts/validate_deployment.sh"
+check_file "Post-deploy runtime validation script exists" "scripts/validate_post_deploy_runtime.py"
+check_dir_has_pattern "Manual smoke artifact exists" "artifacts/validation" "manual-smoke-*.md"
+check_dir_has_pattern "Compliance links artifact exists" "artifacts/validation" "compliance-links-*.md"
 
 echo ""
 echo "Metadata and Documentation Consistency:"
@@ -160,6 +175,16 @@ check_text "README references deployment" 'Deployment Guide' "README.md"
 check_text "Release checklist points to GA definition" 'Production GA Definition of Done' "docs/RELEASE_CHECKLIST.md"
 check_text "Production deploy points to GA definition" 'Production GA Definition of Done' "docs/PRODUCTION_DEPLOY.md"
 check_text "Docs index lists GA definition" 'Production GA Definition of Done' "docs/README.md"
+check_text "Docs index lists customer support" 'Customer Support' "docs/README.md"
+check_text "Support doc links issues" 'github.com/agent-jumbo-deploy/agent-jumbo/issues' "docs/CUSTOMER_SUPPORT.md"
+check_text "Support doc links discussions" 'github.com/agent-jumbo-deploy/agent-jumbo/discussions' "docs/CUSTOMER_SUPPORT.md"
+check_text "Support doc references billing support" 'Billing And Payment Support' "docs/CUSTOMER_SUPPORT.md"
+check_text "Web docs page features support doc" "slug: 'CUSTOMER_SUPPORT'" "web/app/(public)/documentation/page.tsx"
+check_text "Pricing page links support doc" '/documentation/CUSTOMER_SUPPORT' "web/app/(public)/pricing/page.tsx"
+check_text "Pricing page links privacy doc" '/documentation/PRIVACY_POLICY' "web/app/(public)/pricing/page.tsx"
+check_text "Pricing page links terms doc" '/documentation/TERMS_OF_USE' "web/app/(public)/pricing/page.tsx"
+check_text "GA inventory references refreshed manual smoke" 'manual-smoke-20260405.md' "docs/GA_LAUNCH_INVENTORY.md"
+check_text "GA inventory records compliance verification" 'compliance-links-20260405.md' "docs/GA_LAUNCH_INVENTORY.md"
 
 echo ""
 echo "Python Validation:"

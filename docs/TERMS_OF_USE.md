@@ -63,4 +63,6 @@ The platform is provided on an as-configured basis. Customers are responsible fo
 
 ## Contact And Updates
 
+Customer support, incident handling, and billing escalation follow [Customer Support](CUSTOMER_SUPPORT.md).
+
 If these terms change materially, update the launch docs and evidence package in the same release.

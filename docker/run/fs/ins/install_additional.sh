@@ -9,12 +9,13 @@ set -e
 
 if [ "${INSTALL_ADDITIONAL_TOOLS:-1}" = "1" ]; then
     # Install diagram generation dependencies
-    echo "Installing diagram generation tools..."
-
-    # Install Mermaid CLI for diagram export
-    npm install -g @mermaid-js/mermaid-cli
-
-    echo "Diagram tools installation complete."
+    if [ "${INSTALL_MERMAID_CLI:-1}" = "1" ]; then
+        echo "Installing diagram generation tools..."
+        npm install -g @mermaid-js/mermaid-cli
+        echo "Diagram tools installation complete."
+    else
+        echo "Skipping Mermaid CLI install because INSTALL_MERMAID_CLI=${INSTALL_MERMAID_CLI}"
+    fi
 
     # Install Claude Code CLI (authenticates via host credential store)
     echo "Installing Claude Code CLI..."

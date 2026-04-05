@@ -32,6 +32,8 @@ See [../docs/DEPLOYMENT.md](../docs/DEPLOYMENT.md) for detailed instructions.
 - **[Setup Guide](../docs/SETUP-GUIDE.md)** - Team setup and development guide
 - **[Vercel Setup](README-VERCEL.md)** - Vercel-specific configuration
 - **[Web Documentation](app/documentation)** - In-app documentation
+- **[Launch Scope](../docs/PRODUCTION_GA_DEFINITION_OF_DONE.md)** - Current GA source of truth
+- **[Customer Support](../docs/CUSTOMER_SUPPORT.md)** - Canonical support and escalation path
 
 ## Features
 
@@ -135,9 +137,10 @@ Apache License 2.0 - See [../LICENSE](../LICENSE) file for details
 - **Documentation:** [In-app docs](https://agent-jumbo.vercel.app/documentation)
 - **Issues:** [GitHub Issues](https://github.com/agent-jumbo-deploy/agent-jumbo/issues)
 - **Discussions:** [GitHub Discussions](https://github.com/agent-jumbo-deploy/agent-jumbo/discussions)
+- **Support Policy:** [Customer Support](../docs/CUSTOMER_SUPPORT.md)
 
 ---
 
-**Status:** Production Ready
+**Status:** Launch scope and support commitments are defined by the GA docs
 **Version:** 1.0.0
-**Last Updated:** 2026-02-01
+**Last Updated:** 2026-04-05

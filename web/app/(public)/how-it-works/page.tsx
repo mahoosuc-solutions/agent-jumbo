@@ -82,7 +82,7 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              Think of it like a very capable personal assistant — one that can manage your calendar, track your properties, monitor your finances, remind you about the people you care about, and handle the repetitive work you do every week. The difference is that this assistant runs as software on your machine, not in someone else's cloud.
+              Think of it like a very capable personal assistant — one that can manage your calendar, track your properties, monitor your finances, remind you about the people you care about, and handle the repetitive work you do every week. The difference is that this assistant runs as software on your machine, not in someone else&apos;s cloud.
             </p>
             <p>
               Agent Jumbo is <strong className="text-white">not a chat app</strong>. It is not a productivity app. It is not a subscription service. It is an operating system layer — a piece of software that runs continuously in the background, monitoring your configured domains, triggering actions, and routing decisions to you when human judgment is required.
@@ -161,7 +161,7 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              The primary interface is a chat window — accessible from a browser on your local machine, or via Telegram on your phone. You talk to Agent Jumbo the way you would talk to a capable assistant. "The HVAC at the rental property is making a noise." "I haven't called my mother in three weeks." "Schedule a deep work block for Thursday morning." It understands context. It remembers what you told it last month.
+              The primary interface is a chat window — accessible from a browser on your local machine, or via Telegram on your phone. You talk to Agent Jumbo the way you would talk to a capable assistant. &quot;The HVAC at the rental property is making a noise.&quot; &quot;I haven&apos;t called my mother in three weeks.&quot; &quot;Schedule a deep work block for Thursday morning.&quot; It understands context. It remembers what you told it last month.
             </p>
 
             <div className="space-y-4 my-6">
@@ -338,7 +338,7 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              Agent Jumbo does not take autonomous action. Every action it takes is the result of something you set in motion — either directly (you sent a message), on a schedule (you configured a daily briefing), or through an approval you granted (you tapped "approve" on a suggested action).
+              Agent Jumbo does not take autonomous action. Every action it takes is the result of something you set in motion — either directly (you sent a message), on a schedule (you configured a daily briefing), or through an approval you granted (you tapped &quot;approve&quot; on a suggested action).
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6">
@@ -355,7 +355,7 @@ export default function HowItWorksPage() {
             </div>
 
             <p>
-              If you stop Agent Jumbo — close the application, shut down the server — it stops completely. There is no background cloud process continuing to act on your behalf. There is no "always on" remote component. The system is exactly as active as you choose to make it.
+              If you stop Agent Jumbo — close the application, shut down the server — it stops completely. There is no background cloud process continuing to act on your behalf. There is no &quot;always on&quot; remote component. The system is exactly as active as you choose to make it.
             </p>
 
             <div className="p-5 rounded-xl bg-slate-800/60 border border-slate-700/40">

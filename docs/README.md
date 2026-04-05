@@ -14,6 +14,7 @@ To begin with Agent Jumbo, follow the links below for detailed guides on various
 - **[Terms Of Use](TERMS_OF_USE.md):** Core service and acceptable-use terms for the self-serve platform.
 - **[Data Retention Policy](DATA_RETENTION_POLICY.md):** Default retention guidance for platform data and backups.
 - **[Data Deletion Policy](DATA_DELETION_POLICY.md):** Expected deletion behavior for customer content and environments.
+- **[Customer Support](CUSTOMER_SUPPORT.md):** Canonical support, incident, billing, and remediation path for self-serve customers.
 - **[Installation](installation.md):** Set up (or [update](installation.md#how-to-update-agent-jumbo)) Agent Jumbo on your system.
 - **[Usage Guide](usage.md):** Explore GUI features and usage scenarios.
 - **[Diagram Generation](diagrams.md):** Create visual diagrams using Mermaid, Excalidraw, and Draw.io.

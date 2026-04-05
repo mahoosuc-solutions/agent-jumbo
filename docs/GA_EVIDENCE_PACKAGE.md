@@ -19,7 +19,7 @@ This document defines the minimum evidence bundle required for the 2026-04-17 pr
 | Backup and restore | Successful rehearsal notes with timestamps | `artifacts/validation/backup-restore-*.md` | Operations |
 | Stripe flow | Test-mode or production-safe validation of pricing and payment path | `artifacts/validation/stripe-flow-*.md` | Product/Ops |
 | Security review | Signed review with open findings disposition | `artifacts/validation/security-review-*.md` | Security |
-| Compliance packet | Published links for privacy, terms, retention, deletion | `artifacts/validation/compliance-links-*.md` | Product/Ops |
+| Compliance packet | Published links for privacy, terms, retention, deletion, and support | `artifacts/validation/compliance-links-*.md` | Product/Ops |
 | Launch runbook | Final reviewed go-live runbook | `docs/` or `artifacts/validation/` | Operations |
 
 ## Evidence Standards
@@ -46,5 +46,5 @@ Current branch snapshot:
 ## Open Gaps As Of 2026-03-24
 
 - Final launch-window refresh is still required for all artifacts collected before 2026-04-14
-- Customer-facing documentation surface must expose the compliance docs linked in the compliance record
+- Customer-facing documentation surface must expose the compliance and support docs linked in the compliance record
 - Production-target fire drill is still required for monitoring and alerting before GA sign-off

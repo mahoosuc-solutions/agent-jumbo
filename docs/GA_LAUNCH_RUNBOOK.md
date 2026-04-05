@@ -33,6 +33,7 @@ Do not start launch-day execution unless all are true:
 - Refresh evidence artifacts
 - Confirm monitoring and alerting are enabled
 - Confirm support, incident, and payment contacts are staffed
+- Confirm the public support path resolves to [Customer Support](CUSTOMER_SUPPORT.md)
 
 ## T-2 Hours
 

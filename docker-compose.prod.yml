@@ -7,6 +7,7 @@ services:
         INSTALL_PLAYWRIGHT: 1
         RUN_PRELOAD: 1
         INSTALL_ADDITIONAL_TOOLS: 1
+        INSTALL_MERMAID_CLI: ${INSTALL_MERMAID_CLI:-0}
     image: agent-jumbo:production
     pull_policy: never
     container_name: agent-jumbo-production

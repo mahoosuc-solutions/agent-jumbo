@@ -30,9 +30,9 @@ If a row does not have an owner, validation path, evidence path, and rollback pa
 | Chat create/message/poll lifecycle | ga | Engineering | `./scripts/validate_360.sh` and manual smoke | `artifacts/validation/validation-360-20260404-170924.log` | rollback deploy | ✅ Evidence captured 2026-04-04 — chat roundtrip pass |
 | Skills discovery | ga | Engineering | `./scripts/validate_360.sh` | `artifacts/validation/validation-360-20260404-170924.log` | rollback deploy | ✅ Evidence captured 2026-04-04 — skills discovery pass |
 | Trust gate enforcement | ga | Security | targeted pytest plus manual trust-level smoke | `artifacts/validation/deployment-validation-20260404-171147.log` | set stricter trust defaults or stop launch | ✅ Deployment 83/83 pass — refresh manual trust smoke before launch |
-| Trust and Security dashboard | ga | Product | browser smoke on dashboard render and state | launch smoke record | hide dashboard link | Pending manual browser smoke |
-| Dashboards sidebar navigation | ga | Product | browser smoke for sidebar registration and routing | launch smoke record | feature flag or hide section | Pending manual browser smoke |
-| New chat auto-select | ga | Product | browser smoke after chat creation | launch smoke record | rollback deploy | Pending manual browser smoke |
+| Trust and Security dashboard | ga | Product | browser smoke on dashboard render and state | `artifacts/validation/manual-smoke-20260405.md` | hide dashboard link | ✅ Validated 2026-04-05 — 4 trust cards, 6 posture items |
+| Dashboards sidebar navigation | ga | Product | browser smoke for sidebar registration and routing | `artifacts/validation/manual-smoke-20260405.md` | feature flag or hide section | ✅ Validated 2026-04-05 — Work Queue, Workflows, Tasks routes load |
+| New chat auto-select | ga | Product | browser smoke after chat creation | `artifacts/validation/manual-smoke-20260405.md` | rollback deploy | ✅ Validated 2026-04-05 — new chat selected immediately |
 | Ideas workspace | beta | Product | backend tests plus browser smoke for create, refine, and save brief | test report plus launch smoke record | hide sidebar link | Beta — no GA evidence required |
 | Projects workspace | beta | Product | backend tests plus browser smoke for load and project chat activation | test report plus launch smoke record | hide sidebar link | Beta — no GA evidence required |
 | Idea promotion to project/workflow/queue | beta | Engineering/Product | targeted integration tests plus manual promotion smoke | pytest output plus launch smoke record | disable promotion action | Beta — no GA evidence required |
@@ -44,7 +44,7 @@ If a row does not have an owner, validation path, evidence path, and rollback pa
 | Stripe pricing and payment path | ga | Product/Ops | Stripe test-mode end-to-end flow | payment validation record | disable payment route and hold launch | ✅ Mock provider rehearsal 2026-04-05 — 8/8 pass: customer, product, price, checkout, subscription, invoice, finalize, cancel — real sk_test key needed before live launch |
 | Self-serve onboarding docs | ga | Product | fresh install from docs | onboarding dry-run notes | remove self-serve claim | ✅ INSTALL.md created and validated — onboarding guide at /wbm-onboarding.html |
 | Monitoring and alerting | ga | Operations | alert fire drill and dashboard checks | `artifacts/validation/monitoring-alerting-*.md` | hold launch | ✅ health_alerter wired, platform-health-monitor task running every 5 min |
-| Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review | `artifacts/validation/compliance-links-*.md` | hold launch | Local publication package prepared — pending live URL verification |
+| Privacy, terms, retention, deletion docs | ga | Product/Ops | doc publication review on customer-facing documentation and pricing surfaces | `artifacts/validation/compliance-links-20260405.md` | hold launch | ✅ Verified 2026-04-05 — docs routes and pricing surface link compliance + support paths |
 
 ## Freeze Review Checklist
 

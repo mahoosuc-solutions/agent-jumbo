@@ -88,4 +88,6 @@ Customers are responsible for:
 
 ## Changes
 
+Customer support and deletion-request routing follow [Customer Support](CUSTOMER_SUPPORT.md).
+
 If this policy changes materially, update the launch docs and evidence package in the same release.

@@ -37,6 +37,11 @@ const launchAndComplianceDocs = [
     title: 'Data Deletion Policy',
     description: 'Expected deletion behavior for customer content and environments.',
   },
+  {
+    slug: 'CUSTOMER_SUPPORT',
+    title: 'Customer Support',
+    description: 'Canonical support, incident, billing, and remediation paths for self-serve customers.',
+  },
 ]
 
 export default function DocsIndex() {

@@ -35,6 +35,30 @@ export default function PricingPage() {
         {tiers.map((tier, i) => (<PricingTierCard key={tier.name} tier={tier} featured={i === featuredIndex} />))}
       </div>
       <p className="text-center text-xs text-slate-500 font-mono mt-8">Pricing validated by codebase cost analysis.</p>
+
+      <div className="mt-16 max-w-4xl mx-auto rounded-2xl border border-copper-500/20 bg-slate-950/60 p-8">
+        <h2 className="text-2xl font-bold text-white mb-4">Support & Compliance</h2>
+        <p className="text-slate-300 leading-7">
+          Self-serve launch commitments, customer policies, and support escalation paths are published in the documentation surface used at launch.
+        </p>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <Link href="/documentation/CUSTOMER_SUPPORT" className="px-4 py-2 rounded-lg border border-copper-400/40 text-copper-200 hover:border-copper-300 hover:text-white transition">
+            Customer Support
+          </Link>
+          <Link href="/documentation/PRIVACY_POLICY" className="px-4 py-2 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-500 hover:text-white transition">
+            Privacy Policy
+          </Link>
+          <Link href="/documentation/TERMS_OF_USE" className="px-4 py-2 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-500 hover:text-white transition">
+            Terms Of Use
+          </Link>
+          <Link href="/documentation/DATA_RETENTION_POLICY" className="px-4 py-2 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-500 hover:text-white transition">
+            Data Retention
+          </Link>
+          <Link href="/documentation/DATA_DELETION_POLICY" className="px-4 py-2 rounded-lg border border-slate-700 text-slate-200 hover:border-slate-500 hover:text-white transition">
+            Data Deletion
+          </Link>
+        </div>
+      </div>
     </div>
   )
 }

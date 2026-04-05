@@ -150,6 +150,7 @@ The customer must know:
 - how data deletion and account closure requests are handled
 
 Link the final production versions of privacy, terms, retention, and deletion docs before GA.
+Use [Customer Support](CUSTOMER_SUPPORT.md) as the canonical support, incident, billing, and remediation path.
 
 ## Onboarding Completion Checklist
 
@@ -166,6 +167,7 @@ Link the final production versions of privacy, terms, retention, and deletion do
 - [ ] Dashboard smoke complete
 - [ ] Backup and restore checked
 - [ ] Support, privacy, and terms links provided
+- [ ] Customer support path provided from the canonical support document
 
 ## Current Known Gaps
 

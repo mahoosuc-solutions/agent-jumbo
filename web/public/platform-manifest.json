@@ -1,19 +1,19 @@
 {
-  "generated_at": "2026-04-03T23:54:29.997861+00:00",
+  "generated_at": "2026-04-05T05:19:16.839611+00:00",
   "platform": {
     "commands": {
       "total": 414,
       "categories": 92
     },
     "instruments": {
-      "total": 37,
-      "active": 37
+      "total": 38,
+      "active": 38
     },
     "tools": {
       "total": 76
     },
     "api_endpoints": {
-      "total": 182
+      "total": 187
     },
     "integrations": [
       "calendar_hub",
@@ -27,15 +27,12 @@
       "telegram_orchestrator",
       "twilio_voice"
     ],
-    "helper_modules": 163
+    "helper_modules": 166
   },
   "github": {
-    "repos": 31,
+    "repos": 7,
     "verticals": [
       "ai-ops",
-      "communications",
-      "devops",
-      "hospitality",
       "productivity"
     ]
   },
@@ -507,6 +504,74 @@
         "task.completed"
       ],
       "icon_suggestion": "Phone handset with sound waves and a checkmark, representing automated voice conversations that convert"
+    },
+    {
+      "slug": "stayhive-hospitality",
+      "name": "StayHive Hospitality",
+      "tagline": "Turn any property into a fully automated AI-managed hospitality operation.",
+      "description": "StayHive Hospitality is a complete short-term rental and boutique hotel automation module for Stayhive.Cloud customers. Ships with a 14-phase guided onboarding workflow, 9 pre-built recurring scheduler tasks (daily ops brief, check-in scan, occupancy check, revenue review, competitor intel, rate analysis, billing review, seasonal activation, and annual audit), and full MCP bridge integration for voice AI, SMS, door codes, dynamic pricing, and SEO monitoring. Customers go from zero to fully live in one guided session. The module is distributed as a standalone add-on to any Stayhive.Cloud plan.",
+      "audience": "business",
+      "module_type": "add-on",
+      "distribution": "stayhive.cloud",
+      "onboarding_guide": "/wbm-onboarding.html",
+      "instruments": [
+        "property_manager",
+        "pms_hub",
+        "workflow_engine",
+        "stripe_payments"
+      ],
+      "tools": [
+        "property_manager_tool",
+        "pms_hub_tool",
+        "scheduler",
+        "stripe_payments",
+        "competitor_research",
+        "dynamic_pricing_suggest",
+        "seasonal_rates_list",
+        "seasonal_rates_activate",
+        "voice_ai_status",
+        "voice_ai_scripts_list",
+        "door_codes_get_active",
+        "door_codes_issue",
+        "door_codes_audit",
+        "sms_send",
+        "sms_status",
+        "onboarding_status",
+        "dashboard_stats",
+        "billing_invoices",
+        "config_get_full",
+        "config_patch",
+        "edge_health"
+      ],
+      "scheduled_workflows": [
+        "wbm-daily-ops-brief",
+        "wbm-daily-checkin-scan",
+        "wbm-daily-occupancy-check",
+        "wbm-weekly-revenue-review",
+        "wbm-weekly-competitor-intel",
+        "wbm-monthly-rate-analysis",
+        "wbm-monthly-billing-review",
+        "wbm-seasonal-rate-activation",
+        "wbm-yearly-platform-audit"
+      ],
+      "repos": [
+        "west-bethel-motel-booking-system"
+      ],
+      "integrations": [
+        "Twilio Voice AI",
+        "Twilio SMS",
+        "Stripe",
+        "Google Calendar",
+        "Airbnb / OTAs",
+        "Smart Lock / Door Codes",
+        "SEO / Google Search Console"
+      ],
+      "ag_mesh_events": [
+        "task.assigned",
+        "task.completed",
+        "task.approval_required"
+      ],
+      "icon_suggestion": "Honeycomb cell containing a motel key and calendar, representing structured short-term rental automation"
     }
   ],
   "pricing": {
