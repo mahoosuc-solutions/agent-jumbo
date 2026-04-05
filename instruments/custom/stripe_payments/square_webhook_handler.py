@@ -15,6 +15,9 @@ Handled event types:
 
 from __future__ import annotations
 
+import base64
+import hashlib
+import hmac
 import json
 import logging
 from typing import Any
@@ -34,6 +37,31 @@ class SquareWebhookHandler:
             "subscription.updated": self._handle_subscription_updated,
             "customer.updated": self._handle_customer_updated,
         }
+
+    def verify_signature(self, raw_body: str, signature: str, signature_key: str) -> bool:
+        """Verify Square HMAC-SHA256 webhook signature.
+
+        Square signs the raw request body with the webhook signature key using HMAC-SHA256
+        and base64-encodes the result.
+        """
+        if not signature or not signature_key:
+            return False
+        expected = base64.b64encode(
+            hmac.new(signature_key.encode(), raw_body.encode(), hashlib.sha256).digest()  # type: ignore[attr-defined]
+        ).decode()
+        return hmac.compare_digest(expected, signature)
+
+    def handle_event(self, event_id: str, event_type: str, data: dict[str, Any]) -> dict[str, Any]:
+        """Dispatch a Square webhook event by type."""
+        handler = self._handlers.get(event_type)
+        if handler is None:
+            return {"status": "ignored", "event_type": event_type, "event_id": event_id}
+        try:
+            result = handler(data)
+            return {"status": "processed", "event_type": event_type, "event_id": event_id, **result}
+        except Exception as exc:
+            logger.error("Error processing Square event %s (%s): %s", event_id, event_type, exc)
+            return {"status": "error", "event_type": event_type, "event_id": event_id, "error": str(exc)}
 
     def process(self, event: dict[str, Any]) -> dict[str, Any]:
         """Process a Square webhook event dict.

@@ -38,6 +38,74 @@ class PayPalWebhookHandler:
             "INVOICING.INVOICE.PAYMENT_FAILED": self._handle_invoice_payment_failed,
         }
 
+    def verify_signature(
+        self,
+        raw_body: str,
+        headers: dict[str, str],
+        webhook_id: str,
+        client_id: str,
+        client_secret: str,
+        environment: str = "sandbox",
+    ) -> bool:
+        """Verify PayPal webhook signature via the PayPal verify-webhook-signature API.
+
+        Returns True if verification succeeds, False on any failure.
+        Falls back to True in sandbox mode when credentials are not configured
+        (to simplify local development without real PayPal keys).
+        """
+        if not client_id or not client_secret:
+            if environment == "sandbox":
+                logger.warning("PayPal credentials not configured — skipping verification in sandbox mode")
+                return True
+            return False
+
+        try:
+            import httpx
+
+            base_url = "https://api-m.sandbox.paypal.com" if environment == "sandbox" else "https://api-m.paypal.com"
+            # Get access token
+            token_resp = httpx.post(
+                f"{base_url}/v1/oauth2/token",
+                auth=(client_id, client_secret),
+                data={"grant_type": "client_credentials"},
+                timeout=10,
+            )
+            token_resp.raise_for_status()
+            access_token = token_resp.json()["access_token"]
+
+            # Verify signature
+            verify_resp = httpx.post(
+                f"{base_url}/v1/notifications/verify-webhook-signature",
+                headers={"Authorization": f"Bearer {access_token}", "Content-Type": "application/json"},
+                json={
+                    "auth_algo": headers.get("PAYPAL-AUTH-ALGO", ""),
+                    "cert_url": headers.get("PAYPAL-CERT-URL", ""),
+                    "transmission_id": headers.get("PAYPAL-TRANSMISSION-ID", ""),
+                    "transmission_sig": headers.get("PAYPAL-TRANSMISSION-SIG", ""),
+                    "transmission_time": headers.get("PAYPAL-TRANSMISSION-TIME", ""),
+                    "webhook_id": webhook_id,
+                    "webhook_event": json.loads(raw_body),
+                },
+                timeout=10,
+            )
+            verify_resp.raise_for_status()
+            return verify_resp.json().get("verification_status") == "SUCCESS"
+        except Exception as exc:
+            logger.error("PayPal webhook verification error: %s", exc)
+            return False
+
+    def handle_event(self, event_id: str, event_type: str, resource: dict[str, Any]) -> dict[str, Any]:
+        """Dispatch a PayPal webhook event by type."""
+        handler = self._handlers.get(event_type)
+        if handler is None:
+            return {"status": "ignored", "event_type": event_type, "event_id": event_id}
+        try:
+            result = handler(resource)
+            return {"status": "processed", "event_type": event_type, "event_id": event_id, **result}
+        except Exception as exc:
+            logger.error("Error processing PayPal event %s (%s): %s", event_id, event_type, exc)
+            return {"status": "error", "event_type": event_type, "event_id": event_id, "error": str(exc)}
+
     def process(self, event: dict[str, Any]) -> dict[str, Any]:
         """Process a PayPal webhook event dict.
 

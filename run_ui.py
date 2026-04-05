@@ -409,6 +409,15 @@ def run():
         register_api_handler(webapp, handler)
     PrintStyle(font_color="green").print(f"[✓] API handlers loaded ({len(all_handlers)} handlers)")
 
+    # Register Flask Blueprints (multi-route groups that don't use ApiHandler)
+    try:
+        from python.api.billing_portal import billing_bp
+
+        webapp.register_blueprint(billing_bp)
+        PrintStyle(font_color="green").print("[✓] Billing portal blueprint registered (/billing/*)")
+    except Exception as _bp_err:
+        PrintStyle(font_color="yellow").print(f"[!] Billing portal blueprint skipped: {_bp_err}")
+
     # Initialize messaging gateway with channel adapters.
     # Keep UI boot resilient if gateway dependencies are mid-refactor.
     if _is_laptop_mode():
