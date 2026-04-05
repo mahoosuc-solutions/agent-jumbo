@@ -11,6 +11,9 @@ To begin with Agent Jumbo, follow the links below for detailed guides on various
 - **[Self-Serve GA Onboarding](SELF_SERVE_GA_ONBOARDING.md):** Canonical customer-facing setup path for production launch.
 - **[GA Launch Runbook](GA_LAUNCH_RUNBOOK.md):** Launch-day execution, rollback, and observation procedure.
 - **[Stripe Setup For Mahoosuc.ai](STRIPE_MAHOOSUC_SETUP.md):** Stripe CLI workflow for test-mode account wiring, products, prices, and webhooks.
+- **[Square Setup](SQUARE_SETUP.md):** Square developer account, access token, webhook configuration, and catalog sync workflow.
+- **[PayPal Setup](PAYPAL_SETUP.md):** PayPal REST API app, OAuth credentials, webhook configuration, and catalog sync workflow.
+- **[Browser-Assisted Payment Account Setup](BROWSER_ACCOUNT_SETUP.md):** Browser automation instrument for guided account creation on Stripe, Square, and PayPal with human-in-the-loop checkpoints.
 - **[Privacy Policy](PRIVACY_POLICY.md):** Customer-facing summary of platform data handling.
 - **[Terms Of Use](TERMS_OF_USE.md):** Core service and acceptable-use terms for the self-serve platform.
 - **[Data Retention Policy](DATA_RETENTION_POLICY.md):** Default retention guidance for platform data and backups.
