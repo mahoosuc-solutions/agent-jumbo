@@ -4,6 +4,8 @@ Agent Jumbo can guide you through setting up accounts on Stripe, Square, and Pay
 browser automation. The agent handles all navigation and form-filling, but pauses at checkpoints
 where human action is required (CAPTCHA, 2FA, email verification, document upload).
 
+For the full tenant-owned Stripe journey and operating model, see `docs/BILLING_SETUP_JOURNEY.md`.
+
 ## How It Works
 
 The setup instrument uses Playwright browser automation (via the MCP plugin) to:
@@ -11,8 +13,8 @@ The setup instrument uses Playwright browser automation (via the MCP plugin) to:
 1. Open the provider's registration page
 2. Fill in your business details
 3. Navigate to the API keys / developer dashboard
-4. Extract credentials and store them in your `.env` file
-5. Run a dry-run catalog sync to verify the connection
+4. Extract credentials and store them in tenant-scoped billing setup storage
+5. Run a dry-run catalog sync and readiness verification
 
 At each **human-required** checkpoint, the agent stops, shows you a screenshot, gives you
 clear instructions, and waits for you to press **Continue** before proceeding.
@@ -147,8 +149,8 @@ If you've already set up an account and just need to store credentials:
 }
 ```
 
-This writes to your `.env` file. For production deployments, credentials are also pushed
-via `vercel env add` if the Vercel CLI is available.
+This stores credentials in tenant billing setup state by default. For local/dev workflows,
+credentials can still be written to `.env`, and optionally pushed via `vercel env add`.
 
 ## Verifying an Existing Setup
 
@@ -160,9 +162,10 @@ Check that credentials are configured and working:
 
 The agent will:
 
-1. Check that all required env vars are present
-2. Run `scripts/stripe_catalog_sync.py --dry-run` (or equivalent for the provider)
-3. Report success or any missing configuration
+1. Check that required tenant credentials are present
+2. Verify Stripe API auth
+3. Check webhook registration, KYC/payout readiness, and catalog presence
+4. Report success or the next required actions
 
 ## Screenshot Archive
 
@@ -176,9 +179,9 @@ Filenames follow the pattern `{provider}_{session_id}_step{N}.png`.
 
 ## Security Notes
 
-- Credentials are written to `.env` (gitignored) and never logged
-- Session data is stored in a local SQLite database at:
-  `instruments/custom/payment_account_setup/data/setup_sessions.db`
+- Tenant secrets are stored in local billing setup SQLite state for the current environment and returned redacted
+- Session and connection data is stored in a local SQLite database at:
+  `instruments/custom/payment_account_setup/data/payment_account_setup.db`
 - Browser automation only fills forms — it never reads your passwords back after entry
 - At human-required steps, the agent cannot see what you type in the browser
 
