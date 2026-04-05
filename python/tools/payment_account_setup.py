@@ -38,6 +38,9 @@ class PaymentAccountSetup(Tool):
             "store_credentials": self._store_credentials,
             "get_session": self._get_session,
             "list_sessions": self._list_sessions,
+            "get_status": self._get_status,
+            "get_catalog": self._get_catalog,
+            "sync_catalog": self._sync_catalog,
             "verify_setup": self._verify_setup,
         }
 
@@ -70,6 +73,7 @@ class PaymentAccountSetup(Tool):
         email = self.args.get("email", "")
         country = self.args.get("country", "us")
         webhook_url = self.args.get("webhook_endpoint_url", "")
+        tenant_id = self.args.get("tenant_id", "default")
 
         if not business_name or not email:
             return {"error": "business_name and email are required"}
@@ -80,6 +84,7 @@ class PaymentAccountSetup(Tool):
             email=email,
             country=country,
             webhook_endpoint_url=webhook_url,
+            tenant_id=tenant_id,
         )
         return result
 
@@ -125,6 +130,8 @@ class PaymentAccountSetup(Tool):
         credentials = self.args.get("credentials", {})
         session_id = self.args.get("session_id")
         push_to_vercel = bool(self.args.get("push_to_vercel", False))
+        tenant_id = self.args.get("tenant_id", "default")
+        write_to_env = bool(self.args.get("write_to_env", False))
 
         if not provider:
             return {"error": "provider is required"}
@@ -138,7 +145,9 @@ class PaymentAccountSetup(Tool):
             provider=provider,
             credentials=credentials,
             session_id=session_id,
+            tenant_id=tenant_id,
             push_to_vercel=push_to_vercel,
+            write_to_env=write_to_env,
         )
         return {"status": "stored", "provider": provider, "written_keys": written}
 
@@ -152,7 +161,9 @@ class PaymentAccountSetup(Tool):
         return session
 
     async def _list_sessions(self):
-        sessions = self.manager.list_sessions()
+        tenant_id = self.args.get("tenant_id", "default")
+        provider = self.args.get("provider")
+        sessions = self.manager.list_sessions(tenant_id=tenant_id, provider=provider)
         return {
             "count": len(sessions),
             "sessions": [
@@ -169,6 +180,38 @@ class PaymentAccountSetup(Tool):
             ],
         }
 
+    async def _get_status(self):
+        tenant_id = self.args.get("tenant_id", "default")
+        provider = self.args.get("provider", "stripe")
+        include_catalog = bool(self.args.get("include_catalog", False))
+        return self.manager.get_status(tenant_id=tenant_id, provider=provider, include_catalog=include_catalog)
+
+    async def _get_catalog(self):
+        tenant_id = self.args.get("tenant_id", "default")
+        provider = self.args.get("provider", "stripe")
+        return self.manager.get_catalog(tenant_id=tenant_id, provider=provider)
+
+    async def _sync_catalog(self):
+        tenant_id = self.args.get("tenant_id", "default")
+        provider = self.args.get("provider", "stripe")
+        apply = bool(self.args.get("apply", False))
+        mock = bool(self.args.get("mock", False))
+        selected_slugs = self.args.get("selected_slugs") or []
+        if isinstance(selected_slugs, str):
+            try:
+                selected_slugs = json.loads(selected_slugs)
+            except (json.JSONDecodeError, TypeError):
+                selected_slugs = [selected_slugs]
+        return self.manager.sync_catalog(
+            tenant_id=tenant_id,
+            provider=provider,
+            apply=apply,
+            selected_slugs=selected_slugs,
+            mock=mock,
+        )
+
     async def _verify_setup(self):
         provider = self.args.get("provider", "stripe")
-        return self.manager.verify_setup(provider)
+        tenant_id = self.args.get("tenant_id", "default")
+        mock = bool(self.args.get("mock", False))
+        return self.manager.verify_setup(provider=provider, tenant_id=tenant_id, mock=mock)
