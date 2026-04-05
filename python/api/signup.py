@@ -134,7 +134,13 @@ class SignupEndpoint(ApiHandler):
         referrer = (input.get("referrer") or "").strip()
 
         if not email or "@" not in email:
-            return {"error": "valid email is required"}, 400  # type: ignore[return-value]
+            from flask import Response as FlaskResponse
+
+            return FlaskResponse(  # type: ignore[return-value]
+                response='{"error": "valid email is required"}',
+                status=400,
+                mimetype="application/json",
+            )
 
         valid_plans = set(_PLAN_NEXT_STEPS.keys())
         if plan not in valid_plans:
