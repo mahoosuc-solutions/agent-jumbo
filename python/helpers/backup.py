@@ -10,6 +10,7 @@ from pathspec import PathSpec
 from pathspec.patterns.gitwildmatch import GitWildMatchPattern
 
 from python.helpers import files, git, runtime
+from python.helpers.db_paths import get_db_dir
 from python.helpers.print_style import PrintStyle
 
 
@@ -56,12 +57,14 @@ class BackupService:
         """
         # Ensure paths don't have double slashes
         agent_root = self.agent_jumbo_root.rstrip("/")
+        db_root = str(get_db_dir()).rstrip("/")
 
         # pathspec GitWildMatchPattern matches relative paths (leading slash stripped at match time)
         # so patterns must not have a leading slash
         rel_root = agent_root.lstrip("/")
+        rel_db_root = db_root.lstrip("/")
 
-        return f"""# Agent Jumbo Knowledge (excluding defaults)
+        patterns = f"""# Agent Jumbo Knowledge (excluding defaults)
 {rel_root}/knowledge/**
 !{rel_root}/knowledge/default/**
 
@@ -86,6 +89,17 @@ class BackupService:
 # User data
 {rel_root}/usr/**
 """  # nosec B108 - tmp/ is relative to agent root, not system /tmp
+
+        if db_root != agent_root + "/data":
+            patterns += f"""
+
+# Runtime database volume
+{rel_db_root}/*.db
+{rel_db_root}/*.db-wal
+{rel_db_root}/*.db-shm
+"""
+
+        return patterns
 
     def _get_agent_jumbo_version(self) -> str:
         """Get current Agent Jumbo version"""

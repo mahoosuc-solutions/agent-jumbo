@@ -34,7 +34,34 @@ from python.helpers.localization import Localization
 from python.helpers.persist_chat import save_tmp_chat
 from python.helpers.print_style import PrintStyle
 
-SCHEDULER_FOLDER = "tmp/scheduler"
+SCHEDULER_FOLDER = "data/scheduler"
+LEGACY_SCHEDULER_FOLDER = "tmp/scheduler"
+
+
+def get_scheduler_tasks_path() -> str:
+    return get_abs_path(SCHEDULER_FOLDER, "tasks.json")
+
+
+def get_legacy_scheduler_tasks_path() -> str:
+    return get_abs_path(LEGACY_SCHEDULER_FOLDER, "tasks.json")
+
+
+def ensure_scheduler_tasks_file() -> str:
+    path = get_scheduler_tasks_path()
+    legacy_path = get_legacy_scheduler_tasks_path()
+
+    if exists(path):
+        return path
+
+    make_dirs(path)
+
+    if exists(legacy_path):
+        write_file(path, read_file(legacy_path))
+    else:
+        write_file(path, SchedulerTaskList(tasks=[]).model_dump_json())
+
+    return path
+
 
 # ----------------------
 # Task Models
@@ -516,13 +543,9 @@ class SchedulerTaskList(BaseModel):
 
     @classmethod
     def get(cls) -> "SchedulerTaskList":
-        path = get_abs_path(SCHEDULER_FOLDER, "tasks.json")
+        path = ensure_scheduler_tasks_file()
         if cls.__instance is None:
-            if not exists(path):
-                make_dirs(path)
-                cls.__instance = asyncio.run(cls(tasks=[]).save())
-            else:
-                cls.__instance = cls.model_validate_json(read_file(path))
+            cls.__instance = cls.model_validate_json(read_file(path))
         else:
             asyncio.run(cls.__instance.reload())
         return cls.__instance
@@ -532,7 +555,7 @@ class SchedulerTaskList(BaseModel):
         self._lock = threading.RLock()
 
     async def reload(self) -> "SchedulerTaskList":
-        path = get_abs_path(SCHEDULER_FOLDER, "tasks.json")
+        path = ensure_scheduler_tasks_file()
         if exists(path):
             with self._lock:
                 data = self.__class__.model_validate_json(read_file(path))
@@ -561,9 +584,7 @@ class SchedulerTaskList(BaseModel):
                             f"Fixed: Generated new token '{task.token}' for task {task.name}"
                         )
 
-            path = get_abs_path(SCHEDULER_FOLDER, "tasks.json")
-            if not exists(path):
-                make_dirs(path)
+            path = ensure_scheduler_tasks_file()
 
             # Get the JSON string before writing
             json_data = self.model_dump_json()

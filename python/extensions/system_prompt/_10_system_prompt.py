@@ -17,6 +17,7 @@ class SystemPrompt(Extension):
         mcp_tools = get_mcp_tools_prompt(self.agent)
         secrets_prompt = get_secrets_prompt(self.agent)
         project_prompt = get_project_prompt(self.agent)
+        work_context_prompt = get_work_context_prompt(self.agent)
 
         system_prompt.append(main)
         system_prompt.append(tools)
@@ -26,6 +27,8 @@ class SystemPrompt(Extension):
             system_prompt.append(secrets_prompt)
         if project_prompt:
             system_prompt.append(project_prompt)
+        if work_context_prompt:
+            system_prompt.append(work_context_prompt)
 
 
 def get_main_prompt(agent: Agent):
@@ -83,3 +86,8 @@ def get_project_prompt(agent: Agent):
     else:
         result += "\n\n" + agent.read_prompt("agent.system.projects.inactive.md")
     return result
+
+
+def get_work_context_prompt(agent: Agent) -> str:
+    work_context = str(agent.get_data("work_context") or "").strip()
+    return work_context

@@ -74,7 +74,7 @@ class Tool:
             from python.helpers import agent_journal
 
             project_name = getattr(getattr(self.agent, "active_project", None), "name", None)
-            ctx_id = getattr(self.agent, "id", "") or ""
+            ctx_id = getattr(getattr(self.agent, "context", None), "id", "") or ""
             session_id = agent_journal.get_or_create_session(ctx_id, project_name)
             agent_journal.log_tool_use(
                 session_id=session_id,
