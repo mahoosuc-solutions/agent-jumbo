@@ -1,0 +1,55 @@
+name: data-ml
+version: 1.0.0
+description: Data engineering, machine learning, and MLOps specialist for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - data_pipeline_design
+  - ml_experimentation
+  - feature_engineering
+  - model_evaluation
+  - data_architecture
+  - etl_design
+  - experiment_tracking
+  - code_execution
+
+tools:
+  include:
+    - code_execution_tool
+    - document_query
+    - knowledge_*
+    - memory_*
+    - search_engine
+    - browser_agent
+    - analytics_roi_calculator
+    - diagram_tool
+    - task_cycle
+    - workflow_engine
+    - task_planner
+    - response
+    - call_subordinate
+  exclude:
+    - deployment_*
+    - devops_deploy
+    - devops_monitor
+    - brand_voice
+    - customer_lifecycle
+    - sales_generator
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - SOLUTIONS
+    - FRAGMENTS
+  shared_with:
+    - solution-design
+    - researcher
+
+behavior:
+  max_iterations: 50
+  tool_confirmation: []
+  auto_delegate:
+    research_tasks: researcher
+    reporting_tasks: analytics

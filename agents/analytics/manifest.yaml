@@ -1,0 +1,55 @@
+name: analytics
+version: 1.0.0
+description: Analytics, reporting, and business intelligence specialist for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - data_analysis
+  - dashboard_design
+  - reporting
+  - insight_synthesis
+  - roi_analysis
+  - digest_generation
+  - stakeholder_communication
+  - web_search
+
+tools:
+  include:
+    - analytics_roi_calculator
+    - digest_builder
+    - document_query
+    - knowledge_*
+    - memory_*
+    - search_engine
+    - browser_agent
+    - vision_load
+    - response
+    - call_subordinate
+    - workflow_engine
+    - task_planner
+    - diagram_tool
+  exclude:
+    - code_execution_tool
+    - deployment_*
+    - devops_*
+    - brand_voice
+    - customer_lifecycle
+    - sales_generator
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - SOLUTIONS
+    - FRAGMENTS
+  shared_with:
+    - researcher
+    - data-ml
+
+behavior:
+  max_iterations: 35
+  tool_confirmation: []
+  auto_delegate:
+    research_tasks: researcher
+    content_tasks: ghost-writer

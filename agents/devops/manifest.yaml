@@ -1,0 +1,55 @@
+name: devops
+version: 1.0.0
+description: DevOps, deployment, infrastructure, and incident response for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - deployment
+  - infrastructure_automation
+  - ci_cd
+  - monitoring
+  - incident_response
+  - container_orchestration
+  - code_execution
+  - scheduling
+
+tools:
+  include:
+    - code_execution_tool
+    - deployment_*
+    - devops_deploy
+    - devops_monitor
+    - scheduler
+    - task_cycle
+    - git_tool
+    - workflow_engine
+    - memory_*
+    - knowledge_*
+    - search_engine
+    - response
+    - call_subordinate
+    - document_query
+  exclude:
+    - brand_voice
+    - customer_lifecycle
+    - sales_generator
+    - portfolio_manager_tool
+    - business_xray_tool
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - INSTRUMENTS
+  shared_with:
+    - developer
+
+behavior:
+  max_iterations: 40
+  tool_confirmation:
+    - deployment_*
+    - delete_*
+  auto_delegate:
+    research_tasks: actor-research
+    development_tasks: developer

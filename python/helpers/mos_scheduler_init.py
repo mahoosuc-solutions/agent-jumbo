@@ -41,6 +41,21 @@ def register_mos_schedules() -> dict[str, Any]:
                 handler=_run_linear_activity_digest,
             )
             registered.append("mos_linear_activity_digest")
+
+            legacy_scheduler.register_task(
+                name="mos_analytics_daily_digest",
+                cron="0 7 * * *",
+                handler=_run_analytics_digest,
+            )
+            registered.append("mos_analytics_daily_digest")
+
+            legacy_scheduler.register_task(
+                name="mos_support_queue_check",
+                cron="0 * * * *",
+                handler=_run_support_queue_check,
+            )
+            registered.append("mos_support_queue_check")
+
             status = "registered"
         else:
             reason = "current scheduler does not expose the legacy callback registration API"
@@ -75,5 +90,25 @@ async def _run_linear_activity_digest() -> None:
         from python.helpers.mos_orchestrator import MOSOrchestrator
 
         await MOSOrchestrator.sync_linear_activity_to_digest()
+    except Exception:
+        traceback.print_exc()
+
+
+async def _run_analytics_digest() -> None:
+    """Wrapper for analytics daily digest scheduler callback."""
+    try:
+        from python.helpers.mos_orchestrator import MOSOrchestrator
+
+        await MOSOrchestrator.generate_analytics_digest()
+    except Exception:
+        traceback.print_exc()
+
+
+async def _run_support_queue_check() -> None:
+    """Wrapper for hourly support queue check scheduler callback."""
+    try:
+        from python.helpers.mos_orchestrator import MOSOrchestrator
+
+        await MOSOrchestrator.check_support_queue()
     except Exception:
         traceback.print_exc()

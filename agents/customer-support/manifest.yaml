@@ -1,0 +1,50 @@
+name: customer-support
+version: 1.0.0
+description: Customer support triage, knowledge synthesis, and escalation routing for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - ticket_triage
+  - knowledge_lookup
+  - escalation_routing
+  - onboarding_support
+  - billing_support
+  - troubleshooting
+  - documentation
+  - web_search
+
+tools:
+  include:
+    - document_query
+    - knowledge_*
+    - memory_*
+    - search_engine
+    - browser_agent
+    - response
+    - call_subordinate
+    - workflow_engine
+    - task_planner
+    - vision_load
+  exclude:
+    - code_execution_tool
+    - deployment_*
+    - devops_*
+    - git_tool
+    - brand_voice
+    - sales_generator
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - SOLUTIONS
+  shared_with: []
+
+behavior:
+  max_iterations: 30
+  tool_confirmation: []
+  auto_delegate:
+    technical_tasks: developer
+    billing_tasks: researcher
+    content_tasks: ghost-writer

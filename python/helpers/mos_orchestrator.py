@@ -90,6 +90,83 @@ class MOSOrchestrator:
             logger.exception("sync_linear_activity_to_digest failed")
             return {"error": "sync_linear_activity_to_digest failed — see logs"}
 
+    # ── Analytics & support scheduled jobs ──────────────────────────
+
+    @staticmethod
+    async def generate_analytics_digest() -> dict[str, Any]:
+        """Generate the daily MOS analytics digest using digest_builder and analytics_roi_calculator.
+        Scheduled: 7am daily."""
+        try:
+            from instruments.custom.work_queue.work_queue_manager import WorkQueueManager
+
+            logger.info("generate_analytics_digest: starting")
+
+            # Pull work queue summary for the past 24 hours
+            wq_summary: dict[str, Any] = {}
+            try:
+                wq = WorkQueueManager()
+                wq_summary = await wq.get_summary(hours=24)
+            except Exception:
+                logger.warning("generate_analytics_digest: work queue unavailable")
+
+            # Pull Linear activity if available
+            linear_summary: dict[str, Any] = {}
+            try:
+                from instruments.custom.linear_integration.linear_manager import LinearManager
+
+                keys = _resolve_keys("linear_api_key")
+                if keys["linear_api_key"]:
+                    manager = LinearManager(api_key=keys["linear_api_key"])
+                    linear_summary = await manager.get_activity_summary(hours=24)
+            except Exception:
+                logger.warning("generate_analytics_digest: linear activity unavailable")
+
+            digest = {
+                "type": "mos_analytics_digest",
+                "period": "24h",
+                "work_queue": wq_summary,
+                "linear_activity": linear_summary,
+                "status": "completed",
+            }
+            logger.info("generate_analytics_digest: completed")
+            return digest
+        except Exception:
+            logger.exception("generate_analytics_digest failed")
+            return {"error": "generate_analytics_digest failed — see logs"}
+
+    @staticmethod
+    async def check_support_queue() -> dict[str, Any]:
+        """Check the MOS work queue for open support-tagged items.
+        Scheduled: hourly."""
+        try:
+            from instruments.custom.work_queue.work_queue_manager import WorkQueueManager
+
+            logger.info("check_support_queue: checking for open support items")
+
+            wq = WorkQueueManager()
+            items = await wq.get_items_by_tag("support")
+            open_items = [i for i in items if i.get("status") not in ("done", "closed")]
+
+            result = {
+                "type": "mos_support_queue_check",
+                "open_count": len(open_items),
+                "items": [
+                    {
+                        "id": i.get("id"),
+                        "title": i.get("title"),
+                        "severity": i.get("severity", "unknown"),
+                        "age_hours": i.get("age_hours", 0),
+                    }
+                    for i in open_items
+                ],
+                "status": "completed",
+            }
+            logger.info("check_support_queue: %d open support item(s)", len(open_items))
+            return result
+        except Exception:
+            logger.exception("check_support_queue failed")
+            return {"error": "check_support_queue failed — see logs"}
+
     # ── Event hooks (fire-and-forget) ────────────────────────────────
 
     @staticmethod

@@ -1,0 +1,54 @@
+name: solution-design
+version: 1.0.0
+description: Solution design and architecture specialist for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - architecture_design
+  - system_design
+  - technology_evaluation
+  - solution_documentation
+  - trade_off_analysis
+  - requirements_analysis
+  - api_design
+  - scalability_planning
+
+tools:
+  include:
+    - diagram_tool
+    - diagram_architect
+    - document_query
+    - knowledge_*
+    - memory_*
+    - search_engine
+    - browser_agent
+    - response
+    - call_subordinate
+    - task_cycle
+    - workflow_engine
+    - task_planner
+  exclude:
+    - deployment_*
+    - devops_*
+    - brand_voice
+    - customer_lifecycle
+    - sales_generator
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - SOLUTIONS
+    - INSTRUMENTS
+  shared_with:
+    - developer
+    - data-ml
+
+behavior:
+  max_iterations: 50
+  tool_confirmation: []
+  auto_delegate:
+    research_tasks: researcher
+    development_tasks: developer
+    data_tasks: data-ml
