@@ -2,10 +2,11 @@
 <head>
   <script type="module">
     import { store } from "/components/modals/service-profile/service-profile-store.js";
+    import { store as agentProfileStore } from "/components/modals/service-profile/agent-profile-store.js";
   </script>
 </head>
 <body>
-  <div x-data x-init="$store.serviceProfile.init()">
+  <div x-data x-init="$store.serviceProfile.init(); $store.agentProfile.init()">
     <template x-if="$store.serviceProfile?.loaded && $store.serviceProfile?.supported">
       <div class="service-profile-launcher">
         <button class="service-profile-launcher-btn" @click="$store.serviceProfile.openModal()">
@@ -14,6 +15,19 @@
             <span class="service-profile-launcher-label">Service Profile</span>
             <span class="service-profile-launcher-value"
               x-text="'Profile: ' + $store.serviceProfile.currentProfileLabel"></span>
+          </span>
+        </button>
+      </div>
+    </template>
+
+    <template x-if="$store.agentProfile?.loaded && $store.agentProfile?.supported">
+      <div class="service-profile-launcher">
+        <button class="service-profile-launcher-btn agent-profile-launcher-btn" @click="$store.serviceProfile.openModal()">
+          <span class="agent-profile-launcher-icon" x-text="$store.agentProfile.profileIcon($store.agentProfile.currentProfile)"></span>
+          <span class="service-profile-launcher-copy">
+            <span class="service-profile-launcher-label">Agent Persona</span>
+            <span class="service-profile-launcher-value"
+              x-text="$store.agentProfile.currentProfileLabel"></span>
           </span>
         </button>
       </div>
@@ -52,6 +66,12 @@
       border-radius: 999px;
       background: #00c340;
       box-shadow: 0 0 0 5px rgba(0, 195, 64, 0.14);
+      flex-shrink: 0;
+    }
+
+    .agent-profile-launcher-icon {
+      font-size: 1.2rem;
+      line-height: 1;
       flex-shrink: 0;
     }
 
