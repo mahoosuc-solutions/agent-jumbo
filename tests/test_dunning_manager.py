@@ -4,21 +4,33 @@ Tests for DunningManager — automated failed-payment recovery logic.
 Uses a real temp SQLite DB (via StripePaymentDatabase) so the business logic
 runs against actual SQL rather than mocks. External calls (provider.retry_payment,
 email send) are patched.
+
+Note: _get_last_attempt_time() is currently a stub returning None, so the
+time-window gating (e.g. "wait 3 days before retry attempt 1") is bypassed.
+Every past-due item is acted on in each cycle. Tests reflect this behavior.
 """
 
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 from unittest.mock import MagicMock, patch
 
+if TYPE_CHECKING:
+    from pathlib import Path
 
-def _make_db(tmp_path: Path):
-    from instruments.custom.stripe_payments.stripe_db import StripePaymentDatabase
+from instruments.custom.stripe_payments.dunning_manager import (
+    DunningAction,
+    DunningManager,
+    DunningReport,
+)
+from instruments.custom.stripe_payments.stripe_db import StripePaymentDatabase
 
+
+def _make_db(tmp_path: Path) -> StripePaymentDatabase:
     return StripePaymentDatabase(str(tmp_path / "test_dunning.db"))
 
 
-def _make_manager(db):
-    from instruments.custom.stripe_payments.dunning_manager import DunningManager
-
+def _make_manager(db) -> DunningManager:
     return DunningManager(db)
 
 
@@ -32,17 +44,6 @@ def _seed_past_due_invoice(db, invoice_id="inv_001", customer_id="cus_001", amou
     )
 
 
-def _seed_past_due_subscription(db, sub_id="sub_001", customer_id="cus_001", amount=2000):
-    db.add_subscription(
-        stripe_subscription_id=sub_id,
-        stripe_customer_id=customer_id,
-        stripe_price_id="price_test",
-        status="past_due",
-        amount_cents=amount,
-        currency="usd",
-    )
-
-
 # ---------------------------------------------------------------------------
 # DunningReport
 # ---------------------------------------------------------------------------
@@ -50,14 +51,28 @@ def _seed_past_due_subscription(db, sub_id="sub_001", customer_id="cus_001", amo
 
 class TestDunningReport:
     def test_to_dict_has_expected_keys(self):
-        from instruments.custom.stripe_payments.dunning_manager import DunningReport
-
         report = DunningReport(total_past_due=3, retried=1, emailed=2, paused=0, canceled=0)
         d = report.to_dict()
         assert d["total_past_due"] == 3
         assert d["retried"] == 1
         assert d["emailed"] == 2
         assert "at_risk_mrr_dollars" in d
+
+    def test_mrr_cents_converted_to_dollars(self):
+        report = DunningReport(at_risk_mrr_cents=25000)
+        assert report.to_dict()["at_risk_mrr_dollars"] == 250.0
+
+    def test_defaults_are_all_zero(self):
+        report = DunningReport()
+        assert report.total_past_due == 0
+        assert report.retried == 0
+        assert report.errors == []
+
+    def test_errors_list_independent_per_instance(self):
+        r1 = DunningReport()
+        r2 = DunningReport()
+        r1.errors.append("err")
+        assert r2.errors == []
 
 
 # ---------------------------------------------------------------------------
@@ -154,16 +169,12 @@ class TestDunningCycleWithItems:
 
 class TestDetermineAction:
     def test_first_attempt_retries(self, tmp_path):
-        from instruments.custom.stripe_payments.dunning_manager import DunningAction
-
         db = _make_db(tmp_path)
         mgr = _make_manager(db)
         action = mgr._determine_action(0)
         assert action in (DunningAction.RETRY_NOW, DunningAction.SEND_EMAIL)
 
     def test_max_attempts_cancels(self, tmp_path):
-        from instruments.custom.stripe_payments.dunning_manager import DunningAction
-
         db = _make_db(tmp_path)
         mgr = _make_manager(db)
         action = mgr._determine_action(mgr.max_attempts)
@@ -251,4 +262,5 @@ class TestRetryPaymentManually:
 
         assert result["status"] == "ok"
         updated = db.get_invoice_by_id("inv_manual")
+        assert updated is not None
         assert updated["status"] == "paid"
