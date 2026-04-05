@@ -448,6 +448,8 @@ class Message(ApiHandler):
                 prompt,
                 "--output-format",
                 "text",
+                "--system-prompt",
+                "You are a helpful AI assistant. Follow the user's instructions carefully.",
                 "--allowedTools",
                 "mcp__wbm-staging__*,mcp__wbm-production__*,Bash,Read,Write,Edit",
             ]

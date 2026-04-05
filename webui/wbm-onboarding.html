@@ -1284,8 +1284,12 @@ async function pollAgentPanel() {
       agentLogVersion = d.log_version;
       for (const log of (d.logs || [])) {
         if (log.type === 'response') {
-          hideThinkingIndicator();
           appendAgentBubble(log.content, log.no);
+          if (log.kvps && log.kvps.finished) {
+            agentThinking = false;
+            hideThinkingIndicator();
+            setAgentStatus('online');
+          }
         }
       }
     }
