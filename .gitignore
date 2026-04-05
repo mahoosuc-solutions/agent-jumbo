@@ -142,8 +142,10 @@ scripts/training/output/
 # Local MCP server wiring (contains ephemeral tokenized URLs)
 .mcp.json
 
-# LLM Router runtime database
+# Runtime data directories
 data/llm_router.db
+data/chats/
+data/scheduler/
 docker/run-bak-*
 docker/run-old-*
 
