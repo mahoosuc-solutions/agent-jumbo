@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 type Check = {
   id: string
@@ -48,7 +48,7 @@ type CatalogOffer = {
   setup_price_id?: string | null
 }
 
-type StatusPayload = {
+type EmbeddedStatus = {
   provider: string
   tenant_id: string
   summary: {
@@ -83,10 +83,51 @@ type StatusPayload = {
     title: string
     summary: string
   }>
+  catalog?: {
+    offers: CatalogOffer[]
+  }
 }
 
-type CatalogPayload = {
-  offers: CatalogOffer[]
+type WorkflowRun = {
+  run_id: string
+  workflow_type: string
+  status: string
+  current_phase: string
+  target_offer_slug: string
+  selected_slugs: string[]
+  validation_report: {
+    checkout?: {
+      checkout_url?: string
+      detail?: string
+      status?: string
+      offer_slug?: string
+    }
+  }
+  current_step: SetupStep | null
+  checkout_state?: {
+    status: string
+    checkout_url?: string
+    offer_slug?: string
+    detail?: string
+  }
+}
+
+type EvidenceItem = {
+  id: number
+  phase: string
+  evidence_type: string
+  title: string
+  status: string
+  created_at: string
+  payload: Record<string, unknown>
+}
+
+type WorkflowPayload = {
+  provider: string
+  tenant_id: string
+  workflow: WorkflowRun | null
+  status: EmbeddedStatus
+  evidence: EvidenceItem[]
 }
 
 const DEFAULT_TENANT_ID = 'default'
@@ -97,8 +138,7 @@ async function parseJson(res: Response) {
 
 export function StripeSetupWorkspace() {
   const [tenantId] = useState(DEFAULT_TENANT_ID)
-  const [status, setStatus] = useState<StatusPayload | null>(null)
-  const [catalog, setCatalog] = useState<CatalogPayload | null>(null)
+  const [workflowPayload, setWorkflowPayload] = useState<WorkflowPayload | null>(null)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
@@ -108,25 +148,27 @@ export function StripeSetupWorkspace() {
   const [country, setCountry] = useState('US')
   const [secretKey, setSecretKey] = useState('')
   const [webhookSecret, setWebhookSecret] = useState('')
-  const [catalogDrafts, setCatalogDrafts] = useState<Record<string, { active: boolean; monthly_price_usd: number; setup_price_usd: number }>>({})
+  const [catalogDrafts, setCatalogDrafts] = useState<
+    Record<string, { active: boolean; monthly_price_usd: number; setup_price_usd: number }>
+  >({})
+
+  const status = workflowPayload?.status ?? null
+  const workflow = workflowPayload?.workflow ?? null
+  const catalog = status?.catalog ?? { offers: [] }
 
   const loadAll = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const [statusRes, catalogRes] = await Promise.all([
-        fetch(`/api/backend/billing_setup_status?tenant_id=${encodeURIComponent(tenantId)}&provider=stripe`),
-        fetch(`/api/backend/billing_catalog?tenant_id=${encodeURIComponent(tenantId)}&provider=stripe`),
-      ])
-      const statusData = await parseJson(statusRes)
-      const catalogData = await parseJson(catalogRes)
-      if (!statusRes.ok) throw new Error(statusData.error ?? 'Failed to load setup status')
-      if (!catalogRes.ok) throw new Error(catalogData.error ?? 'Failed to load catalog')
-      setStatus(statusData)
-      setCatalog(catalogData)
+      const response = await fetch(
+        `/api/backend/billing_setup_workflow_status?tenant_id=${encodeURIComponent(tenantId)}&provider=stripe`,
+      )
+      const data = await parseJson(response)
+      if (!response.ok) throw new Error(data.error ?? 'Failed to load Stripe workflow')
+      setWorkflowPayload(data)
       setCatalogDrafts(
         Object.fromEntries(
-          (catalogData.offers ?? []).map((offer: CatalogOffer) => [
+          (data.status.catalog?.offers ?? []).map((offer: CatalogOffer) => [
             offer.slug,
             {
               active: Boolean(offer.active),
@@ -137,7 +179,7 @@ export function StripeSetupWorkspace() {
         ),
       )
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load billing setup')
+      setError(err instanceof Error ? err.message : 'Failed to load Stripe workflow')
     } finally {
       setLoading(false)
     }
@@ -166,10 +208,10 @@ export function StripeSetupWorkspace() {
     }
   }
 
-  async function startSetup() {
+  async function startWorkflow() {
     await runAction(
-      'start_setup',
-      fetch('/api/backend/billing_setup_session', {
+      'start_workflow',
+      fetch('/api/backend/billing_setup_workflow_start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -180,25 +222,24 @@ export function StripeSetupWorkspace() {
           country,
         }),
       }),
-      'Guided setup session started.',
+      'Stripe onboarding workflow started.',
     )
   }
 
-  async function continueSetup(humanConfirmed: boolean) {
-    const sessionId = status?.active_session?.session_id
-    if (!sessionId) return
+  async function advanceWorkflow(humanConfirmed: boolean) {
+    if (!workflow?.run_id) return
     await runAction(
-      'advance_setup',
-      fetch('/api/backend/billing_setup_session_advance', {
+      'advance_workflow',
+      fetch('/api/backend/billing_setup_workflow_advance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          session_id: sessionId,
+          run_id: workflow.run_id,
           human_confirmed: humanConfirmed,
           step_result: {},
         }),
       }),
-      humanConfirmed ? 'Marked the current human step complete.' : 'Moved to the next setup step.',
+      humanConfirmed ? 'Human-required step confirmed.' : 'Workflow advanced to the next setup step.',
     )
   }
 
@@ -241,18 +282,6 @@ export function StripeSetupWorkspace() {
     )
   }
 
-  async function syncCatalog(apply: boolean) {
-    await runAction(
-      apply ? 'sync_catalog' : 'catalog_diff',
-      fetch('/api/backend/billing_catalog_sync', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tenant_id: tenantId, provider: 'stripe', apply }),
-      }),
-      apply ? 'Catalog synced to Stripe.' : 'Catalog dry-run refreshed.',
-    )
-  }
-
   async function saveCatalogOffer(slug: string) {
     const draft = catalogDrafts[slug]
     if (!draft) return
@@ -274,8 +303,43 @@ export function StripeSetupWorkspace() {
     )
   }
 
-  if (loading && !status) {
-    return <div className="text-slate-400">Loading Stripe billing admin…</div>
+  async function validateWorkflow(applyCatalogSync: boolean, checkoutCompleted = false) {
+    if (!workflow?.run_id) {
+      setError('Start the workflow before validating it.')
+      return
+    }
+    const selectedSlugs = catalog.offers.filter((offer) => offer.active).map((offer) => offer.slug)
+    const firstPaidOffer = catalog.offers.find(
+      (offer) => offer.active && offer.billing_mode !== 'free' && offer.billing_mode !== 'custom_quote',
+    )
+    await runAction(
+      checkoutCompleted ? 'confirm_checkout' : applyCatalogSync ? 'sync_validate' : 'validate_workflow',
+      fetch('/api/backend/billing_setup_workflow_validate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          run_id: workflow.run_id,
+          apply_catalog_sync: applyCatalogSync,
+          checkout_completed: checkoutCompleted,
+          selected_slugs: selectedSlugs,
+          target_offer_slug: workflow.target_offer_slug || firstPaidOffer?.slug || '',
+        }),
+      }),
+      checkoutCompleted
+        ? 'Hosted checkout marked complete.'
+        : applyCatalogSync
+          ? 'Catalog synced and hosted checkout prepared.'
+          : 'Workflow validation refreshed.',
+    )
+  }
+
+  const recentEvidence = useMemo(
+    () => (workflowPayload?.evidence ?? []).slice(-6).reverse(),
+    [workflowPayload?.evidence],
+  )
+
+  if (loading && !workflowPayload) {
+    return <div className="text-slate-400">Loading Stripe billing workflow…</div>
   }
 
   return (
@@ -283,44 +347,239 @@ export function StripeSetupWorkspace() {
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-white">Stripe Setup Assistant</h1>
+            <h1 className="text-2xl font-bold text-white">Stripe Onboarding Workflow</h1>
             <p className="mt-2 max-w-3xl text-sm text-slate-400">
-              Guide tenants through Stripe Dashboard setup, capture billing readiness, and keep the product catalog in sync without making Mahoosuc the billing intermediary.
+              Launch a tenant-owned Stripe onboarding run, guide the operator through dashboard steps,
+              sync a controlled catalog, and validate readiness with a hosted test checkout.
             </p>
             <div className="mt-3 flex flex-wrap gap-3 text-sm">
               <a
-                href="/documentation/BILLING_SETUP_JOURNEY" // pragma: allowlist secret
+                href="/documentation/BILLING_SETUP_JOURNEY" /* pragma: allowlist secret */
                 className="text-copper-300 transition hover:text-copper-200 hover:underline"
               >
                 Billing journey guide
               </a>
               <a
-                href="/documentation/BROWSER_ACCOUNT_SETUP" // pragma: allowlist secret
+                href="/documentation/BROWSER_ACCOUNT_SETUP" /* pragma: allowlist secret */
                 className="text-copper-300 transition hover:text-copper-200 hover:underline"
               >
                 Browser setup reference
               </a>
             </div>
           </div>
-          <div className={`rounded-xl border px-4 py-3 text-sm ${status?.summary.ready ? 'border-green-800 bg-green-900/20 text-green-300' : 'border-amber-800 bg-amber-900/20 text-amber-200'}`}>
+          <div
+            className={`rounded-xl border px-4 py-3 text-sm ${
+              status?.summary.ready
+                ? 'border-green-800 bg-green-900/20 text-green-300'
+                : 'border-amber-800 bg-amber-900/20 text-amber-200'
+            }`}
+          >
             <div className="font-medium">{status?.summary.ready ? 'Ready' : 'Needs attention'}</div>
             <div>{status?.summary.message}</div>
             <div className="mt-1 text-xs text-slate-300">
               Passed {status?.summary.passed ?? 0} · Failed {status?.summary.failed ?? 0}
             </div>
+            {workflow?.run_id && (
+              <div className="mt-2 text-xs text-slate-300">
+                Workflow {workflow.run_id} · {workflow.status.replace('_', ' ')}
+              </div>
+            )}
           </div>
         </div>
-        {error && <p className="mt-4 rounded-lg border border-red-800 bg-red-900/20 p-3 text-sm text-red-300">{error}</p>}
-        {message && <p className="mt-4 rounded-lg border border-green-800 bg-green-900/20 p-3 text-sm text-green-300">{message}</p>}
+        {error && (
+          <p className="mt-4 rounded-lg border border-red-800 bg-red-900/20 p-3 text-sm text-red-300">
+            {error}
+          </p>
+        )}
+        {message && (
+          <p className="mt-4 rounded-lg border border-green-800 bg-green-900/20 p-3 text-sm text-green-300">
+            {message}
+          </p>
+        )}
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+      <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-white">Workflow Run</h2>
+              <p className="mt-1 text-sm text-slate-400">
+                Start or resume the embedded Stripe onboarding workflow from this workspace.
+              </p>
+            </div>
+            <button
+              onClick={startWorkflow}
+              disabled={busy !== null}
+              className="rounded-lg bg-copper-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-copper-500 disabled:opacity-50"
+            >
+              {busy === 'start_workflow' ? 'Starting…' : workflow ? 'Start New Workflow' : 'Start Workflow'}
+            </button>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-3">
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Business name</span>
+              <input
+                value={businessName}
+                onChange={(event) => setBusinessName(event.target.value)}
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Billing email</span>
+              <input
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+              />
+            </label>
+            <label className="block">
+              <span className="text-xs uppercase tracking-wide text-slate-500">Country</span>
+              <input
+                value={country}
+                onChange={(event) => setCountry(event.target.value)}
+                className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white"
+              />
+            </label>
+          </div>
+
+          {workflow ? (
+            <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-medium text-white">{workflow.run_id}</div>
+                  <div className="text-sm text-slate-400">
+                    Phase {workflow.current_phase} · {workflow.status.replace('_', ' ')}
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => advanceWorkflow(false)}
+                    disabled={busy !== null}
+                    className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50"
+                  >
+                    {busy === 'advance_workflow' ? 'Advancing…' : 'Advance Workflow'}
+                  </button>
+                  <button
+                    onClick={() => advanceWorkflow(true)}
+                    disabled={busy !== null}
+                    className="rounded-lg border border-copper-700 px-4 py-2 text-sm font-medium text-copper-300 transition hover:bg-copper-900/20 disabled:opacity-50"
+                  >
+                    Confirm Human Step
+                  </button>
+                </div>
+              </div>
+
+              {workflow.current_step ? (
+                <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900 p-4">
+                  <div className="flex items-center gap-2">
+                    <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[11px] uppercase tracking-wide text-slate-400">
+                      {workflow.current_step.automation_type}
+                    </span>
+                    <span className="text-sm font-medium text-white">{workflow.current_step.title}</span>
+                  </div>
+                  {workflow.current_step.description && (
+                    <p className="mt-2 text-sm text-slate-400">{workflow.current_step.description}</p>
+                  )}
+                  {workflow.current_step.human_instructions && (
+                    <p className="mt-3 rounded-lg border border-amber-800 bg-amber-900/10 p-3 text-sm text-amber-200">
+                      {workflow.current_step.human_instructions}
+                    </p>
+                  )}
+                </div>
+              ) : (
+                <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900 p-4 text-sm text-slate-400">
+                  No current setup step is active. Move to catalog sync or checkout validation below.
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-5 rounded-xl border border-dashed border-slate-800 bg-slate-950 p-5 text-sm text-slate-400">
+              No active workflow yet. Start one to create or connect a Stripe test account and capture the full audit trail.
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-semibold text-white">Recent Evidence</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            The workflow keeps a structured audit trail of steps, human gates, validation runs, and checkout preparation.
+          </p>
+          <div className="mt-4 space-y-3">
+            {recentEvidence.length > 0 ? (
+              recentEvidence.map((item) => (
+                <div key={item.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  {(() => {
+                    const detail =
+                      typeof item.payload.detail === 'string' ? item.payload.detail : null
+                    return (
+                      <>
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-sm font-medium text-white">{item.title}</div>
+                    <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[11px] uppercase tracking-wide text-slate-400">
+                      {item.phase || item.evidence_type}
+                    </span>
+                  </div>
+                  <div className="mt-1 text-xs text-slate-500">{item.created_at}</div>
+                  {detail && <div className="mt-2 text-sm text-slate-400">{detail}</div>}
+                      </>
+                    )
+                  })()}
+                </div>
+              ))
+            ) : (
+              <div className="rounded-xl border border-dashed border-slate-800 bg-slate-950 p-4 text-sm text-slate-400">
+                Evidence will appear here after you start the workflow.
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-white">Journey Stages</h2>
+            <p className="mt-1 text-sm text-slate-400">
+              The workflow tracks progress from discovery through ongoing billing operations.
+            </p>
+          </div>
+          <div className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-300">
+            Current stage: <span className="font-medium text-white">{status?.journey.current_stage ?? 'discover'}</span>
+          </div>
+        </div>
+        <p className="mt-4 text-sm text-slate-400">{status?.journey.operator_note}</p>
+        <div className="mt-5 grid gap-4 xl:grid-cols-3">
+          {(status?.journey.stages ?? []).map((stage) => (
+            <div key={stage.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-sm font-medium text-white">{stage.title}</div>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[11px] uppercase tracking-wide ${
+                    stage.status === 'complete'
+                      ? 'bg-green-900/30 text-green-300'
+                      : stage.status === 'in_progress'
+                        ? 'bg-copper-900/30 text-copper-300'
+                        : 'bg-slate-800 text-slate-400'
+                  }`}
+                >
+                  {stage.status.replace('_', ' ')}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-slate-400">{stage.goal}</p>
+              <p className="mt-3 text-xs text-slate-500">Exit criteria: {stage.exit_criteria}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
         <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-white">Connection</h2>
               <p className="mt-1 text-sm text-slate-400">
-                Store tenant-owned Stripe credentials and connect the billing admin workspace.
+                Store tenant-owned Stripe credentials and keep them redacted inside the billing workflow.
               </p>
             </div>
             <button
@@ -362,7 +621,8 @@ export function StripeSetupWorkspace() {
               {busy === 'store_credentials' ? 'Saving…' : 'Save Tenant Credentials'}
             </button>
             <div className="text-xs text-slate-500">
-              Stored values are redacted in the UI. Current capture: {Object.entries(status?.credentials ?? {}).filter(([, value]) => value).length} secrets.
+              Stored values are redacted in the UI. Current capture:{' '}
+              {Object.entries(status?.credentials ?? {}).filter(([, value]) => value).length} secrets.
             </div>
           </div>
         </div>
@@ -381,154 +641,6 @@ export function StripeSetupWorkspace() {
       </section>
 
       <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h2 className="text-lg font-semibold text-white">Customer Journey</h2>
-            <p className="mt-1 text-sm text-slate-400">
-              The billing assistant manages a defined journey from discovery through ongoing operations so operators know what to do next.
-            </p>
-          </div>
-          <div className="rounded-xl border border-slate-800 bg-slate-950 px-4 py-3 text-sm text-slate-300">
-            Current stage: <span className="font-medium text-white">{status?.journey.current_stage ?? 'discover'}</span>
-          </div>
-        </div>
-        <p className="mt-4 text-sm text-slate-400">{status?.journey.operator_note}</p>
-        <div className="mt-5 grid gap-4 xl:grid-cols-3">
-          {(status?.journey.stages ?? []).map((stage) => (
-            <div key={stage.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-sm font-medium text-white">{stage.title}</div>
-                <span className={`rounded-full px-2 py-0.5 text-[11px] uppercase tracking-wide ${
-                  stage.status === 'complete'
-                    ? 'bg-green-900/30 text-green-300'
-                    : stage.status === 'in_progress'
-                    ? 'bg-copper-900/30 text-copper-300'
-                    : 'bg-slate-800 text-slate-400'
-                }`}>
-                  {stage.status.replace('_', ' ')}
-                </span>
-              </div>
-              <p className="mt-2 text-sm text-slate-400">{stage.goal}</p>
-              <p className="mt-3 text-xs text-slate-500">Exit criteria: {stage.exit_criteria}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Guided Setup</h2>
-              <p className="mt-1 text-sm text-slate-400">
-                Launch or resume a structured Stripe setup session with human checkpoints for KYC, verification, and dashboard approvals.
-              </p>
-            </div>
-            <button
-              onClick={startSetup}
-              disabled={busy !== null}
-              className="rounded-lg bg-copper-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-copper-500 disabled:opacity-50"
-            >
-              {busy === 'start_setup' ? 'Starting…' : 'Start Guided Setup'}
-            </button>
-          </div>
-
-          <div className="mt-5 grid gap-4 md:grid-cols-3">
-            <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Business name</span>
-              <input value={businessName} onChange={(event) => setBusinessName(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
-            </label>
-            <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Billing email</span>
-              <input value={email} onChange={(event) => setEmail(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
-            </label>
-            <label className="block">
-              <span className="text-xs uppercase tracking-wide text-slate-500">Country</span>
-              <input value={country} onChange={(event) => setCountry(event.target.value)} className="mt-2 w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-white" />
-            </label>
-          </div>
-
-          {status?.active_session ? (
-            <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-5">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <div className="text-sm font-medium text-white">{status.active_session.session_id}</div>
-                  <div className="text-sm text-slate-400">
-                    Step {status.active_session.current_step + 1} of {status.active_session.total_steps} · {status.active_session.status}
-                  </div>
-                </div>
-                <div className="flex gap-3">
-                  <button
-                    onClick={() => continueSetup(false)}
-                    disabled={busy !== null}
-                    className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50"
-                  >
-                    {busy === 'advance_setup' ? 'Advancing…' : 'Advance Step'}
-                  </button>
-                  <button
-                    onClick={() => continueSetup(true)}
-                    disabled={busy !== null}
-                    className="rounded-lg border border-copper-700 px-4 py-2 text-sm font-medium text-copper-300 transition hover:bg-copper-900/20 disabled:opacity-50"
-                  >
-                    Mark Human Step Done
-                  </button>
-                </div>
-              </div>
-              <div className="mt-4 space-y-3">
-                {(status.active_session.steps ?? [])
-                  .slice(status.active_session.current_step, status.active_session.current_step + 3)
-                  .map((step) => (
-                    <div key={step.step_id} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-                      <div className="flex items-center gap-2">
-                        <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[11px] uppercase tracking-wide text-slate-400">
-                          {step.automation_type}
-                        </span>
-                        <span className="text-sm font-medium text-white">{step.title}</span>
-                      </div>
-                      {step.description && <p className="mt-2 text-sm text-slate-400">{step.description}</p>}
-                      {step.human_instructions && <p className="mt-2 rounded-lg border border-amber-800 bg-amber-900/10 p-3 text-sm text-amber-200">{step.human_instructions}</p>}
-                    </div>
-                  ))}
-              </div>
-            </div>
-          ) : (
-            <div className="mt-5 rounded-xl border border-dashed border-slate-800 bg-slate-950 p-5 text-sm text-slate-400">
-              No active setup session. Start one to walk through Stripe Dashboard, KYC checkpoints, API keys, and webhook setup.
-            </div>
-          )}
-        </div>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-white">Health</h2>
-              <p className="mt-1 text-sm text-slate-400">
-                Stripe readiness is tracked as capabilities so tenants can return later for payouts, webhook recovery, or product changes.
-              </p>
-            </div>
-          </div>
-          <div className="mt-4 grid gap-3">
-            {(status?.checks ?? []).map((check) => (
-              <div
-                key={check.id}
-                className={`rounded-xl border p-4 ${
-                  check.ok ? 'border-green-900 bg-green-900/10' : 'border-amber-900 bg-amber-900/10'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-sm font-medium text-white">{check.id.replace(/_/g, ' ')}</div>
-                  <span className={`rounded-full px-2 py-0.5 text-[11px] uppercase tracking-wide ${check.ok ? 'bg-green-900/40 text-green-300' : 'bg-amber-900/40 text-amber-200'}`}>
-                    {check.ok ? 'pass' : 'action needed'}
-                  </span>
-                </div>
-                <div className="mt-1 text-sm text-slate-400">{check.detail}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
             <h2 className="text-lg font-semibold text-white">Catalog</h2>
@@ -538,18 +650,18 @@ export function StripeSetupWorkspace() {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => syncCatalog(false)}
-              disabled={busy !== null}
+              onClick={() => validateWorkflow(false, false)}
+              disabled={busy !== null || !workflow}
               className="rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700 disabled:opacity-50"
             >
-              {busy === 'catalog_diff' ? 'Refreshing…' : 'Refresh Diff'}
+              {busy === 'validate_workflow' ? 'Refreshing…' : 'Refresh Validation'}
             </button>
             <button
-              onClick={() => syncCatalog(true)}
-              disabled={busy !== null}
+              onClick={() => validateWorkflow(true, false)}
+              disabled={busy !== null || !workflow}
               className="rounded-lg bg-copper-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-copper-500 disabled:opacity-50"
             >
-              {busy === 'sync_catalog' ? 'Syncing…' : 'Sync Catalog'}
+              {busy === 'sync_validate' ? 'Syncing…' : 'Sync And Prepare Checkout'}
             </button>
           </div>
         </div>
@@ -566,23 +678,29 @@ export function StripeSetupWorkspace() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {(catalog?.offers ?? []).map((offer) => (
+              {(catalog.offers ?? []).map((offer) => (
                 <tr key={offer.slug}>
                   <td className="py-4 pr-4">
                     <div className="font-medium text-white">{offer.name}</div>
                     <div className="text-xs text-slate-500">{offer.slug}</div>
                   </td>
                   <td className="py-4 pr-4 text-slate-300">{offer.catalog_family.replace('_', ' ')}</td>
-                  <td className="py-4 pr-4 text-slate-300">{offer.monthly_price_usd ? `$${offer.monthly_price_usd}/mo` : '—'}</td>
-                  <td className="py-4 pr-4 text-slate-300">{offer.setup_price_usd ? `$${offer.setup_price_usd}` : '—'}</td>
+                  <td className="py-4 pr-4 text-slate-300">
+                    {offer.monthly_price_usd ? `$${offer.monthly_price_usd}/mo` : '—'}
+                  </td>
+                  <td className="py-4 pr-4 text-slate-300">
+                    {offer.setup_price_usd ? `$${offer.setup_price_usd}` : '—'}
+                  </td>
                   <td className="py-4 pr-4">
                     <div className="flex flex-col gap-2">
-                      <span className={`w-fit rounded-full px-2 py-1 text-[11px] uppercase tracking-wide ${
-                      offer.recommended_action && offer.recommended_action !== 'ready'
-                        ? 'bg-amber-900/30 text-amber-200'
-                        : 'bg-green-900/30 text-green-300'
-                    }`}>
-                      {offer.recommended_action ?? 'pending'}
+                      <span
+                        className={`w-fit rounded-full px-2 py-1 text-[11px] uppercase tracking-wide ${
+                          offer.recommended_action && offer.recommended_action !== 'ready'
+                            ? 'bg-amber-900/30 text-amber-200'
+                            : 'bg-green-900/30 text-green-300'
+                        }`}
+                      >
+                        {offer.recommended_action ?? 'pending'}
                       </span>
                       <span className="text-xs text-slate-500">
                         {offer.source_kind ?? 'template'} · {offer.sync_status ?? 'pending'}
@@ -600,7 +718,8 @@ export function StripeSetupWorkspace() {
                               ...current,
                               [offer.slug]: {
                                 active: event.target.checked,
-                                monthly_price_usd: current[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd,
+                                monthly_price_usd:
+                                  current[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd,
                                 setup_price_usd: current[offer.slug]?.setup_price_usd ?? offer.setup_price_usd,
                               },
                             }))
@@ -620,7 +739,8 @@ export function StripeSetupWorkspace() {
                               [offer.slug]: {
                                 active: current[offer.slug]?.active ?? offer.active,
                                 monthly_price_usd: Number(event.target.value),
-                                setup_price_usd: current[offer.slug]?.setup_price_usd ?? offer.setup_price_usd,
+                                setup_price_usd:
+                                  current[offer.slug]?.setup_price_usd ?? offer.setup_price_usd,
                               },
                             }))
                           }
@@ -636,7 +756,8 @@ export function StripeSetupWorkspace() {
                               ...current,
                               [offer.slug]: {
                                 active: current[offer.slug]?.active ?? offer.active,
-                                monthly_price_usd: current[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd,
+                                monthly_price_usd:
+                                  current[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd,
                                 setup_price_usd: Number(event.target.value),
                               },
                             }))
@@ -657,6 +778,71 @@ export function StripeSetupWorkspace() {
               ))}
             </tbody>
           </table>
+        </div>
+      </section>
+
+      <section className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-semibold text-white">Hosted Checkout Validation</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            After syncing a paid offer, prepare a Stripe-hosted test checkout and confirm it here once you finish the payment flow.
+          </p>
+          <div className="mt-4 rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <div className="text-sm text-slate-300">
+              Status: <span className="font-medium text-white">{workflow?.checkout_state?.status ?? 'not_started'}</span>
+            </div>
+            {workflow?.checkout_state?.detail && (
+              <p className="mt-2 text-sm text-slate-400">{workflow.checkout_state.detail}</p>
+            )}
+            {workflow?.checkout_state?.checkout_url && (
+              <a
+                href={workflow.checkout_state.checkout_url}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex text-sm text-copper-300 transition hover:text-copper-200 hover:underline"
+              >
+                Open hosted Stripe checkout
+              </a>
+            )}
+            <div className="mt-4 flex gap-3">
+              <button
+                onClick={() => validateWorkflow(false, true)}
+                disabled={busy !== null || !workflow || workflow.checkout_state?.status !== 'awaiting_human_completion'}
+                className="rounded-lg bg-copper-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-copper-500 disabled:opacity-50"
+              >
+                {busy === 'confirm_checkout' ? 'Confirming…' : 'Mark Test Checkout Complete'}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-semibold text-white">Health</h2>
+          <p className="mt-1 text-sm text-slate-400">
+            Stripe readiness is tracked as capabilities so tenants can return later for payouts, webhook recovery, or product changes.
+          </p>
+          <div className="mt-4 grid gap-3">
+            {(status?.checks ?? []).map((check) => (
+              <div
+                key={check.id}
+                className={`rounded-xl border p-4 ${
+                  check.ok ? 'border-green-900 bg-green-900/10' : 'border-amber-900 bg-amber-900/10'
+                }`}
+              >
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-sm font-medium text-white">{check.id.replace(/_/g, ' ')}</div>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[11px] uppercase tracking-wide ${
+                      check.ok ? 'bg-green-900/40 text-green-300' : 'bg-amber-900/40 text-amber-200'
+                    }`}
+                  >
+                    {check.ok ? 'pass' : 'action needed'}
+                  </span>
+                </div>
+                <div className="mt-1 text-sm text-slate-400">{check.detail}</div>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

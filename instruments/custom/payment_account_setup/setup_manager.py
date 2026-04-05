@@ -22,7 +22,8 @@ class PaymentAccountSetupManager:
     """Manages guided payment-provider setup and tenant billing readiness."""
 
     def __init__(self, db_path: str | None = None):
-        self.db = SetupDatabase(db_path or _DB_PATH)
+        resolved_db_path = db_path or os.environ.get("PAYMENT_ACCOUNT_SETUP_DB_PATH") or _DB_PATH
+        self.db = SetupDatabase(resolved_db_path)
         self.credential_store = CredentialStore()
 
     # -- session lifecycle ---------------------------------------------------
@@ -107,6 +108,301 @@ class PaymentAccountSetupManager:
         provider: str | None = None,
     ) -> list[dict[str, Any]]:
         return self.db.list_sessions(tenant_id=self._normalize_tenant_id(tenant_id), provider=provider)
+
+    def start_workflow(
+        self,
+        provider: str,
+        business_name: str,
+        email: str,
+        country: str = "us",
+        webhook_endpoint_url: str = "",
+        tenant_id: str = _DEFAULT_TENANT_ID,
+        target_offer_slug: str = "",
+        selected_slugs: list[str] | None = None,
+    ) -> dict[str, Any]:
+        setup = self.start_setup(
+            provider=provider,
+            business_name=business_name,
+            email=email,
+            country=country,
+            webhook_endpoint_url=webhook_endpoint_url,
+            tenant_id=tenant_id,
+        )
+        session = setup["session"]
+        first_step = setup.get("next_step")
+        run_id = f"{provider}_workflow_{uuid.uuid4().hex[:8]}"
+        run = self.db.create_workflow_run(
+            run_id=run_id,
+            tenant_id=session["tenant_id"],
+            provider=provider,
+            workflow_type=f"{provider}_onboarding",
+            session_id=session["session_id"],
+            status="in_progress",
+            current_phase="connect",
+            target_offer_slug=str(target_offer_slug or "").strip(),
+            selected_slugs=[str(slug).strip() for slug in (selected_slugs or []) if str(slug).strip()],
+            workflow_metadata={
+                "business_name": business_name,
+                "email": email,
+                "country": country,
+                "entry_point": "billing_setup",
+            },
+        )
+        self.db.add_workflow_evidence(
+            run["run_id"],
+            "workflow_started",
+            "Stripe onboarding workflow started.",
+            phase="discover",
+            payload={
+                "provider": provider,
+                "business_name": business_name,
+                "email": email,
+                "session_id": session["session_id"],
+            },
+        )
+        if first_step:
+            self.db.add_workflow_evidence(
+                run["run_id"],
+                "step_ready",
+                f"Ready for step: {first_step['title']}",
+                phase="connect",
+                payload={
+                    "step_id": first_step["step_id"],
+                    "automation_type": first_step["automation_type"],
+                },
+            )
+        return self.get_workflow_status(run_id=run["run_id"], mock=False)
+
+    def get_workflow_status(
+        self,
+        run_id: str | None = None,
+        tenant_id: str = _DEFAULT_TENANT_ID,
+        provider: str = "stripe",
+        mock: bool = False,
+    ) -> dict[str, Any]:
+        tenant_id = self._normalize_tenant_id(tenant_id)
+        run = self.db.get_workflow_run(run_id) if run_id else None
+        if run is None:
+            runs = self.db.list_workflow_runs(tenant_id=tenant_id, provider=provider)
+            run = runs[0] if runs else None
+
+        status = self.get_status(tenant_id=tenant_id, provider=provider, include_catalog=True, mock=mock)
+        if run is None:
+            return {
+                "tenant_id": tenant_id,
+                "provider": provider,
+                "workflow": None,
+                "status": status,
+                "evidence": [],
+            }
+
+        session = self.get_session(run["session_id"]) if run.get("session_id") else None
+        evidence = self.db.list_workflow_evidence(run["run_id"])
+        checkout_state = self._workflow_checkout_state(evidence)
+        current_phase = self._workflow_phase(status, session, checkout_state)
+        run_status = self._workflow_run_status(status, session, checkout_state)
+        updated_run = (
+            self.db.update_workflow_run(
+                run["run_id"],
+                status=run_status,
+                current_phase=current_phase,
+            )
+            or run
+        )
+        current_step = None
+        if session and session.get("steps"):
+            idx = int(session.get("current_step", 0))
+            steps = session["steps"]
+            if idx < len(steps):
+                current_step = steps[idx]
+        validation_checkout = updated_run.get("validation_report", {}).get("checkout", {})
+        if checkout_state.get("status") == "not_started" and validation_checkout:
+            checkout_state = {
+                "status": validation_checkout.get("status", "not_started"),
+                "checkout_url": validation_checkout.get("checkout_url"),
+                "offer_slug": validation_checkout.get("offer_slug"),
+                "detail": validation_checkout.get("detail"),
+            }
+        return {
+            "tenant_id": tenant_id,
+            "provider": provider,
+            "workflow": {
+                **updated_run,
+                "current_step": current_step,
+                "checkout_state": checkout_state,
+            },
+            "status": status,
+            "evidence": evidence,
+        }
+
+    def advance_workflow(
+        self,
+        run_id: str,
+        *,
+        step_result: dict[str, Any] | None = None,
+        human_confirmed: bool = False,
+        mock: bool = False,
+    ) -> dict[str, Any]:
+        run = self.db.get_workflow_run(run_id)
+        if run is None:
+            raise ValueError(f"Workflow run {run_id!r} not found.")
+        session = self.get_session(run["session_id"]) if run.get("session_id") else None
+        if session is None:
+            raise ValueError(f"Workflow run {run_id!r} is missing its setup session.")
+
+        steps = session.get("steps", [])
+        current_idx = int(session.get("current_step", 0))
+        current_step = steps[current_idx] if current_idx < len(steps) else None
+        result = self.advance_step(
+            session_id=session["session_id"],
+            step_result=step_result,
+            human_confirmed=human_confirmed,
+        )
+        phase = self._phase_from_step(current_step)
+        if result.get("awaiting_human"):
+            self.db.add_workflow_evidence(
+                run_id,
+                "human_gate",
+                f"Human action required: {current_step['title'] if current_step else 'Unknown step'}",
+                phase=phase,
+                status="awaiting_human",
+                payload={
+                    "instructions": result.get("human_instructions", ""),
+                    "step_id": current_step["step_id"] if current_step else "",
+                },
+            )
+        elif current_step:
+            self.db.add_workflow_evidence(
+                run_id,
+                "step_completed",
+                f"Completed step: {current_step['title']}",
+                phase=phase,
+                payload={
+                    "step_id": current_step["step_id"],
+                    "automation_type": current_step["automation_type"],
+                    "step_result": self._redact_values(step_result or {}),
+                    "human_confirmed": human_confirmed,
+                },
+            )
+        if result.get("next_step"):
+            self.db.add_workflow_evidence(
+                run_id,
+                "step_ready",
+                f"Ready for step: {result['next_step']['title']}",
+                phase=self._phase_from_step(result["next_step"]),
+                payload={
+                    "step_id": result["next_step"]["step_id"],
+                    "automation_type": result["next_step"]["automation_type"],
+                },
+            )
+        elif result.get("session", {}).get("status") == "complete":
+            self.db.add_workflow_evidence(
+                run_id,
+                "setup_completed",
+                "The browser-guided setup session completed.",
+                phase="configure",
+                payload={"session_id": session["session_id"]},
+            )
+        return self.get_workflow_status(run_id=run_id, tenant_id=run["tenant_id"], provider=run["provider"], mock=mock)
+
+    def validate_workflow(
+        self,
+        run_id: str,
+        *,
+        apply_catalog_sync: bool = False,
+        selected_slugs: list[str] | None = None,
+        target_offer_slug: str | None = None,
+        checkout_completed: bool = False,
+        mock: bool = False,
+    ) -> dict[str, Any]:
+        run = self.db.get_workflow_run(run_id)
+        if run is None:
+            raise ValueError(f"Workflow run {run_id!r} not found.")
+
+        tenant_id = run["tenant_id"]
+        provider = run["provider"]
+        selected = [
+            str(slug).strip() for slug in (selected_slugs or run.get("selected_slugs") or []) if str(slug).strip()
+        ]
+        target_slug = str(target_offer_slug or run.get("target_offer_slug") or "").strip()
+
+        catalog_result = None
+        if apply_catalog_sync:
+            catalog_result = self.sync_catalog(
+                tenant_id=tenant_id,
+                provider=provider,
+                apply=True,
+                selected_slugs=selected,
+                mock=mock,
+            )
+            self.db.add_workflow_evidence(
+                run_id,
+                "catalog_sync",
+                "Catalog synced during workflow validation.",
+                phase="catalog",
+                payload={
+                    "status": catalog_result.get("status"),
+                    "offer_count": catalog_result.get("offer_count", 0),
+                    "selected_slugs": selected,
+                },
+            )
+
+        verification = self.verify_setup(provider=provider, tenant_id=tenant_id, mock=mock)
+        checkout_result: dict[str, Any] | None = None
+        if checkout_completed:
+            checkout_result = {
+                "status": "completed",
+                "detail": "Operator confirmed the hosted Stripe test checkout completed.",
+            }
+            self.db.add_workflow_evidence(
+                run_id,
+                "checkout_completed",
+                "Hosted Stripe checkout completed by the operator.",
+                phase="validate",
+                status="confirmed",
+                payload=checkout_result,
+            )
+        else:
+            checkout_result = self.create_checkout_validation(
+                tenant_id=tenant_id,
+                provider=provider,
+                target_offer_slug=target_slug,
+                mock=mock,
+            )
+            if checkout_result.get("status") != "not_ready":
+                self.db.add_workflow_evidence(
+                    run_id,
+                    "checkout_session_created",
+                    "Hosted Stripe checkout session created.",
+                    phase="validate",
+                    status="awaiting_human",
+                    payload=checkout_result,
+                )
+
+        validation_report = {
+            "verification": verification,
+            "catalog_sync": catalog_result or {},
+            "checkout": checkout_result or {},
+            "last_validated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        self.db.add_workflow_evidence(
+            run_id,
+            "readiness_report",
+            "Workflow validation report generated.",
+            phase="validate",
+            payload={
+                "ready": verification["summary"]["ready"],
+                "failed": verification["summary"]["failed"],
+                "checkout_status": (checkout_result or {}).get("status", ""),
+            },
+        )
+        self.db.update_workflow_run(
+            run_id,
+            selected_slugs=selected or run.get("selected_slugs", []),
+            target_offer_slug=target_slug or run.get("target_offer_slug", ""),
+            validation_report=validation_report,
+        )
+        return self.get_workflow_status(run_id=run_id, tenant_id=tenant_id, provider=provider, mock=mock)
 
     # -- step execution ------------------------------------------------------
 
@@ -828,6 +1124,77 @@ class PaymentAccountSetupManager:
 
         return {"status": "synced", "provider": provider, "offer_count": len(synced), "offers": synced}
 
+    def create_checkout_validation(
+        self,
+        *,
+        tenant_id: str = _DEFAULT_TENANT_ID,
+        provider: str = "stripe",
+        target_offer_slug: str = "",
+        mock: bool = False,
+    ) -> dict[str, Any]:
+        tenant_id = self._normalize_tenant_id(tenant_id)
+        credentials = self._read_raw_credentials(provider, tenant_id)
+        if provider != "stripe" or not credentials.get("stripe_secret_key"):
+            return {"status": "not_ready", "detail": "Stripe credentials are required before checkout validation."}
+
+        diff = self.diff_catalog(tenant_id=tenant_id, provider=provider, mock=mock)
+        candidates = [
+            offer
+            for offer in diff["offers"]
+            if offer.get("active", True)
+            and not offer.get("is_free")
+            and not offer.get("is_custom_quote")
+            and (offer.get("monthly_price_id") or offer.get("setup_price_id"))
+        ]
+        if target_offer_slug:
+            candidates = [offer for offer in candidates if offer["slug"] == target_offer_slug]
+        if not candidates:
+            return {
+                "status": "not_ready",
+                "detail": "Sync at least one paid offer before running hosted checkout validation.",
+            }
+
+        offer = candidates[0]
+        price_id = offer.get("monthly_price_id") or offer.get("setup_price_id")
+        if not price_id:
+            return {"status": "not_ready", "detail": "No Stripe price is available for the selected offer."}
+
+        client = self._stripe_provider(
+            api_key=credentials["stripe_secret_key"],
+            webhook_secret=credentials.get("stripe_webhook_secret"),
+            mock=mock,
+        )
+        connection = self.db.get_connection(tenant_id, provider) or {}
+        metadata = connection.get("metadata", {})
+        customer = client.create_customer(
+            email=metadata.get("email") or "billing@example.com",
+            name=metadata.get("business_name") or connection.get("display_name") or "Mahoosuc tenant",
+            metadata={"tenant_id": tenant_id, "offer_slug": offer["slug"]},
+        )
+        checkout = client.create_checkout_session(
+            price_id=price_id,
+            customer_id=customer["id"],
+            mode="subscription" if offer.get("monthly_price_id") else "payment",
+            success_url=os.environ.get(
+                "STRIPE_CHECKOUT_SUCCESS_URL",
+                "http://localhost:6274/billing/setup?checkout=success",
+            ),
+            cancel_url=os.environ.get(
+                "STRIPE_CHECKOUT_CANCEL_URL",
+                "http://localhost:6274/billing/setup?checkout=cancelled",
+            ),
+            metadata={"tenant_id": tenant_id, "offer_slug": offer["slug"]},
+        )
+        return {
+            "status": "awaiting_human_completion",
+            "offer_slug": offer["slug"],
+            "price_id": price_id,
+            "customer_id": customer["id"],
+            "checkout_session_id": checkout.get("id"),
+            "checkout_url": checkout.get("url"),
+            "detail": "Open the hosted Stripe checkout URL and complete the test checkout, then confirm it in the workflow.",
+        }
+
     # -- internal helpers ----------------------------------------------------
 
     def _normalize_tenant_id(self, tenant_id: str | None) -> str:
@@ -851,6 +1218,60 @@ class PaymentAccountSetupManager:
 
     def _action_from_check(self, check: dict[str, Any]) -> dict[str, str]:
         return {"id": check["id"], "title": check["id"].replace("_", " ").title(), "detail": str(check["detail"])}
+
+    def _phase_from_step(self, step: dict[str, Any] | None) -> str:
+        if not step:
+            return "discover"
+        title = str(step.get("title", "")).lower()
+        if "api key" in title or "webhook" in title or "credential" in title:
+            return "connect"
+        if "catalog" in title:
+            return "catalog"
+        if any(token in title for token in ("verification", "2fa", "captcha", "identity")):
+            return "configure"
+        return "configure"
+
+    def _workflow_checkout_state(self, evidence: list[dict[str, Any]]) -> dict[str, Any]:
+        created = next(
+            (item for item in reversed(evidence) if item.get("evidence_type") == "checkout_session_created"), None
+        )
+        completed = next(
+            (item for item in reversed(evidence) if item.get("evidence_type") == "checkout_completed"), None
+        )
+        if completed:
+            return {"status": "completed", **completed.get("payload", {})}
+        if created:
+            return {"status": "awaiting_human_completion", **created.get("payload", {})}
+        return {"status": "not_started"}
+
+    def _workflow_phase(
+        self,
+        status_payload: dict[str, Any],
+        session: dict[str, Any] | None,
+        checkout_state: dict[str, Any],
+    ) -> str:
+        journey_phase = status_payload.get("journey", {}).get("current_stage") or "discover"
+        if checkout_state.get("status") == "awaiting_human_completion":
+            return "validate"
+        if session and session.get("status") == "complete" and journey_phase == "operate":
+            return "validate" if checkout_state.get("status") != "completed" else "operate"
+        return str(journey_phase)
+
+    def _workflow_run_status(
+        self,
+        status_payload: dict[str, Any],
+        session: dict[str, Any] | None,
+        checkout_state: dict[str, Any],
+    ) -> str:
+        if checkout_state.get("status") == "completed" and status_payload.get("summary", {}).get("ready"):
+            return "completed"
+        if checkout_state.get("status") == "awaiting_human_completion":
+            return "awaiting_human"
+        if session and session.get("status") == "awaiting_human":
+            return "awaiting_human"
+        if status_payload.get("summary", {}).get("ready"):
+            return "ready"
+        return "in_progress"
 
     def _default_next_actions(self, provider: str) -> list[dict[str, str]]:
         if provider == "stripe":

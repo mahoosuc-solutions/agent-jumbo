@@ -122,3 +122,68 @@ def test_catalog_override_persists_and_diff_reflects_updated_price(tmp_path):
     )
     updated_offer = next(offer for offer in updated["offers"] if offer["slug"] == "pro")
     assert updated_offer["monthly_price_id"], "re-sync should still return a mock price ID"
+
+
+def test_start_workflow_creates_run_and_evidence(tmp_path):
+    manager = build_manager(tmp_path)
+
+    workflow = manager.start_workflow(
+        provider="stripe",
+        business_name="Tenant Alpha",
+        email="billing@tenant.test",
+        tenant_id="tenant-alpha",
+    )
+
+    assert workflow["workflow"]["workflow_type"] == "stripe_onboarding"
+    assert workflow["workflow"]["status"] == "in_progress"
+    assert workflow["workflow"]["current_step"]["title"] == "Navigate to Stripe registration"
+    assert any(item["evidence_type"] == "workflow_started" for item in workflow["evidence"])
+
+
+def test_advance_workflow_records_human_gate_and_step_completion(tmp_path):
+    manager = build_manager(tmp_path)
+    workflow = manager.start_workflow(
+        provider="stripe",
+        business_name="Tenant Alpha",
+        email="billing@tenant.test",
+        tenant_id="tenant-alpha",
+    )
+    run_id = workflow["workflow"]["run_id"]
+
+    for _ in range(4):
+        manager.advance_workflow(run_id=run_id)
+    paused = manager.advance_workflow(run_id=run_id)
+
+    assert paused["workflow"]["status"] == "awaiting_human"
+    assert any(item["evidence_type"] == "human_gate" for item in paused["evidence"])
+
+    resumed = manager.advance_workflow(run_id=run_id, human_confirmed=True)
+    assert resumed["workflow"]["status"] in {"in_progress", "awaiting_human"}
+    assert any(item["evidence_type"] == "step_completed" for item in resumed["evidence"])
+
+
+def test_validate_workflow_creates_checkout_evidence_and_completion(tmp_path):
+    manager = build_manager(tmp_path)
+    manager.store_credentials(
+        provider="stripe",
+        tenant_id="tenant-alpha",
+        credentials={
+            "stripe_secret_key": "sk_test_workflow",  # pragma: allowlist secret
+            "stripe_webhook_secret": "whsec_workflow",  # pragma: allowlist secret
+        },
+    )
+    workflow = manager.start_workflow(
+        provider="stripe",
+        business_name="Tenant Alpha",
+        email="billing@tenant.test",
+        tenant_id="tenant-alpha",
+    )
+    run_id = workflow["workflow"]["run_id"]
+
+    validated = manager.validate_workflow(run_id=run_id, apply_catalog_sync=True, target_offer_slug="pro", mock=True)
+    assert validated["workflow"]["checkout_state"]["status"] == "awaiting_human_completion"
+    assert validated["workflow"]["validation_report"]["checkout"]["checkout_url"].startswith("https://")
+
+    completed = manager.validate_workflow(run_id=run_id, checkout_completed=True, mock=True)
+    assert completed["workflow"]["checkout_state"]["status"] == "completed"
+    assert any(item["evidence_type"] == "checkout_completed" for item in completed["evidence"])

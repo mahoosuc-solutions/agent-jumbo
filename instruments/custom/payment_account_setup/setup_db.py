@@ -142,6 +142,34 @@ class SetupDatabase:
                     UNIQUE(tenant_id, provider, slug)
                 );
 
+                CREATE TABLE IF NOT EXISTS billing_workflow_runs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    run_id TEXT UNIQUE NOT NULL,
+                    tenant_id TEXT NOT NULL,
+                    provider TEXT NOT NULL,
+                    workflow_type TEXT NOT NULL,
+                    session_id TEXT,
+                    status TEXT DEFAULT 'pending',
+                    current_phase TEXT DEFAULT 'discover',
+                    target_offer_slug TEXT DEFAULT '',
+                    selected_slugs TEXT DEFAULT '[]',
+                    validation_report TEXT DEFAULT '{}',
+                    workflow_metadata TEXT DEFAULT '{}',
+                    created_at TEXT NOT NULL,
+                    updated_at TEXT NOT NULL
+                );
+
+                CREATE TABLE IF NOT EXISTS billing_workflow_evidence (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    run_id TEXT NOT NULL,
+                    phase TEXT DEFAULT '',
+                    evidence_type TEXT NOT NULL,
+                    title TEXT NOT NULL,
+                    status TEXT DEFAULT 'captured',
+                    payload TEXT DEFAULT '{}',
+                    created_at TEXT NOT NULL
+                );
+
                 CREATE INDEX IF NOT EXISTS idx_sessions_provider ON setup_sessions(provider);
                 CREATE INDEX IF NOT EXISTS idx_sessions_status ON setup_sessions(status);
                 CREATE INDEX IF NOT EXISTS idx_sessions_tenant ON setup_sessions(tenant_id);
@@ -150,6 +178,10 @@ class SetupDatabase:
                 CREATE INDEX IF NOT EXISTS idx_catalog_tenant_provider ON tenant_catalog_items(tenant_id, provider);
                 CREATE INDEX IF NOT EXISTS idx_provider_secrets_tenant_provider
                 ON provider_secrets(tenant_id, provider);
+                CREATE INDEX IF NOT EXISTS idx_workflow_runs_tenant_provider
+                ON billing_workflow_runs(tenant_id, provider);
+                CREATE INDEX IF NOT EXISTS idx_workflow_evidence_run
+                ON billing_workflow_evidence(run_id);
                 """
             )
             self._ensure_column(conn, "setup_sessions", "tenant_id", "tenant_id TEXT DEFAULT 'default'")
@@ -517,6 +549,135 @@ class SetupDatabase:
             ).fetchall()
         return [self._decode_catalog_row(row) for row in rows]
 
+    def create_workflow_run(
+        self,
+        run_id: str,
+        tenant_id: str,
+        provider: str,
+        workflow_type: str,
+        session_id: str | None = None,
+        status: str = "pending",
+        current_phase: str = "discover",
+        target_offer_slug: str = "",
+        selected_slugs: list[str] | None = None,
+        validation_report: dict[str, Any] | None = None,
+        workflow_metadata: dict[str, Any] | None = None,
+    ) -> dict:
+        now = self._now()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO billing_workflow_runs (
+                    run_id, tenant_id, provider, workflow_type, session_id, status, current_phase,
+                    target_offer_slug, selected_slugs, validation_report, workflow_metadata, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    run_id,
+                    tenant_id,
+                    provider,
+                    workflow_type,
+                    session_id,
+                    status,
+                    current_phase,
+                    target_offer_slug,
+                    json.dumps(selected_slugs or []),
+                    json.dumps(validation_report or {}),
+                    json.dumps(workflow_metadata or {}),
+                    now,
+                    now,
+                ),
+            )
+        return self.get_workflow_run(run_id) or {}
+
+    def update_workflow_run(
+        self,
+        run_id: str,
+        *,
+        session_id: str | None = None,
+        status: str | None = None,
+        current_phase: str | None = None,
+        target_offer_slug: str | None = None,
+        selected_slugs: list[str] | None = None,
+        validation_report: dict[str, Any] | None = None,
+        workflow_metadata: dict[str, Any] | None = None,
+    ) -> dict | None:
+        fields: list[str] = ["updated_at = ?"]
+        params: list[Any] = [self._now()]
+        if session_id is not None:
+            fields.append("session_id = ?")
+            params.append(session_id)
+        if status is not None:
+            fields.append("status = ?")
+            params.append(status)
+        if current_phase is not None:
+            fields.append("current_phase = ?")
+            params.append(current_phase)
+        if target_offer_slug is not None:
+            fields.append("target_offer_slug = ?")
+            params.append(target_offer_slug)
+        if selected_slugs is not None:
+            fields.append("selected_slugs = ?")
+            params.append(json.dumps(selected_slugs))
+        if validation_report is not None:
+            fields.append("validation_report = ?")
+            params.append(json.dumps(validation_report))
+        if workflow_metadata is not None:
+            fields.append("workflow_metadata = ?")
+            params.append(json.dumps(workflow_metadata))
+        params.append(run_id)
+        with self._connect() as conn:
+            conn.execute(f"UPDATE billing_workflow_runs SET {', '.join(fields)} WHERE run_id = ?", params)
+        return self.get_workflow_run(run_id)
+
+    def get_workflow_run(self, run_id: str) -> dict | None:
+        with self._connect() as conn:
+            row = conn.execute("SELECT * FROM billing_workflow_runs WHERE run_id = ?", (run_id,)).fetchone()
+        if row is None:
+            return None
+        return self._decode_workflow_run_row(row)
+
+    def list_workflow_runs(self, tenant_id: str, provider: str | None = None) -> list[dict]:
+        query = "SELECT * FROM billing_workflow_runs WHERE tenant_id = ?"
+        params: list[Any] = [tenant_id]
+        if provider:
+            query += " AND provider = ?"
+            params.append(provider)
+        query += " ORDER BY created_at DESC"
+        with self._connect() as conn:
+            rows = conn.execute(query, params).fetchall()
+        return [self._decode_workflow_run_row(row) for row in rows]
+
+    def add_workflow_evidence(
+        self,
+        run_id: str,
+        evidence_type: str,
+        title: str,
+        *,
+        phase: str = "",
+        status: str = "captured",
+        payload: dict[str, Any] | None = None,
+    ) -> dict:
+        now = self._now()
+        with self._connect() as conn:
+            conn.execute(
+                """
+                INSERT INTO billing_workflow_evidence (run_id, phase, evidence_type, title, status, payload, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (run_id, phase, evidence_type, title, status, json.dumps(payload or {}), now),
+            )
+            row = conn.execute("SELECT * FROM billing_workflow_evidence WHERE id = last_insert_rowid()").fetchone()
+        return self._decode_workflow_evidence_row(row) if row is not None else {}
+
+    def list_workflow_evidence(self, run_id: str) -> list[dict]:
+        with self._connect() as conn:
+            rows = conn.execute(
+                "SELECT * FROM billing_workflow_evidence WHERE run_id = ? ORDER BY created_at ASC, id ASC",
+                (run_id,),
+            ).fetchall()
+        return [self._decode_workflow_evidence_row(row) for row in rows]
+
     def _decode_session_row(self, row: sqlite3.Row) -> dict:
         result = dict(row)
         result["extracted_credentials"] = self._decode_json(result.get("extracted_credentials"), {})
@@ -543,4 +704,16 @@ class SetupDatabase:
         result["metadata"] = self._decode_json(result.get("metadata"), {})
         result["provider_metadata"] = self._decode_json(result.get("provider_metadata"), {})
         result["active"] = bool(result.get("active"))
+        return result
+
+    def _decode_workflow_run_row(self, row: sqlite3.Row) -> dict:
+        result = dict(row)
+        result["selected_slugs"] = self._decode_json(result.get("selected_slugs"), [])
+        result["validation_report"] = self._decode_json(result.get("validation_report"), {})
+        result["workflow_metadata"] = self._decode_json(result.get("workflow_metadata"), {})
+        return result
+
+    def _decode_workflow_evidence_row(self, row: sqlite3.Row) -> dict:
+        result = dict(row)
+        result["payload"] = self._decode_json(result.get("payload"), {})
         return result

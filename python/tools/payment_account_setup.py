@@ -33,12 +33,17 @@ class PaymentAccountSetup(Tool):
 
         action_map = {
             "start_setup": self._start_setup,
+            "start_workflow": self._start_workflow,
             "next_step": self._next_step,
             "confirm_human_step": self._confirm_human_step,
             "store_credentials": self._store_credentials,
             "get_session": self._get_session,
             "list_sessions": self._list_sessions,
             "get_status": self._get_status,
+            "get_workflow_status": self._get_workflow_status,
+            "advance_workflow": self._advance_workflow,
+            "validate_workflow": self._validate_workflow,
+            "get_workflow_evidence": self._get_workflow_evidence,
             "get_catalog": self._get_catalog,
             "sync_catalog": self._sync_catalog,
             "verify_setup": self._verify_setup,
@@ -87,6 +92,35 @@ class PaymentAccountSetup(Tool):
             tenant_id=tenant_id,
         )
         return result
+
+    async def _start_workflow(self):
+        provider = self.args.get("provider", "stripe")
+        business_name = self.args.get("business_name", "")
+        email = self.args.get("email", "")
+        country = self.args.get("country", "us")
+        webhook_url = self.args.get("webhook_endpoint_url", "")
+        tenant_id = self.args.get("tenant_id", "default")
+        target_offer_slug = self.args.get("target_offer_slug", "")
+        selected_slugs = self.args.get("selected_slugs") or []
+        if isinstance(selected_slugs, str):
+            try:
+                selected_slugs = json.loads(selected_slugs)
+            except (json.JSONDecodeError, TypeError):
+                selected_slugs = [selected_slugs]
+
+        if not business_name or not email:
+            return {"error": "business_name and email are required"}
+
+        return self.manager.start_workflow(
+            provider=provider,
+            business_name=business_name,
+            email=email,
+            country=country,
+            webhook_endpoint_url=webhook_url,
+            tenant_id=tenant_id,
+            target_offer_slug=target_offer_slug,
+            selected_slugs=selected_slugs,
+        )
 
     async def _next_step(self):
         session_id = self.args.get("session_id", "")
@@ -191,6 +225,62 @@ class PaymentAccountSetup(Tool):
             include_catalog=include_catalog,
             mock=mock,
         )
+
+    async def _get_workflow_status(self):
+        run_id = self.args.get("run_id")
+        tenant_id = self.args.get("tenant_id", "default")
+        provider = self.args.get("provider", "stripe")
+        mock = bool(self.args.get("mock", False))
+        return self.manager.get_workflow_status(
+            run_id=run_id,
+            tenant_id=tenant_id,
+            provider=provider,
+            mock=mock,
+        )
+
+    async def _advance_workflow(self):
+        run_id = self.args.get("run_id", "")
+        if not run_id:
+            return {"error": "run_id is required"}
+        return self.manager.advance_workflow(
+            run_id=run_id,
+            step_result=self.args.get("step_result") or {},
+            human_confirmed=bool(self.args.get("human_confirmed", False)),
+            mock=bool(self.args.get("mock", False)),
+        )
+
+    async def _validate_workflow(self):
+        run_id = self.args.get("run_id", "")
+        if not run_id:
+            return {"error": "run_id is required"}
+        selected_slugs = self.args.get("selected_slugs") or []
+        if isinstance(selected_slugs, str):
+            try:
+                selected_slugs = json.loads(selected_slugs)
+            except (json.JSONDecodeError, TypeError):
+                selected_slugs = [selected_slugs]
+        return self.manager.validate_workflow(
+            run_id=run_id,
+            apply_catalog_sync=bool(self.args.get("apply_catalog_sync", False)),
+            selected_slugs=selected_slugs,
+            target_offer_slug=self.args.get("target_offer_slug"),
+            checkout_completed=bool(self.args.get("checkout_completed", False)),
+            mock=bool(self.args.get("mock", False)),
+        )
+
+    async def _get_workflow_evidence(self):
+        run_id = self.args.get("run_id", "")
+        if not run_id:
+            return {"error": "run_id is required"}
+        run = self.manager.db.get_workflow_run(run_id)
+        if run is None:
+            return {"error": f"Workflow run '{run_id}' not found"}
+        return {
+            "run_id": run_id,
+            "provider": run["provider"],
+            "tenant_id": run["tenant_id"],
+            "evidence": self.manager.db.list_workflow_evidence(run_id),
+        }
 
     async def _get_catalog(self):
         tenant_id = self.args.get("tenant_id", "default")
