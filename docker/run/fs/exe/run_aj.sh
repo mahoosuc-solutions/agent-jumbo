@@ -6,6 +6,7 @@
 # The project is bind-mounted in local Docker runs, so mark it as safe for git.
 git config --global --add safe.directory /aj >/dev/null 2>&1 || true
 
+python /aj/python/helpers/scheduler_bootstrap.py
 python /aj/prepare.py --dockerized=true
 # python /aj/preload.py --dockerized=true # no need to run preload if it's done during container build
 

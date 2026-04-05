@@ -27,6 +27,7 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       FILE_OWNER_UID: ${FILE_OWNER_UID:-1000}
       FILE_OWNER_GID: ${FILE_OWNER_GID:-1000}
+      AGENT_JUMBO_SCHEDULER_SEED_PATH: ${AGENT_JUMBO_SCHEDULER_SEED_PATH:-/mnt/wdblack/dev/projects/agent-jumbo/tmp/scheduler/tasks.json}
     ports:
       - "6274:80"
     volumes:
