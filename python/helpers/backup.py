@@ -57,30 +57,34 @@ class BackupService:
         # Ensure paths don't have double slashes
         agent_root = self.agent_jumbo_root.rstrip("/")
 
+        # pathspec GitWildMatchPattern matches relative paths (leading slash stripped at match time)
+        # so patterns must not have a leading slash
+        rel_root = agent_root.lstrip("/")
+
         return f"""# Agent Jumbo Knowledge (excluding defaults)
-{agent_root}/knowledge/**
-!{agent_root}/knowledge/default/**
+{rel_root}/knowledge/**
+!{rel_root}/knowledge/default/**
 
 # Agent Jumbo Instruments (excluding defaults)
-{agent_root}/instruments/**
-!{agent_root}/instruments/default/**
+{rel_root}/instruments/**
+!{rel_root}/instruments/default/**
 
 # Memory (excluding embeddings cache)
-{agent_root}/memory/**
-!{agent_root}/memory/**/embeddings/**
+{rel_root}/memory/**
+!{rel_root}/memory/**/embeddings/**
 
 # Configuration and Settings (CRITICAL)
-{agent_root}/.env
-{agent_root}/tmp/settings.json
-{agent_root}/tmp/secrets.env
-{agent_root}/tmp/scheduler/**
-{agent_root}/tmp/uploads/**
+{rel_root}/.env
+{rel_root}/tmp/settings.json
+{rel_root}/tmp/secrets.env
+{rel_root}/tmp/scheduler/**
+{rel_root}/tmp/uploads/**
 
 # Centralized data directory (DBs, chats)
-{agent_root}/data/**
+{rel_root}/data/**
 
 # User data
-{agent_root}/usr/**
+{rel_root}/usr/**
 """  # nosec B108 - tmp/ is relative to agent root, not system /tmp
 
     def _get_agent_jumbo_version(self) -> str:

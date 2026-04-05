@@ -40,6 +40,13 @@ class BackupCreate(ApiHandler):
 
             # Create backup service and generate backup
             backup_service = BackupService()
+
+            # Fall back to default patterns when none provided
+            if not include_patterns and not exclude_patterns:
+                defaults = backup_service.get_default_backup_metadata()
+                include_patterns = defaults["include_patterns"]
+                exclude_patterns = defaults["exclude_patterns"]
+
             zip_path = await backup_service.create_backup(
                 include_patterns=include_patterns,
                 exclude_patterns=exclude_patterns,
