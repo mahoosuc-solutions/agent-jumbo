@@ -1,16 +1,21 @@
 """
-Local training and evaluation harness for MOS persona profiles.
+Local training and evaluation harness for MOS and C-suite persona profiles.
 
 Purpose:
-    Validate that each persona profile (solution-design, devops, data-ml, analytics,
-    customer-support) is correctly configured — manifests load, capabilities are
-    declared, tool lists are non-empty, and delegation targets are valid persona names.
+    Validate that each persona profile is correctly configured — manifests load,
+    capabilities are declared, tool lists are non-empty, and delegation targets
+    are valid persona names.
+
+    Covers two tiers:
+    - MOS specialist personas: solution-design, devops, data-ml, analytics, customer-support
+    - C-suite executive personas: coo, cso, cmo, cfo
 
 Usage:
     # Run all personas
     pytest tests/test_persona_eval.py -v
 
-    # Run a specific persona
+    # Run a specific persona or tier
+    pytest tests/test_persona_eval.py -v -k "cfo"
     pytest tests/test_persona_eval.py -v -k "solution_design"
 
     # Run fixture coverage check only
@@ -33,11 +38,17 @@ import yaml
 AGENTS_DIR = Path(__file__).parent.parent / "agents"
 
 PERSONAS = [
+    # MOS specialist personas
     "solution-design",
     "devops",
     "data-ml",
     "analytics",
     "customer-support",
+    # C-suite executive personas
+    "coo",
+    "cso",
+    "cmo",
+    "cfo",
 ]
 
 KNOWN_PERSONA_NAMES = {
@@ -51,6 +62,10 @@ KNOWN_PERSONA_NAMES = {
     "data-ml",
     "analytics",
     "customer-support",
+    "coo",
+    "cso",
+    "cmo",
+    "cfo",
 }
 
 # Representative MOS task fixtures for manual / LLM evaluation.
@@ -83,6 +98,27 @@ PERSONA_TASK_FIXTURES: dict[str, list[str]] = {
         "A customer reports their Stripe payment failed on checkout — triage the issue and provide resolution steps.",
         "Onboard a new Mahoosuc.ai customer to the solutions catalog and configure their first workflow.",
         "A customer reports the work queue dashboard shows stale data — escalate to the appropriate technical team.",
+    ],
+    # C-suite executive personas
+    "coo": [
+        "Run the daily operations digest — collect platform health signals and produce the morning briefing.",
+        "Identify work queue items aging beyond SLA thresholds and escalate to responsible personas.",
+        "Coordinate incident response for a P1 workflow engine failure across devops and data-ml.",
+    ],
+    "cso": [
+        "Run the weekly pipeline review — sweep customer_lifecycle for stage movements and produce an action list.",
+        "Coordinate an enterprise proposal for a new customer — ROI model, technical review, and narrative.",
+        "Process a batch of new signup leads and classify by tier for operator follow-up.",
+    ],
+    "cmo": [
+        "Review this week's marketing content queue and brief ghost-writer on the top-priority items.",
+        "Run a brand voice audit on recently produced solution briefs and flag any brand drift.",
+        "Update the solution positioning framework based on a new competitive research report.",
+    ],
+    "cfo": [
+        "Run the daily financial snapshot — collect Stripe revenue state and write to EXECUTIVE memory.",
+        "Review the dunning queue and prepare a human confirmation package for next-stage actions.",
+        "Produce the weekly financial digest combining Stripe actuals with the CSO pipeline forecast.",
     ],
 }
 

@@ -1,0 +1,68 @@
+name: cso
+version: 1.0.0
+description: Chief Sales Officer — revenue pipeline, proposal strategy, lead qualification, and sales operations for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - pipeline_management
+  - lead_qualification
+  - proposal_strategy
+  - sales_content_oversight
+  - win_loss_analysis
+  - sales_digest_generation
+  - customer_lifecycle_management
+  - revenue_intelligence
+
+tools:
+  include:
+    - sales_generator
+    - customer_lifecycle
+    - signup_leads
+    - analytics_roi_calculator
+    - solution_catalog
+    - scheduler
+    - workflow_engine
+    - task_planner
+    - digest_builder
+    - document_query
+    - knowledge_*
+    - memory_*
+    - search_engine
+    - browser_agent
+    - vision_load
+    - response
+    - call_subordinate
+  exclude:
+    - code_execution_tool
+    - deployment_*
+    - devops_*
+    - git_tool
+    - brand_voice
+    - stripe_payments
+    - payment_dunning
+    - finance_manager
+    - mahoosuc_finance_report
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - SOLUTIONS
+    - EXECUTIVE
+  shared_with:
+    - analytics
+    - customer-support
+    - coo
+    - cmo
+    - cfo
+
+behavior:
+  max_iterations: 25
+  tool_confirmation: []
+  auto_delegate:
+    analysis_tasks: analytics
+    content_tasks: ghost-writer
+    technical_tasks: solution-design
+    research_tasks: researcher
+    support_handoff: customer-support

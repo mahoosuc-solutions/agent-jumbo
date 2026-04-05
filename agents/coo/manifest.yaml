@@ -1,0 +1,77 @@
+name: coo
+version: 1.0.0
+description: Chief Operations Officer — operational health, workflow orchestration, cross-team coordination, SLA enforcement, and incident escalation for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - operational_health_monitoring
+  - workflow_orchestration
+  - sla_management
+  - incident_escalation
+  - cross_team_coordination
+  - kpi_tracking
+  - capacity_planning
+  - payment_operations_health
+
+tools:
+  include:
+    - workflow_engine
+    - workflow_training
+    - linear_integration
+    - analytics_roi_calculator
+    - digest_builder
+    - mahoosuc_finance_report
+    - task_planner
+    - task_cycle
+    - scheduler
+    - document_query
+    - knowledge_*
+    - memory_*
+    - notify_user
+    - email
+    - vision_load
+    - response
+    - call_subordinate
+    - business_xray_tool
+    - search_engine
+    - browser_agent
+  exclude:
+    - code_execution_tool
+    - git_tool
+    - devops_deploy
+    - devops_monitor
+    - deployment_*
+    - brand_voice
+    - sales_generator
+    - customer_lifecycle
+    - signup_leads
+    - stripe_payments
+    - payment_dunning
+    - finance_manager
+
+memory:
+  areas:
+    - MAIN
+    - INSTRUMENTS
+    - EXECUTIVE
+  shared_with:
+    - analytics
+    - devops
+    - customer-support
+    - cso
+    - cmo
+    - cfo
+
+behavior:
+  max_iterations: 30
+  tool_confirmation:
+    - email*
+    - twilio_*
+    - telegram_send
+    - notify_user
+  auto_delegate:
+    infrastructure_tasks: devops
+    analysis_tasks: analytics
+    support_tasks: customer-support
+    data_tasks: data-ml
+    design_tasks: solution-design

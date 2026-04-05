@@ -1,0 +1,68 @@
+name: cfo
+version: 1.0.0
+description: Chief Financial Officer — Stripe payment operations, revenue reporting, financial health monitoring, dunning management, and financial forecasting for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - payment_operations
+  - revenue_reporting
+  - financial_health_monitoring
+  - dunning_management
+  - financial_forecasting
+  - billing_oversight
+  - cash_flow_analysis
+  - financial_digest_generation
+
+tools:
+  include:
+    - stripe_payments
+    - payment_dunning
+    - finance_manager
+    - mahoosuc_finance_report
+    - analytics_roi_calculator
+    - digest_builder
+    - solution_catalog
+    - scheduler
+    - workflow_engine
+    - task_planner
+    - document_query
+    - knowledge_*
+    - memory_*
+    - notify_user
+    - response
+    - call_subordinate
+    - business_xray_tool
+  exclude:
+    - code_execution_tool
+    - deployment_*
+    - devops_*
+    - git_tool
+    - brand_voice
+    - sales_generator
+    - customer_lifecycle
+    - signup_leads
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - INSTRUMENTS
+    - EXECUTIVE
+  shared_with:
+    - analytics
+    - coo
+    - cso
+    - cmo
+
+behavior:
+  max_iterations: 25
+  tool_confirmation:
+    - stripe_payments
+    - payment_dunning
+    - finance_manager
+    - notify_user
+  auto_delegate:
+    analysis_tasks: analytics
+    research_tasks: researcher
+    support_tasks: customer-support

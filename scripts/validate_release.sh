@@ -143,10 +143,21 @@ check_mos_personas() {
         [[ -f "agents/${persona}/manifest.yaml" ]] || return 1
         [[ -f "agents/${persona}/_context.md" ]] || return 1
         [[ -f "agents/${persona}/prompts/agent.system.main.role.md" ]] || return 1
-        # Verify manifest declares the persona name correctly
         grep -q "^name: ${persona}$" "agents/${persona}/manifest.yaml" || return 1
-        # Verify manifest inherits from a valid base profile
         grep -q "^inherits:" "agents/${persona}/manifest.yaml" || return 1
+    done
+}
+
+check_csuite_personas() {
+    # Verify all four C-suite executive agent persona directories are present and complete
+    for persona in coo cso cmo cfo; do
+        [[ -f "agents/${persona}/manifest.yaml" ]] || return 1
+        [[ -f "agents/${persona}/_context.md" ]] || return 1
+        [[ -f "agents/${persona}/prompts/agent.system.main.role.md" ]] || return 1
+        grep -q "^name: ${persona}$" "agents/${persona}/manifest.yaml" || return 1
+        grep -q "^inherits:" "agents/${persona}/manifest.yaml" || return 1
+        # Verify C-suite agents declare EXECUTIVE memory area
+        grep -q "EXECUTIVE" "agents/${persona}/manifest.yaml" || return 1
     done
 }
 
@@ -229,6 +240,7 @@ check_text "pyproject declares Python 3.11+" '^requires-python = ">=3.11"$' "pyp
 check_cmd "Core files compile" check_core_python_compile
 check_cmd "Code review runtime deps in requirements.txt" check_code_review_runtime_deps
 check_cmd "MOS agent personas complete" check_mos_personas
+check_cmd "C-suite agent personas complete" check_csuite_personas
 
 echo ""
 echo "Web Validation:"

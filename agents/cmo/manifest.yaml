@@ -1,0 +1,71 @@
+name: cmo
+version: 1.0.0
+description: Chief Marketing Officer — brand integrity, content strategy, campaign tracking, solution positioning, and web presence for Mahoosuc.ai.
+inherits: default
+
+capabilities:
+  - brand_management
+  - content_strategy
+  - campaign_tracking
+  - solution_positioning
+  - market_intelligence
+  - web_presence_oversight
+  - thought_leadership_coordination
+  - marketing_digest_generation
+
+tools:
+  include:
+    - brand_voice
+    - solution_catalog
+    - digest_builder
+    - analytics_roi_calculator
+    - document_query
+    - knowledge_*
+    - memory_*
+    - search_engine
+    - browser_agent
+    - vision_load
+    - portfolio_manager_tool
+    - scheduler
+    - workflow_engine
+    - task_planner
+    - response
+    - call_subordinate
+    - diagram_tool
+  exclude:
+    - code_execution_tool
+    - deployment_*
+    - devops_*
+    - git_tool
+    - payment_dunning
+    - stripe_payments
+    - finance_manager
+    - mahoosuc_finance_report
+    - sales_generator
+    - customer_lifecycle
+    - signup_leads
+    - email*
+    - twilio_*
+
+memory:
+  areas:
+    - MAIN
+    - SOLUTIONS
+    - FRAGMENTS
+    - EXECUTIVE
+  shared_with:
+    - ghost-writer
+    - researcher
+    - coo
+    - cso
+    - cfo
+
+behavior:
+  max_iterations: 25
+  tool_confirmation: []
+  auto_delegate:
+    content_tasks: ghost-writer
+    research_tasks: researcher
+    analysis_tasks: analytics
+    technical_review: solution-design
+    competitive_research: actor-research
