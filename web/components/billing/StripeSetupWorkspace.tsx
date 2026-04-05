@@ -37,8 +37,11 @@ type CatalogOffer = {
   name: string
   catalog_family: string
   billing_mode: string
+  active: boolean
   monthly_price_usd: number
   setup_price_usd: number
+  source_kind?: string
+  sync_status?: string
   recommended_action?: string
   product_exists?: boolean
   monthly_price_id?: string | null
@@ -105,6 +108,7 @@ export function StripeSetupWorkspace() {
   const [country, setCountry] = useState('US')
   const [secretKey, setSecretKey] = useState('')
   const [webhookSecret, setWebhookSecret] = useState('')
+  const [catalogDrafts, setCatalogDrafts] = useState<Record<string, { active: boolean; monthly_price_usd: number; setup_price_usd: number }>>({})
 
   const loadAll = useCallback(async () => {
     setLoading(true)
@@ -120,6 +124,18 @@ export function StripeSetupWorkspace() {
       if (!catalogRes.ok) throw new Error(catalogData.error ?? 'Failed to load catalog')
       setStatus(statusData)
       setCatalog(catalogData)
+      setCatalogDrafts(
+        Object.fromEntries(
+          (catalogData.offers ?? []).map((offer: CatalogOffer) => [
+            offer.slug,
+            {
+              active: Boolean(offer.active),
+              monthly_price_usd: Number(offer.monthly_price_usd ?? 0),
+              setup_price_usd: Number(offer.setup_price_usd ?? 0),
+            },
+          ]),
+        ),
+      )
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load billing setup')
     } finally {
@@ -234,6 +250,27 @@ export function StripeSetupWorkspace() {
         body: JSON.stringify({ tenant_id: tenantId, provider: 'stripe', apply }),
       }),
       apply ? 'Catalog synced to Stripe.' : 'Catalog dry-run refreshed.',
+    )
+  }
+
+  async function saveCatalogOffer(slug: string) {
+    const draft = catalogDrafts[slug]
+    if (!draft) return
+    await runAction(
+      `save_offer_${slug}`,
+      fetch('/api/backend/billing_catalog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tenant_id: tenantId,
+          provider: 'stripe',
+          slug,
+          active: draft.active,
+          monthly_price_usd: draft.monthly_price_usd,
+          setup_price_usd: draft.setup_price_usd,
+        }),
+      }),
+      `Updated ${slug} catalog draft.`,
     )
   }
 
@@ -525,6 +562,7 @@ export function StripeSetupWorkspace() {
                 <th className="pb-3 pr-4">Monthly</th>
                 <th className="pb-3 pr-4">Setup</th>
                 <th className="pb-3 pr-4">State</th>
+                <th className="pb-3 pr-4">Manage</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
@@ -538,13 +576,82 @@ export function StripeSetupWorkspace() {
                   <td className="py-4 pr-4 text-slate-300">{offer.monthly_price_usd ? `$${offer.monthly_price_usd}/mo` : '—'}</td>
                   <td className="py-4 pr-4 text-slate-300">{offer.setup_price_usd ? `$${offer.setup_price_usd}` : '—'}</td>
                   <td className="py-4 pr-4">
-                    <span className={`rounded-full px-2 py-1 text-[11px] uppercase tracking-wide ${
+                    <div className="flex flex-col gap-2">
+                      <span className={`w-fit rounded-full px-2 py-1 text-[11px] uppercase tracking-wide ${
                       offer.recommended_action && offer.recommended_action !== 'ready'
                         ? 'bg-amber-900/30 text-amber-200'
                         : 'bg-green-900/30 text-green-300'
                     }`}>
                       {offer.recommended_action ?? 'pending'}
-                    </span>
+                      </span>
+                      <span className="text-xs text-slate-500">
+                        {offer.source_kind ?? 'template'} · {offer.sync_status ?? 'pending'}
+                      </span>
+                    </div>
+                  </td>
+                  <td className="py-4 pr-4">
+                    <div className="grid min-w-[260px] gap-3">
+                      <label className="flex items-center gap-2 text-xs text-slate-400">
+                        <input
+                          type="checkbox"
+                          checked={catalogDrafts[offer.slug]?.active ?? offer.active}
+                          onChange={(event) =>
+                            setCatalogDrafts((current) => ({
+                              ...current,
+                              [offer.slug]: {
+                                active: event.target.checked,
+                                monthly_price_usd: current[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd,
+                                setup_price_usd: current[offer.slug]?.setup_price_usd ?? offer.setup_price_usd,
+                              },
+                            }))
+                          }
+                        />
+                        Offer active for this tenant
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={catalogDrafts[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd}
+                          onChange={(event) =>
+                            setCatalogDrafts((current) => ({
+                              ...current,
+                              [offer.slug]: {
+                                active: current[offer.slug]?.active ?? offer.active,
+                                monthly_price_usd: Number(event.target.value),
+                                setup_price_usd: current[offer.slug]?.setup_price_usd ?? offer.setup_price_usd,
+                              },
+                            }))
+                          }
+                          className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                        />
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={catalogDrafts[offer.slug]?.setup_price_usd ?? offer.setup_price_usd}
+                          onChange={(event) =>
+                            setCatalogDrafts((current) => ({
+                              ...current,
+                              [offer.slug]: {
+                                active: current[offer.slug]?.active ?? offer.active,
+                                monthly_price_usd: current[offer.slug]?.monthly_price_usd ?? offer.monthly_price_usd,
+                                setup_price_usd: Number(event.target.value),
+                              },
+                            }))
+                          }
+                          className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                        />
+                      </div>
+                      <button
+                        onClick={() => saveCatalogOffer(offer.slug)}
+                        disabled={busy !== null}
+                        className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-medium text-white transition hover:bg-slate-800 disabled:opacity-50"
+                      >
+                        {busy === `save_offer_${offer.slug}` ? 'Saving…' : 'Save Draft'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
