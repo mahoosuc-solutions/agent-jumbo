@@ -1,0 +1,100 @@
+# =============================================================================
+# Agent Jumbo — MOS Production Stack (mos-prod: 46.224.170.197)
+#
+# Joins the existing MOS Docker network for direct access to:
+#   - mos-redis:6379   (AgentMesh bridge)
+#   - mos-aios-backend:3012  (AIOS API)
+#   - mos-vault:8200   (Vault — bootstrap only)
+#
+# Traefik labels handle TLS routing for agentjumbo.mahoosuc.ai.
+# No host port mapping — all traffic flows through Traefik.
+#
+# Usage:
+#   # Resolve secrets from Vault first:
+#   deploy/resolve-env.sh --output /opt/agent-jumbo/runtime.env
+#
+#   # Deploy:
+#   docker compose -f docker-compose.mos-prod.yml up -d
+#
+#   # Or use the full pipeline:
+#   deploy/start-docker.sh
+# =============================================================================
+
+networks:
+  mos-network:
+    external: true
+    name: mos_mos-network
+
+services:
+  agent-jumbo:
+    image: agent-jumbo:current
+    pull_policy: never
+    container_name: agent-jumbo-production
+    restart: unless-stopped
+
+    env_file:
+      - path: /opt/agent-jumbo/runtime.env
+        required: true
+
+    environment:
+      # ── Runtime mode ─────────────────────────────────────────────────────
+      AGENT_JUMBO_RUN_MODE: production
+      DEPLOYMENT_MODE: cloud
+      AGENT_JUMBO_LAPTOP_MODE: "false"
+      CODE_EXEC_SSH_ENABLED: "false"
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
+      WEB_UI_PORT: 80
+      WEB_UI_HOST: 0.0.0.0
+
+      # ── MOS integration (Docker network — no TLS needed) ────────────────
+      AGENTMESH_REDIS_URL: redis://:${REDIS_PASSWORD}@mos-redis:6379
+      AIOS_BASE_URL: http://mos-aios-backend:3012
+
+    volumes:
+      - agent_jumbo_data:/aj/data
+      - agent_jumbo_logs:/aj/logs
+      - agent_jumbo_venv:/opt/venv-a0
+
+    networks:
+      mos-network:
+        aliases:
+          - agent-jumbo
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '3.0'
+          memory: 6G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+    labels:
+      # ── Traefik routing ─────────────────────────────────────────────────
+      traefik.enable: "true"
+
+      # HTTPS router
+      traefik.http.routers.agentjumbo.rule: "Host(`agentjumbo.mahoosuc.ai`)"
+      traefik.http.routers.agentjumbo.entrypoints: "websecure"
+      traefik.http.routers.agentjumbo.tls.certresolver: "letsencrypt"
+      traefik.http.routers.agentjumbo.middlewares: "agentjumbo-ratelimit,security-headers@file,compress@file"
+      traefik.http.services.agentjumbo.loadbalancer.server.port: "80"
+
+      # Rate limiting (stricter than default — financial data)
+      traefik.http.middlewares.agentjumbo-ratelimit.ratelimit.average: "50"
+      traefik.http.middlewares.agentjumbo-ratelimit.ratelimit.burst: "100"
+
+volumes:
+  agent_jumbo_data:
+    external: true
+  agent_jumbo_logs:
+    external: true
+  agent_jumbo_venv:
+    external: true

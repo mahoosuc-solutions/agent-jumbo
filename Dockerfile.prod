@@ -6,7 +6,7 @@
 #
 # First build after this change is full-length. Subsequent code-only rebuilds skip all deps.
 
-ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
+ARG BASE_IMAGE=agent0ai/agent-zero-base@sha256:342ffbf59b5d2771c01f348cb9ee3e05121ad7a639aa5bff5c48c2912685eda8
 FROM ${BASE_IMAGE} AS deps
 
 ARG INSTALL_PLAYWRIGHT=1
@@ -71,8 +71,12 @@ COPY . /aj
 WORKDIR /aj
 
 # usr/projects is excluded from the image (large user data) but lives on the host
-# bind-mounted at /mnt/wdblack. Symlink so relative path resolution finds it.
-RUN ln -sf /mnt/wdblack/dev/projects/agent-jumbo/usr/projects /aj/usr/projects
+# bind-mounted at /mnt/wdblack (local) or as an empty dir (cloud).
+RUN if [ -d "/mnt/wdblack/dev/projects/agent-jumbo/usr/projects" ]; then \
+        ln -sf /mnt/wdblack/dev/projects/agent-jumbo/usr/projects /aj/usr/projects; \
+    else \
+        mkdir -p /aj/usr/projects; \
+    fi
 
 # Preload models (runs after source is present; skip with RUN_PRELOAD=0 for fast iteration)
 RUN bash -c 'if [ "${RUN_PRELOAD:-1}" = "1" ]; then \

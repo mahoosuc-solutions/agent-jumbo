@@ -1,5 +1,6 @@
 # disable logging
 import contextlib
+import hmac
 import logging
 import os
 import secrets
@@ -211,7 +212,9 @@ async def login_handler():
         user = dotenv.get_dotenv_value("AUTH_LOGIN")
         password = dotenv.get_dotenv_value("AUTH_PASSWORD")
 
-        if request.form["username"] == user and request.form["password"] == password:
+        if hmac.compare_digest(request.form["username"], user) and hmac.compare_digest(
+            request.form["password"], password
+        ):
             _login_attempts.pop(ip, None)
             session["authentication"] = login.get_credentials_hash()
             return redirect(url_for("serve_index"))

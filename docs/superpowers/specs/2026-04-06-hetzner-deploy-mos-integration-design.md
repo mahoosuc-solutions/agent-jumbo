@@ -1,13 +1,13 @@
 # Agent Jumbo — Hetzner Deployment & MOS Integration Design
 
 > **Date:** 2026-04-06
-> **Status:** Approved
+> **Status:** Approved (Revised: TLS-everywhere, no VPN)
 > **Author:** Claude + Aaron
-> **Cost:** ~$30/mo incremental (CPX42 only)
+> **Cost:** ~$30/mo incremental (CPX42 for staging)
 
 ## Executive Summary
 
-Deploy agent-jumbo to a dedicated Hetzner CPX42 server (`168.119.49.252`), integrated with the existing MOS production platform (`46.224.170.197`) via WireGuard tunnel and AgentMesh Redis bridge. Access is VPN-gated — no public exposure. Build artifacts flow through the canonical build server (`49.13.125.252`) per MOS deployment runbook rules.
+**Revised architecture (2026-04-06):** Agent-jumbo production runs on mos-prod (`46.224.170.197`) as a Docker container on the MOS network. Staging/tenant instances run on CPX42 (`168.119.49.252`). TLS-everywhere — no VPN. Production accesses Redis/AIOS via Docker network (localhost-equivalent). Staging accesses Redis over stunnel TLS. Build server (`49.13.125.252`) handles artifact creation per MOS deployment runbook. Public tenant access via `apps.mahoosuc.ai`, private access via `agentjumbo.mahoosuc.ai` (Traefik + auth).
 
 ## Architecture
 
