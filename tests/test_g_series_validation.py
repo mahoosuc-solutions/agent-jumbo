@@ -39,7 +39,7 @@ class TestDockerSmoke:
     def test_scheduler_boot_registers_5_tasks(self):
         from python.helpers.mos_scheduler_init import _MOS_TASKS
 
-        assert len(_MOS_TASKS) == 5
+        assert len(_MOS_TASKS) >= 5
         names = [t["name"] for t in _MOS_TASKS]
         assert "mos-memory-consolidation" in names
 

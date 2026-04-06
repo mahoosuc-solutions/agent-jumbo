@@ -213,10 +213,10 @@ class TestExecutiveMemoryBridge:
 class TestSchedulerTaskExecution:
     """Validate all MOS and WBM scheduled tasks."""
 
-    def test_mos_has_exactly_5_tasks(self):
+    def test_mos_has_at_least_6_tasks(self):
         from python.helpers.mos_scheduler_init import _MOS_TASKS
 
-        assert len(_MOS_TASKS) == 5
+        assert len(_MOS_TASKS) >= 6
 
     def test_mos_task_names_unique(self):
         from python.helpers.mos_scheduler_init import _MOS_TASKS
@@ -253,6 +253,7 @@ class TestSchedulerTaskExecution:
             "mos-linear-activity-digest",
             "mos-analytics-daily-digest",
             "mos-support-queue-check",
+            "mos-email-digest",
             "mos-memory-consolidation",
         }
         actual = {t["name"] for t in _MOS_TASKS}

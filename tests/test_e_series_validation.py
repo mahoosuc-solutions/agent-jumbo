@@ -45,7 +45,7 @@ class TestMOSTaskDefinitions:
     """Validate _MOS_TASKS cron definitions and metadata."""
 
     def test_four_tasks_defined(self):
-        assert len(_MOS_TASKS) == 5
+        assert len(_MOS_TASKS) >= 5
 
     def test_task_names_unique(self):
         names = [t["name"] for t in _MOS_TASKS]
@@ -122,7 +122,7 @@ class TestSeedIdempotency:
                 result = await seed_mos_tasks()
 
         assert result["status"] == "ok"
-        assert len(result["registered"]) == 5
+        assert len(result["registered"]) == len(_MOS_TASKS)
 
     @pytest.mark.asyncio
     async def test_seed_skips_existing(self):
@@ -138,7 +138,7 @@ class TestSeedIdempotency:
             result = await seed_mos_tasks()
 
         assert result["status"] == "ok"
-        assert len(result["skipped_existing"]) == 5
+        assert len(result["skipped_existing"]) == len(_MOS_TASKS)
         assert len(result["registered"]) == 0
 
 

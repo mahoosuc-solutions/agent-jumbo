@@ -1,7 +1,7 @@
 """
 MOS Scheduler Init — seeds MOS cross-system sync tasks at boot.
 
-Registers 5 MOS operational tasks in the persisted TaskScheduler if they do not
+Registers 6 MOS operational tasks in the persisted TaskScheduler if they do not
 already exist. All tasks are idempotent: existing tasks (matched by name) are not
 re-added. Silently skipped if TaskScheduler is unavailable.
 
@@ -10,6 +10,7 @@ Task schedule:
   Daily (1):       mos-linear-activity-digest (6am)
   Daily (1):       mos-analytics-daily-digest (7am)
   Hourly (1):      mos-support-queue-check (top of every hour)
+  3x/day (1):      mos-email-digest (7am, 12pm, 5pm daily)
   Weekly (1):      mos-memory-consolidation (Sunday 3am)
 """
 
@@ -60,6 +61,17 @@ _MOS_TASKS = [
             "Check the MOS work queue for open support-tagged items. "
             "Use the MOS orchestrator check_support_queue method. "
             "Escalate any items older than 4 hours or with severity >= high."
+        ),
+    },
+    {
+        "name": "mos-email-digest",
+        "schedule": {"minute": "0", "hour": "7,12,17", "day": "*", "month": "*", "weekday": "*"},
+        "prompt": (
+            "Run the email digest to build ambient awareness of the operator's inbox. "
+            "Use the email_advanced tool with action=read_gmail to pull recent emails (last 4 hours). "
+            "Summarize the key signal: who wrote, what about, anything that needs action. "
+            "Write the digest to EXECUTIVE memory via memory_save with area=executive and source=email_digest. "
+            "Do NOT reply to any emails automatically. Just observe and record."
         ),
     },
     {
