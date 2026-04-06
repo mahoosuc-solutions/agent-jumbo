@@ -205,6 +205,7 @@ class Settings(TypedDict):
     trust_onboarded: bool  # whether first-run wizard has been completed
     trial_started_at: str  # ISO timestamp of first launch (local trial)
     trial_tier: str  # tier during trial period (default: professional)
+    onboarding_stage: str  # signup|profile_created|first_chat|settings_configured|complete
     max_monologue_iterations: int
     max_monologue_seconds: int
     response_style: str
@@ -593,6 +594,7 @@ def get_default_settings() -> Settings:
         trust_onboarded=False,
         trial_started_at="",
         trial_tier="professional",
+        onboarding_stage="signup",
         max_monologue_iterations=25,
         max_monologue_seconds=1200,
         response_style="concise",
