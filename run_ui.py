@@ -1,6 +1,7 @@
 # disable logging
 import contextlib
 import hmac
+import json
 import logging
 import os
 import secrets
@@ -38,6 +39,7 @@ from python.helpers import (
     runtime,
     runtime_mode,
     startup_status,
+    usage_enforcement,
 )
 from python.helpers.api import ApiHandler
 from python.helpers.extract_tools import load_classes_from_folder
@@ -287,6 +289,21 @@ async def logout_handler():
     return redirect(url_for("login_handler"))
 
 
+@webapp.route("/api/usage")
+@requires_auth
+async def usage_status():
+    """Return current usage stats for the authenticated org."""
+    if mos_auth.is_mos_auth_enabled():
+        mos_user = session.get("mos_user", {})
+        org_id = mos_user.get("organization_id", "")
+        if org_id:
+            _, info = usage_enforcement.check_usage_allowed(org_id)
+            return Response(json.dumps({"success": True, "usage": info}), content_type="application/json")
+    return Response(
+        json.dumps({"success": True, "usage": {"tier": "unlimited", "limit": -1}}), content_type="application/json"
+    )
+
+
 @webapp.after_request
 def add_request_id(response):
     if "X-Request-ID" not in response.headers:
@@ -428,6 +445,34 @@ def run():
     host = runtime.get_arg("host") or dotenv.get_dotenv_value("WEB_UI_HOST") or "localhost"
     server = None
 
+    def enforce_usage(f):
+        """Check tier usage limits for MOS-authenticated requests."""
+
+        @wraps(f)
+        async def decorated(*args, **kwargs):
+            if mos_auth.is_mos_auth_enabled():
+                mos_user = session.get("mos_user", {})
+                org_id = mos_user.get("organization_id", "")
+                if org_id:
+                    allowed, info = usage_enforcement.check_usage_allowed(org_id)
+                    if not allowed:
+                        return Response(
+                            json.dumps(
+                                {
+                                    "error": "Usage limit reached",
+                                    "detail": f"Your {info['tier']} plan allows {info['limit']} operations/month. "
+                                    f"Current usage: {info['current']}. Please upgrade.",
+                                    "usage": info,
+                                }
+                            ),
+                            429,
+                            content_type="application/json",
+                        )
+                    usage_enforcement.increment_usage(org_id)
+            return await f(*args, **kwargs)
+
+        return decorated
+
     def register_api_handler(app, handler: type[ApiHandler]):
         name = handler.__module__.split(".")[-1]
         instance = handler(app, lock)
@@ -439,6 +484,9 @@ def run():
             handler_wrap = requires_loopback(handler_wrap)
         if handler.requires_auth():
             handler_wrap = requires_auth(handler_wrap)
+            # Add usage enforcement after auth for MOS-authenticated API calls
+            if not handler.requires_loopback():
+                handler_wrap = enforce_usage(handler_wrap)
         if handler.requires_api_key():
             handler_wrap = requires_api_key(handler_wrap)
         if handler.requires_csrf():
