@@ -62,7 +62,7 @@ webapp.config.update(
     JSON_SORT_KEYS=False,
     SESSION_COOKIE_NAME="session_"
     + runtime.get_runtime_id(),  # bind the session cookie name to runtime id to prevent session collision on same host
-    SESSION_COOKIE_SAMESITE="Strict",
+    SESSION_COOKIE_SAMESITE="Lax",
     SESSION_PERMANENT=True,
     PERMANENT_SESSION_LIFETIME=timedelta(days=1),
 )
@@ -171,13 +171,17 @@ def requires_loopback(f):
 def requires_auth(f):
     @wraps(f)
     async def decorated(*args, **kwargs):
-        # MOS auth mode: validate JWT from cookie/header
+        # MOS auth mode: validate JWT from cookie/header or session
         if mos_auth.is_mos_auth_enabled():
-            token = mos_auth.extract_token_from_request(request)
+            # Check session first (set by relay handler), then request headers/cookies
+            token = session.get("mos_access_token") or mos_auth.extract_token_from_request(request)
             if not token:
                 return redirect(url_for("login_handler"))
             payload = mos_auth.verify_token(token)
             if not payload:
+                # Token expired — clear stale session
+                session.pop("mos_access_token", None)
+                session.pop("mos_user", None)
                 return redirect(url_for("login_handler"))
             org_id = payload.get("organization_id", "")
             if org_id and not mos_auth.check_entitlement(org_id):
@@ -253,31 +257,35 @@ async def relay_handler():
     """Exchange a MOS relay token for a local session (cross-domain login)."""
     token = request.args.get("token", "").strip()
     if not token or not mos_auth.is_mos_auth_enabled():
+        logging.warning("[relay] No token or MOS auth not enabled")
         return redirect(url_for("login_handler"))
 
     import requests as http_req
 
     base_url = dotenv.get_dotenv_value("AIOS_BASE_URL") or "https://apps.mahoosuc.ai"
+    exchange_url = f"{base_url.rstrip('/')}/api/auth/relay/exchange"
     try:
-        resp = http_req.post(
-            f"{base_url.rstrip('/')}/api/auth/relay/exchange",
-            json={"token": token},
-            timeout=5,
-        )
+        logging.info(f"[relay] Exchanging token at {exchange_url}")
+        resp = http_req.post(exchange_url, json={"token": token}, timeout=10)
+        logging.info(f"[relay] Exchange response: {resp.status_code}")
         if resp.status_code != 200:
+            logging.warning(f"[relay] Exchange failed: {resp.status_code} {resp.text[:200]}")
             return redirect(url_for("login_handler"))
         data = resp.json()
         access_token = data.get("accessToken")
         if not access_token:
+            logging.warning("[relay] No accessToken in exchange response")
             return redirect(url_for("login_handler"))
-        # Verify the token locally and set session
         payload = mos_auth.verify_token(access_token)
         if not payload:
+            logging.warning("[relay] Token verification failed")
             return redirect(url_for("login_handler"))
         session["mos_user"] = payload
         session["mos_access_token"] = access_token
+        logging.info(f"[relay] Success — user {payload.get('email')} authenticated")
         return redirect(url_for("serve_index"))
-    except Exception:
+    except Exception as e:
+        logging.error(f"[relay] Exception: {e}")
         return redirect(url_for("login_handler"))
 
 
