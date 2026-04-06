@@ -246,9 +246,44 @@ async def login_handler():
     return render_template_string(login_page_content, error=error)
 
 
+@webapp.route("/auth/relay")
+async def relay_handler():
+    """Exchange a MOS relay token for a local session (cross-domain login)."""
+    token = request.args.get("token", "").strip()
+    if not token or not mos_auth.is_mos_auth_enabled():
+        return redirect(url_for("login_handler"))
+
+    import requests as http_req
+
+    base_url = dotenv.get_dotenv_value("AIOS_BASE_URL") or "https://apps.mahoosuc.ai"
+    try:
+        resp = http_req.post(
+            f"{base_url.rstrip('/')}/api/auth/relay/exchange",
+            json={"token": token},
+            timeout=5,
+        )
+        if resp.status_code != 200:
+            return redirect(url_for("login_handler"))
+        data = resp.json()
+        access_token = data.get("accessToken")
+        if not access_token:
+            return redirect(url_for("login_handler"))
+        # Verify the token locally and set session
+        payload = mos_auth.verify_token(access_token)
+        if not payload:
+            return redirect(url_for("login_handler"))
+        session["mos_user"] = payload
+        session["mos_access_token"] = access_token
+        return redirect(url_for("serve_index"))
+    except Exception:
+        return redirect(url_for("login_handler"))
+
+
 @webapp.route("/logout")
 async def logout_handler():
     session.pop("authentication", None)
+    session.pop("mos_user", None)
+    session.pop("mos_access_token", None)
     return redirect(url_for("login_handler"))
 
 
