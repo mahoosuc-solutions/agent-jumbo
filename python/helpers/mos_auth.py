@@ -5,6 +5,8 @@ Verifies MOS JWT tokens offline and checks product entitlements
 via cached HTTP calls to the MOS platform API.
 """
 
+import hashlib
+import hmac as hmac_mod
 import threading
 import time
 
@@ -12,6 +14,25 @@ import jwt
 import requests as http_requests
 
 from python.helpers import dotenv
+
+# ── HMAC service-to-service signing ──────────────────────────────────────
+
+
+def _sign_service_request(path: str) -> dict[str, str]:
+    """Generate HMAC-SHA256 headers for authenticated service-to-service calls."""
+    secret = dotenv.get_dotenv_value("SERVICE_MESH_SECRET") or ""
+    if not secret:
+        # Fallback to legacy header when no secret configured
+        return {"x-internal-service": "agent-jumbo"}
+    timestamp = str(int(time.time()))
+    message = f"agent-jumbo|{timestamp}|{path}"
+    signature = hmac_mod.new(secret.encode(), message.encode(), hashlib.sha256).hexdigest()
+    return {
+        "x-service-name": "agent-jumbo",
+        "x-service-timestamp": timestamp,
+        "x-service-signature": signature,
+    }
+
 
 # ── Entitlement cache ─────────────────────────────────────────────────────
 
@@ -67,11 +88,12 @@ def check_entitlement(organization_id: str, product_key: str = "agent-jumbo") ->
     url = f"{base_url}/api/platform/entitlements/check"
 
     try:
-        # Use internal service header — no JWT needed for server-to-server
+        # HMAC-signed service-to-service call
+        api_path = f"/api/platform/entitlements/check?product_key={product_key}&organization_id={organization_id}"
         resp = http_requests.get(
             url,
             params={"product_key": product_key, "organization_id": organization_id},
-            headers={"x-internal-service": "agent-jumbo"},
+            headers=_sign_service_request(api_path),
             timeout=5,
         )
         if resp.status_code == 200:

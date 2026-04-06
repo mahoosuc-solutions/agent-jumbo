@@ -12,6 +12,7 @@ import time
 import requests as http_requests
 
 from python.helpers import dotenv
+from python.helpers.mos_auth import _sign_service_request
 
 # ── Tier limit cache ──────────────────────────────────────────────────
 
@@ -49,7 +50,9 @@ def _fetch_limits_from_mos(org_id: str) -> dict:
         resp = http_requests.get(
             url,
             params={"product_key": "agent-jumbo", "organization_id": org_id},
-            headers={"x-internal-service": "agent-jumbo"},
+            headers=_sign_service_request(
+                f"/api/platform/entitlements/check?product_key=agent-jumbo&organization_id={org_id}"
+            ),
             timeout=5,
         )
         if resp.status_code == 200:
@@ -64,7 +67,7 @@ def _fetch_limits_from_mos(org_id: str) -> dict:
                 sub_resp = http_requests.get(
                     f"{base_url.rstrip('/')}/api/platform/subscription-tier",
                     params={"organization_id": org_id},
-                    headers={"x-internal-service": "agent-jumbo"},
+                    headers=_sign_service_request(f"/api/platform/subscription-tier?organization_id={org_id}"),
                     timeout=5,
                 )
                 if sub_resp.status_code == 200:
