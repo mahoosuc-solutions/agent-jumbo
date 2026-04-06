@@ -69,13 +69,28 @@ def verify_token(token: str) -> dict | None:
         return None
 
 
+# ── Circuit breaker state ─────────────────────────────────────────────────
+
+_consecutive_failures: int = 0
+_CIRCUIT_BREAKER_THRESHOLD = 5
+_CIRCUIT_BREAKER_CRITICAL = 10
+
+
 def check_entitlement(organization_id: str, product_key: str = "agent-jumbo") -> bool:
     """
     Check if an organization has an active entitlement for the given product.
 
     Uses a 5-minute cache to avoid per-request HTTP calls.
-    Falls back to True if the MOS API is unreachable (fail-open for availability).
+    Defaults to fail-closed (deny access) when MOS API is unreachable.
+    Circuit breaker: after 5 consecutive failures, uses stale cached value.
+    Configurable via ENTITLEMENT_FAIL_MODE=open|closed (default: closed).
     """
+    global _consecutive_failures
+
+    # Standalone mode: no MOS = no entitlement check needed
+    if not is_mos_auth_enabled():
+        return True
+
     cache_key = f"{organization_id}:{product_key}"
 
     with _cache_lock:
@@ -87,8 +102,9 @@ def check_entitlement(organization_id: str, product_key: str = "agent-jumbo") ->
     base_url = base_url.rstrip("/")
     url = f"{base_url}/api/platform/entitlements/check"
 
+    fail_mode = dotenv.get_dotenv_value("ENTITLEMENT_FAIL_MODE") or "closed"
+
     try:
-        # HMAC-signed service-to-service call
         api_path = f"/api/platform/entitlements/check?product_key={product_key}&organization_id={organization_id}"
         resp = http_requests.get(
             url,
@@ -99,17 +115,44 @@ def check_entitlement(organization_id: str, product_key: str = "agent-jumbo") ->
         if resp.status_code == 200:
             data = resp.json()
             entitled = data.get("entitled", False)
+            _consecutive_failures = 0  # Reset on success
         else:
-            # API error — fail-open to avoid blocking users
-            entitled = True
+            _consecutive_failures += 1
+            entitled = _resolve_failure(cache_key, fail_mode)
     except Exception:
-        # Network error — fail-open
-        entitled = True
+        _consecutive_failures += 1
+        entitled = _resolve_failure(cache_key, fail_mode)
 
     with _cache_lock:
         _entitlement_cache[cache_key] = (entitled, time.time())
 
     return entitled
+
+
+def _resolve_failure(cache_key: str, fail_mode: str) -> bool:
+    """Determine entitlement on API failure using circuit breaker + fail mode."""
+    import logging
+
+    # Circuit breaker: use stale cache if available after threshold
+    if _consecutive_failures >= _CIRCUIT_BREAKER_THRESHOLD:
+        with _cache_lock:
+            stale = _entitlement_cache.get(cache_key)
+        if stale is not None:
+            logging.warning(
+                f"[entitlement] Circuit breaker active ({_consecutive_failures} failures), using stale cache: {stale[0]}"
+            )
+            return stale[0]
+
+    if _consecutive_failures >= _CIRCUIT_BREAKER_CRITICAL:
+        logging.critical(f"[entitlement] {_consecutive_failures} consecutive failures — MOS API unreachable")
+
+    # No stale cache — use fail mode
+    if fail_mode == "open":
+        logging.warning("[entitlement] Fail-open: granting access despite API error")
+        return True
+    else:
+        logging.warning("[entitlement] Fail-closed: denying access due to API error")
+        return False
 
 
 def extract_token_from_request(flask_request) -> str | None:
