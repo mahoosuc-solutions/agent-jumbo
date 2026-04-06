@@ -157,6 +157,7 @@ STRIPE_WEBHOOK_SECRET=$(vault_get_field "${RUNTIME_RESP}" "STRIPE_WEBHOOK_SECRET
 GMAIL_CLIENT_ID=$(vault_get_field "${RUNTIME_RESP}" "GMAIL_CLIENT_ID")
 GMAIL_CLIENT_SECRET=$(vault_get_field "${RUNTIME_RESP}" "GMAIL_CLIENT_SECRET")
 REDIS_PASSWORD=$(vault_get_field "${RUNTIME_RESP}" "REDIS_PASSWORD")
+MOS_JWT_SECRET=$(vault_get_field "${RUNTIME_RESP}" "MOS_JWT_SECRET")
 
 # Validate required fields (infrastructure only — blocks deploy)
 MISSING=()
@@ -172,6 +173,7 @@ OPTIONAL_MISSING=()
 [[ -z "${ANTHROPIC_API_KEY}" ]] && OPTIONAL_MISSING+=("ANTHROPIC_API_KEY")
 [[ -z "${TELEGRAM_BOT_TOKEN}" ]] && OPTIONAL_MISSING+=("TELEGRAM_BOT_TOKEN")
 [[ -z "${OPENAI_API_KEY}" ]] && OPTIONAL_MISSING+=("OPENAI_API_KEY")
+[[ -z "${MOS_JWT_SECRET}" ]] && OPTIONAL_MISSING+=("MOS_JWT_SECRET")
 if [[ ${#OPTIONAL_MISSING[@]} -gt 0 ]]; then
     echo "[resolve-env] WARNING: optional secrets not set (can be added post-deploy):" >&2
     for m in "${OPTIONAL_MISSING[@]}"; do
@@ -221,6 +223,7 @@ TELEGRAM_ALERT_CHAT_ID=${TELEGRAM_ALERT_CHAT_ID}
 AUTH_LOGIN=${AUTH_LOGIN}
 AUTH_PASSWORD=${AUTH_PASSWORD}
 FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+MOS_JWT_SECRET=${MOS_JWT_SECRET}
 
 # ── Integrations ─────────────────────────────────────────────────────────────
 LINEAR_API_KEY=${LINEAR_API_KEY}
