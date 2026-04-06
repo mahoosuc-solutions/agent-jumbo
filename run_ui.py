@@ -453,30 +453,35 @@ def run():
     host = runtime.get_arg("host") or dotenv.get_dotenv_value("WEB_UI_HOST") or "localhost"
     server = None
 
+    # API handlers that count as billable operations (not page loads/reads)
+    _BILLABLE_HANDLERS = {"message", "chat", "chat_send", "agent_run", "tool_call", "code_exec"}
+
     def enforce_usage(f):
-        """Check tier usage limits for MOS-authenticated requests."""
+        """Check tier usage limits for MOS-authenticated chat/agent operations only."""
 
         @wraps(f)
         async def decorated(*args, **kwargs):
-            if mos_auth.is_mos_auth_enabled():
-                mos_user = session.get("mos_user", {})
-                org_id = mos_user.get("organization_id", "")
-                if org_id:
-                    allowed, info = usage_enforcement.check_usage_allowed(org_id)
-                    if not allowed:
-                        return Response(
-                            json.dumps(
-                                {
-                                    "error": "Usage limit reached",
-                                    "detail": f"Your {info['tier']} plan allows {info['limit']} operations/month. "
-                                    f"Current usage: {info['current']}. Please upgrade.",
-                                    "usage": info,
-                                }
-                            ),
-                            429,
-                            content_type="application/json",
-                        )
-                    usage_enforcement.increment_usage(org_id)
+            if mos_auth.is_mos_auth_enabled() and request.method == "POST":
+                handler_name = request.path.strip("/").split("/")[-1] if request.path else ""
+                if handler_name in _BILLABLE_HANDLERS:
+                    mos_user = session.get("mos_user", {})
+                    org_id = mos_user.get("organization_id", "")
+                    if org_id:
+                        allowed, info = usage_enforcement.check_usage_allowed(org_id)
+                        if not allowed:
+                            return Response(
+                                json.dumps(
+                                    {
+                                        "error": "Usage limit reached",
+                                        "detail": f"Your {info['tier']} plan allows {info['limit']} operations/month. "
+                                        f"Current usage: {info['current']}. Please upgrade.",
+                                        "usage": info,
+                                    }
+                                ),
+                                429,
+                                content_type="application/json",
+                            )
+                        usage_enforcement.increment_usage(org_id)
             return await f(*args, **kwargs)
 
         return decorated
