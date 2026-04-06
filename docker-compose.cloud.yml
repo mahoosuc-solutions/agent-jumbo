@@ -1,0 +1,71 @@
+# =============================================================================
+# Agent Jumbo — Cloud Production (CPX42: 168.119.49.252)
+#
+# Standalone deployment on dedicated Hetzner server.
+# Caddy handles TLS (Let's Encrypt via Hetzner DNS challenge).
+# Connects to mos-prod Redis over stunnel TLS.
+# Connects to mos-prod AIOS over public HTTPS.
+#
+# Usage:
+#   # Resolve secrets from Vault first (SSH to mos-prod):
+#   deploy/resolve-env.sh --output /opt/agent-jumbo/runtime.env
+#
+#   # Deploy:
+#   docker compose -f docker-compose.cloud.yml up -d
+#
+#   # Or use the full pipeline:
+#   deploy/start-docker.sh --compose docker-compose.cloud.yml
+# =============================================================================
+
+services:
+  agent-jumbo:
+    image: agent-jumbo:current
+    pull_policy: never
+    container_name: agent-jumbo-production
+    restart: unless-stopped
+
+    env_file:
+      - path: /opt/agent-jumbo/runtime.env
+        required: true
+
+    environment:
+      # ── Runtime mode ─────────────────────────────────────────────────────
+      AGENT_JUMBO_RUN_MODE: production
+      DEPLOYMENT_MODE: cloud
+      AGENT_JUMBO_LAPTOP_MODE: "false"
+      CODE_EXEC_SSH_ENABLED: "false"
+      LITELLM_LOCAL_MODEL_COST_MAP: "True"
+      WEB_UI_PORT: 80
+      WEB_UI_HOST: 0.0.0.0
+
+    ports:
+      - "127.0.0.1:6274:80"
+
+    volumes:
+      - agent_jumbo_data:/aj/data
+      - agent_jumbo_logs:/aj/logs
+      - agent_jumbo_venv:/opt/venv-a0
+
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 90s
+
+    deploy:
+      resources:
+        limits:
+          cpus: '4.0'
+          memory: 8G
+        reservations:
+          cpus: '1.0'
+          memory: 2G
+
+volumes:
+  agent_jumbo_data:
+    external: true
+  agent_jumbo_logs:
+    external: true
+  agent_jumbo_venv:
+    external: true

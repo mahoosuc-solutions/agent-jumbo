@@ -33,7 +33,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 ENV_FILE="${ENV_FILE:-/opt/agent-jumbo/runtime.env}"
-COMPOSE_FILE="${COMPOSE_FILE:-${PROJECT_ROOT}/docker-compose.mos-prod.yml}"
+COMPOSE_FILE="${COMPOSE_FILE:-${PROJECT_ROOT}/docker-compose.cloud.yml}"
 STAGING_DIR="${STAGING_DIR:-/opt/agent-jumbo/staging}"
 IMAGE_FILE=""
 SKIP_RESOLVE=false

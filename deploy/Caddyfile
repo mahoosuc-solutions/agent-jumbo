@@ -1,0 +1,36 @@
+# =============================================================================
+# Agent Jumbo — Caddy Configuration (CPX42)
+#
+# TLS via Let's Encrypt DNS challenge (Hetzner DNS plugin).
+# Reverse proxy to agent-jumbo container on localhost:6274.
+#
+# Requires: HETZNER_DNS_API_TOKEN env var set for Caddy.
+# Install Caddy with: xcaddy build --with github.com/caddy-dns/hetzner
+# =============================================================================
+
+agentjumbo.mahoosuc.ai {
+	tls {
+		dns hetzner {env.HETZNER_DNS_API_TOKEN}
+	}
+
+	reverse_proxy localhost:6274 {
+		health_uri /health
+		health_interval 30s
+		health_timeout 5s
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Frame-Options SAMEORIGIN
+		X-Content-Type-Options nosniff
+		X-XSS-Protection "1; mode=block"
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	log {
+		output file /var/log/caddy/agentjumbo-access.log {
+			roll_size 50mb
+			roll_keep 5
+		}
+	}
+}
