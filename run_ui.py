@@ -63,6 +63,7 @@ webapp.config.update(
     SESSION_COOKIE_NAME="session_"
     + runtime.get_runtime_id(),  # bind the session cookie name to runtime id to prevent session collision on same host
     SESSION_COOKIE_SAMESITE="Lax",
+    SESSION_COOKIE_HTTPONLY=True,
     SESSION_PERMANENT=True,
     PERMANENT_SESSION_LIFETIME=timedelta(days=1),
 )
@@ -280,10 +281,14 @@ async def relay_handler():
         if not payload:
             logging.warning("[relay] Token verification failed")
             return redirect(url_for("login_handler"))
+        # Regenerate session to prevent fixation attacks
+        session.clear()
         session["mos_user"] = payload
         session["mos_access_token"] = access_token
         logging.info(f"[relay] Success — user {payload.get('email')} authenticated")
-        return redirect(url_for("serve_index"))
+        resp = redirect(url_for("serve_index"))
+        resp.headers["Referrer-Policy"] = "no-referrer"
+        return resp
     except Exception as e:
         logging.error(f"[relay] Exception: {e}")
         return redirect(url_for("login_handler"))
