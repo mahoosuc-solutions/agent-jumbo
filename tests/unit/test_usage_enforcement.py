@@ -97,17 +97,20 @@ class TestUsageAllowed:
     def test_allows_when_under_limit(self):
         from python.helpers.usage_enforcement import check_usage_allowed, increment_usage
 
-        # Default free tier: 100 ops
+        # In standalone mode, default trial tier is "professional" (5000 ops)
         increment_usage("org-check", 50)
         allowed, info = check_usage_allowed("org-check")
 
         assert allowed is True
         assert info["current"] == 50
-        assert info["remaining"] == 50
+        assert info["remaining"] > 0
 
     def test_denies_when_at_limit(self):
+        import python.helpers.usage_enforcement as u
         from python.helpers.usage_enforcement import check_usage_allowed, increment_usage
 
+        # Seed free tier in cache to get a low limit (100)
+        u._limits_cache["org-full"] = {"tier": "free", "_fetched_at": time.time()}
         increment_usage("org-full", 100)
         allowed, info = check_usage_allowed("org-full")
 

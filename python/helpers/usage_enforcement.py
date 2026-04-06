@@ -129,16 +129,56 @@ DEFAULT_TIER_LIMITS = {
 }
 
 
+def _get_local_trial_tier() -> str:
+    """Get the effective tier for standalone/local mode based on trial status."""
+    try:
+        from python.helpers.settings_persistence import get_settings, set_settings_delta
+
+        settings = get_settings()
+        trial_started = settings.get("trial_started_at", "")
+        trial_tier = settings.get("trial_tier", "professional")
+
+        if not trial_started:
+            # First launch — start the trial
+            from datetime import datetime, timezone
+
+            now = datetime.now(timezone.utc).isoformat()
+            set_settings_delta({"trial_started_at": now})
+            logging.info(f"[usage] Local trial started: {trial_tier} tier for 30 days")
+            return trial_tier
+
+        # Check if trial has expired (30 days)
+        from datetime import datetime, timezone
+
+        started = datetime.fromisoformat(trial_started.replace("Z", "+00:00"))
+        elapsed_days = (datetime.now(timezone.utc) - started).days
+
+        if elapsed_days > 30:
+            logging.info(f"[usage] Local trial expired ({elapsed_days} days). Using free tier limits.")
+            return "free"
+
+        return trial_tier
+    except Exception:
+        return "professional"  # Default to professional during trial
+
+
 def get_operation_limit(org_id: str) -> int:
     """Get the monthly operation limit for an organization. Returns -1 for unlimited."""
-    limits = _get_cached_limits(org_id) or _fetch_limits_from_mos(org_id)
-    tier = limits.get("tier", "free")
-    tier_limits = limits.get("limits", {})
+    from python.helpers.mos_auth import is_mos_auth_enabled
 
-    # Try MOS-provided limits first, fall back to defaults
-    ops_limit = tier_limits.get("max_operations", tier_limits.get("operations_monthly"))
-    if ops_limit is not None:
-        return int(ops_limit)
+    if is_mos_auth_enabled() and org_id:
+        # Cloud mode: fetch from MOS
+        limits = _get_cached_limits(org_id) or _fetch_limits_from_mos(org_id)
+        tier = limits.get("tier", "free")
+        tier_limits = limits.get("limits", {})
+
+        ops_limit = tier_limits.get("max_operations", tier_limits.get("operations_monthly"))
+        if ops_limit is not None:
+            return int(ops_limit)
+        return DEFAULT_TIER_LIMITS.get(tier, DEFAULT_TIER_LIMITS["free"]).get("operations_monthly", 100)
+
+    # Standalone mode: use local trial tier
+    tier = _get_local_trial_tier()
     return DEFAULT_TIER_LIMITS.get(tier, DEFAULT_TIER_LIMITS["free"]).get("operations_monthly", 100)
 
 

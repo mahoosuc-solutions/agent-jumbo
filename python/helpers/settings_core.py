@@ -201,8 +201,10 @@ class Settings(TypedDict):
     # Trust & Performance
     trust_level: int
     performance_profile: str
-    trust_always_allow: list[str]   # tools permanently exempt from trust gate
-    trust_onboarded: bool           # whether first-run wizard has been completed
+    trust_always_allow: list[str]  # tools permanently exempt from trust gate
+    trust_onboarded: bool  # whether first-run wizard has been completed
+    trial_started_at: str  # ISO timestamp of first launch (local trial)
+    trial_tier: str  # tier during trial period (default: professional)
     max_monologue_iterations: int
     max_monologue_seconds: int
     response_style: str
@@ -589,6 +591,8 @@ def get_default_settings() -> Settings:
         performance_profile="efficient",
         trust_always_allow=[],
         trust_onboarded=False,
+        trial_started_at="",
+        trial_tier="professional",
         max_monologue_iterations=25,
         max_monologue_seconds=1200,
         response_style="concise",
