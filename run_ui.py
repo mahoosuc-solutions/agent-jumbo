@@ -72,7 +72,7 @@ limiter = Limiter(
     get_remote_address,
     app=webapp,
     default_limits=[],
-    storage_uri="memory://",
+    storage_uri=os.getenv("REDIS_URL", "memory://"),
 )
 
 # Initialize WorkModeManager and start background network probe

@@ -6,6 +6,7 @@ Limits are fetched from MOS and cached. Counts are stored in Redis
 when available, falling back to in-memory.
 """
 
+import logging
 import threading
 import time
 
@@ -14,16 +15,46 @@ import requests as http_requests
 from python.helpers import dotenv
 from python.helpers.mos_auth import _sign_service_request
 
+# ── Redis client (lazy init) ─────────────────────────────────────────
+
+_redis_client = None
+_redis_init_attempted = False
+
+
+def _get_redis():
+    """Get Redis client for usage counters. Returns None if unavailable."""
+    global _redis_client, _redis_init_attempted
+    if _redis_init_attempted:
+        return _redis_client
+    _redis_init_attempted = True
+    redis_url = dotenv.get_dotenv_value("REDIS_URL") or ""
+    if not redis_url:
+        return None
+    try:
+        import redis
+
+        _redis_client = redis.Redis.from_url(redis_url, decode_responses=True)
+        _redis_client.ping()
+        logging.info("[usage] Redis connected for usage counters")
+        return _redis_client
+    except Exception as e:
+        logging.warning(f"[usage] Redis unavailable, using in-memory counters: {e}")
+        _redis_client = None
+        return None
+
+
 # ── Tier limit cache ──────────────────────────────────────────────────
 
 _limits_cache: dict[str, dict] = {}
 _limits_lock = threading.Lock()
 _LIMITS_CACHE_TTL = 300  # 5 minutes
 
-# ── Operation counters (in-memory, keyed by org:month) ────────────────
+# ── Operation counters (in-memory fallback, keyed by org:month) ───────
 
 _counters: dict[str, int] = {}
 _counters_lock = threading.Lock()
+_REDIS_COUNTER_PREFIX = "usage:"
+_REDIS_COUNTER_TTL = 3888000  # 45 days
 
 
 def _current_month_key(org_id: str) -> str:
@@ -114,6 +145,14 @@ def get_operation_limit(org_id: str) -> int:
 def get_current_usage(org_id: str) -> int:
     """Get the current month's operation count for an organization."""
     key = _current_month_key(org_id)
+    r = _get_redis()
+    if r:
+        try:
+            val = r.get(f"{_REDIS_COUNTER_PREFIX}{key}")
+            return int(val) if val else 0
+        except Exception:
+            pass
+    # Fallback to in-memory
     with _counters_lock:
         return _counters.get(key, 0)
 
@@ -121,6 +160,21 @@ def get_current_usage(org_id: str) -> int:
 def increment_usage(org_id: str, count: int = 1) -> int:
     """Increment the operation counter. Returns the new total."""
     key = _current_month_key(org_id)
+    r = _get_redis()
+    if r:
+        try:
+            redis_key = f"{_REDIS_COUNTER_PREFIX}{key}"
+            new_val = r.incrby(redis_key, count)
+            # Set TTL on first increment (only if no TTL yet)
+            if new_val == count:
+                r.expire(redis_key, _REDIS_COUNTER_TTL)
+            # Write-through to in-memory cache
+            with _counters_lock:
+                _counters[key] = new_val
+            return new_val
+        except Exception:
+            pass
+    # Fallback to in-memory only
     with _counters_lock:
         _counters[key] = _counters.get(key, 0) + count
         return _counters[key]
@@ -161,8 +215,11 @@ def check_usage_allowed(org_id: str) -> tuple[bool, dict]:
 
 def reset_counters():
     """Reset all counters (for testing)."""
+    global _redis_init_attempted, _redis_client
     with _counters_lock:
         _counters.clear()
+    _redis_init_attempted = False
+    _redis_client = None
 
 
 def clear_cache():
