@@ -1,6 +1,6 @@
 import hashlib
 
-from python.helpers import dotenv
+from python.helpers import dotenv, mos_auth
 
 
 def get_credentials_hash():
@@ -12,5 +12,7 @@ def get_credentials_hash():
 
 
 def is_login_required():
+    if mos_auth.is_mos_auth_enabled():
+        return True
     user = dotenv.get_dotenv_value("AUTH_LOGIN")
     return bool(user)

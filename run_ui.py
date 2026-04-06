@@ -32,6 +32,7 @@ from python.helpers import (
     git,
     login,
     mcp_server,
+    mos_auth,
     perf_metrics,
     process,
     runtime,
@@ -168,6 +169,21 @@ def requires_loopback(f):
 def requires_auth(f):
     @wraps(f)
     async def decorated(*args, **kwargs):
+        # MOS auth mode: validate JWT from cookie/header
+        if mos_auth.is_mos_auth_enabled():
+            token = mos_auth.extract_token_from_request(request)
+            if not token:
+                return redirect(url_for("login_handler"))
+            payload = mos_auth.verify_token(token)
+            if not payload:
+                return redirect(url_for("login_handler"))
+            org_id = payload.get("organization_id", "")
+            if org_id and not mos_auth.check_entitlement(org_id):
+                return Response("Product access denied. Please check your subscription.", 403)
+            session["mos_user"] = payload
+            return await f(*args, **kwargs)
+
+        # Legacy env-var auth mode
         user_pass_hash = login.get_credentials_hash()
         # If no auth is configured, just proceed
         if not user_pass_hash:
@@ -196,6 +212,11 @@ def csrf_protect(f):
 @webapp.route("/login", methods=["GET", "POST"])
 @limiter.limit("5 per minute", methods=["POST"])
 async def login_handler():
+    # MOS auth mode: redirect to MOS login page
+    if mos_auth.is_mos_auth_enabled():
+        mos_base = dotenv.get_dotenv_value("AIOS_BASE_URL") or "https://apps.mahoosuc.ai"
+        return redirect(f"{mos_base.rstrip('/')}/login")
+
     error = None
     if request.method == "POST":
         ip = request.remote_addr or "unknown"
