@@ -41,11 +41,9 @@ fi
 REQUIRED_VARS=(
     AGENTMESH_REDIS_URL
     AIOS_BASE_URL
-    ANTHROPIC_API_KEY
     AUTH_LOGIN
     AUTH_PASSWORD
     FLASK_SECRET_KEY
-    TELEGRAM_BOT_TOKEN
     REDIS_PASSWORD
 )
 
@@ -60,7 +58,9 @@ done
 
 # ── Optional but recommended ─────────────────────────────────────────────────
 OPTIONAL_VARS=(
+    ANTHROPIC_API_KEY
     OPENAI_API_KEY
+    TELEGRAM_BOT_TOKEN
     TELEGRAM_CHAT_ID
     TELEGRAM_ALERT_CHAT_ID
     LINEAR_API_KEY

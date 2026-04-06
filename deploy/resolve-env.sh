@@ -158,16 +158,26 @@ GMAIL_CLIENT_ID=$(vault_get_field "${RUNTIME_RESP}" "GMAIL_CLIENT_ID")
 GMAIL_CLIENT_SECRET=$(vault_get_field "${RUNTIME_RESP}" "GMAIL_CLIENT_SECRET")
 REDIS_PASSWORD=$(vault_get_field "${RUNTIME_RESP}" "REDIS_PASSWORD")
 
-# Validate required fields
+# Validate required fields (infrastructure only — blocks deploy)
 MISSING=()
 [[ -z "${AGENTMESH_REDIS_URL}" ]] && MISSING+=("AGENTMESH_REDIS_URL")
 [[ -z "${AIOS_BASE_URL}" ]] && MISSING+=("AIOS_BASE_URL")
-[[ -z "${ANTHROPIC_API_KEY}" ]] && MISSING+=("ANTHROPIC_API_KEY")
 [[ -z "${AUTH_LOGIN}" ]] && MISSING+=("AUTH_LOGIN")
 [[ -z "${AUTH_PASSWORD}" ]] && MISSING+=("AUTH_PASSWORD")
 [[ -z "${FLASK_SECRET_KEY}" ]] && MISSING+=("FLASK_SECRET_KEY")
-[[ -z "${TELEGRAM_BOT_TOKEN}" ]] && MISSING+=("TELEGRAM_BOT_TOKEN")
 [[ -z "${REDIS_PASSWORD}" ]] && MISSING+=("REDIS_PASSWORD")
+
+# Warn for optional fields (LLM, Telegram, integrations — populate after deploy)
+OPTIONAL_MISSING=()
+[[ -z "${ANTHROPIC_API_KEY}" ]] && OPTIONAL_MISSING+=("ANTHROPIC_API_KEY")
+[[ -z "${TELEGRAM_BOT_TOKEN}" ]] && OPTIONAL_MISSING+=("TELEGRAM_BOT_TOKEN")
+[[ -z "${OPENAI_API_KEY}" ]] && OPTIONAL_MISSING+=("OPENAI_API_KEY")
+if [[ ${#OPTIONAL_MISSING[@]} -gt 0 ]]; then
+    echo "[resolve-env] WARNING: optional secrets not set (can be added post-deploy):" >&2
+    for m in "${OPTIONAL_MISSING[@]}"; do
+        echo "[resolve-env]   - ${m}" >&2
+    done
+fi
 
 if [[ ${#MISSING[@]} -gt 0 ]]; then
     echo "[resolve-env] ERROR: required secrets missing from Vault path ${AGENT_JUMBO_PATH}:" >&2
