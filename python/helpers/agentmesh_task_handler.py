@@ -54,6 +54,8 @@ def register_task_handlers(bridge: AgentMeshBridge) -> None:
     bridge.on("executive.ops_digest", _handle_task_assigned)
     bridge.on("executive.sales_update", _handle_task_assigned)
     bridge.on("executive.brand_review", _handle_task_assigned)
+    # Memory sync acknowledgment (consumed by MOS on Hetzner)
+    bridge.on("memory.updated", _handle_memory_updated)
 
 
 async def _handle_task_assigned(event: AgentMeshEvent) -> None:
@@ -120,6 +122,25 @@ async def _handle_approval_resolved(event: AgentMeshEvent) -> None:
                 },
                 correlation_id=correlation_id,
             )
+
+
+async def _handle_memory_updated(event: AgentMeshEvent) -> None:
+    """Log memory sync events received from other mesh nodes.
+
+    On the local instance this is a no-op (we produced the event).
+    On MOS/Hetzner this is where the remote node would ingest the knowledge.
+    """
+    payload = event.payload
+    doc_id = payload.get("doc_id", "?")
+    area = payload.get("metadata", {}).get("area", "?")
+    source = payload.get("metadata", {}).get("source", "?")
+    logger.info(
+        "memory.updated received: doc=%s area=%s source=%s (produced_by=%s)",
+        doc_id,
+        area,
+        source,
+        event.produced_by,
+    )
 
 
 def _get_or_create_mesh_context():

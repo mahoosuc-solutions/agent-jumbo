@@ -483,6 +483,15 @@ def run():
                     await bridge.connect()
                     set_bridge(bridge)
                     register_task_handlers(bridge)
+
+                    # Wire memory → AgentMesh sync for EXECUTIVE writes
+                    try:
+                        from python.helpers.memory_mesh_sync import register_memory_sync
+
+                        register_memory_sync(bridge, asyncio.get_event_loop())
+                    except Exception as e:
+                        PrintStyle(font_color="yellow").print(f"[!] Memory mesh sync failed: {e}")
+
                     try:
                         await bridge.start()
                     finally:

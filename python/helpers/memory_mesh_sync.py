@@ -75,3 +75,14 @@ def on_memory_saved(doc_id: str, text: str, metadata: dict[str, Any]) -> None:
     except RuntimeError:
         # Loop is closed or not running — skip silently
         logger.debug("Event loop not running, skipping memory sync for doc %s", doc_id)
+
+
+def attach_to_memory(memory_instance: Any) -> None:
+    """Attach the mesh sync callback to a Memory instance.
+
+    Called during Memory initialization when the bridge is active.
+    Only attaches if register_memory_sync has been called.
+    """
+    if _bridge is not None:
+        memory_instance.on_save = on_memory_saved
+        logger.debug("Attached mesh sync to memory instance")

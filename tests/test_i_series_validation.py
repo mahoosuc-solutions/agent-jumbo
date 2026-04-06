@@ -269,6 +269,32 @@ class TestAgentMeshComprehensive:
     def test_health_agentmesh_exists(self):
         assert (ROOT / "python" / "api" / "health_agentmesh.py").exists()
 
+    def test_agentmesh_has_memory_updated_handler(self):
+        """AgentMesh must register a memory.updated event handler."""
+        src = (ROOT / "python" / "helpers" / "agentmesh_task_handler.py").read_text()
+        assert "memory.updated" in src, "Missing memory.updated handler registration"
+
+
+class TestMemoryMeshSync:
+    """Validate memory → AgentMesh sync module."""
+
+    def test_memory_mesh_sync_importable(self):
+        import python.helpers.memory_mesh_sync as mod
+
+        assert hasattr(mod, "register_memory_sync")
+        assert hasattr(mod, "on_memory_saved")
+        assert hasattr(mod, "attach_to_memory")
+
+    def test_sync_only_executive_area(self):
+        from python.helpers.memory_mesh_sync import _SYNC_AREAS
+
+        assert "executive" in _SYNC_AREAS
+        assert "main" not in _SYNC_AREAS
+
+    def test_boot_sequence_wires_sync(self):
+        content = (ROOT / "run_ui.py").read_text()
+        assert "register_memory_sync" in content
+
 
 # ── I5: Performance Benchmark Tests ────────────────────────────────────────
 

@@ -96,6 +96,12 @@ class Memory:
             )
             Memory.index[memory_subdir] = db
             wrap = Memory(db, memory_subdir=memory_subdir)
+            try:
+                from python.helpers.memory_mesh_sync import attach_to_memory
+
+                attach_to_memory(wrap)
+            except ImportError:
+                pass
             knowledge_subdirs = get_knowledge_subdirs_by_memory_subdir(
                 memory_subdir, agent.config.knowledge_subdirs or []
             )
@@ -126,6 +132,12 @@ class Memory:
                 in_memory=False,
             )
             wrap = Memory(db, memory_subdir=memory_subdir)
+            try:
+                from python.helpers.memory_mesh_sync import attach_to_memory
+
+                attach_to_memory(wrap)
+            except ImportError:
+                pass
             if preload_knowledge:
                 knowledge_subdirs = get_knowledge_subdirs_by_memory_subdir(
                     memory_subdir, agent_config.knowledge_subdirs or []
