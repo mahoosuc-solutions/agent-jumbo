@@ -213,6 +213,79 @@ def check_usage_allowed(org_id: str) -> tuple[bool, dict]:
     }
 
 
+def snapshot_usage_to_mos():
+    """
+    Write current usage counters to MOS for durable billing records.
+    Called periodically (daily) by a background thread.
+    Only runs in cloud mode with MOS connectivity.
+    """
+    from python.helpers.mos_auth import is_mos_auth_enabled
+
+    if not is_mos_auth_enabled():
+        return
+
+    base_url = dotenv.get_dotenv_value("AIOS_BASE_URL") or "http://127.0.0.1:3000"
+    month = time.strftime("%Y-%m")
+
+    # Collect all org counters for the current month
+    with _counters_lock:
+        snapshots = {k.split(":")[0]: v for k, v in _counters.items() if k.endswith(f":{month}") and v > 0}
+
+    if not snapshots:
+        return
+
+    # Also read from Redis if available
+    r = _get_redis()
+    if r:
+        try:
+            keys = r.keys(f"{_REDIS_COUNTER_PREFIX}*:{month}:operations")
+            for rkey in keys or []:
+                org_id = rkey.replace(_REDIS_COUNTER_PREFIX, "").split(":")[0]
+                val = r.get(rkey)
+                if val:
+                    snapshots[org_id] = max(snapshots.get(org_id, 0), int(val))
+        except Exception:
+            pass
+
+    for org_id, value in snapshots.items():
+        try:
+            api_path = "/api/platform/usage-snapshot"
+            http_requests.post(
+                f"{base_url.rstrip('/')}{api_path}",
+                json={"organization_id": org_id, "month": month, "metric": "operations", "value": value},
+                headers=_sign_service_request(api_path),
+                timeout=5,
+            )
+        except Exception as e:
+            logging.warning(f"[usage] Failed to snapshot for {org_id}: {e}")
+
+
+_snapshot_thread: threading.Timer | None = None
+_SNAPSHOT_INTERVAL = 86400  # 24 hours
+
+
+def start_snapshot_thread():
+    """Start the daily usage snapshot background thread."""
+    global _snapshot_thread
+
+    def _run():
+        global _snapshot_thread
+        try:
+            snapshot_usage_to_mos()
+        except Exception as e:
+            logging.error(f"[usage] Snapshot thread error: {e}")
+        # Reschedule
+        _snapshot_thread = threading.Timer(_SNAPSHOT_INTERVAL, _run)
+        _snapshot_thread.daemon = True
+        _snapshot_thread.start()
+
+    # First snapshot after 1 hour (let the system stabilize)
+    _snapshot_thread = threading.Timer(3600, _run)
+    _snapshot_thread.daemon = True
+    _snapshot_thread.start()
+    logging.info("[usage] Snapshot thread started (first run in 1 hour, then every 24h)")
+
+
 def reset_counters():
     """Reset all counters (for testing)."""
     global _redis_init_attempted, _redis_client
