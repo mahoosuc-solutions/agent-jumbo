@@ -1,5 +1,6 @@
 # disable logging
 import contextlib
+import hashlib
 import hmac
 import json
 import logging
@@ -184,6 +185,18 @@ def requires_auth(f):
                 session.pop("mos_access_token", None)
                 session.pop("mos_user", None)
                 return redirect(url_for("login_handler"))
+            # Session fingerprint check (IP + user-agent binding)
+            fingerprint = hashlib.sha256(
+                f"{request.remote_addr}:{request.headers.get('User-Agent', '')}".encode()
+            ).hexdigest()[:16]
+            stored_fp = session.get("_fingerprint")
+            if stored_fp and stored_fp != fingerprint:
+                logging.warning(
+                    f"[auth] Session fingerprint mismatch — possible hijacking (user: {payload.get('email')})"
+                )
+                session.clear()
+                return redirect(url_for("login_handler"))
+            session["_fingerprint"] = fingerprint
             org_id = payload.get("organization_id", "")
             if org_id and not mos_auth.check_entitlement(org_id):
                 return Response("Product access denied. Please check your subscription.", 403)
