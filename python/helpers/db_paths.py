@@ -28,9 +28,36 @@ def get_db_dir() -> Path:
     return d
 
 
-def db_path(name: str) -> str:
-    """Return the absolute path for a named database file."""
-    return str(get_db_dir() / name)
+def db_path(name: str, organization_id: str | None = None) -> str:
+    """Return the absolute path for a named database file.
+
+    In cloud mode with an organization_id, data is scoped per-org:
+      data/{org_id}/{name}
+    In standalone mode (no org), data lives in the root:
+      data/{name}
+    """
+    base = get_db_dir()
+    if organization_id:
+        org_dir = base / organization_id
+        org_dir.mkdir(parents=True, exist_ok=True)
+        return str(org_dir / name)
+    return str(base / name)
+
+
+def get_current_org_id() -> str | None:
+    """Get the current organization_id from MOS session, or None in standalone mode."""
+    try:
+        from flask import session
+
+        mos_user = session.get("mos_user", {})
+        return mos_user.get("organization_id") or None
+    except Exception:
+        return None
+
+
+def db_path_scoped(name: str) -> str:
+    """Return a tenant-scoped database path using the current session's org_id."""
+    return db_path(name, get_current_org_id())
 
 
 def migrate_db_if_needed(old_path: str, name: str) -> None:

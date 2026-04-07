@@ -46,27 +46,50 @@ def is_mos_auth_enabled() -> bool:
     return bool(dotenv.get_dotenv_value("MOS_JWT_SECRET"))
 
 
+_mos_public_key: str | None = None
+
+
 def verify_token(token: str) -> dict | None:
     """
-    Verify a MOS JWT token offline using the shared secret.
+    Verify a MOS JWT token offline.
+
+    Supports dual-algorithm verification:
+    1. RS256 with MOS_JWT_PUBLIC_KEY (preferred — no shared secret)
+    2. HS256 with MOS_JWT_SECRET (legacy fallback)
 
     Returns the decoded payload dict on success, or None on failure.
-    Payload contains: userId, email, role, organization_id/organizationId.
     """
+    global _mos_public_key
+
+    # Try RS256 first if public key is available
+    public_key = dotenv.get_dotenv_value("MOS_JWT_PUBLIC_KEY")
+    if public_key:
+        public_key = public_key.replace("\\n", "\n")
+        try:
+            payload = jwt.decode(token, public_key, algorithms=["RS256"])
+            return _normalize_payload(payload)
+        except jwt.InvalidTokenError:
+            pass  # Fall through to HS256
+
+    # HS256 fallback with shared secret
     secret = dotenv.get_dotenv_value("MOS_JWT_SECRET")
     if not secret:
         return None
 
     try:
         payload = jwt.decode(token, secret, algorithms=["HS256"])
-        # Normalize organization_id (MOS uses both field names)
-        if "organizationId" in payload and "organization_id" not in payload:
-            payload["organization_id"] = payload["organizationId"]
-        return payload
+        return _normalize_payload(payload)
     except jwt.ExpiredSignatureError:
         return None
     except jwt.InvalidTokenError:
         return None
+
+
+def _normalize_payload(payload: dict) -> dict:
+    """Normalize organization_id field (MOS uses both field names)."""
+    if "organizationId" in payload and "organization_id" not in payload:
+        payload["organization_id"] = payload["organizationId"]
+    return payload
 
 
 # ── Circuit breaker state ─────────────────────────────────────────────────
