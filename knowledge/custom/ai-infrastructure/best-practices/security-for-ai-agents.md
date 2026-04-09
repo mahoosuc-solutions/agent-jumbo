@@ -196,6 +196,7 @@ class AuditLogger:
 ```
 
 **What triggers an alert:**
+
 - Agent making tool calls at unusual rate
 - Agent accessing data outside its normal scope
 - Agent attempting to call tools not in its allowlist

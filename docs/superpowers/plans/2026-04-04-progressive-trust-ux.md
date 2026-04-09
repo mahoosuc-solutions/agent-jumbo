@@ -13,20 +13,24 @@
 ## File Map
 
 **Modified — backend:**
+
 - `python/helpers/trust_system.py` — add `get_approval_fingerprint()`, `is_always_allowed()`, `TRUST_ALWAYS_ALLOW_KEY`
 - `python/helpers/settings_core.py` — add `trust_always_allow: list[str]` and `trust_onboarded: bool` fields + defaults
 - `python/extensions/tool_execute_before/_25_trust_gate.py` — rewrite to use cowork + pause instead of bare `RepairableException`
 - `python/api/cowork_approvals_update.py` — on approve/deny for trust gate records, also set `context.paused = False`
 
 **Modified — frontend:**
+
 - `webui/components/panels/cowork-panel.html` — add risk badge, always-approve link, and `alwaysApprove()` method
 - `webui/index.js` — wire send intercept for onboarding check
 - `webui/index.html` — include onboarding modal component
 
 **Created — frontend:**
+
 - `webui/components/onboarding/onboarding-modal.html` — 3-step Alpine.js wizard with inline store
 
 **Tests:**
+
 - `tests/unit/test_trust_system.py` — unit tests for new trust_system helpers
 - `tests/e2e/test_trust_gate_approval.py` — e2e: trust gate stores approval record, approve/deny unpauses
 
@@ -35,6 +39,7 @@
 ## Task 1: Add settings fields for trust_always_allow and trust_onboarded
 
 **Files:**
+
 - Modify: `python/helpers/settings_core.py`
 
 - [ ] **Step 1: Write the failing test**
@@ -113,6 +118,7 @@ git commit -m "feat: add trust_always_allow and trust_onboarded settings fields"
 ## Task 2: Add trust_system helpers for always-allow and fingerprinting
 
 **Files:**
+
 - Modify: `python/helpers/trust_system.py`
 - Modify: `tests/unit/test_trust_system.py`
 
@@ -218,6 +224,7 @@ git commit -m "feat: add get_approval_fingerprint and is_always_allowed to trust
 ## Task 3: Rewrite trust gate to use cowork approval + context.paused
 
 **Files:**
+
 - Modify: `python/extensions/tool_execute_before/_25_trust_gate.py`
 - Modify: `python/api/cowork_approvals_update.py`
 - Create: `tests/e2e/test_trust_gate_approval.py`
@@ -425,9 +432,11 @@ git commit -m "feat: wire trust gate into cowork approval system with context.pa
 ## Task 4: Add risk badge and always-approve to cowork panel
 
 **Files:**
+
 - Modify: `webui/components/panels/cowork-panel.html`
 
 The cowork panel already renders `pendingApprovals`. Add:
+
 1. A color-coded risk badge when `approval.source === 'trust_gate'`
 2. An "Always approve this tool →" link that calls `alwaysApprove(toolName)`
 3. The `alwaysApprove()` method in `coworkPanelData()`
@@ -552,6 +561,7 @@ In the `<script>` block, find the `truncate(text, length)` method and add after 
 - [ ] **Step 4: Manual verification**
 
 Start the app, set `trust_level = 2` (Guided) via Trust dashboard, send a message asking the agent to save something to memory. Verify:
+
 - The cowork panel shows a pending approval card with a yellow MEDIUM badge
 - "Always approve this tool →" link appears
 - Clicking Approve resumes the agent
@@ -568,6 +578,7 @@ git commit -m "feat: add risk badge and always-approve link to cowork approval p
 ## Task 5: First-run onboarding wizard
 
 **Files:**
+
 - Create: `webui/components/onboarding/onboarding-modal.html`
 - Modify: `webui/index.js`
 - Modify: `webui/index.html`
@@ -874,6 +885,7 @@ git commit -m "feat: add first-run onboarding wizard for trust level setup"
 ## Self-Review Notes
 
 **Spec coverage check:**
+
 - ✅ Trust gate → cowork approval with paused suspension (Task 3)
 - ✅ `trust_always_allow` list + always-approve UI (Tasks 2, 4)
 - ✅ Risk badge on cowork panel (Task 4)

@@ -119,6 +119,7 @@ jumbo solutions test {{SOLUTION_SLUG}} --suite smoke
 **Symptom:** Agent status shows `error` after deployment.
 
 **Resolution:**
+
 1. Check logs: `jumbo solutions logs {{SOLUTION_SLUG}} --agent {{agent_name}}`
 2. Verify API keys are correctly set in `.env`
 3. Confirm model access permissions
@@ -128,6 +129,7 @@ jumbo solutions test {{SOLUTION_SLUG}} --suite smoke
 **Symptom:** Integration health check returns `timeout`.
 
 **Resolution:**
+
 1. Verify network connectivity to the external service
 2. Check API rate limits on the external service
 3. Review firewall rules for outbound connections
@@ -137,12 +139,13 @@ jumbo solutions test {{SOLUTION_SLUG}} --suite smoke
 **Symptom:** Ingested data does not appear in output.
 
 **Resolution:**
+
 1. Check the ingestion queue: `jumbo solutions queue {{SOLUTION_SLUG}}`
 2. Verify transformation rules in `pipeline.yaml`
 3. Review agent logs for processing errors
 
 ### Getting Help
 
-- Platform docs: https://docs.agentjumbo.com/solutions/{{SOLUTION_SLUG}}
-- Support: support@agentjumbo.com
-- Status page: https://status.agentjumbo.com
+- Platform docs: <https://docs.agentjumbo.com/solutions/{{SOLUTION_SLUG}}>
+- Support: <support@agentjumbo.com>
+- Status page: <https://status.agentjumbo.com>

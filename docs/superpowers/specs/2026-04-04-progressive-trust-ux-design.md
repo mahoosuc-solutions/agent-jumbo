@@ -70,6 +70,7 @@ The cowork panel gets an "Always approve this tool →" link for trust gate reco
 ### Frontend (cowork panel)
 
 The existing cowork approvals panel already renders pending records. The only addition is:
+
 - Display `risk` badge (color-coded: LOW=green, MEDIUM=yellow, HIGH=orange, CRITICAL=red) when `source === "trust_gate"`
 - Show "Always approve this tool →" link for trust gate records that calls a new `alwaysApprove(toolName)` method in the cowork store, which POSTs to `settings_set` with the updated `trust_always_allow` list
 
@@ -127,6 +128,7 @@ async function handleSend(message) {
 **Step 3 — Confirmation screen**
 
 Shows the recommended level (computed below) with:
+
 - Level name, icon, and description from `TRUST_LEVELS`
 - "What it handles automatically" and "What it asks about" — pulled from existing `TRUST_LEVEL_INFO`
 - Full 4-level override picker (same selector as trust dashboard)

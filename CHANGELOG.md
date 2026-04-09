@@ -1,15 +1,28 @@
 # Changelog
 
-All notable changes to Agent Jumbo DevOps will be documented in this file.
+All notable changes to Agent Mahoo DevOps will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Changed
+
+- Finalized platform-wide rebrand from Agent Jumbo to Agent Mahoo across code, docs, prompts, tests, and deployment assets.
+- Renamed canonical paths and components to Agent Mahoo naming (`agents/agent-mahoo`, `project_context/agent_mahoo.context.yaml`, web product components, and docs/internal references).
+- Updated web and PWA branding assets with the Agent Mahoo monogram icon set (`webui/public/favicon.svg`, `webui/public/favicon_round.svg`, `webui/public/icon.svg`, `webui/public/icon-maskable.svg`).
+
+### Validation
+
+- Backend Linear/portfolio integration suite: 58 passing tests (`tests/test_linear_integration.py`, `tests/test_mos_orchestrator.py`, `tests/test_motion_integration.py`, `tests/test_notion_integration.py`, `tests/test_project_lifecycle.py`, `tests/test_release_governance.py`, `tests/test_render_folder_workflow_summary.py`, `tests/test_update_folder_workflow_evidence.py`).
+- Web checks: `npm --prefix web run type-check` and `npm --prefix web run build` passing.
 
 ## [1.0.0] - 2026-04-05 — Production GA
 
 ### Release Summary
 
-Production GA release of Agent Jumbo AI Architect Platform. All 5 GA gates green.
+Production GA release of Agent Mahoo AI Architect Platform. All 5 GA gates green.
 Validation: 330 series tests (E→K), 83 deployment checks, 10 platform checks, 65 release checks — all pass.
 
 ### Added — K-series: GA Readiness & Documentation (2026-04-05)
@@ -64,7 +77,7 @@ Validation: 330 series tests (E→K), 83 deployment checks, 10 platform checks, 
 
 ### Added — Earlier
 
-- Beta release of Agent Jumbo DevOps
+- Beta release of Agent Mahoo DevOps
 - Production-ready Kubernetes deployment strategy
 - POC framework for SSH, AWS, GCP, GitHub Actions
 - Intelligent error classification and retry logic

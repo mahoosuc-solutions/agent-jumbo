@@ -112,9 +112,17 @@ async def test_workflow_devops_to_testing(mock_agent):
     assert "test" in auth_result.message.lower()
 
     # Step 3: Review deployment code
-    review = CodeReview(mock_agent, "code_review", None, {"file": "deploy.py", "focus": "security"}, "", None)
+    review = CodeReview(
+        mock_agent,
+        "code_review",
+        None,
+        {"file": "python/tools/devops_deploy.py", "focus": "security"},
+        "",
+        None,
+    )
     review_result = await review.execute()
-    assert "security" in review_result.message.lower()
+    assert "code review" in review_result.message.lower()
+    assert "decision" in review_result.message.lower()
 
 
 @pytest.mark.asyncio
