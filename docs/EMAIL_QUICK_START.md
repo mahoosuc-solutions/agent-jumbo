@@ -78,7 +78,7 @@ Choose your setup path based on your needs:
    → Click "Create Credentials" > "OAuth 2.0 Client ID"
    → Application type: "Desktop app"
    → Download credentials.json
-   → Save to project root: agent-jumbo/credentials.json
+   → Save to project root: agent-mahoo/credentials.json
    ```
 
 4. **Install Dependencies**
@@ -90,7 +90,7 @@ Choose your setup path based on your needs:
 5. **Authenticate First Account**
 
    ```python
-   # Agent Jumbo will guide you through OAuth2 flow
+   # Agent Mahoo will guide you through OAuth2 flow
    {
      "tool": "email_advanced",
      "args": {
@@ -159,7 +159,7 @@ Choose your setup path based on your needs:
    → Name: "gmail-pubsub"
    → Grant role: "Pub/Sub Admin"
    → Click "Create Key" > JSON
-   → Download and save to: agent-jumbo/service-account.json
+   → Download and save to: agent-mahoo/service-account.json
    ```
 
 3. **Set Environment Variable**

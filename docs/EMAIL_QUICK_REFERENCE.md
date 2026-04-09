@@ -5,7 +5,7 @@
 ### Phase 1: SMTP Enhancement (100% Complete)
 
 - ✅ Async SMTP email sender (`python/helpers/email_sender.py`)
-- ✅ Email tool wrapper for Agent Jumbo (`python/tools/email.py`)
+- ✅ Email tool wrapper for Agent Mahoo (`python/tools/email.py`)
 - ✅ Customer lifecycle email automation (4 methods)
 - ✅ Virtual team notifications (3 methods)
 - ✅ Complete documentation (350+ lines)
@@ -30,7 +30,7 @@ GMAIL_APP_PASSWORD="your-16-char-password"
 pip install aiosmtplib
 ```
 
-### 3. Use in Agent Jumbo
+### 3. Use in Agent Mahoo
 
 **Send Email:**
 
@@ -70,7 +70,7 @@ await team.send_task_assignment_notification(
 | File | Purpose | Lines |
 |------|---------|-------|
 | `python/helpers/email_sender.py` | Core SMTP client | 227 |
-| `python/tools/email.py` | Agent Jumbo tool wrapper | 291 |
+| `python/tools/email.py` | Agent Mahoo tool wrapper | 291 |
 | `prompts/agent.system.tool.email.md` | Documentation | 350+ |
 | `instruments/custom/customer_lifecycle/lifecycle_manager.py` | Customer email methods | +150 |
 | `instruments/custom/virtual_team/team_orchestrator.py` | Team notifications | +180 |

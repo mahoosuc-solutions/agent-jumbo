@@ -2,12 +2,12 @@
 
 ## Overview
 
-This guide provides manual testing procedures for the newly implemented Portfolio Manager and Property Manager tools in Agent Jumbo.
+This guide provides manual testing procedures for the newly implemented Portfolio Manager and Property Manager tools in Agent Mahoo.
 
 ## Prerequisites
 
 - Docker containers running (`docker-compose up -d`)
-- Agent Jumbo UI accessible
+- Agent Mahoo UI accessible
 - Access to terminal for database verification
 
 ## Test Suite
@@ -307,14 +307,14 @@ Show cash flow projection for property 1 for next 12 months
 
 ```bash
 # Stop containers
-cd /home/webemo-aaron/projects/agent-jumbo/docker/run
+cd /home/webemo-aaron/projects/agent-mahoo/docker/run
 docker-compose down
 
 # Restart containers
 docker-compose up -d
 
 # Check if Qwen model is still available (no re-download)
-docker-compose exec agent-jumbo ollama list
+docker-compose exec agent-mahoo ollama list
 ```
 
 **Expected Result:**
@@ -437,11 +437,11 @@ If you see import errors:
 
 ```bash
 # Verify __init__.py files exist
-ls -la /home/webemo-aaron/projects/agent-jumbo/instruments/custom/portfolio_manager/__init__.py
-ls -la /home/webemo-aaron/projects/agent-jumbo/instruments/custom/property_manager/__init__.py
+ls -la /home/webemo-aaron/projects/agent-mahoo/instruments/custom/portfolio_manager/__init__.py
+ls -la /home/webemo-aaron/projects/agent-mahoo/instruments/custom/property_manager/__init__.py
 
 # Check Python path
-docker-compose exec agent-jumbo python3 -c "import sys; print('\n'.join(sys.path))"
+docker-compose exec agent-mahoo python3 -c "import sys; print('\n'.join(sys.path))"
 ```
 
 ### Database Locked
@@ -459,16 +459,16 @@ docker-compose restart
 
 ### Tool Not Found
 
-If Agent Jumbo says tool not found:
+If Agent Mahoo says tool not found:
 
 ```bash
 # Verify tool files exist
-ls -la /home/webemo-aaron/projects/agent-jumbo/python/tools/portfolio_manager_tool.py
-ls -la /home/webemo-aaron/projects/agent-jumbo/python/tools/property_manager_tool.py
+ls -la /home/webemo-aaron/projects/agent-mahoo/python/tools/portfolio_manager_tool.py
+ls -la /home/webemo-aaron/projects/agent-mahoo/python/tools/property_manager_tool.py
 
 # Check prompts are loaded
-ls -la /home/webemo-aaron/projects/agent-jumbo/prompts/agent.system.tool.portfolio_manager_tool.md
-ls -la /home/webemo-aaron/projects/agent-jumbo/prompts/agent.system.tool.property_manager_tool.md
+ls -la /home/webemo-aaron/projects/agent-mahoo/prompts/agent.system.tool.portfolio_manager_tool.md
+ls -la /home/webemo-aaron/projects/agent-mahoo/prompts/agent.system.tool.property_manager_tool.md
 ```
 
 ## Test Report Template
@@ -480,7 +480,7 @@ Use this template to document test results:
 
 ### Environment
 - Docker Version:
-- Agent Jumbo Version:
+- Agent Mahoo Version:
 - Database Versions: SQLite [version]
 
 ### Test Results

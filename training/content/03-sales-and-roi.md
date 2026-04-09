@@ -147,7 +147,7 @@ For the Ops Manager:
 
 **Step 1: Gather the raw numbers from discovery**
 
-Pull the process data you captured during discovery using Agent Jumbo tools:
+Pull the process data you captured during discovery using Agent Mahoo tools:
 
 ```text
 {{process_analyzer(action="get_metrics", customer_id="acme-corp")}}
@@ -254,7 +254,7 @@ Repeat with `audience="ceo"` and `audience="ops_manager"` to generate each versi
 
 ### Practice Exercise
 
-Run this exercise using your own Agent Jumbo instance:
+Run this exercise using your own Agent Mahoo instance:
 
 1. Pick any existing customer record (or create a test one)
 2. Identify 3 tasks from their process map
@@ -522,7 +522,7 @@ This pulls from the customer record, discovery notes, solution design, and ROI m
 
 ### Practice Exercise
 
-Using Agent Jumbo, complete this end-to-end proposal workflow:
+Using Agent Mahoo, complete this end-to-end proposal workflow:
 
 1. Select an existing customer with a completed ROI model
 2. Run `{{sales_generator(action="create_proposal", ...)}}` with all 7 sections

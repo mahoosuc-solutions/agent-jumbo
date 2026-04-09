@@ -1,4 +1,4 @@
-# Agent Jumbo — Hetzner Deployment & MOS Integration Design
+# Agent Mahoo — Hetzner Deployment & MOS Integration Design
 
 > **Date:** 2026-04-06
 > **Status:** Approved (Revised: TLS-everywhere, no VPN)
@@ -17,7 +17,7 @@
          | WireGuard
          v
 +------------------------+
-|  agent-jumbo (CPX42)   |
+|  agent-mahoo (CPX42)   |
 |  168.119.49.252        |
 |  WG: 10.0.0.3          |
 |                        |
@@ -57,7 +57,7 @@
 
 | Server | IP | Spec | Role |
 |--------|-----|------|------|
-| `agent-jumbo` (CPX42) | `168.119.49.252` | x86 8c/16GB/320GB, fsn1 | Deploy host |
+| `agent-mahoo` (CPX42) | `168.119.49.252` | x86 8c/16GB/320GB, fsn1 | Deploy host |
 | `mos-prod` (CCX23) | `46.224.170.197` | 4c/16GB/160GB | MOS platform, Redis, Vault |
 | Build server | `49.13.125.252` | Existing | Build-only lane |
 
@@ -67,7 +67,7 @@
 |------|-------|------|
 | mos-prod | `10.0.0.1` | MOS platform (existing) |
 | Laptop/WSL | `10.0.0.2` | Dev access (existing peer def) |
-| CPX42 (agent-jumbo) | `10.0.0.3` | Deploy host (new) |
+| CPX42 (agent-mahoo) | `10.0.0.3` | Deploy host (new) |
 | Phone | `10.0.0.4` | Mobile access (new) |
 
 CPX42 acts as WG hub — all peers connect to it. ListenPort: 51820.
@@ -124,7 +124,7 @@ Build server must NOT:
 2. Deploy host retrieves approved artifact (docker pull or scp)
 3. Deploy host resolves Vault-backed runtime config via AppRole
 4. Deploy host runs pre-deploy hooks
-5. Deploy host starts agent-jumbo (docker compose up)
+5. Deploy host starts agent-mahoo (docker compose up)
 6. Deploy host runs post-deploy verification
 7. On failure: auto-rollback + Telegram alert
 ```
@@ -138,13 +138,13 @@ New file: `docker-compose.cloud.yml`
 - `/mnt/wdblack:/mnt/wdblack:rw` — no local drive on VPS
 - `${HOME}/.ssh:/root/.ssh:ro` — not needed on server
 - `${HOME}/.config:/root/.config:rw` — not needed on server
-- `AGENT_JUMBO_SCHEDULER_SEED_PATH` pointing to local path
+- `AGENT_MAHOO_SCHEDULER_SEED_PATH` pointing to local path
 - `pull_policy: never` — changed to pull from build server
 - WBM MCP sidecar containers — excluded, stays local
 
 ### Kept
 
-- Named volumes: `agent_jumbo_data`, `agent_jumbo_logs`, `agent_jumbo_venv`
+- Named volumes: `agent_mahoo_data`, `agent_mahoo_logs`, `agent_mahoo_venv`
 - Health check config (30s interval, 90s start period)
 - Resource limits: 4 CPU / 8GB (half the box)
 - `host.docker.internal` extra host (for WG-routed mos-prod access)
@@ -261,12 +261,12 @@ All secrets resolved from Vault via AppRole at deploy time. Not baked into image
 | Auth | `AUTH_LOGIN`, `AUTH_PASSWORD`, `FLASK_SECRET_KEY` | Vault |
 | Integrations | `LINEAR_API_KEY`, `MOTION_API_KEY`, `NOTION_API_KEY` | Vault |
 | Stripe | `STRIPE_API_KEY`, `STRIPE_WEBHOOK_SECRET` | Vault |
-| Runtime | `AGENT_JUMBO_RUN_MODE=production`, `DEPLOYMENT_MODE=cloud` | Static |
+| Runtime | `AGENT_MAHOO_RUN_MODE=production`, `DEPLOYMENT_MODE=cloud` | Static |
 | Gmail | `GMAIL_CLIENT_ID`, `GMAIL_CLIENT_SECRET` | Vault |
 
 ### Disabled on Cloud
 
-- `AGENT_JUMBO_LAPTOP_MODE=false`
+- `AGENT_MAHOO_LAPTOP_MODE=false`
 - `CODE_EXEC_SSH_ENABLED=false`
 - `OLLAMA_BASE_URL` — no local Ollama (API providers only)
 - SearXNG — optional, enable later if needed
@@ -283,16 +283,16 @@ All secrets resolved from Vault via AppRole at deploy time. Not baked into image
 ### Image Tagging
 
 ```
-agent-jumbo:current    <- running now
-agent-jumbo:previous   <- last known good
-agent-jumbo:<sha>      <- immutable, from build server
+agent-mahoo:current    <- running now
+agent-mahoo:previous   <- last known good
+agent-mahoo:<sha>      <- immutable, from build server
 ```
 
 ### Rollback Flow
 
 1. Post-deploy health checks fail
 2. `docker compose down` the new container
-3. Retag `agent-jumbo:previous` -> `agent-jumbo:current`
+3. Retag `agent-mahoo:previous` -> `agent-mahoo:current`
 4. `docker compose up -d`
 5. Verify health
 6. Send Telegram alert with failure details and rolled-back SHA

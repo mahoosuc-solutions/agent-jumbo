@@ -8,7 +8,7 @@ date: 2026-03-24
 
 Last updated: 2026-03-24
 
-This policy defines the default retention expectations for Agent Jumbo platform data.
+This policy defines the default retention expectations for Agent Mahoo platform data.
 
 ## General Rule
 

@@ -1,4 +1,4 @@
-# Agent Jumbo - Model Management & GCP Deployment Guide
+# Agent Mahoo - Model Management & GCP Deployment Guide
 
 ## ✅ Setup Complete
 
@@ -17,7 +17,7 @@ Your Ollama models are now:
 # Full build with automatic model handling
 ./scripts/build.sh
 
-# Access Agent Jumbo
+# Access Agent Mahoo
 http://localhost:50080
 ```
 
@@ -44,7 +44,7 @@ http://localhost:50080
 - **Model Location**: `./ollama_models/` (4.4 GB)
 - **Model Version**: `20260113-184641`
 - **Included Models**: qwen2.5-coder:7b
-- **GCP Bucket**: `gs://agent-jumbo-models` (configurable)
+- **GCP Bucket**: `gs://agent-mahoo-models` (configurable)
 
 ### Version Format
 
@@ -71,7 +71,7 @@ Versions use timestamp: `YYYYMMDD-HHMMSS`
    gcloud config set project YOUR_PROJECT_ID
 
    # Create bucket (choose region close to you)
-   gsutil mb -l us-central1 gs://agent-jumbo-models
+   gsutil mb -l us-central1 gs://agent-mahoo-models
 
    # Or use custom name
    export GCP_BUCKET=gs://your-custom-bucket-name
@@ -108,7 +108,7 @@ git push
 ```bash
 # Clone repo
 git clone <repo-url>
-cd agent-jumbo
+cd agent-mahoo
 
 # Download models from GCP
 ./scripts/gcp_models_sync.sh download
@@ -122,7 +122,7 @@ cd agent-jumbo
 ### GitHub Actions Example
 
 ```yaml
-name: Build Agent Jumbo
+name: Build Agent Mahoo
 
 on: [push]
 
@@ -231,10 +231,10 @@ rm -rf ollama_models/models ollama_models/blobs
 
 ```bash
 # List versions with sizes
-gsutil du -sh gs://agent-jumbo-models/*
+gsutil du -sh gs://agent-mahoo-models/*
 
 # Remove specific version
-gsutil -m rm -r gs://agent-jumbo-models/20260113-184641
+gsutil -m rm -r gs://agent-mahoo-models/20260113-184641
 
 # Keep last 5 versions
 ./scripts/gcp_models_sync.sh clean 5
@@ -270,13 +270,13 @@ gcloud auth activate-service-account --key-file=key.json
 
 ```bash
 # Check bucket exists
-gsutil ls gs://agent-jumbo-models/
+gsutil ls gs://agent-mahoo-models/
 
 # Check permissions
-gsutil iam get gs://agent-jumbo-models/
+gsutil iam get gs://agent-mahoo-models/
 
 # Manual download
-gsutil -m rsync -r gs://agent-jumbo-models/latest/ ./ollama_models/
+gsutil -m rsync -r gs://agent-mahoo-models/latest/ ./ollama_models/
 ```
 
 ## 💡 Cost Optimization
@@ -292,7 +292,7 @@ gsutil -m rsync -r gs://agent-jumbo-models/latest/ ./ollama_models/
 1. **Use Nearline/Coldline for old versions**
 
    ```bash
-   gsutil rewrite -s nearline gs://agent-jumbo-models/old-version/**
+   gsutil rewrite -s nearline gs://agent-mahoo-models/old-version/**
    ```
 
 2. **Auto-delete old versions**

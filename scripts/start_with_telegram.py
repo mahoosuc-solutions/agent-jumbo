@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Start Agent Jumbo with tunnel + auto-wired Telegram webhook.
+"""Start Agent Mahoo with tunnel + auto-wired Telegram webhook.
 
 Usage:
     python scripts/start_with_telegram.py [--provider serveo|cloudflared] [--port 5000]
@@ -23,7 +23,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Start Agent Jumbo with Telegram auto-wiring")
+    parser = argparse.ArgumentParser(description="Start Agent Mahoo with Telegram auto-wiring")
     parser.add_argument("--provider", default="serveo", choices=["serveo", "cloudflared"])
     parser.add_argument("--port", type=int, default=int(os.getenv("WEB_UI_PORT", "5000")))
     parser.add_argument("--host", default=os.getenv("WEB_UI_HOST", "0.0.0.0"))

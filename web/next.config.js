@@ -14,13 +14,13 @@ const remotePatterns = process.env.NODE_ENV === 'production'
       // Self-hosted images (when deployed to production domain)
       {
         protocol: 'https',
-        hostname: 'agent-jumbo.com',
+        hostname: 'agent-mahoo.com',
       },
       // GitHub raw content for documentation images
       {
         protocol: 'https',
         hostname: 'raw.githubusercontent.com',
-        pathname: '/agent-jumbo-deploy/agent-jumbo/**',
+        pathname: '/agent-mahoo-deploy/agent-mahoo/**',
       },
       // GitHub user avatars (if needed)
       {

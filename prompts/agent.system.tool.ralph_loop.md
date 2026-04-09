@@ -2,7 +2,7 @@
 
 Autonomous iterative task execution using the Ralph Wiggum technique.
 
-Ralph Loop enables Agent Jumbo to work on tasks iteratively, continuing until the task is complete or a maximum number of iterations is reached. This is ideal for complex tasks that require multiple attempts, refinement, or tasks where success criteria can be automatically verified.
+Ralph Loop enables Agent Mahoo to work on tasks iteratively, continuing until the task is complete or a maximum number of iterations is reached. This is ideal for complex tasks that require multiple attempts, refinement, or tasks where success criteria can be automatically verified.
 
 ## How It Works
 

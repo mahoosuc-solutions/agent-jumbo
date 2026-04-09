@@ -2,7 +2,7 @@
 
 ## Summary
 
-Successfully implemented UI-based Gmail account setup for Agent Jumbo, allowing users to manage OAuth2 authentication through the web interface instead of manual credential file management.
+Successfully implemented UI-based Gmail account setup for Agent Mahoo, allowing users to manage OAuth2 authentication through the web interface instead of manual credential file management.
 
 ## What Was Implemented
 
@@ -151,7 +151,7 @@ Settings (python/helpers/settings.py)
 
 2. **Credential Storage**
    - Tokens pickled to `data/gmail_credentials/`
-   - Only accessible by Agent Jumbo process
+   - Only accessible by Agent Mahoo process
    - Auto-refresh on expiry
 
 3. **Session Management**
@@ -290,7 +290,7 @@ WEB_UI_PORT=5000
 ### Settings System
 
 - Gmail accounts persist in `tmp/settings.json`
-- Survive Agent Jumbo restarts
+- Survive Agent Mahoo restarts
 - Synced with token files in `data/gmail_credentials/`
 
 ### Notification System
@@ -329,7 +329,7 @@ WEB_UI_PORT=5000
 
 ## Notes
 
-- OAuth2 flow requires Agent Jumbo accessible via browser
+- OAuth2 flow requires Agent Mahoo accessible via browser
 - Popup blockers may interfere with authentication
 - Credentials.json contains client secrets (keep secure)
 - Tokens grant full Gmail access per configured scopes

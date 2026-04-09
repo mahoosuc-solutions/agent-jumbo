@@ -117,7 +117,7 @@ If you wrote the code manually (not through task_cycle execute), grade it direct
     "tool_name": "task_cycle",
     "tool_args": {
         "action": "grade",
-        "path": "/mnt/wdblack/dev/projects/agent-jumbo/python/helpers/stripe_retry.py"
+        "path": "/mnt/wdblack/dev/projects/agent-mahoo/python/helpers/stripe_retry.py"
     }
 }
 ```

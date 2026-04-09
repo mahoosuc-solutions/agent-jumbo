@@ -1,5 +1,5 @@
 """
-Virtual Team Tool for Agent Jumbo
+Virtual Team Tool for Agent Mahoo
 Enables AI-driven multi-agent collaboration
 """
 
@@ -11,7 +11,7 @@ from python.helpers.tool import Response, Tool
 
 class VirtualTeam(Tool):
     """
-    Agent Jumbo tool for virtual team orchestration.
+    Agent Mahoo tool for virtual team orchestration.
     Coordinates specialized AI agents (architect, developer, DBA, QA, DevOps, etc.)
     for collaborative software development workflows.
     """

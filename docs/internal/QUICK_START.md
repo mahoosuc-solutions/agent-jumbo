@@ -1,11 +1,11 @@
-# 🚀 Agent Jumbo - Quick Reference
+# 🚀 Agent Mahoo - Quick Reference
 
 ## ✅ System Status
 
 **All Systems Operational**
 
 - ✓ Docker containers running
-- ✓ Agent Jumbo UI: <http://localhost:50080>
+- ✓ Agent Mahoo UI: <http://localhost:50080>
 - ✓ Ollama models: 4.4GB in project
 - ✓ Portfolio Manager tool loaded
 - ✓ Property Manager tool loaded
@@ -27,7 +27,7 @@ cd docker/run && docker-compose logs -f
 
 # Restart a service
 docker restart ollama
-docker restart agent-jumbo
+docker restart agent-mahoo
 
 # Check status
 ./scripts/validate.sh
@@ -98,7 +98,7 @@ MODEL_VERSION=20260113-184641 ./scripts/build.sh
 ## 📁 Project Structure
 
 ```text
-agent-jumbo/
+agent-mahoo/
 ├── ollama_models/          # Ollama models (4.4GB, not in Git)
 │   ├── models/             # Model manifests
 │   ├── blobs/              # Model binaries
@@ -109,7 +109,7 @@ agent-jumbo/
 │   └── validate.sh         # Check deployment status
 ├── docker/run/
 │   ├── docker-compose.yml  # Container orchestration
-│   └── agent-jumbo/data/    # SQLite databases (persistent)
+│   └── agent-mahoo/data/    # SQLite databases (persistent)
 ├── python/tools/
 │   ├── portfolio_manager_tool.py  # 17KB
 │   └── property_manager_tool.py   # 29KB
@@ -137,24 +137,24 @@ sleep 30
 docker exec ollama ollama list
 ```
 
-### Agent Jumbo UI not accessible
+### Agent Mahoo UI not accessible
 
 ```bash
 # Check logs
-docker logs agent-jumbo
+docker logs agent-mahoo
 
 # Restart
-docker restart agent-jumbo
+docker restart agent-mahoo
 ```
 
 ### Database not persisting
 
 ```bash
 # Check volume
-docker volume inspect agent_jumbo_data
+docker volume inspect agent_mahoo_data
 
 # Check mount
-docker exec agent-jumbo ls -la /a0/data/
+docker exec agent-mahoo ls -la /a0/data/
 ```
 
 ### GCP sync fails
@@ -167,7 +167,7 @@ gcloud auth list
 gcloud auth login
 
 # Check bucket
-gsutil ls gs://agent-jumbo-models/
+gsutil ls gs://agent-mahoo-models/
 ```
 
 ## 📊 Testing Checklist
@@ -198,17 +198,17 @@ gsutil ls gs://agent-jumbo-models/
 
 ## 🌐 Access Points
 
-- **Agent Jumbo UI**: <http://localhost:50080>
+- **Agent Mahoo UI**: <http://localhost:50080>
 - **Ollama API**: <http://localhost:11434>
 - **Model Manifest**: `ollama_models/model_manifest.json`
-- **Databases**: `docker/run/agent-jumbo/data/`
+- **Databases**: `docker/run/agent-mahoo/data/`
 
 ## 📝 Important Notes
 
 1. **Models are NOT in Git** - They're in `ollama_models/` (gitignored) and versioned in GCP bucket
 2. **Download before building** - New machines need: `./scripts/gcp_models_sync.sh download`
 3. **Databases persist** - SQLite files in volume survive container restarts
-4. **Tools auto-load** - Agent Jumbo discovers `python/tools/*.py` automatically
+4. **Tools auto-load** - Agent Mahoo discovers `python/tools/*.py` automatically
 
 ## 🎯 Next Actions
 

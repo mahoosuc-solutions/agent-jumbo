@@ -12,7 +12,7 @@ def test_backup_defaults_include_runtime_db_volume(monkeypatch):
     monkeypatch.setattr("python.helpers.backup.get_db_dir", lambda: Path("/aj/data"))
 
     service = BackupService()
-    service.agent_jumbo_root = "/repo"
+    service.agent_mahoo_root = "/repo"
 
     metadata = service.get_default_backup_metadata()
 

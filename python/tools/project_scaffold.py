@@ -1,5 +1,5 @@
 """
-Project Scaffold Tool for Agent Jumbo
+Project Scaffold Tool for Agent Mahoo
 Generate complete project structures from templates
 """
 
@@ -11,7 +11,7 @@ from python.helpers.tool import Response, Tool
 
 class ProjectScaffold(Tool):
     """
-    Agent Jumbo tool for project scaffolding.
+    Agent Mahoo tool for project scaffolding.
     Generate complete project structures from templates with app_spec integration.
     """
 

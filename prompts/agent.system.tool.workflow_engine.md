@@ -569,7 +569,7 @@ Get comprehensive dashboard.
 
 ## Integration with Other Tools
 
-The workflow engine integrates with Agent Jumbo's tool ecosystem:
+The workflow engine integrates with Agent Mahoo's tool ecosystem:
 
 | Tool | Integration |
 |------|-------------|

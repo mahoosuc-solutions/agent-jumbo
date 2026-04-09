@@ -2,7 +2,7 @@
 
 ## Overview
 
-This directory contains a comprehensive analysis of the PMS Hub authentication and system integration implementation in the agent-jumbo project. The analysis covers all provider adapters (Hostaway, Lodgify, Hostify, iCal), webhook security, system integration points, data flows, and identified gaps.
+This directory contains a comprehensive analysis of the PMS Hub authentication and system integration implementation in the agent-mahoo project. The analysis covers all provider adapters (Hostaway, Lodgify, Hostify, iCal), webhook security, system integration points, data flows, and identified gaps.
 
 ## Documents Included
 
@@ -120,7 +120,7 @@ Implementation details and architecture
 ### Core Implementation
 
 ```text
-/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/
+/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/
 ├── pms_provider.py                    # Abstract interface (256 lines)
 ├── provider_registry.py               # Configuration management (327 lines)
 ├── sync_service.py                    # PMS ↔ PropertyManager sync (362 lines)
@@ -135,7 +135,7 @@ Implementation details and architecture
 ### API Endpoints
 
 ```text
-/home/webemo-aaron/projects/agent-jumbo/python/api/
+/home/webemo-aaron/projects/agent-mahoo/python/api/
 ├── pms_webhook_receive.py             # Webhook handler (142 lines)
 ├── pms_settings_get.py                # Configuration GET (81 lines)
 └── pms_settings_set.py                # Configuration POST (207 lines)
@@ -144,7 +144,7 @@ Implementation details and architecture
 ### Tool Integration
 
 ```text
-/home/webemo-aaron/projects/agent-jumbo/python/tools/
+/home/webemo-aaron/projects/agent-mahoo/python/tools/
 └── pms_hub_tool.py                    # Agent-zero interface (436 lines)
 ```
 
@@ -353,5 +353,5 @@ All documents use absolute file paths and include specific line references for e
 
 **Analysis Date:** 2026-01-17
 **Analyst:** Claude Code AI
-**Project:** agent-jumbo
+**Project:** agent-mahoo
 **Component:** PMS Hub Integration Layer

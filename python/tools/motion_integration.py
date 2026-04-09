@@ -1,5 +1,5 @@
 """
-Motion Integration Tool for Agent Jumbo / MOS.
+Motion Integration Tool for Agent Mahoo / MOS.
 
 4 actions: create_task, list_tasks, get_schedule, sync_from_linear.
 """

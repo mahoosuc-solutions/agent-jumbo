@@ -1,12 +1,12 @@
-# Communication Pack: Agent Jumbo
+# Communication Pack: Agent Mahoo
 
-## 1) Agent Jumbo Team Outreach Email (draft)
+## 1) Agent Mahoo Team Outreach Email (draft)
 
-Subject: Agent Jumbo fork update and proposal to upstream reliability/performance improvements
+Subject: Agent Mahoo fork update and proposal to upstream reliability/performance improvements
 
-Hello Agent Jumbo team,
+Hello Agent Mahoo team,
 
-We are running Agent Jumbo as a specialized AI Architect platform built from an Agent Jumbo-derived base.
+We are running Agent Mahoo as a specialized AI Architect platform built from an Agent Mahoo-derived base.
 We recently completed a reliability/performance pass focused on constrained environments.
 
 Highlights:
@@ -32,13 +32,13 @@ Thank you.
 
 ## 2) Internal legal/counsel kickoff note (draft)
 
-Subject: Review request: Agent Jumbo fork commercialization and open-source compliance
+Subject: Review request: Agent Mahoo fork commercialization and open-source compliance
 
 Team,
 
-Please review the attached compliance packet for Agent Jumbo:
+Please review the attached compliance packet for Agent Mahoo:
 
-1. `docs/LEGAL_COMPLIANCE_BRIEF_AGENT_JUMBO.md`
+1. `docs/LEGAL_COMPLIANCE_BRIEF_AGENT_MAHOO.md`
 2. `NOTICE`
 3. `LICENSE`
 4. Product positioning and external communication drafts

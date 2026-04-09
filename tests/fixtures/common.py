@@ -1,5 +1,5 @@
 """
-Shared Test Fixtures for Agent Jumbo Tests
+Shared Test Fixtures for Agent Mahoo Tests
 
 Import fixtures from this module in your tests:
     from tests.fixtures.common import sample_workflow, sample_skills

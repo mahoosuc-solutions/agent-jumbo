@@ -2,10 +2,10 @@
 
 ## Issue Summary
 
-Dev container failed to build due to permission denied error when Docker tried to access root-owned files in `docker/run/agent-jumbo/tmp/codex-home/`.
+Dev container failed to build due to permission denied error when Docker tried to access root-owned files in `docker/run/agent-mahoo/tmp/codex-home/`.
 
 ```text
-ERROR: failed to build: failed to solve: error from sender: open .../docker/run/agent-jumbo/tmp/codex-home/tmp/arg0: permission denied
+ERROR: failed to build: failed to solve: error from sender: open .../docker/run/agent-mahoo/tmp/codex-home/tmp/arg0: permission denied
 ```
 
 ## Root Causes Identified
@@ -102,7 +102,7 @@ devcontainer up --workspace-folder .
 docker build \
   --build-arg BRANCH=local \
   -f DockerfileLocal \
-  -t agent-jumbo-local:latest .
+  -t agent-mahoo-local:latest .
 ```
 
 ## Files Modified

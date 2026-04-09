@@ -38,8 +38,8 @@ The runtime now recognizes:
 
 Current source of truth:
 
-- env var: `AGENT_JUMBO_RUN_MODE`
-- fallback legacy flag: `AGENT_JUMBO_LAPTOP_MODE=true` maps to `local-lite`
+- env var: `AGENT_MAHOO_RUN_MODE`
+- fallback legacy flag: `AGENT_MAHOO_LAPTOP_MODE=true` maps to `local-lite`
 - helper: `python/helpers/runtime_mode.py`
 - status surface: `/health` and `/poll`
 

@@ -1,5 +1,5 @@
 """
-Usage enforcement for Agent Jumbo subscription tiers.
+Usage enforcement for Agent Mahoo subscription tiers.
 
 Tracks operation counts per organization and enforces tier limits.
 Limits are fetched from MOS and cached. Counts are stored in Redis
@@ -80,9 +80,9 @@ def _fetch_limits_from_mos(org_id: str) -> dict:
     try:
         resp = http_requests.get(
             url,
-            params={"product_key": "agent-jumbo", "organization_id": org_id},
+            params={"product_key": "agent-mahoo", "organization_id": org_id},
             headers=_sign_service_request(
-                f"/api/platform/entitlements/check?product_key=agent-jumbo&organization_id={org_id}"
+                f"/api/platform/entitlements/check?product_key=agent-mahoo&organization_id={org_id}"
             ),
             timeout=5,
         )

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo Release Packaging Script
+# Agent Mahoo Release Packaging Script
 # ============================================
 # Creates distributable .tar.gz and .zip archives
 # for GitHub Releases. Users extract and run
@@ -35,10 +35,10 @@ if [[ -z "${VERSION}" ]]; then
     exit 1
 fi
 
-echo "[package-release] Packaging Agent Jumbo v${VERSION}..."
+echo "[package-release] Packaging Agent Mahoo v${VERSION}..."
 
 # Create dist directory
-DIST_DIR="dist/agent-jumbo-${VERSION}"
+DIST_DIR="dist/agent-mahoo-${VERSION}"
 echo "[package-release] Cleaning previous build..."
 rm -rf "${DIST_DIR}"
 mkdir -p "${DIST_DIR}"
@@ -111,22 +111,22 @@ find "${DIST_DIR}" -name ".DS_Store" -delete 2>/dev/null || true
 echo "[package-release] Creating archives..."
 (
   cd dist
-  tar -czf "agent-jumbo-${VERSION}.tar.gz" "agent-jumbo-${VERSION}/"
-  zip -rq "agent-jumbo-${VERSION}.zip" "agent-jumbo-${VERSION}/"
+  tar -czf "agent-mahoo-${VERSION}.tar.gz" "agent-mahoo-${VERSION}/"
+  zip -rq "agent-mahoo-${VERSION}.zip" "agent-mahoo-${VERSION}/"
 )
 
-TARGZ_SIZE=$(du -h "dist/agent-jumbo-${VERSION}.tar.gz" | cut -f1)
-ZIP_SIZE=$(du -h "dist/agent-jumbo-${VERSION}.zip" | cut -f1)
+TARGZ_SIZE=$(du -h "dist/agent-mahoo-${VERSION}.tar.gz" | cut -f1)
+ZIP_SIZE=$(du -h "dist/agent-mahoo-${VERSION}.zip" | cut -f1)
 
 # Print summary
 echo ""
 echo "============================================"
-echo "[package-release] Agent Jumbo v${VERSION} packaged:"
-echo "  dist/agent-jumbo-${VERSION}.tar.gz  (${TARGZ_SIZE})"
-echo "  dist/agent-jumbo-${VERSION}.zip     (${ZIP_SIZE})"
+echo "[package-release] Agent Mahoo v${VERSION} packaged:"
+echo "  dist/agent-mahoo-${VERSION}.tar.gz  (${TARGZ_SIZE})"
+echo "  dist/agent-mahoo-${VERSION}.zip     (${ZIP_SIZE})"
 echo "============================================"
 echo ""
 echo "To verify contents:"
-echo "  tar -tzf dist/agent-jumbo-${VERSION}.tar.gz | less"
-echo "  unzip -l dist/agent-jumbo-${VERSION}.zip | less"
+echo "  tar -tzf dist/agent-mahoo-${VERSION}.tar.gz | less"
+echo "  unzip -l dist/agent-mahoo-${VERSION}.zip | less"
 echo ""

@@ -4,7 +4,7 @@
 
 Event-Driven Architecture is a design pattern where the flow of the program is determined by events—changes in state or significant occurrences detected by the system.
 
-## In the Context of Agent Jumbo
+## In the Context of Agent Mahoo
 
 Agents often operate asynchronously. Using events allows multiple agents to react to the same trigger (e.g., a new email) without direct coupling.
 

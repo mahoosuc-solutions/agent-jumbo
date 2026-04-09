@@ -932,7 +932,7 @@ def setup_training():
         {
             "path_id": "platform_admin",
             "name": "Platform Administrator",
-            "description": "Configure, secure, and monitor the Agent Jumbo platform for production operations",
+            "description": "Configure, secure, and monitor the Agent Mahoo platform for production operations",
             "target_role": "devops",
             "modules": [
                 {

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Build Server CI: Sign Artifact
+# Agent Mahoo — Build Server CI: Sign Artifact
 # ============================================
 # Runs on build server: 49.13.125.252
 # Must NOT run on deploy host or in GitHub Actions.

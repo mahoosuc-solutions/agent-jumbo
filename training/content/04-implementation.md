@@ -32,7 +32,7 @@ The difference between amateur and professional AI delivery is not the AI itself
 
 **Template Selection Framework**
 
-Agent Jumbo provides scaffold templates for common project types. Choosing the right one saves days of setup.
+Agent Mahoo provides scaffold templates for common project types. Choosing the right one saves days of setup.
 
 ```text
 TEMPLATE SELECTION DECISION TREE

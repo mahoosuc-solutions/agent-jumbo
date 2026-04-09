@@ -1,8 +1,8 @@
-# Agent Jumbo Diagram Generation Guide
+# Agent Mahoo Diagram Generation Guide
 
 ## Overview
 
-Agent Jumbo now supports comprehensive diagram generation using three powerful tools:
+Agent Mahoo now supports comprehensive diagram generation using three powerful tools:
 
 - **Mermaid** - Text-based diagrams with inline rendering
 - **Excalidraw** - Hand-drawn style visual diagrams
@@ -227,7 +227,7 @@ journey
 
 ```mermaid
 mindmap
-  root((Agent Jumbo))
+  root((Agent Mahoo))
     Tools
       Code Execution
       Memory
@@ -255,7 +255,7 @@ graph TB
 
     subgraph "Backend"
         API[API Server]
-        Agent[Agent Jumbo]
+        Agent[Agent Mahoo]
         Tools[Tool System]
     end
 
@@ -415,4 +415,4 @@ To add new diagram types or templates:
 - [Mermaid Documentation](https://mermaid.js.org/)
 - [Excalidraw](https://excalidraw.com)
 - [Draw.io](https://app.diagrams.net)
-- [Agent Jumbo Docs](../docs/README.md)
+- [Agent Mahoo Docs](../docs/README.md)

@@ -1,4 +1,4 @@
-# Agent Jumbo System Manual
+# Agent Mahoo System Manual
 
 {{ include "agent.system.main.role.md" }}
 

@@ -1,6 +1,6 @@
 # Installation Guide
 
-> Self-serve installation for Agent Jumbo. For production GA deployment details see [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md).
+> Self-serve installation for Agent Mahoo. For production GA deployment details see [docs/PRODUCTION_DEPLOY.md](docs/PRODUCTION_DEPLOY.md).
 
 ## Requirements
 
@@ -13,8 +13,8 @@
 
 ```bash
 # 1. Clone
-git clone https://github.com/mahoosuc-solutions/agent-jumbo.git
-cd agent-jumbo
+git clone https://github.com/mahoosuc-solutions/agent-mahoo.git
+cd agent-mahoo
 
 # 2. Configure
 cp .env.example .env
@@ -53,20 +53,20 @@ docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d
 
 # Check health
-docker ps --filter name=agent-jumbo-production
+docker ps --filter name=agent-mahoo-production
 ```
 
 Port mapping: host `6274` → container `80`.
 
 ## Windows (auto-start service)
 
-Scripts in `C:\Users\<you>\agent-jumbo\`:
+Scripts in `C:\Users\<you>\agent-mahoo\`:
 
 ```powershell
-.\Start-AgentJumbo.ps1    # Start
-.\Stop-AgentJumbo.ps1     # Stop
-.\Status-AgentJumbo.ps1   # Status
-.\Logs-AgentJumbo.ps1     # Live logs
+.\Start-AgentMahoo.ps1    # Start
+.\Stop-AgentMahoo.ps1     # Stop
+.\Status-AgentMahoo.ps1   # Status
+.\Logs-AgentMahoo.ps1     # Live logs
 ```
 
 Register auto-start on login (run once as Administrator):
@@ -111,7 +111,7 @@ Expected: `Summary: pass=10 fail=0`
 
 ```bash
 git pull
-CONTAINER=agent-jumbo-production BASE_URL=http://localhost:6274 ./scripts/docker-deploy.sh deploy
+CONTAINER=agent-mahoo-production BASE_URL=http://localhost:6274 ./scripts/docker-deploy.sh deploy
 ```
 
 The deploy script builds a new image, replaces the running container, and waits for the health check to pass before reporting success.
@@ -120,11 +120,11 @@ The deploy script builds a new image, replaces the running container, and waits 
 
 | Symptom | Fix |
 |---------|-----|
-| Container exits immediately | Check `docker logs agent-jumbo-production` — missing required env var |
+| Container exits immediately | Check `docker logs agent-mahoo-production` — missing required env var |
 | Health check returns `ok: false` | Check disk space (`df -h`) and memory |
 | LLM calls fail | Verify API key in `.env` and model name is correct for provider |
 | Auth loop | Ensure `AUTH_LOGIN` and `AUTH_PASSWORD` are set; clear browser cookies |
 
 ## Support
 
-File issues at [mahoosuc-solutions/agent-jumbo](https://github.com/mahoosuc-solutions/agent-jumbo/issues).
+File issues at [mahoosuc-solutions/agent-mahoo](https://github.com/mahoosuc-solutions/agent-mahoo/issues).

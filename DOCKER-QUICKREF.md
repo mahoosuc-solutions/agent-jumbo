@@ -30,9 +30,9 @@
 
 ## Volumes
 
-- `agent_jumbo_data` → `/aj/data` (SQLite, uploads)
-- `agent_jumbo_logs` → `/aj/logs` (application logs)
-- `agent_jumbo_venv` → `/opt/venv-a0` (Python deps)
+- `agent_mahoo_data` → `/aj/data` (SQLite, uploads)
+- `agent_mahoo_logs` → `/aj/logs` (application logs)
+- `agent_mahoo_venv` → `/opt/venv-a0` (Python deps)
 
 ## Mounts
 
@@ -53,19 +53,19 @@ docker-compose down       # Stop
 
 ```bash
 # Check container logs
-docker logs -f agent-jumbo-production
+docker logs -f agent-mahoo-production
 
 # Check health
 curl http://localhost:6274/health
 
 # Inspect volumes
-docker volume inspect agent_jumbo_data
+docker volume inspect agent_mahoo_data
 
 # Shell into container
-docker exec -it agent-jumbo-production bash
+docker exec -it agent-mahoo-production bash
 
 # Check resource usage
-docker stats agent-jumbo-production
+docker stats agent-mahoo-production
 ```
 
 ## Code Updates

@@ -541,7 +541,7 @@ This generates a Dockerfile with a build stage and a production stage, non-root 
 
 ### Practice Exercise
 
-Containerize an existing Agent Jumbo project:
+Containerize an existing Agent Mahoo project:
 
 1. Run `{{docker_config(action="create", ...)}}` with multi-stage build enabled
 2. Generate a compose file with at least app + worker + database services

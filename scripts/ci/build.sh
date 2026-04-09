@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Build Server CI: Build
+# Agent Mahoo — Build Server CI: Build
 # ============================================
 # Runs on build server: 49.13.125.252
 # Must NOT run on deploy host or in GitHub Actions.
@@ -8,8 +8,8 @@
 # Usage: scripts/ci/build.sh <commit-sha>
 #
 # Produces:
-#   dist/agent-jumbo-<VERSION>.tar.gz
-#   dist/agent-jumbo-<VERSION>.zip
+#   dist/agent-mahoo-<VERSION>.tar.gz
+#   dist/agent-mahoo-<VERSION>.zip
 #   dist/build-manifest.json
 #
 # Exits non-zero on any failure.
@@ -35,7 +35,7 @@ if ! echo "${COMMIT_SHA}" | grep -qE '^[0-9a-f]{7,40}$'; then
     exit 1
 fi
 
-echo "[build] Starting Agent Jumbo build"
+echo "[build] Starting Agent Mahoo build"
 echo "[build] Commit: ${COMMIT_SHA}"
 echo "[build] Host:   $(hostname)"
 echo "[build] Date:   $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -92,8 +92,8 @@ print(d["project"]["version"])
 PYEOF
 )
 
-TARGZ="dist/agent-jumbo-${VERSION}.tar.gz"
-ZIP="dist/agent-jumbo-${VERSION}.zip"
+TARGZ="dist/agent-mahoo-${VERSION}.tar.gz"
+ZIP="dist/agent-mahoo-${VERSION}.zip"
 
 if [[ ! -f "${TARGZ}" ]]; then
     echo "[build] ERROR: expected artifact not found: ${TARGZ}" >&2
@@ -114,7 +114,7 @@ sha256sum "${ZIP}" > "${ZIP}.sha256"
 
 # ── Build manifest ────────────────────────────────────────────────────────────
 BUILD_TS=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-ARTIFACT_ID="agent-jumbo-${VERSION}-${FULL_SHA:0:7}"
+ARTIFACT_ID="agent-mahoo-${VERSION}-${FULL_SHA:0:7}"
 
 cat > dist/build-manifest.json <<MANIFEST
 {

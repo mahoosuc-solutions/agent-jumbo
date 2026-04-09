@@ -66,7 +66,7 @@ class IrcAdapter(ChannelBridge):
         server = self.config.get("irc_server", "")
         port = int(self.config.get("irc_port", 6667))
         use_ssl = self.config.get("irc_ssl", False)
-        nickname = self.config.get("irc_nickname", "agent-jumbo")
+        nickname = self.config.get("irc_nickname", "agent-mahoo")
         password = self.config.get("irc_password", "")
         channels = self.config.get("irc_channels", [])
         if not server:

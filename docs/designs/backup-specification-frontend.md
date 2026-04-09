@@ -1,8 +1,8 @@
-# Agent Jumbo Backup/Restore Frontend Specification
+# Agent Mahoo Backup/Restore Frontend Specification
 
 ## Overview
 
-This specification defines the frontend implementation for Agent Jumbo's backup and restore functionality, providing an intuitive user interface with a dedicated "backup" tab in the settings system and following established Alpine.js patterns. The backup functionality gets its own tab for better organization and user experience.
+This specification defines the frontend implementation for Agent Mahoo's backup and restore functionality, providing an intuitive user interface with a dedicated "backup" tab in the settings system and following established Alpine.js patterns. The backup functionality gets its own tab for better organization and user experience.
 
 ## Frontend Architecture
 
@@ -338,7 +338,7 @@ The backup system uses a comprehensive `metadata.json` file that includes:
 import { createStore } from "/js/AlpineStore.js";
 
 // ⚠️ CRITICAL: The .env file contains API keys and essential configuration.
-// This file is REQUIRED for Agent Jumbo to function and must be backed up.
+// This file is REQUIRED for Agent Mahoo to function and must be backed up.
 // Note: Patterns now use resolved absolute paths (e.g., /home/user/aj/data/.env)
 
 const model = {
@@ -445,7 +445,7 @@ const model = {
         const exclude_patterns = response.default_patterns.exclude_patterns;
 
         return {
-          backup_name: `agent-jumbo-backup-${timestamp.slice(0, 10)}`,
+          backup_name: `agent-mahoo-backup-${timestamp.slice(0, 10)}`,
           include_hidden: false,
           include_patterns: include_patterns,
           exclude_patterns: exclude_patterns,
@@ -461,7 +461,7 @@ const model = {
 
     // Fallback patterns (will be overridden by backend on first use)
     return {
-      backup_name: `agent-jumbo-backup-${timestamp.slice(0, 10)}`,
+      backup_name: `agent-mahoo-backup-${timestamp.slice(0, 10)}`,
       include_hidden: false,
       include_patterns: [
         // These will be replaced with resolved absolute paths by backend
@@ -475,7 +475,7 @@ const model = {
     };
   },
 
-    // Editor Management - Following Agent Jumbo ACE editor patterns
+    // Editor Management - Following Agent Mahoo ACE editor patterns
   async initBackupEditor() {
     const container = document.getElementById("backup-metadata-editor");
     if (container) {
@@ -1009,13 +1009,13 @@ const model = {
 
         const warnings = [];
 
-        // Check Agent Jumbo version compatibility
+        // Check Agent Mahoo version compatibility
         // Note: Both backup and current versions are obtained via git.get_git_info()
-        const backupVersion = this.backupMetadata.agent_jumbo_version;
+        const backupVersion = this.backupMetadata.agent_mahoo_version;
         const currentVersion = "current"; // Retrieved from git.get_git_info() on backend
 
         if (backupVersion !== currentVersion && backupVersion !== "development") {
-            warnings.push(`Backup created with Agent Jumbo ${backupVersion}, current version is ${currentVersion}`);
+            warnings.push(`Backup created with Agent Mahoo ${backupVersion}, current version is ${currentVersion}`);
         }
 
     // Check backup age
@@ -1309,7 +1309,7 @@ Use existing `openModal()` and `closeModal()` functions from the global modal sy
 
 #### Toast Notifications
 
-Use existing Agent Jumbo toast system for consistent user feedback:
+Use existing Agent Mahoo toast system for consistent user feedback:
 
 ```javascript
 // Use established toast patterns
@@ -1320,7 +1320,7 @@ globalThis.toast("Error creating backup", "error");
 
 #### ACE Editor Integration
 
-The backup system follows Agent Jumbo's established ACE editor patterns **exactly** as implemented in MCP servers:
+The backup system follows Agent Mahoo's established ACE editor patterns **exactly** as implemented in MCP servers:
 
 **Theme Detection (identical to MCP servers):**
 
@@ -1358,7 +1358,7 @@ onClose() {
 
 #### API Integration Patterns
 
-The backup system uses Agent Jumbo's existing API communication methods for consistency:
+The backup system uses Agent Mahoo's existing API communication methods for consistency:
 
 **Standard API Calls (using global sendJsonData):**
 
@@ -1370,7 +1370,7 @@ const response = await sendJsonData("backup_test", {
     max_files: 1000
 });
 
-// Error handling follows Agent Jumbo patterns
+// Error handling follows Agent Mahoo patterns
 if (response.success) {
     this.previewFiles = response.files;
 } else {
@@ -1412,13 +1412,13 @@ eventSource.onmessage = (event) => {
 
 #### Utility Function Integration
 
-The backup system can leverage existing Agent Jumbo utility functions for consistency:
+The backup system can leverage existing Agent Mahoo utility functions for consistency:
 
 **File Size Formatting:**
 
 ```javascript
-// Check if Agent Jumbo has existing file size utilities
-// If not available, implement following Agent Jumbo's style patterns
+// Check if Agent Mahoo has existing file size utilities
+// If not available, implement following Agent Mahoo's style patterns
 formatFileSize(bytes) {
     if (!bytes) return '0 B';
     const sizes = ['B', 'KB', 'MB', 'GB'];
@@ -1540,10 +1540,10 @@ Ensure modals work on mobile devices with appropriate responsive breakpoints.
 
 ### Integration Features
 
-- **Settings Modal Integration**: Seamless integration with existing Agent Jumbo settings system
+- **Settings Modal Integration**: Seamless integration with existing Agent Mahoo settings system
 - **Toast Notifications**: Success/error feedback using existing notification system
-- **Modal System**: Proper integration with Agent Jumbo's modal management
-- **API Layer**: Consistent API communication patterns following Agent Jumbo conventions
+- **Modal System**: Proper integration with Agent Mahoo's modal management
+- **API Layer**: Consistent API communication patterns following Agent Mahoo conventions
 - **Error Handling**: Unified error handling and user feedback mechanisms
 
 ### Accessibility and Usability
@@ -1581,7 +1581,7 @@ Ensure modals work on mobile devices with appropriate responsive breakpoints.
 - **Real-time Preview**: See exactly which files will be restored before proceeding
 - **Immediate Feedback**: JSON validation and error highlighting as you edit
 
-This enhanced frontend specification delivers a professional-grade user interface with sophisticated file management, real-time progress monitoring, and comprehensive metadata visualization, all organized within a dedicated backup tab for optimal user experience. The implementation maintains perfect integration with Agent Jumbo's existing UI architecture and follows established Alpine.js patterns.
+This enhanced frontend specification delivers a professional-grade user interface with sophisticated file management, real-time progress monitoring, and comprehensive metadata visualization, all organized within a dedicated backup tab for optimal user experience. The implementation maintains perfect integration with Agent Mahoo's existing UI architecture and follows established Alpine.js patterns.
 
 ### Implementation Status: ✅ COMPLETED & PRODUCTION READY
 
@@ -1593,7 +1593,7 @@ This enhanced frontend specification delivers a professional-grade user interfac
 
 - **Backup Tab**: Dedicated "Backup & Restore" tab in settings interface
 - **Button Handlers**: Integrated with existing `handleFieldButton()` method
-- **Modal System**: Uses existing Agent Jumbo modal management
+- **Modal System**: Uses existing Agent Mahoo modal management
 - **Toast Notifications**: Consistent error/success feedback
 
 **2. Alpine.js Components** ✅
@@ -1635,7 +1635,7 @@ This enhanced frontend specification delivers a professional-grade user interfac
 
 - **Standard API**: Uses global `sendJsonData()` for consistency
 - **File Upload**: FormData for archive uploads with proper validation
-- **Error Handling**: Follows Agent Jumbo error formatting and toast patterns
+- **Error Handling**: Follows Agent Mahoo error formatting and toast patterns
 - **Progress Updates**: Real-time file operation logging and status updates
 
 #### **✅ Key Technical Achievements:**
@@ -1656,7 +1656,7 @@ This enhanced frontend specification delivers a professional-grade user interfac
 
 **Professional UI/UX:**
 
-- **Consistent Styling**: Follows Agent Jumbo design patterns and CSS variables
+- **Consistent Styling**: Follows Agent Mahoo design patterns and CSS variables
 - **Loading States**: Comprehensive progress indicators and status messages
 - **Error Recovery**: Clear error messages with suggested fixes
 - **Accessibility**: Keyboard navigation and screen reader support
@@ -1666,22 +1666,22 @@ This enhanced frontend specification delivers a professional-grade user interfac
 **Alpine.js Integration:**
 
 - **Store Pattern**: Uses proven `createStore()` pattern from MCP servers
-- **Component Lifecycle**: Proper initialization and cleanup following Agent Jumbo patterns
+- **Component Lifecycle**: Proper initialization and cleanup following Agent Mahoo patterns
 - **Reactive State**: Real-time UI updates with Alpine's reactivity system
 - **Event Handling**: Leverages Alpine's declarative event system
 
 **Code Reuse:**
 
 - **ACE Editor Setup**: Identical theme detection and configuration as MCP servers
-- **Modal Management**: Uses existing Agent Jumbo modal and overlay systems
-- **API Communication**: Consistent with Agent Jumbo's established API patterns
+- **Modal Management**: Uses existing Agent Mahoo modal and overlay systems
+- **API Communication**: Consistent with Agent Mahoo's established API patterns
 - **Error Handling**: Unified error formatting and toast notification system
 
 ### **Implementation Quality Metrics:**
 
 **Code Quality:** ✅
 
-- Follows Agent Jumbo coding conventions
+- Follows Agent Mahoo coding conventions
 - Proper error handling and validation
 - Clean separation of concerns
 - Comprehensive documentation
@@ -1691,7 +1691,7 @@ This enhanced frontend specification delivers a professional-grade user interfac
 - Intuitive backup/restore workflow
 - Real-time feedback and progress tracking
 - Responsive design for all screen sizes
-- Consistent with Agent Jumbo UI patterns
+- Consistent with Agent Mahoo UI patterns
 
 **Performance:** ✅
 
@@ -1709,14 +1709,14 @@ This enhanced frontend specification delivers a professional-grade user interfac
 
 ### **Final Status: 🚀 PRODUCTION READY**
 
-The Agent Jumbo backup frontend is now:
+The Agent Mahoo backup frontend is now:
 
 - **Complete**: All planned features implemented and tested
-- **Integrated**: Seamlessly integrated with existing Agent Jumbo infrastructure
+- **Integrated**: Seamlessly integrated with existing Agent Mahoo infrastructure
 - **Reliable**: Comprehensive error handling and edge case coverage
-- **User-friendly**: Intuitive interface following Agent Jumbo design principles
+- **User-friendly**: Intuitive interface following Agent Mahoo design principles
 - **Maintainable**: Clean code following established patterns and conventions
 
 **Ready for production use with full backup and restore capabilities!**
 
-The backup system provides users with a powerful, easy-to-use interface for backing up and restoring their Agent Jumbo configurations, data, and custom files using sophisticated pattern-based selection and real-time progress monitoring.
+The backup system provides users with a powerful, easy-to-use interface for backing up and restoring their Agent Mahoo configurations, data, and custom files using sophisticated pattern-based selection and real-time progress monitoring.

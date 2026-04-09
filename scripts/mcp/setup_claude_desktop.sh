@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-CONTAINER_NAME="${CONTAINER_NAME:-agent-jumbo}"
+CONTAINER_NAME="${CONTAINER_NAME:-agent-mahoo}"
 CLAUDE_CONFIG_PATH="${CLAUDE_CONFIG_PATH:-$HOME/.config/Claude/claude_desktop_config.json}"
-SERVER_NAME="${SERVER_NAME:-agent-jumbo-local}"
+SERVER_NAME="${SERVER_NAME:-agent-mahoo-local}"
 A0_BASE_URL="${A0_BASE_URL:-http://localhost:50080}"
 
 if ! docker ps --format '{{.Names}}' | grep -qx "$CONTAINER_NAME"; then
-  if docker ps --format '{{.Names}}' | grep -qx "agent-jumbo"; then
-    CONTAINER_NAME="agent-jumbo"
+  if docker ps --format '{{.Names}}' | grep -qx "agent-mahoo"; then
+    CONTAINER_NAME="agent-mahoo"
   else
     echo "Container '$CONTAINER_NAME' is not running."
     exit 1

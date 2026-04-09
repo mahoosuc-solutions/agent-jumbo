@@ -1,6 +1,6 @@
 # DevOps Deployment System
 
-A production-ready, multi-platform deployment infrastructure for Agent Jumbo
+A production-ready, multi-platform deployment infrastructure for Agent Mahoo
 
 ![Status](https://img.shields.io/badge/status-production%20ready-brightgreen)
 ![Tests](https://img.shields.io/badge/tests-66%20passing-brightgreen)
@@ -84,7 +84,7 @@ The DevOps Deployment System provides a unified interface for deploying applicat
 pip install kubernetes>=34.1.0 pyyaml>=6.0 tenacity>=8.0.0
 
 # Clone/navigate to repository
-cd agent-jumbo-devops
+cd agent-mahoo-devops
 ```
 
 ### 2. Basic Kubernetes Deployment
@@ -742,8 +742,8 @@ tests/
 
 ```bash
 # Clone repository
-git clone https://github.com/agent-jumbo-deploy/agent-jumbo-devops.git
-cd agent-jumbo-devops
+git clone https://github.com/agent-mahoo-deploy/agent-mahoo-devops.git
+cd agent-mahoo-devops
 
 # Create virtual environment
 python -m venv venv
@@ -916,14 +916,14 @@ This project is licensed under the Apache License 2.0. See LICENSE file for deta
 ## Acknowledgments
 
 - Kubernetes Python SDK team for excellent library
-- Agent Jumbo project for providing deployment context
+- Agent Mahoo project for providing deployment context
 - Community contributors and testers
 
 ---
 
 ## Contact & Resources
 
-- **Repository**: <https://github.com/agent-jumbo-deploy/agent-jumbo-devops>
+- **Repository**: <https://github.com/agent-mahoo-deploy/agent-mahoo-devops>
 - **Documentation**: See docs/ directory
 - **Issues**: GitHub Issues in repository
 - **Quick Start**: [DEVOPS_DEPLOYMENT_QUICK_REFERENCE.md](DEVOPS_DEPLOYMENT_QUICK_REFERENCE.md)

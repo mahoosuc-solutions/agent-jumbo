@@ -1,10 +1,10 @@
-# Agent Jumbo Tunnel Feature
+# Agent Mahoo Tunnel Feature
 
-The tunnel feature in Agent Jumbo allows you to expose your local Agent Jumbo instance to the internet using Flaredantic tunnels. This makes it possible to share your Agent Jumbo instance with others without requiring them to install and run Agent Jumbo themselves.
+The tunnel feature in Agent Mahoo allows you to expose your local Agent Mahoo instance to the internet using Flaredantic tunnels. This makes it possible to share your Agent Mahoo instance with others without requiring them to install and run Agent Mahoo themselves.
 
 ## How It Works
 
-Agent Jumbo uses the [Flaredantic](https://pypi.org/project/flaredantic/) library to create secure tunnels to expose your local instance to the internet. These tunnels:
+Agent Mahoo uses the [Flaredantic](https://pypi.org/project/flaredantic/) library to create secure tunnels to expose your local instance to the internet. These tunnels:
 
 - Are secure (HTTPS)
 - Don't require any configuration
@@ -17,16 +17,16 @@ Agent Jumbo uses the [Flaredantic](https://pypi.org/project/flaredantic/) librar
 2. Click on "Flare Tunnel" in the navigation menu
 3. Click the "Create Tunnel" button to generate a new tunnel
 4. Once created, the tunnel URL will be displayed and can be copied to share with others
-5. The tunnel URL will remain active until you stop the tunnel or close the Agent Jumbo application
+5. The tunnel URL will remain active until you stop the tunnel or close the Agent Mahoo application
 
 ## Security Considerations
 
-When sharing your Agent Jumbo instance via a tunnel:
+When sharing your Agent Mahoo instance via a tunnel:
 
-- Anyone with the URL can access your Agent Jumbo instance
-- No additional authentication is added beyond what your Agent Jumbo instance already has
+- Anyone with the URL can access your Agent Mahoo instance
+- No additional authentication is added beyond what your Agent Mahoo instance already has
 - Consider setting up authentication if you're sharing sensitive information
-- The tunnel exposes your local Agent Jumbo instance, not your entire system
+- The tunnel exposes your local Agent Mahoo instance, not your entire system
 
 ## Troubleshooting
 
@@ -34,12 +34,12 @@ If you encounter issues with the tunnel feature:
 
 1. Check your internet connection
 2. Try refreshing the tunnel URL
-3. Restart Agent Jumbo
+3. Restart Agent Mahoo
 4. Check the console logs for any error messages
 
 ## Adding Authentication
 
-To add basic authentication to your Agent Jumbo instance when using tunnels, you can set the following environment variables:
+To add basic authentication to your Agent Mahoo instance when using tunnels, you can set the following environment variables:
 
 ```bash
 AUTH_LOGIN=your_username
@@ -48,10 +48,10 @@ AUTH_PASSWORD=your_password
 
 Alternatively, you can configure the username and password directly in the settings:
 
-1. Open the settings modal in the Agent Jumbo UI
+1. Open the settings modal in the Agent Mahoo UI
 2. Navigate to the "External Services" tab
 3. Find the "Authentication" section
 4. Enter your desired username and password in the "UI Login" and "UI Password" fields
 5. Click the "Save" button to apply the changes
 
-This will require users to enter these credentials when accessing your tunneled Agent Jumbo instance. When attempting to create a tunnel without authentication configured, Agent Jumbo will display a security warning.
+This will require users to enter these credentials when accessing your tunneled Agent Mahoo instance. When attempting to create a tunnel without authentication configured, Agent Mahoo will display a security warning.

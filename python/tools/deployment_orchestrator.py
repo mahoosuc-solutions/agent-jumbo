@@ -1,5 +1,5 @@
 """
-Deployment Orchestrator Tool for Agent Jumbo
+Deployment Orchestrator Tool for Agent Mahoo
 CI/CD pipeline generation, Docker configuration, and Kubernetes manifests
 """
 
@@ -11,7 +11,7 @@ from python.helpers.tool import Response, Tool
 
 class DeploymentOrchestrator(Tool):
     """
-    Agent Jumbo tool for deployment automation.
+    Agent Mahoo tool for deployment automation.
     Generates CI/CD pipelines, Docker configurations, and Kubernetes manifests.
     """
 

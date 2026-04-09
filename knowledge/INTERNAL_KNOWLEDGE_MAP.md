@@ -1,4 +1,4 @@
-# Agent Jumbo - Internal Knowledge Map
+# Agent Mahoo - Internal Knowledge Map
 
 This index tracks custom knowledge modules available to the agent for high-performance solution architecting.
 

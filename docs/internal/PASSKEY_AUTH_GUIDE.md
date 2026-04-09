@@ -1,6 +1,6 @@
 # Passkey (WebAuthn) Integration Guide
 
-Agent Jumbo now supports **Hardware-Bound Authentication** using Passkeys. This allows you to centralize all authorization via your phone or hardware security key (like YubiKey), providing a seamless "Power User" experience.
+Agent Mahoo now supports **Hardware-Bound Authentication** using Passkeys. This allows you to centralize all authorization via your phone or hardware security key (like YubiKey), providing a seamless "Power User" experience.
 
 ## Key Features
 
@@ -11,7 +11,7 @@ Agent Jumbo now supports **Hardware-Bound Authentication** using Passkeys. This 
 ## Setup Instructions
 
 1. **Prerequisites**:
-   - Ensure you are accessing Agent Jumbo over **HTTPS** (or `localhost` for local development). Passkeys require a "Secure Context".
+   - Ensure you are accessing Agent Mahoo over **HTTPS** (or `localhost` for local development). Passkeys require a "Secure Context".
    - Using a tunnel (like Cloudflare or Tailscale) automatically provides the necessary secure context.
 
 2. **Registration**:
@@ -22,7 +22,7 @@ Agent Jumbo now supports **Hardware-Bound Authentication** using Passkeys. This 
    - Complete the biometric scan on your phone.
 
 3. **Verification**:
-   - Once registered, your phone is bound to your Agent Jumbo instance.
+   - Once registered, your phone is bound to your Agent Mahoo instance.
    - You can now enable "Mandatory Tool Authorization" to ensure the agent never sends an email or runs a shell command without a physical tap on your device.
 
 ## Technical Details

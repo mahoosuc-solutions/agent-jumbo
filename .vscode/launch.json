@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "🚀 Agent Jumbo - Full Stack (Recommended)",
+      "name": "🚀 Agent Mahoo - Full Stack (Recommended)",
       "type": "python",
       "request": "launch",
       "module": "agent",
@@ -15,7 +15,7 @@
         "AGENT_ENV": "development",
         "ENABLE_MEMORY": "true"
       },
-      "preLaunchTask": "agent-jumbo:setup"
+      "preLaunchTask": "agent-mahoo:setup"
     },
     {
       "name": "🔧 Web UI Server (port 5000)",
@@ -156,7 +156,7 @@
         "docker",
         "exec",
         "-it",
-        "agent-jumbo",
+        "agent-mahoo",
         "bash"
       ]
     },
@@ -245,7 +245,7 @@
       "configurations": [
         "🔧 Web UI Server (port 5000)",
         "⚡ API Server (port 8000)",
-        "🚀 Agent Jumbo - Full Stack (Recommended)"
+        "🚀 Agent Mahoo - Full Stack (Recommended)"
       ],
       "stopAll": true
     },

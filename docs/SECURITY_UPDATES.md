@@ -6,7 +6,7 @@
 
 ### CVE-2025-68143, CVE-2025-68144, CVE-2025-68145
 
-Agent Jumbo has been updated to address three critical vulnerabilities in the Model Context Protocol (MCP) Git server implementation:
+Agent Mahoo has been updated to address three critical vulnerabilities in the Model Context Protocol (MCP) Git server implementation:
 
 1. **CVE-2025-68143**: Path traversal vulnerability in `git_diff`
 2. **CVE-2025-68144**: Path traversal vulnerability in `git_checkout`
@@ -20,7 +20,7 @@ Agent Jumbo has been updated to address three critical vulnerabilities in the Mo
 
 ### Recommendations
 
-If you have implemented custom MCP servers for Agent Jumbo:
+If you have implemented custom MCP servers for Agent Mahoo:
 
 1. **Update to latest MCP version**: `pip install --upgrade mcp`
 2. **Review git operations**: Ensure all git commands validate paths and restrict operations to allowed directories
@@ -71,8 +71,8 @@ python -m pytest tests/test_mcp_security.py
 
 - [MCP Security Advisory](https://github.com/anthropics/anthropic-sdk-python/security/advisories)
 - [MCP Documentation](https://modelcontextprotocol.io/docs)
-- [Agent Jumbo Security Policy](./SECURITY.md)
+- [Agent Mahoo Security Policy](./SECURITY.md)
 
 ### Contact
 
-For security concerns, please report to: <security@agent-jumbo.ai> (or create a private security advisory on GitHub)
+For security concerns, please report to: <security@mahoosuc.ai> (or create a private security advisory on GitHub)

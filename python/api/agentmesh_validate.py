@@ -25,7 +25,7 @@ def _check_aios(aios_base_url: str) -> str:
     try:
         import requests
 
-        url = aios_base_url.rstrip("/") + "/api/platform/agent-jumbo/status"
+        url = aios_base_url.rstrip("/") + "/api/platform/agent-mahoo/status"
         requests.get(url, timeout=3)
         return "reachable"
     except Exception:

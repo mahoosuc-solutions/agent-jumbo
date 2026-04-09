@@ -232,7 +232,7 @@
 
 ### Access
 
-1. Open Agent Jumbo web interface
+1. Open Agent Mahoo web interface
 2. Click **Settings** (gear icon)
 3. Select **Workflows** tab
 

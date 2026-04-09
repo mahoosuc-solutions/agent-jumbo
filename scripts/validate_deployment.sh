@@ -1,5 +1,5 @@
 #!/bin/bash
-# Validate deployed Agent Jumbo environment and archive a timestamped report.
+# Validate deployed Agent Mahoo environment and archive a timestamped report.
 
 set -euo pipefail
 
@@ -12,7 +12,7 @@ mkdir -p "$REPORT_DIR"
 
 exec > >(tee "$REPORT_FILE") 2>&1
 
-CONTAINER="${CONTAINER:-agent-jumbo-production}"
+CONTAINER="${CONTAINER:-agent-mahoo-production}"
 BASE_URL="${BASE_URL:-http://localhost:6274}"
 
 # Colors
@@ -30,7 +30,7 @@ increment() {
 }
 
 echo "=========================================="
-echo " Agent Jumbo Docker Deployment Validation"
+echo " Agent Mahoo Docker Deployment Validation"
 echo "=========================================="
 echo " Report: $REPORT_FILE"
 echo ""

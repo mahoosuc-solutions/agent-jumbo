@@ -1,4 +1,4 @@
-"""Knowledge ingest tool for Agent Jumbo."""
+"""Knowledge ingest tool for Agent Mahoo."""
 
 from python.helpers import files
 from python.helpers.tool import Response, Tool

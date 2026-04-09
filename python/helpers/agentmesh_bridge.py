@@ -1,6 +1,6 @@
-"""AgentMesh Redis Streams bridge for Agent Jumbo.
+"""AgentMesh Redis Streams bridge for Agent Mahoo.
 
-Connects Agent Jumbo to the AgentMesh event bus via a single Redis Stream
+Connects Agent Mahoo to the AgentMesh event bus via a single Redis Stream
 (``agentmesh:events``).  Each consumer uses a consumer group so that events
 are delivered exactly once per system.
 
@@ -82,7 +82,7 @@ class AgentMeshEvent:
 
 @dataclass
 class AgentMeshConfig:
-    name: str = "agent-jumbo"
+    name: str = "agent-mahoo"
     redis_url: str = "redis://localhost:6379"
 
 
@@ -90,7 +90,7 @@ EventHandlerFn = Callable[[AgentMeshEvent], Awaitable[None]]
 
 
 class AgentMeshBridge:
-    """Bridge between Agent Jumbo and AgentMesh via Redis Streams."""
+    """Bridge between Agent Mahoo and AgentMesh via Redis Streams."""
 
     def __init__(self, config: AgentMeshConfig) -> None:
         self.config = config

@@ -1,34 +1,34 @@
-![Agent Jumbo Logo](res/header.png)
+![Agent Mahoo Logo](res/header.png)
 
-# Agent Jumbo Documentation
+# Agent Mahoo Documentation
 
-To begin with Agent Jumbo, follow the links below for detailed guides on various topics:
+To begin with Agent Mahoo, follow the links below for detailed guides on various topics:
 
-- **[Installation](installation.md):** Set up (or [update](installation.md#how-to-update-agent-jumbo)) Agent Jumbo on your system.
+- **[Installation](installation.md):** Set up (or [update](installation.md#how-to-update-agent-mahoo)) Agent Mahoo on your system.
 - **[Usage Guide](usage.md):** Explore GUI features and usage scenarios.
 - **[Architecture Overview](architecture.md):** Understand the internal workings of the framework.
-- **[Contributing](contribution.md):** Learn how to contribute to the Agent Jumbo project.
+- **[Contributing](contribution.md):** Learn how to contribute to the Agent Mahoo project.
 - **[Troubleshooting and FAQ](troubleshooting.md):** Find answers to common issues and questions.
 
-### Your experience with Agent Jumbo starts now
+### Your experience with Agent Mahoo starts now
 
-- **Download Agent Jumbo:** Follow the [installation guide](installation.md) to download and run Agent Jumbo.
-- **Join the Community:** Join the Agent Jumbo [Skool](https://www.skool.com/agent-jumbo) or [Discord](https://discord.gg/B8KZKNsPpj) community to discuss ideas, ask questions, and collaborate with other contributors.
-- **Share your Work:** Share your Agent Jumbo creations, workflows and discoverings on our [Show and Tell](https://github.com/agent0ai/agent-jumbo/discussions/categories/show-and-tell) area on GitHub.
-- **Report Issues:** Use the [GitHub issue tracker](https://github.com/agent0ai/agent-jumbo/issues) to report framework-relative bugs or suggest new features.
+- **Download Agent Mahoo:** Follow the [installation guide](installation.md) to download and run Agent Mahoo.
+- **Join the Community:** Join the Agent Mahoo [Skool](https://www.skool.com/agent-mahoo) or [Discord](https://discord.gg/B8KZKNsPpj) community to discuss ideas, ask questions, and collaborate with other contributors.
+- **Share your Work:** Share your Agent Mahoo creations, workflows and discoverings on our [Show and Tell](https://github.com/agent0ai/agent-mahoo/discussions/categories/show-and-tell) area on GitHub.
+- **Report Issues:** Use the [GitHub issue tracker](https://github.com/agent0ai/agent-mahoo/issues) to report framework-relative bugs or suggest new features.
 
 ## Table of Contents
 
-- [Welcome to the Agent Jumbo Documentation](#agent-jumbo-documentation)
-  - [Your Experience with Agent Jumbo](#your-experience-with-agent-jumbo-starts-now)
+- [Welcome to the Agent Mahoo Documentation](#agent-mahoo-documentation)
+  - [Your Experience with Agent Mahoo](#your-experience-with-agent-mahoo-starts-now)
   - [Table of Contents](#table-of-contents)
 - [Installation Guide](installation.md)
   - [Windows, macOS and Linux Setup](installation.md#windows-macos-and-linux-setup-guide)
   - [Settings Configuration](installation.md#settings-configuration)
   - [Choosing Your LLMs](installation.md#choosing-your-llms)
   - [Installing and Using Ollama](installation.md#installing-and-using-ollama-local-models)
-  - [Using Agent Jumbo on Mobile](installation.md#using-agent-jumbo-on-your-mobile-device)
-  - [How to Update Agent Jumbo](installation.md#how-to-update-agent-jumbo)
+  - [Using Agent Mahoo on Mobile](installation.md#using-agent-mahoo-on-your-mobile-device)
+  - [How to Update Agent Mahoo](installation.md#how-to-update-agent-mahoo)
   - [Full Binaries Installation](installation.md#in-depth-guide-for-full-binaries-installation)
 - [Usage Guide](usage.md)
   - [Basic Operations](usage.md#basic-operations)

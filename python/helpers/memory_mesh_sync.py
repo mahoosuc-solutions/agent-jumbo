@@ -1,6 +1,6 @@
 """Memory → AgentMesh sync — emits memory.updated events on EXECUTIVE writes.
 
-When Agent Jumbo writes to EXECUTIVE memory locally, this module emits a
+When Agent Mahoo writes to EXECUTIVE memory locally, this module emits a
 structured event via the AgentMesh Bridge so MOS on Hetzner receives the
 knowledge without needing a separate FAISS index.
 

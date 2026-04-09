@@ -24,7 +24,7 @@
    └─→ Copy config from: APPLY_MCP_CONFIG.md
 
 4. SAVE & RESTART
-   └─→ docker restart agent-jumbo
+   └─→ docker restart agent-mahoo
 
 ═══════════════════════════════════════════════════════════════════════
 
@@ -38,11 +38,11 @@
 
 🔧 QUICK COMMANDS:
 
-  Restart:    docker restart agent-jumbo
-  Logs:       docker logs -f agent-jumbo
-  Shell:      docker exec -it agent-jumbo bash
-  Stop:       docker stop agent-jumbo
-  Start:      docker start agent-jumbo
+  Restart:    docker restart agent-mahoo
+  Logs:       docker logs -f agent-mahoo
+  Shell:      docker exec -it agent-mahoo bash
+  Stop:       docker stop agent-mahoo
+  Start:      docker start agent-mahoo
 
 ═══════════════════════════════════════════════════════════════════════
 

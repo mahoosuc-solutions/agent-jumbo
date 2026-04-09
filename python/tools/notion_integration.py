@@ -1,5 +1,5 @@
 """
-Notion Integration Tool for Agent Jumbo / MOS.
+Notion Integration Tool for Agent Mahoo / MOS.
 
 5 actions: create_page, update_page, query_database, sync_specs, sync_crm.
 """

@@ -1,6 +1,6 @@
 # PayPal Payment Platform Setup
 
-This guide walks through creating a PayPal developer account and connecting it to Agent Jumbo.
+This guide walks through creating a PayPal developer account and connecting it to Agent Mahoo.
 
 ## Prerequisites
 
@@ -18,7 +18,7 @@ This guide walks through creating a PayPal developer account and connecting it t
 1. In the Developer Dashboard, go to **Apps & Credentials**
 2. Make sure **Sandbox** tab is selected for testing
 3. Click **Create App**
-4. Name it `Agent Jumbo`, select **Merchant** as app type
+4. Name it `Agent Mahoo`, select **Merchant** as app type
 5. Click **Create App**
 6. Copy the **Client ID** and **Secret**
 
@@ -94,7 +94,7 @@ python3 scripts/paypal_catalog_sync.py --mock --catalog both
 
 ## Browser-Assisted Setup
 
-Agent Jumbo can guide you through account setup interactively:
+Agent Mahoo can guide you through account setup interactively:
 
 ```
 Ask the agent: "Help me set up PayPal payments"
@@ -106,7 +106,7 @@ checkpoints (CAPTCHA, 2FA, email verification). See
 
 ## OAuth Token Caching
 
-Agent Jumbo caches PayPal OAuth tokens at the module level (keyed by `client_id`). Tokens
+Agent Mahoo caches PayPal OAuth tokens at the module level (keyed by `client_id`). Tokens
 expire every 30 minutes; the cache refreshes automatically with a 5-minute buffer. This means
 your first request after a cold start will be slightly slower (~200ms) while the token is
 fetched.

@@ -1,6 +1,6 @@
 import { createStore } from "/js/AlpineStore.js";
 
-// Complete list of Agent Jumbo skills/tools with metadata
+// Complete list of Agent Mahoo skills/tools with metadata
 const ALL_SKILLS = [
     // Business & Sales
     {

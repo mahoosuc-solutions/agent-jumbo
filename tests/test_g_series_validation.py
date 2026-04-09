@@ -260,8 +260,8 @@ class TestAgentMeshCSuiteRouting:
             assert ev in events, f"Missing handler for {ev}"
 
     @pytest.mark.asyncio
-    async def test_task_assigned_ignores_non_agent_jumbo(self):
-        """Events not assigned to agent-jumbo should be silently ignored."""
+    async def test_task_assigned_ignores_non_agent_mahoo(self):
+        """Events not assigned to agent-mahoo should be silently ignored."""
         from python.helpers.agentmesh_task_handler import _handle_task_assigned
 
         event = MagicMock()
@@ -279,7 +279,7 @@ class TestAgentMeshCSuiteRouting:
         event = MagicMock()
         event.payload = {
             "taskId": "t1",
-            "assignee": "agent-jumbo",
+            "assignee": "agent-mahoo",
             "category": "financial_report",
         }
         event.aggregate_id = "t1"

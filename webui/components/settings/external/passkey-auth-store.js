@@ -36,7 +36,7 @@ const model = {
             // 1. Get options from server
             const optionsResp = await callJsonApi("/passkey_auth", {
                 action: "get_registration_options",
-                username: "AgentJumboUser"
+                username: "AgentMahooUser"
             });
 
             if (!optionsResp.success) throw new Error(optionsResp.error);

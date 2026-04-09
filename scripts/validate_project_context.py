@@ -117,7 +117,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate unified project context manifest")
     parser.add_argument(
         "--manifest",
-        default="project_context/agent_jumbo.context.yaml",
+        default="project_context/agent_mahoo.context.yaml",
         help="Path to context manifest",
     )
     args = parser.parse_args()

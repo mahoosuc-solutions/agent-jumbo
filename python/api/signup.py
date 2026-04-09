@@ -16,45 +16,45 @@ _DB_PATH = Path(__file__).resolve().parent.parent.parent / "data" / "signups.db"
 
 _PLAN_EMAIL = {
     "free_cloud": {
-        "subject": "Welcome to Agent Jumbo Free Cloud — you're on the list",
+        "subject": "Welcome to Agent Mahoo Free Cloud — you're on the list",
         "body": (
             "<p>Hi there,</p>"
-            "<p>You're on the list for <strong>Agent Jumbo Free Cloud</strong>. "
+            "<p>You're on the list for <strong>Agent Mahoo Free Cloud</strong>. "
             "We'll email you access credentials within 1 business day.</p>"
             "<p>In the meantime, explore the live demos at "
-            "<a href='https://agent-jumbo.mahoosuc.ai/try'>agent-jumbo.mahoosuc.ai/try</a> "
+            "<a href='https://agent-mahoo.mahoosuc.ai/try'>agent-mahoo.mahoosuc.ai/try</a> "
             "or read the install guide if you'd rather self-host.</p>"
             "<p>— The Mahoosuc Team</p>"
         ),
     },
     "pro": {
-        "subject": "Agent Jumbo Pro — your setup link is on the way",
+        "subject": "Agent Mahoo Pro — your setup link is on the way",
         "body": (
             "<p>Hi there,</p>"
-            "<p>Thanks for signing up for <strong>Agent Jumbo Pro</strong>. "
+            "<p>Thanks for signing up for <strong>Agent Mahoo Pro</strong>. "
             "Check your email shortly for a setup link, or head straight to checkout.</p>"
-            "<p><a href='https://agent-jumbo.mahoosuc.ai/billing/checkout?plan=pro'>Complete checkout →</a></p>"
+            "<p><a href='https://agent-mahoo.mahoosuc.ai/billing/checkout?plan=pro'>Complete checkout →</a></p>"
             "<p>— The Mahoosuc Team</p>"
         ),
     },
     "enterprise": {
-        "subject": "Agent Jumbo Enterprise — an account manager will be in touch",
+        "subject": "Agent Mahoo Enterprise — an account manager will be in touch",
         "body": (
             "<p>Hi there,</p>"
-            "<p>Thanks for your interest in <strong>Agent Jumbo Enterprise</strong>. "
+            "<p>Thanks for your interest in <strong>Agent Mahoo Enterprise</strong>. "
             "An account manager will reach out within 1 business day to schedule onboarding.</p>"
             "<p>You can also book time directly at "
-            "<a href='https://agent-jumbo.mahoosuc.ai/demo'>agent-jumbo.mahoosuc.ai/demo</a>.</p>"
+            "<a href='https://agent-mahoo.mahoosuc.ai/demo'>agent-mahoo.mahoosuc.ai/demo</a>.</p>"
             "<p>— The Mahoosuc Team</p>"
         ),
     },
     "community": {
-        "subject": "Agent Jumbo Community — install guide inside",
+        "subject": "Agent Mahoo Community — install guide inside",
         "body": (
             "<p>Hi there,</p>"
-            "<p>Thanks for your interest in <strong>Agent Jumbo Community</strong> (self-hosted, free forever). "
+            "<p>Thanks for your interest in <strong>Agent Mahoo Community</strong> (self-hosted, free forever). "
             "Follow the install guide to get running in minutes — no account needed.</p>"
-            "<p><a href='https://agent-jumbo.mahoosuc.ai/install'>Open install guide →</a></p>"
+            "<p><a href='https://agent-mahoo.mahoosuc.ai/install'>Open install guide →</a></p>"
             "<p>— The Mahoosuc Team</p>"
         ),
     },

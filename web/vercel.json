@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "agent-jumbo",
+  "name": "agent-mahoo",
   "public": true,
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",

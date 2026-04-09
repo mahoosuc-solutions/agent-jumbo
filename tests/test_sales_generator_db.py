@@ -133,7 +133,7 @@ def test_sales_generator_db_roundtrip(tmp_path):
     # Create comparison
     cmp_id = db.create_comparison(
         title="Us vs Them",
-        our_solution="Agent Jumbo",
+        our_solution="Agent Mahoo",
         competitors=["Competitor A"],
         criteria=["price", "features"],
     )

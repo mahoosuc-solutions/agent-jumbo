@@ -1,4 +1,4 @@
-const CACHE_NAME = 'agent-jumbo-v1';
+const CACHE_NAME = 'agent-mahoo-v1';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -56,7 +56,7 @@ self.addEventListener('fetch', (event) => {
 
 // PUSH Event - Handle incoming push notifications
 self.addEventListener('push', (event) => {
-  let data = { title: 'Agent Jumbo', body: 'New update available', icon: '/public/icon.svg' };
+  let data = { title: 'Agent Mahoo', body: 'New update available', icon: '/public/icon.svg' };
   if (event.data) {
     try {
       data = event.data.json();

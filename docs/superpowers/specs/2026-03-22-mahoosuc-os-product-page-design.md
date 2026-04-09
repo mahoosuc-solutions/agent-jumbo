@@ -16,7 +16,7 @@ Build a public-facing product page for the Mahoosuc Operating System within the 
 Grateful House Inc. (parent company)
   Mahoosuc Solutions (IT services company)
     Mahoosuc Operating System (the AI infrastructure platform)
-      Agent Jumbo (orchestration engine)
+      Agent Mahoo (orchestration engine)
       AG Mesh (event-driven backbone, Redis Streams)
       DevFlow (AI software delivery — turns specs into code via agent orchestration)
       ArchitectFlow (requirements generation & system design)
@@ -63,7 +63,7 @@ Four agents run in parallel to generate structured outputs:
       "audience": "builder" | "business" | "both",
       "instruments": ["workflow_engine", "deployment_orchestrator"],
       "tools": ["devops_deploy", "code_review"],
-      "repos": ["agent-jumbo"],
+      "repos": ["agent-mahoo"],
       "integrations": ["Linear", "GitHub Actions"],
       "ag_mesh_events": ["task.assigned", "task.completed"],
       "icon_suggestion": "description for icon"

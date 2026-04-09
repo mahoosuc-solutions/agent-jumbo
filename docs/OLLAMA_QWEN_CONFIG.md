@@ -1,8 +1,8 @@
-# Agent Jumbo - Ollama & Qwen Configuration
+# Agent Mahoo - Ollama & Qwen Configuration
 
 ## ✅ Configuration Complete
 
-Agent Jumbo is now configured to use **Ollama with Qwen 2.5 Coder 7B** model.
+Agent Mahoo is now configured to use **Ollama with Qwen 2.5 Coder 7B** model.
 
 ### Current Configuration
 
@@ -37,14 +37,14 @@ Agent Jumbo is now configured to use **Ollama with Qwen 2.5 Coder 7B** model.
 
 ```text
 ┌─────────────────┐
-│  Agent Jumbo UI  │
+│  Agent Mahoo UI  │
 │   Port: 50080   │
 └────────┬────────┘
          │
          │ HTTP
          ▼
 ┌─────────────────┐
-│  Agent Jumbo     │
+│  Agent Mahoo     │
 │   Container     │
 │                 │
 │  Settings:      │
@@ -150,7 +150,7 @@ docker exec ollama ollama list
 
 ### Testing the Configuration
 
-1. **Access Agent Jumbo UI**
+1. **Access Agent Mahoo UI**
 
    ```text
    http://localhost:50080
@@ -166,10 +166,10 @@ docker exec ollama ollama list
 
    ```bash
    # From host
-   docker exec agent-jumbo curl http://ollama:11434/api/tags
+   docker exec agent-mahoo curl http://ollama:11434/api/tags
 
    # Check logs
-   docker logs agent-jumbo -f
+   docker logs agent-mahoo -f
    ```
 
 ### Changing Models
@@ -217,11 +217,11 @@ docker exec ollama ls -la /root/.ollama/models/
 docker exec ollama ollama pull qwen2.5-coder:7b
 ```
 
-#### Agent Jumbo can't connect to Ollama
+#### Agent Mahoo can't connect to Ollama
 
 ```bash
-# Test connection from Agent Jumbo container
-docker exec agent-jumbo curl http://ollama:11434/api/tags
+# Test connection from Agent Mahoo container
+docker exec agent-mahoo curl http://ollama:11434/api/tags
 
 # Check networks
 docker network inspect run_default
@@ -235,10 +235,10 @@ docker-compose restart
 
 ```bash
 # Clear settings cache (if exists)
-docker exec agent-jumbo rm -f /aj/data/settings.json
+docker exec agent-mahoo rm -f /aj/data/settings.json
 
-# Restart Agent Jumbo
-docker restart agent-jumbo
+# Restart Agent Mahoo
+docker restart agent-mahoo
 ```
 
 ### Performance Tuning
@@ -284,7 +284,7 @@ Settings configured with `chat_model_ctx_length=32768`
 ### Next Steps
 
 1. ✅ Wait for model verification to complete
-2. ✅ Test Agent Jumbo UI at <http://localhost:50080>
+2. ✅ Test Agent Mahoo UI at <http://localhost:50080>
 3. ✅ Try Portfolio Manager: "Scan my projects"
 4. ✅ Try Property Manager: "Initialize West Bethel Motel"
 5. 📤 Upload models to GCP: `./scripts/gcp_models_sync.sh upload`

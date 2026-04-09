@@ -80,7 +80,7 @@ PERSONA_TASK_FIXTURES: dict[str, list[str]] = {
         "Review the current work queue instrument architecture and propose a scaling roadmap for 10x throughput.",
     ],
     "devops": [
-        "Deploy the latest agent-jumbo build to production — run pre-flight checks and post-deploy smoke tests.",
+        "Deploy the latest agent-mahoo build to production — run pre-flight checks and post-deploy smoke tests.",
         "Investigate high latency reported in the MOS work queue scanner and produce a root cause analysis.",
         "Design a GitHub Actions CI/CD pipeline for the Mahoosuc.ai web application.",
     ],

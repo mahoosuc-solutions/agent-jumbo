@@ -11,7 +11,7 @@ pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client g
 ### 2. Create Google Cloud Project
 
 1. Go to <https://console.cloud.google.com/>
-2. Create new project: `agent-jumbo-gmail`
+2. Create new project: `agent-mahoo-gmail`
 3. Enable Gmail API:
    - APIs & Services → Library
    - Search "Gmail API" → Enable
@@ -20,7 +20,7 @@ pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client g
    - APIs & Services → Credentials
    - Create Credentials → OAuth client ID
    - Application type: **Web application**
-   - Name: `Agent Jumbo Gmail Integration`
+   - Name: `Agent Mahoo Gmail Integration`
    - Authorized redirect URIs:
 
      ```text
@@ -30,7 +30,7 @@ pip install google-auth-oauthlib google-auth-httplib2 google-api-python-client g
 
    - Download `credentials.json`
 
-### 3. Start Agent Jumbo
+### 3. Start Agent Mahoo
 
 ```bash
 python run_ui.py
@@ -42,7 +42,7 @@ python run_ui.py
 
 **Steps:**
 
-1. Open Agent Jumbo UI (<http://localhost:5000>)
+1. Open Agent Mahoo UI (<http://localhost:5000>)
 2. Click Settings icon
 3. Navigate to "External" tab
 4. Scroll to "Gmail Accounts" section
@@ -201,7 +201,7 @@ curl -X POST http://localhost:5000/gmail_accounts_list \
 
 **Steps:**
 
-1. Send message to Agent Jumbo:
+1. Send message to Agent Mahoo:
 
    ```text
    Send an email using Gmail to test@example.com with subject "Test" and body "Hello"
@@ -326,7 +326,7 @@ curl -X POST http://localhost:5000/gmail_account_remove \
 **Steps:**
 
 1. Add Gmail account
-2. Restart Agent Jumbo (`Ctrl+C`, then `python run_ui.py`)
+2. Restart Agent Mahoo (`Ctrl+C`, then `python run_ui.py`)
 3. Check account list
 
 **Expected Results:**
@@ -438,7 +438,7 @@ All ✓ items must pass:
 [What actually happened]
 
 ### Environment
-- Agent Jumbo version: [git commit hash]
+- Agent Mahoo version: [git commit hash]
 - Python version: [3.x.x]
 - Browser: [Chrome/Firefox/etc]
 - OS: [Linux/Windows/Mac]

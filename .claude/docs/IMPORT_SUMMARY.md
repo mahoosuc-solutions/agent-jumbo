@@ -2,7 +2,7 @@
 
 **Date**: 2026-01-24
 **Source**: `/mnt/wdblack/dev/projects/mahoosuc-operating-system/.claude/`
-**Target**: `/mnt/wdblack/dev/projects/agent-jumbo/.claude/`
+**Target**: `/mnt/wdblack/dev/projects/agent-mahoo/.claude/`
 
 ## What Was Imported
 
@@ -22,7 +22,7 @@
   - **agent-os**: 11 agents (product-planner, spec-writer, implementer, etc.)
   - **product-management**: 10 agents (rollout-coordinator, adoption-tracker, etc.)
   - **metrics**: Custom metrics agents
-- **Status**: Reference only - requires adaptation for Agent Jumbo architecture
+- **Status**: Reference only - requires adaptation for Agent Mahoo architecture
 - **Guide**: See `.claude/docs/AGENTS_MIGRATION.md`
 
 ### ✅ Skills (Reference Import)
@@ -55,18 +55,18 @@
 
 ### Immediately Usable
 
-- ✅ **Slash Commands**: If Agent Jumbo has Claude Code integration, all commands are available
+- ✅ **Slash Commands**: If Agent Mahoo has Claude Code integration, all commands are available
 - ✅ **Reference Docs**: All documentation available for learning and pattern extraction
 
 ### Requires Adaptation
 
-- ⚠️ **Agents**: Need conversion to Agent Jumbo's `agent.py` architecture
-- ⚠️ **Skills**: Need conversion to Agent Jumbo tools or MCP bridge
-- ⚠️ **Hooks**: Claude Code specific, may need Agent Jumbo equivalents
+- ⚠️ **Agents**: Need conversion to Agent Mahoo's `agent.py` architecture
+- ⚠️ **Skills**: Need conversion to Agent Mahoo tools or MCP bridge
+- ⚠️ **Hooks**: Claude Code specific, may need Agent Mahoo equivalents
 
 ### Not Applicable
 
-- ❌ **Claude Code Settings**: Mahoosuc uses Claude Code CLI, Agent Jumbo uses different config
+- ❌ **Claude Code Settings**: Mahoosuc uses Claude Code CLI, Agent Mahoo uses different config
 
 ## File Statistics
 
@@ -82,14 +82,14 @@ Documentation: 20+ reference files
 ## Next Steps
 
 1. **Test Claude Code Integration**: Verify slash commands work if Claude Code MCP enabled
-2. **Identify High-Value Agents**: Review agent-os agents for Agent Jumbo tool conversion
-3. **Skill Assessment**: Determine which skills to convert to native Agent Jumbo tools
-4. **Hook Adaptation**: Evaluate which hooks have Agent Jumbo equivalents
-5. **Documentation**: Create Agent Jumbo-specific usage guides
+2. **Identify High-Value Agents**: Review agent-os agents for Agent Mahoo tool conversion
+3. **Skill Assessment**: Determine which skills to convert to native Agent Mahoo tools
+4. **Hook Adaptation**: Evaluate which hooks have Agent Mahoo equivalents
+5. **Documentation**: Create Agent Mahoo-specific usage guides
 
 ## Compatibility Notes
 
-**Agent Jumbo Architecture**:
+**Agent Mahoo Architecture**:
 
 - Uses `python/tools/` for tools (not Claude Code skills)
 - Uses `agent.py` + `AgentContext` (not Claude Code agents)
@@ -101,4 +101,4 @@ Documentation: 20+ reference files
 - Uses Claude Code agent/skill system
 - Uses `.claude/settings.local.json` for configuration
 
-**Bridge**: Agent Jumbo can potentially access Mahoosuc features via Claude Code MCP integration if enabled.
+**Bridge**: Agent Mahoo can potentially access Mahoosuc features via Claude Code MCP integration if enabled.

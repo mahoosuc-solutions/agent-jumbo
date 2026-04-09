@@ -54,7 +54,7 @@ Two professional parallel development teams are ready to execute on:
 ### Team A: Calendar Hub Integration
 
 ```yaml
-Worktree: /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+Worktree: /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 Branch: feature/pms-calendar-sync
 Status: ✅ Ready
 ```
@@ -62,14 +62,14 @@ Status: ✅ Ready
 **Start working:**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 pytest tests/test_pms_calendar_sync.py -v
 ```
 
 ### Team B: Guest Communication Automation
 
 ```yaml
-Worktree: /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+Worktree: /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 Branch: feature/pms-messaging-automation
 Status: ✅ Ready
 ```
@@ -77,7 +77,7 @@ Status: ✅ Ready
 **Start working:**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 pytest tests/test_pms_communication_workflows.py -v
 ```
 
@@ -146,7 +146,7 @@ pytest tests/test_pms_communication_workflows.py -v
 
 ```bash
 # 1. Navigate to your worktree
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 
 # 2. Verify your branch
 git branch  # Should show: feature/pms-calendar-sync
@@ -158,14 +158,14 @@ cat tests/test_pms_calendar_sync.py | head -50
 pytest tests/test_pms_calendar_sync.py -v
 
 # 5. Read the quick start
-cat /home/webemo-aaron/projects/agent-jumbo/TEAM_QUICKSTART.md
+cat /home/webemo-aaron/projects/agent-mahoo/TEAM_QUICKSTART.md
 ```
 
 ### For Team B
 
 ```bash
 # 1. Navigate to your worktree
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 
 # 2. Verify your branch
 git branch  # Should show: feature/pms-messaging-automation
@@ -177,7 +177,7 @@ cat tests/test_pms_communication_workflows.py | head -50
 pytest tests/test_pms_communication_workflows.py -v
 
 # 5. Read the quick start
-cat /home/webemo-aaron/projects/agent-jumbo/TEAM_QUICKSTART.md
+cat /home/webemo-aaron/projects/agent-mahoo/TEAM_QUICKSTART.md
 ```
 
 ---
@@ -538,7 +538,7 @@ git worktree list
 ### For Team A
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 git branch
 git status
 ```
@@ -546,7 +546,7 @@ git status
 ### For Team B
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 git branch
 git status
 ```
@@ -554,7 +554,7 @@ git status
 ### Return to Main
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 git branch
 ```
 

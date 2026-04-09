@@ -43,9 +43,9 @@ jobs:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          NEXT_PUBLIC_GITHUB_REPO: mahoosuc-solutions/agent-jumbo
-          NEXT_PUBLIC_URL: https://agent-jumbo.com
-          NEXT_PUBLIC_API_URL: https://agent-jumbo.com/api
+          NEXT_PUBLIC_GITHUB_REPO: mahoosuc-solutions/agent-mahoo
+          NEXT_PUBLIC_URL: https://agent-mahoo.com
+          NEXT_PUBLIC_API_URL: https://agent-mahoo.com/api
 
       - name: Deploy to Production
         id: deploy
@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "Waiting for deployment to propagate..."
           for i in {1..12}; do
-            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://agent-jumbo.com/health || echo "000")
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://agent-mahoo.com/health || echo "000")
             if [ "$STATUS" = "200" ]; then
               echo "Health check passed (attempt $i)"
               exit 0

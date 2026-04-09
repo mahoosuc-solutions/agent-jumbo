@@ -1,12 +1,12 @@
-# Agent Jumbo Product Update Draft (for Agent Jumbo Team)
+# Agent Mahoo Product Update Draft (for Agent Mahoo Team)
 
 ## Subject
 
-Agent Jumbo fork update: reliability + MCP performance improvements and proposed upstream collaboration
+Agent Mahoo fork update: reliability + MCP performance improvements and proposed upstream collaboration
 
 ## Summary
 
-We are running Agent Jumbo as a specialized platform for AI Architects on top of an Agent Jumbo-derived codebase.
+We are running Agent Mahoo as a specialized platform for AI Architects on top of an Agent Mahoo-derived codebase.
 Recent work focused on reliability and local performance in constrained laptop/free-tier environments.
 
 ## Recently shipped changes
@@ -41,7 +41,7 @@ These are proposed as separate, reviewable PRs:
 
 ## Collaboration intent
 
-We want to maintain compatibility with Agent Jumbo while contributing generic improvements upstream and keeping Agent Jumbo-specific product layers in fork-only modules.
+We want to maintain compatibility with Agent Mahoo while contributing generic improvements upstream and keeping Agent Mahoo-specific product layers in fork-only modules.
 
 ## Ask
 

@@ -75,7 +75,7 @@ class PlaidFinanceProvider(FinanceProvider):
 
         payload = {
             "user": {"client_user_id": user_id},
-            "client_name": "AgentJumbo Finance",
+            "client_name": "AgentMahoo Finance",
             "products": ["transactions"],
             "country_codes": ["US"],
             "language": "en",

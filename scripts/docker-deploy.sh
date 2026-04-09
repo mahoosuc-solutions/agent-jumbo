@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Production Docker deployment script for Agent Jumbo
+# Production Docker deployment script for Agent Mahoo
 #
 # Hook pipeline:
 #   PRE-BUILD:   check_instrument_packages.sh  — host __init__.py structure + imports
@@ -17,8 +17,8 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 COMPOSE_FILE="docker-compose.prod.yml"
-CONTAINER_NAME="agent-jumbo-production"
-IMAGE_NAME="agent-jumbo:production"
+CONTAINER_NAME="agent-mahoo-production"
+IMAGE_NAME="agent-mahoo:production"
 CHECKS_DIR="$PROJECT_ROOT/scripts/checks"
 
 # Colors
@@ -91,7 +91,7 @@ run_postbuild_hooks() {
 
 ensure_volumes() {
     log_info "Checking Docker volumes..."
-    local volumes=("agent_jumbo_data" "agent_jumbo_logs" "agent_jumbo_venv")
+    local volumes=("agent_mahoo_data" "agent_mahoo_logs" "agent_mahoo_venv")
     for vol in "${volumes[@]}"; do
         if ! docker volume inspect "$vol" &>/dev/null; then
             log_warn "Volume $vol does not exist, creating..."
@@ -136,7 +136,7 @@ build_image() {
 # ─── Start ──────────────────────────────────────────────────────────────────
 
 start_container() {
-    log_info "Starting Agent Jumbo production container..."
+    log_info "Starting Agent Mahoo production container..."
 
     ensure_volumes
     check_mounts
@@ -149,7 +149,7 @@ start_container() {
 
     if docker ps --filter "name=$CONTAINER_NAME" --filter "health=healthy" | grep -q "$CONTAINER_NAME"; then
         log_success "Health check passed ✓"
-        log_info "Agent Jumbo is running at http://localhost:6274"
+        log_info "Agent Mahoo is running at http://localhost:6274"
     else
         log_warn "Container is starting but health check not yet passed."
         log_warn "Check logs with: $0 logs"
@@ -159,13 +159,13 @@ start_container() {
 # ─── Stop / Restart ─────────────────────────────────────────────────────────
 
 stop_container() {
-    log_info "Stopping Agent Jumbo production container..."
+    log_info "Stopping Agent Mahoo production container..."
     docker-compose -f "$COMPOSE_FILE" down
     log_success "Container stopped"
 }
 
 restart_container() {
-    log_info "Restarting Agent Jumbo production container..."
+    log_info "Restarting Agent Mahoo production container..."
     stop_container
     sleep 2
     start_container
@@ -183,7 +183,7 @@ show_status() {
 
     echo ""
     log_info "Volume status:"
-    for vol in agent_jumbo_data agent_jumbo_logs agent_jumbo_venv; do
+    for vol in agent_mahoo_data agent_mahoo_logs agent_mahoo_venv; do
         if docker volume inspect "$vol" &>/dev/null; then
             SIZE=$(docker system df -v 2>/dev/null | grep "$vol" | awk '{print $3}' || echo "?")
             echo "  $vol: $SIZE"
@@ -197,7 +197,7 @@ show_status() {
 
     if [ "$HEALTH" = "healthy" ]; then
         echo ""
-        log_success "Agent Jumbo is healthy at http://localhost:6274"
+        log_success "Agent Mahoo is healthy at http://localhost:6274"
     fi
 }
 

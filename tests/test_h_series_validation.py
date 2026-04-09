@@ -348,7 +348,7 @@ class TestAgentMeshE2E:
         event = MagicMock()
         event.payload = {
             "taskId": "t-fin-1",
-            "assignee": "agent-jumbo",
+            "assignee": "agent-mahoo",
             "category": "financial_report",
         }
         event.aggregate_id = "t-fin-1"
@@ -372,7 +372,7 @@ class TestAgentMeshE2E:
         event = MagicMock()
         event.payload = {
             "taskId": "t-cal-1",
-            "assignee": "agent-jumbo",
+            "assignee": "agent-mahoo",
             "category": "content_calendar",
         }
         event.aggregate_id = "t-cal-1"
@@ -396,7 +396,7 @@ class TestAgentMeshE2E:
         event = MagicMock()
         event.payload = {
             "taskId": "t-risk-1",
-            "assignee": "agent-jumbo",
+            "assignee": "agent-mahoo",
             "category": "payment_dunning",
         }
         event.aggregate_id = "t-risk-1"
@@ -421,7 +421,7 @@ class TestAgentMeshE2E:
         event = MagicMock()
         event.payload = {
             "taskId": "t-crit-1",
-            "assignee": "agent-jumbo",
+            "assignee": "agent-mahoo",
             "category": "financial_report",
         }
         event.aggregate_id = "t-crit-1"
@@ -474,7 +474,7 @@ class TestAgentMeshE2E:
         event = MagicMock()
         event.payload = {
             "taskId": "t-low-1",
-            "assignee": "agent-jumbo",
+            "assignee": "agent-mahoo",
             "category": "ops_digest",
         }
         event.aggregate_id = "t-low-1"

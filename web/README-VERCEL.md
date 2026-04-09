@@ -1,6 +1,6 @@
-# Agent Jumbo - Vercel Deployment Guide
+# Agent Mahoo - Vercel Deployment Guide
 
-This guide provides comprehensive instructions for deploying Agent Jumbo to Vercel.
+This guide provides comprehensive instructions for deploying Agent Mahoo to Vercel.
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ This guide provides comprehensive instructions for deploying Agent Jumbo to Verc
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/agent-jumbo-deploy/agent-jumbo.git
-cd agent-jumbo/web
+git clone https://github.com/agent-mahoo-deploy/agent-mahoo.git
+cd agent-mahoo/web
 ```
 
 ### 2. Copy and Configure Environment Variables
@@ -30,7 +30,7 @@ cp .env.example .env.local
 Environment variables needed for local development:
 
 - `NEXT_PUBLIC_API_URL`: Your API endpoint (e.g., `http://localhost:8000`)
-- `NEXT_PUBLIC_GITHUB_REPO`: Repository identifier (e.g., `agent-jumbo-deploy/agent-jumbo`)
+- `NEXT_PUBLIC_GITHUB_REPO`: Repository identifier (e.g., `agent-mahoo-deploy/agent-mahoo`)
 - `NEXT_PUBLIC_GA_ID`: Google Analytics ID (optional, leave empty to skip)
 - `NEXT_PUBLIC_URL`: Application URL (e.g., `http://localhost:3000`)
 
@@ -59,7 +59,7 @@ This is the easiest and most common way to deploy.
 1. Go to [vercel.com/dashboard](https://vercel.com/dashboard)
 2. Click "Add New Project" or "New Project"
 3. Click "Import Git Repository"
-4. Search for and select the Agent Jumbo repository
+4. Search for and select the Agent Mahoo repository
 
 #### Step 2: Configure Project Settings
 
@@ -78,8 +78,8 @@ Click "Environment Variables" and add:
 | Variable | Value | Required |
 |----------|-------|----------|
 | `NEXT_PUBLIC_API_URL` | Your API endpoint (e.g., `https://api.example.com`) | Yes |
-| `NEXT_PUBLIC_GITHUB_REPO` | `agent-jumbo-deploy/agent-jumbo` | Yes |
-| `NEXT_PUBLIC_URL` | Your production domain (e.g., `https://agent-jumbo.vercel.app`) | Yes |
+| `NEXT_PUBLIC_GITHUB_REPO` | `agent-mahoo-deploy/agent-mahoo` | Yes |
+| `NEXT_PUBLIC_URL` | Your production domain (e.g., `https://agent-mahoo.vercel.app`) | Yes |
 | `NEXT_PUBLIC_GA_ID` | Your Google Analytics ID (e.g., `G-XXXXXXXXXX`) | No |
 | `NEXT_PUBLIC_ENABLE_BETA_FEATURES` | `false` | No |
 
@@ -141,13 +141,13 @@ Or edit variables in the Vercel Dashboard (Project Settings > Environment Variab
 
 - GitHub repository identifier
 - Format: `owner/repo`
-- Example: `agent-jumbo-deploy/agent-jumbo`
+- Example: `agent-mahoo-deploy/agent-mahoo`
 - Used for repository statistics and information
 
 #### NEXT_PUBLIC_URL
 
 - The public URL where your application is deployed
-- Example: `https://agent-jumbo.vercel.app`
+- Example: `https://agent-mahoo.vercel.app`
 - Used for canonical URLs and redirects
 
 ### Optional Variables
@@ -399,7 +399,7 @@ After successful deployment:
 - [Vercel Documentation](https://vercel.com/docs)
 - [Next.js Documentation](https://nextjs.org/docs)
 - [Vercel Community](https://vercel.com/community)
-- [GitHub Issues](https://github.com/agent-jumbo-deploy/agent-jumbo/issues)
+- [GitHub Issues](https://github.com/agent-mahoo-deploy/agent-mahoo/issues)
 
 ## Related Documentation
 

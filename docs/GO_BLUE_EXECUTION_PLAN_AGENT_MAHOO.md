@@ -1,4 +1,4 @@
-# Go-Blue Execution Plan: Agent Jumbo (AI Architect Platform)
+# Go-Blue Execution Plan: Agent Mahoo (AI Architect Platform)
 
 ## Objective
 
@@ -8,8 +8,8 @@ Move from active development to safe, legally clean external collaboration and r
 
 1. Finalize upstream candidate commit map:
 
-- `A`: generic improvements for Agent Jumbo upstream
-- `B`: Agent Jumbo-specific product features
+- `A`: generic improvements for Agent Mahoo upstream
+- `B`: Agent Mahoo-specific product features
 
 1. Run validation suite and archive results in `artifacts/validation/`.
 1. Confirm no secret leakage via logs/settings/tests.
@@ -21,7 +21,7 @@ Move from active development to safe, legally clean external collaboration and r
 3. Approve privacy/terms drafts for commercial use.
 4. Approve data retention and deletion policy.
 
-## Phase 3: External coordination with Agent Jumbo
+## Phase 3: External coordination with Agent Mahoo
 
 1. Send product update memo:
 
@@ -34,7 +34,7 @@ Move from active development to safe, legally clean external collaboration and r
 - PR-2 chat queue/pause fault tolerance
 - PR-3 readiness and observability additions
 
-## Phase 4: Agent Jumbo RC hardening
+## Phase 4: Agent Mahoo RC hardening
 
 1. Lock RC acceptance criteria:
 

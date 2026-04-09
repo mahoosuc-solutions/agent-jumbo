@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Turn the Telegram bot from a simple chat pipe into a full agentic workflow orchestrator that exposes Agent Jumbo's top 15 tools — portfolio, projects, workflows, Linear, knowledge, memory, vision, calendar, email, finance, diagrams, search, work queue, notifications, and digests — through natural conversation, with vision-powered context persistence and complete work product generation.
+**Goal:** Turn the Telegram bot from a simple chat pipe into a full agentic workflow orchestrator that exposes Agent Mahoo's top 15 tools — portfolio, projects, workflows, Linear, knowledge, memory, vision, calendar, email, finance, diagrams, search, work queue, notifications, and digests — through natural conversation, with vision-powered context persistence and complete work product generation.
 
 **Architecture:** The Telegram webhook handler (`python/api/telegram_webhook.py`) currently receives messages, creates an agent context, and sends back the LLM's text response. We enhance this by: (1) adding a Telegram-aware system prompt that teaches the agent about available orchestration tools, (2) building a `TelegramOrchestrator` layer that enriches context with vision analysis and persistent state, (3) adding structured output formatting that adapts rich tool responses for Telegram's Markdown constraints, and (4) creating a `/status` and `/help` command system for quick access. The existing tool infrastructure (`agent.get_tool()` at `agent.py:1516`) already supports all tools — the agent just needs the right system prompt and context to use them.
 
@@ -92,7 +92,7 @@ class TestChunkMessage:
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_client_chunking.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_client_chunking.py -v`
 Expected: FAIL — `chunk_message` and `MAX_TELEGRAM_LENGTH` don't exist yet
 
 - [ ] **Step 3: Implement chunk_message in telegram_client.py**
@@ -144,13 +144,13 @@ def send_long_message(token: str, chat_id: str, text: str, parse_mode: str = "Ma
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_client_chunking.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_client_chunking.py -v`
 Expected: All PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add python/helpers/telegram_client.py tests/test_telegram_client_chunking.py
 git commit -m "feat(telegram): add message chunking for long tool responses"
 ```
@@ -193,8 +193,8 @@ import pytest
 
 class TestSessionMeta:
     def test_set_and_get_meta(self):
-        set_session_meta("chat123", "active_project", "agent-jumbo")
-        assert get_session_meta("chat123", "active_project") == "agent-jumbo"
+        set_session_meta("chat123", "active_project", "agent-mahoo")
+        assert get_session_meta("chat123", "active_project") == "agent-mahoo"
 
     def test_get_missing_key_returns_none(self):
         assert get_session_meta("chat123", "nonexistent") is None
@@ -228,7 +228,7 @@ class TestSessionMeta:
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_bridge_session.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_bridge_session.py -v`
 Expected: FAIL — functions don't exist
 
 - [ ] **Step 3: Implement session metadata functions**
@@ -259,13 +259,13 @@ def clear_session_meta(chat_id: str) -> None:
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_bridge_session.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_bridge_session.py -v`
 Expected: All PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add python/helpers/telegram_bridge.py tests/test_telegram_bridge_session.py
 git commit -m "feat(telegram): add session metadata for orchestration state"
 ```
@@ -287,7 +287,7 @@ Create `prompts/agent.system.telegram_orchestrator.md` with this content:
 ```markdown
 # Telegram Orchestrator Mode
 
-You are Agent Jumbo responding via Telegram. You have full access to the platform's tools and should use them proactively to help the user manage their projects, workflows, and business operations.
+You are Agent Mahoo responding via Telegram. You have full access to the platform's tools and should use them proactively to help the user manage their projects, workflows, and business operations.
 
 ## Available Tools (use by name in your tool calls)
 
@@ -368,13 +368,13 @@ When you see these, execute the appropriate tool calls to fulfill the command.
 
 - [ ] **Step 2: Verify the prompt file was created and contains expected tool names**
 
-Run: `grep -c "portfolio_manager_tool\|workflow_engine\|linear_integration\|project_lifecycle\|memory_save\|calendar_hub\|diagram_tool\|finance_manager" /mnt/wdblack/dev/projects/agent-jumbo/prompts/agent.system.telegram_orchestrator.md`
+Run: `grep -c "portfolio_manager_tool\|workflow_engine\|linear_integration\|project_lifecycle\|memory_save\|calendar_hub\|diagram_tool\|finance_manager" /mnt/wdblack/dev/projects/agent-mahoo/prompts/agent.system.telegram_orchestrator.md`
 Expected: 8 or more matches (all tool names present)
 
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add prompts/agent.system.telegram_orchestrator.md
 git commit -m "feat(telegram): add orchestrator system prompt with tool catalog"
 ```
@@ -412,9 +412,9 @@ class TestParseSlashCommand:
         assert args == ""
 
     def test_project_command_with_name(self):
-        cmd, args = parse_slash_command("/project agent-jumbo")
+        cmd, args = parse_slash_command("/project agent-mahoo")
         assert cmd == "project"
-        assert args == "agent-jumbo"
+        assert args == "agent-mahoo"
 
     def test_not_a_command(self):
         cmd, args = parse_slash_command("hello world")
@@ -442,8 +442,8 @@ class TestSlashCommandToPrompt:
         assert "linear" in prompt.lower()
 
     def test_project_includes_name(self):
-        prompt = slash_command_to_prompt("project", "agent-jumbo")
-        assert "agent-jumbo" in prompt
+        prompt = slash_command_to_prompt("project", "agent-mahoo")
+        assert "agent-mahoo" in prompt
 
     def test_tasks_mentions_linear(self):
         prompt = slash_command_to_prompt("tasks", "")
@@ -482,9 +482,9 @@ class TestBuildOrchestratorContext:
     def test_includes_active_project(self):
         ctx = build_orchestrator_context(
             chat_id="123",
-            active_project="agent-jumbo",
+            active_project="agent-mahoo",
         )
-        assert "agent-jumbo" in ctx
+        assert "agent-mahoo" in ctx
 
     def test_minimal_context_without_extras(self):
         ctx = build_orchestrator_context(chat_id="123")
@@ -501,7 +501,7 @@ class TestHelpText:
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_orchestrator.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_orchestrator.py -v`
 Expected: FAIL — module doesn't exist
 
 - [ ] **Step 3: Implement the orchestrator module**
@@ -518,7 +518,7 @@ from typing import Any
 
 ORCHESTRATOR_COMMANDS = {"status", "project", "tasks", "help", "digest"}
 
-HELP_TEXT = """*Agent Jumbo — Telegram Commands*
+HELP_TEXT = """*Agent Mahoo — Telegram Commands*
 
 /status — Cross-system status (portfolio + tasks + workflows)
 /project <name> — Project details and lifecycle
@@ -633,13 +633,13 @@ def build_orchestrator_context(
 
 - [ ] **Step 4: Run tests to verify they pass**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_orchestrator.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_orchestrator.py -v`
 Expected: All PASS
 
 - [ ] **Step 5: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add python/helpers/telegram_orchestrator.py tests/test_telegram_orchestrator.py
 git commit -m "feat(telegram): add orchestrator module with command parsing and formatting"
 ```
@@ -702,13 +702,13 @@ class TelegramOrchestratorPrompt(Extension):
 
 - [ ] **Step 2: Verify the file exists and slot number doesn't conflict**
 
-Run: `ls /mnt/wdblack/dev/projects/agent-jumbo/python/extensions/system_prompt/ | sort`
+Run: `ls /mnt/wdblack/dev/projects/agent-mahoo/python/extensions/system_prompt/ | sort`
 Expected: `_85_telegram_orchestrator.py` present, no conflicts with `_10`, `_20`, `_30` (existing), or any other slots
 
 - [ ] **Step 3: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add python/extensions/system_prompt/_85_telegram_orchestrator.py
 git commit -m "feat(telegram): add system prompt extension for Telegram orchestrator"
 ```
@@ -801,7 +801,7 @@ Replace the existing response send line (`send_message(token, chat_id_str, resul
 - [ ] **Step 6: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add python/api/telegram_webhook.py
 git commit -m "feat(telegram): wire orchestrator into webhook with commands, vision, and formatting"
 ```
@@ -865,12 +865,12 @@ class TestFullOrchestrationFlow:
 
     def test_project_flow(self):
         """Project lookup -> context enrichment."""
-        cmd, args = parse_slash_command("/project agent-jumbo")
+        cmd, args = parse_slash_command("/project agent-mahoo")
         assert cmd == "project"
-        assert args == "agent-jumbo"
+        assert args == "agent-mahoo"
 
         prompt = slash_command_to_prompt(cmd, args)
-        assert "agent-jumbo" in prompt
+        assert "agent-mahoo" in prompt
 
     def test_vision_enrichment_flow(self):
         """Image context -> enriched prompt."""
@@ -903,18 +903,18 @@ class TestFullOrchestrationFlow:
 
 - [ ] **Step 2: Run the integration tests**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_orchestration_e2e.py -v`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_orchestration_e2e.py -v`
 Expected: All PASS
 
 - [ ] **Step 3: Run the full Telegram test suite**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_*.py -v --tb=short`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_*.py -v --tb=short`
 Expected: All PASS
 
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add tests/test_telegram_orchestration_e2e.py
 git commit -m "test(telegram): add integration tests for orchestration flow"
 ```
@@ -948,23 +948,23 @@ These commands are shortcuts. Users can also describe what they want in natural 
 
 - [ ] **Step 2: Verify all new files exist**
 
-Run: `ls -la /mnt/wdblack/dev/projects/agent-jumbo/prompts/agent.system.telegram_orchestrator.md /mnt/wdblack/dev/projects/agent-jumbo/prompts/agent.system.tool.telegram_commands.md /mnt/wdblack/dev/projects/agent-jumbo/python/helpers/telegram_orchestrator.py /mnt/wdblack/dev/projects/agent-jumbo/python/extensions/system_prompt/_85_telegram_orchestrator.py`
+Run: `ls -la /mnt/wdblack/dev/projects/agent-mahoo/prompts/agent.system.telegram_orchestrator.md /mnt/wdblack/dev/projects/agent-mahoo/prompts/agent.system.tool.telegram_commands.md /mnt/wdblack/dev/projects/agent-mahoo/python/helpers/telegram_orchestrator.py /mnt/wdblack/dev/projects/agent-mahoo/python/extensions/system_prompt/_85_telegram_orchestrator.py`
 Expected: All 4 files exist
 
 - [ ] **Step 3: Run the complete test suite**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/test_telegram_*.py -v --tb=short`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/test_telegram_*.py -v --tb=short`
 Expected: All PASS
 
 - [ ] **Step 4: Commit**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 git add prompts/agent.system.tool.telegram_commands.md
 git commit -m "docs(telegram): add Telegram commands tool prompt"
 ```
 
 - [ ] **Step 5: Verify commit history**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && git log --oneline -10`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && git log --oneline -10`
 Expected: 8 discrete commits for this feature

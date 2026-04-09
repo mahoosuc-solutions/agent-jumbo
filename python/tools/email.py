@@ -1,5 +1,5 @@
 """
-Email Tool for Agent Jumbo
+Email Tool for Agent Mahoo
 Provides email send/read/search capabilities with SMTP and IMAP
 """
 
@@ -13,7 +13,7 @@ from python.helpers.tool import Response, Tool
 
 class Email(Tool):
     """
-    Email operations tool for Agent Jumbo.
+    Email operations tool for Agent Mahoo.
     Supports send (SMTP), read (IMAP), and search operations.
     Integrates with customer_lifecycle and virtual_team for automation.
     """
@@ -80,7 +80,7 @@ class Email(Tool):
                 bcc=self.args.get("bcc"),
                 attachments=self.args.get("attachments"),
                 html=self.args.get("html", False),
-                from_name=self.args.get("from_name", "Agent Jumbo"),
+                from_name=self.args.get("from_name", "Agent Mahoo"),
             )
 
             if result.get("success"):

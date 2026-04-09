@@ -1,4 +1,4 @@
-# Local development Dockerfile for Agent Jumbo
+# Local development Dockerfile for Agent Mahoo
 # Builds a runtime image with all dependencies installed.
 # The actual project code is mounted via docker-compose volumes.
 ARG BASE_IMAGE=agent0ai/agent-zero-base:latest
@@ -22,7 +22,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
     bash /ins/pre_install.sh $BRANCH
 
 # Copy full project for dependency installation
-COPY . /git/agent-jumbo
+COPY . /git/agent-mahoo
 
 # Refresh apt index (base image may be stale vs Kali rolling repos)
 RUN apt-get update

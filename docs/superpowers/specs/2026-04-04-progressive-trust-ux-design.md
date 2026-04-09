@@ -130,7 +130,7 @@ Shows the recommended level (computed below) with:
 - Level name, icon, and description from `TRUST_LEVELS`
 - "What it handles automatically" and "What it asks about" — pulled from existing `TRUST_LEVEL_INFO`
 - Full 4-level override picker (same selector as trust dashboard)
-- "Start using Agent Jumbo →" button
+- "Start using Agent Mahoo →" button
 
 ### Recommendation logic
 

@@ -4,13 +4,13 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-IMAGE_TAG="${IMAGE_TAG:-agent-jumbo-local:latest}"
+IMAGE_TAG="${IMAGE_TAG:-agent-mahoo-local:latest}"
 CACHE_DIR="${CACHE_DIR:-.buildx-cache}"
-BUILDER_NAME="${BUILDER_NAME:-agent-jumbo-builder}"
+BUILDER_NAME="${BUILDER_NAME:-agent-mahoo-builder}"
 if [[ -n "${BASE_IMAGE:-}" ]]; then
   BASE_IMAGE="${BASE_IMAGE}"
-elif docker image inspect agent-jumbo-base:local >/dev/null 2>&1; then
-  BASE_IMAGE="agent-jumbo-base:local"
+elif docker image inspect agent-mahoo-base:local >/dev/null 2>&1; then
+  BASE_IMAGE="agent-mahoo-base:local"
 else
   BASE_IMAGE="agent0ai/agent-zero-base:latest"
 fi

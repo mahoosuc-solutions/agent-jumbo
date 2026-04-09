@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ollama Model Initialization Script
-# Ensures qwen2.5-coder:7b is pulled and ready before Agent Jumbo starts
+# Ensures qwen2.5-coder:7b is pulled and ready before Agent Mahoo starts
 
 set -e
 

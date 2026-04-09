@@ -1,4 +1,4 @@
-# Agent Jumbo ↔ CoreHive ↔ Mahoosuc OS Integration Plan
+# Agent Mahoo ↔ CoreHive ↔ Mahoosuc OS Integration Plan
 
 ## System Architecture Overview
 
@@ -8,7 +8,7 @@
 │  (Claude Code workspace: agents, skills, hooks, commands, workflows)│
 │                                                                     │
 │  ┌──────────────┐    ┌──────────────────┐    ┌───────────────────┐  │
-│  │  Agent Jumbo  │◄──►│    AgentMesh      │◄──►│    CoreHive       │  │
+│  │  Agent Mahoo  │◄──►│    AgentMesh      │◄──►│    CoreHive       │  │
 │  │  (Python)     │    │  (Event Store)    │    │  (NestJS/TS)      │  │
 │  │              │    │                  │    │                   │  │
 │  │ 13 profiles  │    │  EventStore      │    │ 28 Hive platforms │  │
@@ -78,9 +78,9 @@
 - **Agents**: `database-architect`, `security-auditor` (Claude Code agent definitions)
 - **Pattern**: Tiered migration system (Tier 1 → Tier 2) for skills and commands
 
-### Agent Jumbo
+### Agent Mahoo
 
-- **What**: Production AI agent orchestration (enhanced Agent Jumbo)
+- **What**: Production AI agent orchestration (enhanced Agent Mahoo)
 - **Tech**: Python, Flask, FAISS, LangChain, Next.js
 - **Key systems**: 13 agent profiles, 65+ tools, LLM router, 4 messaging channels, heartbeat daemon, workflow engine
 
@@ -88,9 +88,9 @@
 
 ## Integration Architecture: OPA-9
 
-### OPA-9.1: AgentMesh Bridge (Agent Jumbo → EventStore)
+### OPA-9.1: AgentMesh Bridge (Agent Mahoo → EventStore)
 
-Agent Jumbo becomes a first-class AgentMesh agent that subscribes to CoreHive events and produces results back.
+Agent Mahoo becomes a first-class AgentMesh agent that subscribes to CoreHive events and produces results back.
 
 **File**: `python/helpers/agentmesh_bridge.py`
 
@@ -117,13 +117,13 @@ class AgentMeshEvent:
 
 @dataclass
 class AgentMeshConfig:
-    name: str = "agent-jumbo"
+    name: str = "agent-mahoo"
     subscriptions: list[str] = field(default_factory=list)
     produces: list[str] = field(default_factory=list)
     redis_url: str = "redis://localhost:6379"
 
 class AgentMeshBridge:
-    """Bridge between Agent Jumbo and the AgentMesh EventStore via Redis"""
+    """Bridge between Agent Mahoo and the AgentMesh EventStore via Redis"""
 
     def __init__(self, config: AgentMeshConfig):
         self.config = config
@@ -188,7 +188,7 @@ class AgentMeshBridge:
 
 ### OPA-9.2: CoreHive Event Handlers
 
-Map CoreHive events to Agent Jumbo agent profiles and tools:
+Map CoreHive events to Agent Mahoo agent profiles and tools:
 
 **File**: `python/helpers/corehive_handlers.py`
 
@@ -197,7 +197,7 @@ from python.helpers.agentmesh_bridge import AgentMeshBridge, AgentMeshConfig, Ag
 
 # Event → Agent Profile mapping
 EVENT_PROFILE_MAP = {
-    # CoreHive platform events → Agent Jumbo profiles
+    # CoreHive platform events → Agent Mahoo profiles
     "PlatformHealthDegraded":     "actor-ops",       # Operations agent handles infra
     "SecurityAuditRequested":     "hacker",           # Security profile runs audit
     "ContentDraftRequested":      "ghost-writer",     # Content creation
@@ -305,7 +305,7 @@ async def start_corehive_integration():
         return  # AgentMesh integration not configured
 
     config = AgentMeshConfig(
-        name="agent-jumbo",
+        name="agent-mahoo",
         subscriptions=list(EVENT_PROFILE_MAP.keys()),
         produces=[
             t.replace("Requested", "Completed").replace("Submitted", "Completed")
@@ -327,16 +327,16 @@ async def start_corehive_integration():
 
 ### OPA-9.4: MCP Protocol Bridge
 
-Agent Jumbo can also expose its tools as CoreHive MCP tools, enabling the CoreHive orchestration agent to invoke Agent Jumbo capabilities directly.
+Agent Mahoo can also expose its tools as CoreHive MCP tools, enabling the CoreHive orchestration agent to invoke Agent Mahoo capabilities directly.
 
 **File**: `python/helpers/corehive_mcp_tools.py`
 
 ```python
-"""Expose Agent Jumbo capabilities as MCP tools for CoreHive"""
+"""Expose Agent Mahoo capabilities as MCP tools for CoreHive"""
 
 MCP_TOOLS = [
     {
-        "name": "agent-jumbo-deploy",
+        "name": "agent-mahoo-deploy",
         "description": "Deploy to any cloud (AWS, GCP, K8s, SSH, GitHub Actions, Docker)",
         "parameters": {
             "strategy": "aws|gcp|k8s|ssh|github-actions|docker",
@@ -344,32 +344,32 @@ MCP_TOOLS = [
         },
     },
     {
-        "name": "agent-jumbo-llm-route",
-        "description": "Route LLM request through Agent Jumbo's intelligent model selector",
+        "name": "agent-mahoo-llm-route",
+        "description": "Route LLM request through Agent Mahoo's intelligent model selector",
         "parameters": {
             "prompt": "The prompt to route",
             "priority": "cost|speed|quality|balanced",
         },
     },
     {
-        "name": "agent-jumbo-memory-search",
-        "description": "Search Agent Jumbo's knowledge graph memory",
+        "name": "agent-mahoo-memory-search",
+        "description": "Search Agent Mahoo's knowledge graph memory",
         "parameters": {
             "query": "Search query",
             "areas": "main|fragments|solutions|instruments",
         },
     },
     {
-        "name": "agent-jumbo-workflow",
-        "description": "Execute an Agent Jumbo workflow",
+        "name": "agent-mahoo-workflow",
+        "description": "Execute an Agent Mahoo workflow",
         "parameters": {
             "workflow_id": "Workflow identifier",
             "inputs": "Workflow input parameters",
         },
     },
     {
-        "name": "agent-jumbo-security-audit",
-        "description": "Run security audit using Agent Jumbo's hacker profile",
+        "name": "agent-mahoo-security-audit",
+        "description": "Run security audit using Agent Mahoo's hacker profile",
         "parameters": {
             "target": "Target system/codebase to audit",
             "scope": "full|quick|compliance",
@@ -386,7 +386,7 @@ Add AgentMesh/CoreHive settings to `python/helpers/settings.py`:
 # New settings fields
 "agentmesh_enabled": False,
 "agentmesh_redis_url": "",              # Redis URL for AgentMesh EventStore
-"agentmesh_agent_name": "agent-jumbo",  # Agent name in the mesh
+"agentmesh_agent_name": "agent-mahoo",  # Agent name in the mesh
 "agentmesh_auto_profiles": True,        # Auto-select profile based on event type
 "corehive_api_url": "",                 # CoreHive REST API base URL
 "corehive_mcp_expose": False,           # Expose tools as MCP to CoreHive
@@ -402,16 +402,16 @@ Add AgentMesh/CoreHive settings to `python/helpers/settings.py`:
 1. CoreHive platform detects anomaly
    → emits SecurityAuditRequested event to EventStore
 
-2. AgentMesh EventStore delivers to Agent Jumbo bridge
+2. AgentMesh EventStore delivers to Agent Mahoo bridge
    → bridge.on("SecurityAuditRequested", handle_task_event)
 
-3. Agent Jumbo creates task context with "hacker" profile
+3. Agent Mahoo creates task context with "hacker" profile
    → context = AgentContext(config=..., profile="hacker")
 
-4. Hacker agent executes security audit using Agent Jumbo tools
+4. Hacker agent executes security audit using Agent Mahoo tools
    → code_execution, browser_agent, deployment analysis
 
-5. Agent Jumbo emits SecurityAuditCompleted back to EventStore
+5. Agent Mahoo emits SecurityAuditCompleted back to EventStore
    → bridge.emit("SecurityAuditCompleted", {results, findings, score})
 
 6. CoreHive receives result, updates platform security dashboard
@@ -423,13 +423,13 @@ Add AgentMesh/CoreHive settings to `python/helpers/settings.py`:
 1. AgentMesh scheduler fires ContentCalendarDue (cron: 0 10 * * 1-5)
    → BullMQ worker emits event to EventStore
 
-2. Agent Jumbo bridge receives ContentCalendarDue
+2. Agent Mahoo bridge receives ContentCalendarDue
    → routes to "ghost-writer" profile
 
-3. Ghost-writer agent creates content using Agent Jumbo tools
+3. Ghost-writer agent creates content using Agent Mahoo tools
    → research, writing, formatting
 
-4. Agent Jumbo emits ContentDraftReady
+4. Agent Mahoo emits ContentDraftReady
    → payload: { draft, platform: "linkedin", scheduledTime }
 
 5. AgentMesh scheduler picks up PostScheduled event
@@ -442,10 +442,10 @@ Add AgentMesh/CoreHive settings to `python/helpers/settings.py`:
 1. CoreHive workflow-coordinator triggers DeploymentRequested
    → payload: { platforms: ["hotelhive", "retailhive"], strategy: "k8s" }
 
-2. Agent Jumbo receives via bridge, routes to "actor-ops"
+2. Agent Mahoo receives via bridge, routes to "actor-ops"
    → actor-ops profile has deployment tools
 
-3. Agent Jumbo executes multi-platform K8s deployment
+3. Agent Mahoo executes multi-platform K8s deployment
    → uses existing deployment strategies (AWS, GCP, K8s)
 
 4. Emits DeploymentCompleted with per-platform status
@@ -460,7 +460,7 @@ Add AgentMesh/CoreHive settings to `python/helpers/settings.py`:
 
 | OPA Phase | Integration Touchpoint |
 |-----------|----------------------|
-| OPA-1 (Messaging) | CoreHive channels can route through Agent Jumbo's channel factory |
+| OPA-1 (Messaging) | CoreHive channels can route through Agent Mahoo's channel factory |
 | OPA-2 (Skills) | AgentMesh agents can be packaged as Tier 2 skills |
 | OPA-3 (Knowledge Graph) | Shared memory across CoreHive platforms via graph |
 | OPA-4 (Event Heartbeat) | **Direct integration** — EventBus bridges to AgentMesh EventStore |
@@ -470,14 +470,14 @@ Add AgentMesh/CoreHive settings to `python/helpers/settings.py`:
 
 ### OPA-4 EventBus → AgentMesh Bridge
 
-The OPA-4 EventBus is the **natural integration point**. When OPA-4 adds event-driven triggers to Agent Jumbo's heartbeat, those same events can flow bidirectionally with AgentMesh:
+The OPA-4 EventBus is the **natural integration point**. When OPA-4 adds event-driven triggers to Agent Mahoo's heartbeat, those same events can flow bidirectionally with AgentMesh:
 
 ```python
-# Agent Jumbo EventBus event → AgentMesh
+# Agent Mahoo EventBus event → AgentMesh
 event_bus.on("tool.executed", lambda data:
     bridge.emit("ToolExecuted", data["tool_name"], data))
 
-# AgentMesh event → Agent Jumbo EventBus
+# AgentMesh event → Agent Mahoo EventBus
 bridge.on("ExternalTaskRequested", lambda event:
     event_bus.emit("task.received", event.payload))
 ```
@@ -497,16 +497,16 @@ Mahoosuc OS
 ├── workflows/        ← Orchestration workflows
 ├── contexts/         ← Context files for different operational modes
 ├── data/             ← Persistent data
-└── Agent Jumbo       ← Runs as a managed agent within the OS
+└── Agent Mahoo       ← Runs as a managed agent within the OS
     └── Connected to CoreHive via AgentMesh bridge
 ```
 
-**Mahoosuc OS manages Agent Jumbo as one of its agents**, providing:
+**Mahoosuc OS manages Agent Mahoo as one of its agents**, providing:
 
-- Agent definitions that map to Agent Jumbo profiles
+- Agent definitions that map to Agent Mahoo profiles
 - Hooks for safety/audit (already has PreToolUse blocking dangerous commands)
-- Workflows that coordinate Agent Jumbo with CoreHive operations
-- Skills that encapsulate common Agent Jumbo + CoreHive patterns
+- Workflows that coordinate Agent Mahoo with CoreHive operations
+- Skills that encapsulate common Agent Mahoo + CoreHive patterns
 
 ---
 
@@ -516,7 +516,7 @@ Mahoosuc OS
 |------|---------|-------------|
 | `python/helpers/agentmesh_bridge.py` | Redis Streams bridge to AgentMesh EventStore | ~150 |
 | `python/helpers/corehive_handlers.py` | Event → agent profile routing + task execution | ~120 |
-| `python/helpers/corehive_mcp_tools.py` | Expose Agent Jumbo as MCP tools for CoreHive | ~80 |
+| `python/helpers/corehive_mcp_tools.py` | Expose Agent Mahoo as MCP tools for CoreHive | ~80 |
 | `python/helpers/corehive_startup.py` | Integration startup logic | ~50 |
 | `python/api/agentmesh_status.py` | API: bridge status, event counts | ~40 |
 | `python/api/agentmesh_emit.py` | API: manually emit events | ~30 |

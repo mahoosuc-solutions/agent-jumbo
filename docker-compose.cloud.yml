@@ -1,5 +1,5 @@
 # =============================================================================
-# Agent Jumbo — Cloud Production (CPX42: 168.119.49.252)
+# Agent Mahoo — Cloud Production (CPX42: 168.119.49.252)
 #
 # Standalone deployment on dedicated Hetzner server.
 # Caddy handles TLS (Let's Encrypt via Hetzner DNS challenge).
@@ -8,7 +8,7 @@
 #
 # Usage:
 #   # Resolve secrets from Vault first (SSH to mos-prod):
-#   deploy/resolve-env.sh --output /opt/agent-jumbo/runtime.env
+#   deploy/resolve-env.sh --output /opt/agent-mahoo/runtime.env
 #
 #   # Deploy:
 #   docker compose -f docker-compose.cloud.yml up -d
@@ -18,21 +18,21 @@
 # =============================================================================
 
 services:
-  agent-jumbo:
-    image: agent-jumbo:current
+  agent-mahoo:
+    image: agent-mahoo:current
     pull_policy: never
-    container_name: agent-jumbo-production
+    container_name: agent-mahoo-production
     restart: unless-stopped
 
     env_file:
-      - path: /opt/agent-jumbo/runtime.env
+      - path: /opt/agent-mahoo/runtime.env
         required: true
 
     environment:
       # ── Runtime mode ─────────────────────────────────────────────────────
-      AGENT_JUMBO_RUN_MODE: production
+      AGENT_MAHOO_RUN_MODE: production
       DEPLOYMENT_MODE: cloud
-      AGENT_JUMBO_LAPTOP_MODE: "false"
+      AGENT_MAHOO_LAPTOP_MODE: "false"
       CODE_EXEC_SSH_ENABLED: "false"
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
       WEB_UI_PORT: 80
@@ -45,9 +45,9 @@ services:
       - "host.docker.internal:host-gateway"
 
     volumes:
-      - agent_jumbo_data:/aj/data
-      - agent_jumbo_logs:/aj/logs
-      - agent_jumbo_venv:/opt/venv-a0
+      - agent_mahoo_data:/aj/data
+      - agent_mahoo_logs:/aj/logs
+      - agent_mahoo_venv:/opt/venv-a0
 
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost/health"]
@@ -66,9 +66,9 @@ services:
           memory: 2G
 
 volumes:
-  agent_jumbo_data:
+  agent_mahoo_data:
     external: true
-  agent_jumbo_logs:
+  agent_mahoo_logs:
     external: true
-  agent_jumbo_venv:
+  agent_mahoo_venv:
     external: true

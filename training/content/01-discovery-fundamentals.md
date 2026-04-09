@@ -2,7 +2,7 @@
 
 > **Learning Path:** AI Solution Architect
 > **Audience:** Non-technical business operators learning AI solution architecture
-> **Prerequisites:** Basic familiarity with Agent Jumbo interface
+> **Prerequisites:** Basic familiarity with Agent Mahoo interface
 
 ---
 
@@ -50,7 +50,7 @@ Discover --> Design --> Sell --> Build --> Deploy --> Optimize
 1. **Discover** — Understand the business, its processes, its pain, and its readiness for AI. This is where 80% of project success is determined.
 2. **Design** — Classify tasks, design workflows, choose architecture, write prompts. Turn understanding into a blueprint.
 3. **Sell** — Package the solution with clear scope, pricing, timeline, and success criteria. Get commitment.
-4. **Build** — Implement the solution using Agent Jumbo tools. Configure workflows, integrations, prompts.
+4. **Build** — Implement the solution using Agent Mahoo tools. Configure workflows, integrations, prompts.
 5. **Deploy** — Roll out to users. Train staff. Monitor early usage. Handle the inevitable surprises.
 6. **Optimize** — Measure against success criteria. Tune prompts. Expand scope. Build the case for next engagement.
 
@@ -75,7 +75,7 @@ Business Pain --> Process Map --> AI Opportunity --> Solution Scope --> Value Es
 
 ### Step-by-Step Approach
 
-When starting any new AI engagement, follow this sequence using Agent Jumbo tools:
+When starting any new AI engagement, follow this sequence using Agent Mahoo tools:
 
 **Step 1: Create the customer record**
 
@@ -136,7 +136,7 @@ Ask yourself these gating questions before moving to the next phase:
 
 **Scenario:** You receive a lead from a small accounting firm (15 people). The owner says: "We spend too much time on data entry. We heard AI can help."
 
-**Task:** Using Agent Jumbo tools, complete the following:
+**Task:** Using Agent Mahoo tools, complete the following:
 
 1. Create a customer record for "Summit Accounting" with appropriate initial data
 2. List 5 questions you would ask in the discovery call

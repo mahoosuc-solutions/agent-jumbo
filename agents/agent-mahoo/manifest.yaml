@@ -5,7 +5,7 @@ description: >
   Communicates with users, delegates to subordinates, general purpose.
 
 display:
-  display_name: Agent Jumbo
+  display_name: Agent Mahoo
   icon: 🐘
   tier: orchestrator
   selectable: true

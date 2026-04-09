@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "name": "agent-jumbo",
+  "name": "agent-mahoo",
   "public": true,
   "installCommand": "cd web && npm install",
   "buildCommand": "cd web && npm run build",

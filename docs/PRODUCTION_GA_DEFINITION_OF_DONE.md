@@ -6,7 +6,7 @@ date: 2026-03-24
 
 # Production GA Definition of Done
 
-**Platform:** Agent Jumbo AI Architect Platform
+**Platform:** Agent Mahoo AI Architect Platform
 **Launch profile:** Production GA for self-serve customers
 **Last reviewed:** 2026-03-24
 **Feature freeze target:** 2026-04-03

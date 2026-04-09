@@ -1,11 +1,11 @@
 # Quick Start
 
-This guide provides a quick introduction to using Agent Jumbo. We'll cover launching the web UI, starting a new chat, and running a simple task.
+This guide provides a quick introduction to using Agent Mahoo. We'll cover launching the web UI, starting a new chat, and running a simple task.
 
 ## Launching the Web UI
 
-1. Make sure you have Agent Jumbo installed and your environment set up correctly (refer to the [Installation guide](installation.md) if needed).
-2. Open a terminal in the Agent Jumbo directory and activate your conda environment (if you're using one).
+1. Make sure you have Agent Mahoo installed and your environment set up correctly (refer to the [Installation guide](installation.md) if needed).
+2. Open a terminal in the Agent Mahoo directory and activate your conda environment (if you're using one).
 3. Run the following command:
 
 ```bash
@@ -16,7 +16,7 @@ python run_ui.py
 
 ![Terminal output showing Web UI URL](res/flask_link.png)
 
-1. Open your web browser and navigate to the URL shown in the terminal (usually `http://127.0.0.1:50001`). You should see the Agent Jumbo Web UI.
+1. Open your web browser and navigate to the URL shown in the terminal (usually `http://127.0.0.1:50001`). You should see the Agent Mahoo Web UI.
 
 ![New Chat](res/ui_newchat1.png)
 
@@ -30,11 +30,11 @@ python run_ui.py
 
 ## Running a Simple Task
 
-Let's ask Agent Jumbo to download a YouTube video. Here's how:
+Let's ask Agent Mahoo to download a YouTube video. Here's how:
 
 1. Type "Download a YouTube video for me" in the chat input field and press Enter or click the send button.
 
-2. Agent Jumbo will process your request.  You'll see its "thoughts" and the actions it takes displayed in the UI. It will find a default already existing solution, that implies using the `code_execution_tool` to run a simple Python script to perform the task.
+2. Agent Mahoo will process your request.  You'll see its "thoughts" and the actions it takes displayed in the UI. It will find a default already existing solution, that implies using the `code_execution_tool` to run a simple Python script to perform the task.
 
 3. The agent will then ask you for the URL of the YouTube video you want to download.
 
@@ -45,7 +45,7 @@ Here's an example of what you might see in the Web UI at step 3:
 
 ## Next Steps
 
-Now that you've run a simple task, you can experiment with more complex requests. Try asking Agent Jumbo to:
+Now that you've run a simple task, you can experiment with more complex requests. Try asking Agent Mahoo to:
 
 * Perform calculations
 * Search the web for information

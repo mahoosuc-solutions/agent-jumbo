@@ -52,7 +52,7 @@ class UpdateCheck(Extension):
         notifs.send_notification(
             title=notif.get("title", "Newer version available"),
             message=notif.get(
-                "message", "A newer version of Agent Jumbo is available. Please update to the latest version."
+                "message", "A newer version of Agent Mahoo is available. Please update to the latest version."
             ),
             type=notif.get("type", "info"),
             detail=notif.get("detail", ""),

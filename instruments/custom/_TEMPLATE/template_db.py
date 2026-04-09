@@ -12,7 +12,7 @@ class TemplateDatabase:
     """
     Database operations for template instrument.
 
-    Follows Agent Jumbo conventions:
+    Follows Agent Mahoo conventions:
     - Constructor takes db_path parameter
     - Uses WAL mode for better concurrency
     - Row factory for dict-like access

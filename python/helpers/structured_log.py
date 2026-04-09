@@ -44,7 +44,7 @@ class StructuredFormatter(logging.Formatter):
 
 def setup_structured_logging(level: str = "INFO") -> logging.Logger:
     """Configure structured logging. Call once at startup."""
-    logger = logging.getLogger("agent_jumbo")
+    logger = logging.getLogger("agent_mahoo")
     if logger.handlers:
         return logger  # Already configured
 
@@ -58,7 +58,7 @@ def setup_structured_logging(level: str = "INFO") -> logging.Logger:
 
 def get_logger() -> logging.Logger:
     """Get the structured logger."""
-    return logging.getLogger("agent_jumbo")
+    return logging.getLogger("agent_mahoo")
 
 
 def log_event(

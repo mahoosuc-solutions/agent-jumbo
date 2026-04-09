@@ -16,7 +16,7 @@ _PRINTER = PrintStyle(italic=True, font_color="cyan", padding=False)
 
 
 class AgentConnection:
-    """Helper class for connecting to and communicating with other Agent Jumbo instances via FastA2A."""
+    """Helper class for connecting to and communicating with other Agent Mahoo instances via FastA2A."""
 
     def __init__(self, agent_url: str, timeout: int = 30, token: str | None = None):
         """Initialize connection to an agent.

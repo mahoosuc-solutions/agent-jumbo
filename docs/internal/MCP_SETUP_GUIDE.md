@@ -1,8 +1,8 @@
-# MCP Integration Setup Guide for Agent Jumbo
+# MCP Integration Setup Guide for Agent Mahoo
 
 ## Overview
 
-This guide will help you integrate Model Context Protocol (MCP) servers into Agent Jumbo, enabling extended capabilities like file operations, web search, GitHub integration, and more.
+This guide will help you integrate Model Context Protocol (MCP) servers into Agent Mahoo, enabling extended capabilities like file operations, web search, GitHub integration, and more.
 
 ## Quick Start - Essential MCP Servers
 
@@ -10,7 +10,7 @@ Here's a minimal configuration to get started with the most useful MCP servers:
 
 ### 1. Filesystem Server (Most Useful)
 
-Allows Agent Jumbo to read/write files in specified directories.
+Allows Agent Mahoo to read/write files in specified directories.
 
 ```json
 {
@@ -61,25 +61,25 @@ Provides extended chain-of-thought reasoning for complex problems.
 
 ### Method 1: Via Web UI (Recommended)
 
-1. **Access Agent Jumbo**: Open <http://localhost:8080>
+1. **Access Agent Mahoo**: Open <http://localhost:8080>
 2. **Open Settings**: Click the Settings button
 3. **Navigate to MCP Servers**: Scroll to "MCP Servers Configuration"
 4. **Paste Configuration**: Copy the JSON from above and paste into the text area
 5. **Save**: Click Save Settings
-6. **Restart**: Restart Agent Jumbo container or process
+6. **Restart**: Restart Agent Mahoo container or process
 
 ### Method 2: Direct File Edit
 
-1. **Run Agent Jumbo Once**: This creates `tmp/settings.json`
-2. **Stop Agent Jumbo**
+1. **Run Agent Mahoo Once**: This creates `tmp/settings.json`
+2. **Stop Agent Mahoo**
 3. **Edit Settings File**:
 
    ```bash
-   nano /home/webemo-aaron/projects/agent-jumbo/tmp/settings.json
+   nano /home/webemo-aaron/projects/agent-mahoo/tmp/settings.json
    ```
 
 4. **Update mcp_servers Field**: Replace the `mcp_servers` value with your JSON config
-5. **Restart Agent Jumbo**
+5. **Restart Agent Mahoo**
 
 ## Recommended Starter Configuration
 
@@ -165,14 +165,14 @@ Some servers require API keys. Add them after you obtain the keys:
 
 ## Docker Configuration
 
-If running Agent Jumbo in Docker, ensure Node.js/npm are available in the container (they should be in the built image).
+If running Agent Mahoo in Docker, ensure Node.js/npm are available in the container (they should be in the built image).
 
 To configure MCP servers in Docker:
 
 1. **Access Container**:
 
    ```bash
-   docker exec -it agent-jumbo bash
+   docker exec -it agent-mahoo bash
    ```
 
 2. **Test npx Availability**:
@@ -186,11 +186,11 @@ To configure MCP servers in Docker:
 Alternatively, mount your settings file:
 
 ```bash
-docker run -d --name agent-jumbo \
+docker run -d --name agent-mahoo \
   -p 8080:80 \
-  -v /home/webemo-aaron/projects/agent-jumbo:/a0 \
-  -v /home/webemo-aaron/projects/agent-jumbo/tmp:/a0/tmp \
-  agent-jumbo-local:latest
+  -v /home/webemo-aaron/projects/agent-mahoo:/a0 \
+  -v /home/webemo-aaron/projects/agent-mahoo/tmp:/a0/tmp \
+  agent-mahoo-local:latest
 ```
 
 ## Verification
@@ -200,10 +200,10 @@ After configuration and restart:
 1. **Check Logs**: Look for MCP server initialization messages
 
    ```bash
-   docker logs agent-jumbo | grep -i mcp
+   docker logs agent-mahoo | grep -i mcp
    ```
 
-2. **Test in Chat**: Ask Agent Jumbo to use an MCP tool
+2. **Test in Chat**: Ask Agent Mahoo to use an MCP tool
 
    ```text
    "Can you list files in the current directory using the filesystem server?"
@@ -235,7 +235,7 @@ After configuration and restart:
 3. **Check Logs**: Look for error messages
 
    ```bash
-   docker logs agent-jumbo --tail 100 | grep -i error
+   docker logs agent-mahoo --tail 100 | grep -i error
    ```
 
 ### NPX Package Installation Fails
@@ -282,12 +282,12 @@ Popular servers include:
 1. **Start with Basics**: Configure filesystem, fetch, and sequential-thinking
 2. **Test Functionality**: Verify each server works before adding more
 3. **Add API Services**: Once comfortable, add GitHub, Brave Search, etc.
-4. **Explore Tools**: Ask Agent Jumbo what tools are available
+4. **Explore Tools**: Ask Agent Mahoo what tools are available
 5. **Build Workflows**: Create complex workflows using multiple MCP tools
 
 ## Resources
 
 - **MCP Documentation**: <https://modelcontextprotocol.io>
 - **Anthropic MCP Servers**: <https://github.com/modelcontextprotocol/servers>
-- **Agent Jumbo Docs**: `/docs/mcp_setup.md`
+- **Agent Mahoo Docs**: `/docs/mcp_setup.md`
 - **Configuration Examples**: `mcp_config_claude.json`

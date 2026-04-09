@@ -4,15 +4,15 @@ import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: {
-    default: 'Agent Jumbo — Your Personal AI Operating System',
-    template: '%s | Agent Jumbo',
+    default: 'Agent Mahoo — Your Personal AI Operating System',
+    template: '%s | Agent Mahoo',
   },
-  description: 'Agent Jumbo orchestrates your life — real estate, finances, wellness, relationships, calendar — with specialized AI agents and human governance. Part of Mahoosuc OS.',
+  description: 'Agent Mahoo orchestrates your life — real estate, finances, wellness, relationships, calendar — with specialized AI agents and human governance. Part of Mahoosuc OS.',
   openGraph: {
-    title: 'Agent Jumbo',
+    title: 'Agent Mahoo',
     description: 'Your Personal AI Operating System. Part of Mahoosuc OS.',
     type: 'website',
-    siteName: 'Agent Jumbo',
+    siteName: 'Agent Mahoo',
   },
 }
 

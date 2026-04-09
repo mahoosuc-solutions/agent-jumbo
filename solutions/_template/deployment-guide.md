@@ -2,7 +2,7 @@
 
 ## Prerequisites
 
-- [ ] Agent Jumbo platform access (v2.0+)
+- [ ] Agent Mahoo platform access (v2.0+)
 - [ ] Required API keys and credentials:
   - {{List each required credential}}
 - [ ] Infrastructure requirements:

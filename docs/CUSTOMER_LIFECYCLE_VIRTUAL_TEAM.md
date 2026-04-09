@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers the new **Customer Lifecycle Manager** and **Virtual Team Orchestrator** features added to Agent Jumbo.
+This guide covers the new **Customer Lifecycle Manager** and **Virtual Team Orchestrator** features added to Agent Mahoo.
 
 ### Features
 
@@ -11,7 +11,7 @@ This guide covers the new **Customer Lifecycle Manager** and **Virtual Team Orch
 
 ## Installation
 
-These features are installed as custom instruments in Agent Jumbo:
+These features are installed as custom instruments in Agent Mahoo:
 
 ```text
 instruments/custom/
@@ -450,7 +450,7 @@ Check file permissions in data/ directory
 
 ```text
 Solution: Close connections properly
-Restart Agent Jumbo if needed
+Restart Agent Mahoo if needed
 ```
 
 ### Task Assignment Issues
@@ -496,8 +496,8 @@ For issues or questions:
 1. Check tool documentation: `prompts/agent.system.tool.*.md`
 2. Review database schemas: `instruments/custom/*/db.py`
 3. Run test scripts to verify functionality
-4. Check Agent Jumbo logs for errors
+4. Check Agent Mahoo logs for errors
 
 ## License
 
-Inherits Agent Jumbo license (see LICENSE in project root)
+Inherits Agent Mahoo license (see LICENSE in project root)

@@ -550,7 +550,7 @@ Line 233-235 (before `test_work_queue_filter_dropdown_present`):
 
 - [ ] **Step 2: Verify the browser tests can be collected by pytest**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/e2e/test_work_queue_e2e.py --collect-only 2>&1 | grep "test_work_queue"`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/e2e/test_work_queue_e2e.py --collect-only 2>&1 | grep "test_work_queue"`
 
 Expected: All 11 tests collected (no skips for the 3 browser tests).
 
@@ -567,7 +567,7 @@ git commit -m "test(work-queue): remove skip decorators from browser tests — A
 
 - [ ] **Step 1: Run the work queue E2E tests**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/e2e/test_work_queue_e2e.py -v --timeout=120`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/e2e/test_work_queue_e2e.py -v --timeout=120`
 
 Expected: All 11 tests pass (8 API + 3 browser).
 
@@ -588,7 +588,7 @@ Common issues:
 
 - [ ] **Step 3: Run full E2E suite to check no regressions**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python -m pytest tests/e2e/ -v --timeout=120`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python -m pytest tests/e2e/ -v --timeout=120`
 
 Expected: 49/52 pass (the 3 previously-skipped tests now active, other skips remain for env-limited tests).
 

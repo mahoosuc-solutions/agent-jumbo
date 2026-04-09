@@ -1,6 +1,6 @@
 # Task Cycle Tool
 
-The **task_cycle** tool is the end-to-end agentic pipeline for Agent Jumbo: it takes a task description, classifies its complexity, decomposes it into subtasks with optimal model assignments, dispatches execution, grades code output with real linters and tests, and returns a ship/pivot/escalate decision.
+The **task_cycle** tool is the end-to-end agentic pipeline for Agent Mahoo: it takes a task description, classifies its complexity, decomposes it into subtasks with optimal model assignments, dispatches execution, grades code output with real linters and tests, and returns a ship/pivot/escalate decision.
 
 Use this tool when you receive a coding or analysis task that you want to plan, execute, evaluate, and potentially commit — rather than doing each step manually.
 
@@ -110,7 +110,7 @@ The classifier automatically routes to the right model:
     "tool_name": "task_cycle",
     "tool_args": {
         "action": "grade",
-        "path": "/mnt/wdblack/dev/projects/agent-jumbo/python/tools/git_tool.py"
+        "path": "/mnt/wdblack/dev/projects/agent-mahoo/python/tools/git_tool.py"
     }
 }
 ```

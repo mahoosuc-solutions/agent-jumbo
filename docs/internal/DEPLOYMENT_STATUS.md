@@ -1,4 +1,4 @@
-# Agent Jumbo Docker Deployment Summary
+# Agent Mahoo Docker Deployment Summary
 
 ## 🐝 Phase 5: Solutioning Engine Status (LATEST)
 
@@ -25,17 +25,17 @@
 
 ### 1. Docker Image Built Successfully
 
-- **Image name**: `agent-jumbo-local:latest`
+- **Image name**: `agent-mahoo-local:latest`
 - **Build time**: ~620 seconds total
 - **Status**: ✅ SUCCESS
 
 ### 2. Docker Container Running
 
-- **Container name**: `agent-jumbo`
+- **Container name**: `agent-mahoo`
 - **Status**: ✅ Running
 - **Web UI Access**: <http://localhost:8080>
 - **SSH Access**: localhost:2222
-- **Volume Mount**: `/home/webemo-aaron/projects/agent-jumbo:/a0`
+- **Volume Mount**: `/home/webemo-aaron/projects/agent-mahoo:/a0`
 
 ### 3. Ollama Installed
 
@@ -54,7 +54,7 @@
 
 ## 🔧 Configuration Instructions
 
-Once the Qwen model download completes, configure Agent Jumbo to use it:
+Once the Qwen model download completes, configure Agent Mahoo to use it:
 
 ### Method 1: Using the Web UI (Recommended)
 
@@ -73,7 +73,7 @@ Once the Qwen model download completes, configure Agent Jumbo to use it:
 Run the prepared configuration script:
 
 ```bash
-/home/webemo-aaron/projects/agent-jumbo/configure_ollama.sh
+/home/webemo-aaron/projects/agent-mahoo/configure_ollama.sh
 ```
 
 This will add Ollama configuration to the `.env` file.
@@ -82,7 +82,7 @@ This will add Ollama configuration to the `.env` file.
 
 ### Docker Container Services
 
-- ✅ Agent Jumbo UI (port 80 → 8080)
+- ✅ Agent Mahoo UI (port 80 → 8080)
 - ✅ SSH Server (port 22 → 2222)
 - ✅ SearXNG Search Engine
 - ✅ Tunnel API
@@ -107,10 +107,10 @@ Verify Qwen model is available:
 ollama list
 ```
 
-Check Agent Jumbo container status:
+Check Agent Mahoo container status:
 
 ```bash
-docker logs agent-jumbo --tail 20
+docker logs agent-mahoo --tail 20
 ```
 
 Test web UI access:
@@ -125,25 +125,25 @@ curl -I http://localhost:8080
    - Monitor progress: `tail -f /tmp/qwen-download.log`
    - Verify completion: `ollama list` (should show `qwen2.5-coder:7b`)
 
-2. **Configure Agent Jumbo**
+2. **Configure Agent Mahoo**
    - Access <http://localhost:8080>
    - Go to Settings
    - Set model provider to `ollama` with model `qwen2.5-coder:7b`
 
 3. **Test Integration**
-   - Send a test message to Agent Jumbo
+   - Send a test message to Agent Mahoo
    - Verify Qwen model responds correctly
 
 ## 📝 Important Notes
 
 - **Local LLM**: Qwen2.5-Coder:7b is a 7-billion parameter code-focused model optimized for programming tasks
-- **Offline Operation**: Once configured, Agent Jumbo will work completely offline using the local Qwen model
+- **Offline Operation**: Once configured, Agent Mahoo will work completely offline using the local Qwen model
 - **No API Costs**: No cloud API keys required for basic operation
 - **Performance**: Qwen model will use local GPU/CPU resources (slower than cloud APIs but free and private)
 
 ## 🐛 Troubleshooting
 
-If Agent Jumbo cannot connect to Ollama:
+If Agent Mahoo cannot connect to Ollama:
 
 ```bash
 # Check Ollama server is running
@@ -158,13 +158,13 @@ If Docker container isn't accessible:
 
 ```bash
 # Check container status
-docker ps -a | grep agent-jumbo
+docker ps -a | grep agent-mahoo
 
 # Restart container if needed
-docker restart agent-jumbo
+docker restart agent-mahoo
 
 # Check logs for errors
-docker logs agent-jumbo
+docker logs agent-mahoo
 ```
 
 ## 📦 Resource Requirements
@@ -173,7 +173,7 @@ docker logs agent-jumbo
 - **Qwen Model Size**: 4.7GB
 - **Total Disk Space**: ~6-7GB
 - **RAM Requirements**:
-  - Agent Jumbo: ~1-2GB
+  - Agent Mahoo: ~1-2GB
   - Qwen Model: ~8-12GB (recommended for smooth operation)
 
 ## ✨ Features Ready to Use

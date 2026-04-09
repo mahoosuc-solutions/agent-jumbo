@@ -295,7 +295,7 @@ class SharedContextStore:
         try:
             # Extract system prompt excerpt
             if hasattr(agent, "config") and agent.config:
-                system_instructions = "You are Agent Jumbo, an AI assistant with tool access."
+                system_instructions = "You are Agent Mahoo, an AI assistant with tool access."
         except Exception:
             pass
 

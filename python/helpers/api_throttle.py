@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-logger = logging.getLogger("agent_jumbo")
+logger = logging.getLogger("agent_mahoo")
 
 
 class AsyncThrottle:

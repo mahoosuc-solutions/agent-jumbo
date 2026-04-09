@@ -1,4 +1,4 @@
-"""Consolidated E2E functional tests for Agent Jumbo.
+"""Consolidated E2E functional tests for Agent Mahoo.
 
 Covers: authentication, chat, file upload, settings, and SSE transport.
 """

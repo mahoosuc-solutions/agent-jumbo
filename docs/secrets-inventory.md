@@ -2,7 +2,7 @@
 
 # Secrets Inventory
 
-All secrets are stored in `/mnt/wdblack/dev/secrets/agent-jumbo.env` (outside the project bind mount). This file is loaded via `env_file` in docker-compose.yml.
+All secrets are stored in `/mnt/wdblack/dev/secrets/agent-mahoo.env` (outside the project bind mount). This file is loaded via `env_file` in docker-compose.yml.
 
 ## Critical Secrets (rotate quarterly)
 
@@ -13,7 +13,7 @@ All secrets are stored in `/mnt/wdblack/dev/secrets/agent-jumbo.env` (outside th
 | `API_KEY_GOOGLE` / `GOOGLE_API_KEY` | Gemini API access | LLM provider |
 | `API_KEY_ANTHROPIC` | Claude API access | LLM provider |
 | `API_KEY_OPENAI` | GPT API access | LLM provider |
-| `ROOT_PASSWORD` | Agent Jumbo root auth | Web UI auth |
+| `ROOT_PASSWORD` | Agent Mahoo root auth | Web UI auth |
 | `AUTH_LOGIN` | Web UI login credentials | Web UI auth |
 
 ## Integration Secrets (rotate on compromise)
@@ -57,14 +57,14 @@ These are configuration values, not secrets. They do not need rotation:
 ## Rotation Procedure
 
 1. Generate new key/token from the provider's dashboard
-2. Update `/mnt/wdblack/dev/secrets/agent-jumbo.env`
-3. Restart the container: `docker compose restart agent-jumbo`
+2. Update `/mnt/wdblack/dev/secrets/agent-mahoo.env`
+3. Restart the container: `docker compose restart agent-mahoo`
 4. Verify the service works with the new key
 5. Revoke the old key from the provider's dashboard
 
 ## Security Notes
 
 - The `.env` file at the project root is a **symlink or copy** for local development only
-- The Docker container reads secrets from `/mnt/wdblack/dev/secrets/agent-jumbo.env` which is NOT inside the `/aj` bind mount
+- The Docker container reads secrets from `/mnt/wdblack/dev/secrets/agent-mahoo.env` which is NOT inside the `/aj` bind mount
 - Never commit secrets to git — `.env` is in `.gitignore`
 - The `SecurityVaultManager` in `python/helpers/security.py` provides AES-256-GCM encryption for sensitive data stored in SQLite

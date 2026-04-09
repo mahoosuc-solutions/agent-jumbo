@@ -101,11 +101,11 @@ def get_square_steps(session_id: str, email: str, webhook_endpoint_url: str) -> 
         step(
             7,
             title="Create new Square application",
-            description="Click New Application and name it 'Agent Jumbo'.",
+            description="Click New Application and name it 'Agent Mahoo'.",
             automation_type="automated",
             human_instructions=(
                 "If the agent cannot find the New Application button, "
-                "click it manually and name the app 'Agent Jumbo'. Press Continue when created."
+                "click it manually and name the app 'Agent Mahoo'. Press Continue when created."
             ),
             action={
                 "tool": "browser_click",

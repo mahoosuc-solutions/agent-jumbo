@@ -4,7 +4,7 @@
 
 ## Overview
 
-This guide explains the Mahoosuc OS integration configuration added to Agent Jumbo's environment variables.
+This guide explains the Mahoosuc OS integration configuration added to Agent Mahoo's environment variables.
 
 ## Environment Variables
 
@@ -43,9 +43,9 @@ MAHOOSUC_INTEGRATION_MODE=reference
    - Use for testing Mahoosuc commands before native conversion
 
 3. **`native-tools`** - Production integration
-   - Convert high-value Mahoosuc commands to native Agent Jumbo tools
+   - Convert high-value Mahoosuc commands to native Agent Mahoo tools
    - Best performance (no subprocess overhead)
-   - Full Agent Jumbo context integration
+   - Full Agent Mahoo context integration
    - Requires manual tool development per command
    - Use after identifying valuable commands in reference mode
 
@@ -61,7 +61,7 @@ MAHOOSUC_INTEGRATION_MODE=reference
 - `MAHOOSUC_COMMAND_TIMEOUT`: Max execution time for MCP bridge commands
 - `MAHOOSUC_AUTO_APPROVE`: Skip approval prompts (security risk - disabled by default)
 
-#### Agent Routing (If Adapted to Agent Jumbo)
+#### Agent Routing (If Adapted to Agent Mahoo)
 
 ```bash
 # MAHOOSUC_ENABLE_AGENT_ROUTING=false
@@ -125,17 +125,17 @@ MAHOOSUC_COMMAND_TIMEOUT=300
 **What you can do**:
 
 - Execute Mahoosuc commands via subprocess
-- Test command behavior in Agent Jumbo context
+- Test command behavior in Agent Mahoo context
 - Identify high-value commands for conversion
 
 ### Use Case 3: Production Native Tools
 
-**Goal**: Convert valuable commands to native Agent Jumbo tools
+**Goal**: Convert valuable commands to native Agent Mahoo tools
 
 **Prerequisites**:
 
 - Identified high-value commands from reference/testing
-- Developed native Agent Jumbo tool implementations
+- Developed native Agent Mahoo tool implementations
 
 **Configuration**:
 
@@ -147,7 +147,7 @@ MAHOOSUC_TRACK_USAGE=true
 
 **What you can do**:
 
-- Use native Agent Jumbo tools inspired by Mahoosuc
+- Use native Agent Mahoo tools inspired by Mahoosuc
 - Track which converted tools are most used
 - Iterate on tool implementations based on usage
 
@@ -179,7 +179,7 @@ Phase 3: Native Tool Development (Month 2+)
 
 - **Import Summary**: `.claude/docs/IMPORT_SUMMARY.md` - What was imported
 - **Usage Guide**: `.claude/docs/USING_MAHOOSUC_COMMANDS.md` - How to use commands
-- **Integration Architecture**: `.claude/docs/AGENT_JUMBO_INTEGRATION.md` - Technical details
+- **Integration Architecture**: `.claude/docs/AGENT_MAHOO_INTEGRATION.md` - Technical details
 - **Commands Index**: `.claude/docs/COMMANDS_INDEX.md` - All 414 commands
 - **Agents Migration**: `.claude/docs/AGENTS_MIGRATION.md` - Agent adaptation guide
 - **Skills Adaptation**: `.claude/docs/SKILLS_ADAPTATION.md` - Skill conversion guide
@@ -204,7 +204,7 @@ Phase 3: Native Tool Development (Month 2+)
 
 - **Solution**: Check directory permissions: `ls -la .claude/`
 
-**Issue**: Commands don't match Agent Jumbo's context
+**Issue**: Commands don't match Agent Mahoo's context
 
 - **Solution**: This is expected - Mahoosuc commands assume Claude Code context. Use reference mode or convert to native tools.
 
@@ -217,7 +217,7 @@ Phase 3: Native Tool Development (Month 2+)
 1. **Start with reference mode** - Browse commands and documentation
 2. **Identify valuable commands** - Which would help your workflows?
 3. **Test via MCP** (optional) - Validate behavior before converting
-4. **Convert to native tools** - Implement as Agent Jumbo tools for production use
+4. **Convert to native tools** - Implement as Agent Mahoo tools for production use
 5. **Monitor and iterate** - Track usage and improve based on data
 
 ## Support
@@ -225,6 +225,6 @@ Phase 3: Native Tool Development (Month 2+)
 For questions about:
 
 - **Configuration**: This document
-- **Integration**: `.claude/docs/AGENT_JUMBO_INTEGRATION.md`
+- **Integration**: `.claude/docs/AGENT_MAHOO_INTEGRATION.md`
 - **Usage**: `.claude/docs/USING_MAHOOSUC_COMMANDS.md`
 - **Specific commands**: `.claude/commands/<category>/<command>.md`

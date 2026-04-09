@@ -1,6 +1,6 @@
-"""Task handler for AgentMesh events in Agent Jumbo.
+"""Task handler for AgentMesh events in Agent Mahoo.
 
-Routes ``task.assigned`` events to the appropriate Agent Jumbo profile
+Routes ``task.assigned`` events to the appropriate Agent Mahoo profile
 and reports lifecycle events (accepted, status_update, completed, failed,
 escalated) back through the AgentMesh bridge.
 """
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Map task categories to Agent Jumbo profile names.
+# Map task categories to Agent Mahoo profile names.
 # The profile name is used as a hint in the system prompt —
 # it does not require a full runtime reconfiguration.
 CATEGORY_PROFILE_MAP: dict[str, str] = {
@@ -64,7 +64,7 @@ async def _handle_task_assigned(event: AgentMeshEvent) -> None:
     task_id = payload.get("taskId", event.aggregate_id)
     assignee = payload.get("assignee", "")
 
-    if assignee != "agent-jumbo":
+    if assignee != "agent-mahoo":
         return  # Not for us
 
     category = payload.get("category", "general")
@@ -117,7 +117,7 @@ async def _handle_approval_resolved(event: AgentMeshEvent) -> None:
                 payload={
                     "taskId": task_id,
                     "error": "Task rejected by approval workflow",
-                    "executedBy": "agent-jumbo",
+                    "executedBy": "agent-mahoo",
                     "executionTimeMs": 0,
                 },
                 correlation_id=correlation_id,
@@ -186,7 +186,7 @@ async def _execute_task(
     await bridge.emit(
         event_type="task.accepted",
         aggregate_id=task_id,
-        payload={"taskId": task_id, "executedBy": "agent-jumbo"},
+        payload={"taskId": task_id, "executedBy": "agent-mahoo"},
         correlation_id=correlation_id,
     )
 
@@ -235,7 +235,7 @@ async def _execute_task(
             payload={
                 "taskId": task_id,
                 "result": result if isinstance(result, dict) else str(result),
-                "executedBy": f"agent-jumbo/{profile}",
+                "executedBy": f"agent-mahoo/{profile}",
                 "executionTimeMs": elapsed_ms,
             },
             correlation_id=correlation_id,
@@ -267,7 +267,7 @@ async def _execute_task(
                 payload={
                     "taskId": task_id,
                     "error": error_msg,
-                    "executedBy": f"agent-jumbo/{profile}",
+                    "executedBy": f"agent-mahoo/{profile}",
                     "executionTimeMs": elapsed_ms,
                 },
                 correlation_id=correlation_id,

@@ -10,7 +10,7 @@
 
 ### Why This Matters
 
-Telegram is the primary operator interface for Agent Jumbo. It is where you receive briefings, approve messages, monitor workflows, and issue commands. A poorly integrated Telegram setup means:
+Telegram is the primary operator interface for Agent Mahoo. It is where you receive briefings, approve messages, monitor workflows, and issue commands. A poorly integrated Telegram setup means:
 
 - **Missed notifications** — Messages are formatted badly, too long, or lost in noise
 - **Slow response loops** — The operator cannot quickly approve, skip, or command from the chat
@@ -45,7 +45,7 @@ Telegram servers
 POST https://your-domain.com/webhook/telegram
       |
       v
-Agent Jumbo webhook handler
+Agent Mahoo webhook handler
       |
       v
 Route to appropriate workflow execution

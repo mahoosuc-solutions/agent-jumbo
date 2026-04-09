@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getManifest } from '@/lib/manifest'
 
-export default function AgentJumboHero() {
+export default function AgentMahooHero() {
   const m = getManifest()
   const commandCount = m.platform.commands.total
   const instrumentCount = m.platform.instruments.active
@@ -15,7 +15,7 @@ export default function AgentJumboHero() {
       <div className="relative max-w-7xl mx-auto">
         <div className="max-w-3xl">
           <p className="text-copper-400 font-mono text-sm tracking-widest uppercase mb-4">
-            Agent Jumbo
+            Agent Mahoo
           </p>
           <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1]">
             Your Personal AI Operating System

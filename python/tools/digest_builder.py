@@ -1,4 +1,4 @@
-"""Digest builder tool for Agent Jumbo."""
+"""Digest builder tool for Agent Mahoo."""
 
 from python.helpers import files
 from python.helpers.tool import Response, Tool

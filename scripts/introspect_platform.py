@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Introspect the agent-jumbo codebase and emit a platform manifest JSON.
+"""Introspect the agent-mahoo codebase and emit a platform manifest JSON.
 
 Scans commands, instruments, tools, API endpoints, integrations, helpers,
 AG Mesh metadata, GitHub repos, and optional product/pricing catalogs.

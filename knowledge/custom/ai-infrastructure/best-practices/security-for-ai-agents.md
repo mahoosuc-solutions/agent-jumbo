@@ -312,9 +312,9 @@ class DLPFilter:
 - [ ] Code execution happens in sandboxed environments with network restrictions
 - [ ] Regular review of audit logs for anomalous agent behavior
 
-## Agent Jumbo Security Model
+## Agent Mahoo Security Model
 
-Agent Jumbo implements these patterns through its layered security architecture:
+Agent Mahoo implements these patterns through its layered security architecture:
 
 - **Tool isolation**: MCP servers run in separate processes with per-server permissions
 - **Token budget enforcement**: Hard limits at the session level prevent cost overruns

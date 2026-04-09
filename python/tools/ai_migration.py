@@ -1,5 +1,5 @@
 """
-AI Migration Tool for Agent Jumbo
+AI Migration Tool for Agent Mahoo
 Analyze business processes and design human-AI collaboration workflows
 """
 
@@ -11,7 +11,7 @@ from python.helpers.tool import Response, Tool
 
 class AIMigration(Tool):
     """
-    Agent Jumbo tool for AI business migration.
+    Agent Mahoo tool for AI business migration.
     Analyze processes, classify tasks, design workflows, and generate roadmaps.
     """
 

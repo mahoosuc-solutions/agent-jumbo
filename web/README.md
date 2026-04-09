@@ -1,6 +1,6 @@
-# Agent Jumbo
+# Agent Mahoo
 
-> Agent Jumbo is Agent Jumbo DevOps fork - a modern DevOps deployment and orchestration platform with an intuitive web interface, comprehensive documentation, and production-ready CI/CD automation.
+> Agent Mahoo is Agent Mahoo DevOps fork - a modern DevOps deployment and orchestration platform with an intuitive web interface, comprehensive documentation, and production-ready CI/CD automation.
 
 ## Quick Start
 
@@ -109,7 +109,7 @@ Copy `.env.example` to `.env.local` and configure:
 
 ```bash
 NEXT_PUBLIC_API_URL=http://localhost:3000/api
-NEXT_PUBLIC_GITHUB_REPO=agent-jumbo-deploy/agent-jumbo
+NEXT_PUBLIC_GITHUB_REPO=agent-mahoo-deploy/agent-mahoo
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_URL=http://localhost:3000
 ```
@@ -134,9 +134,9 @@ Apache License 2.0 - See [../LICENSE](../LICENSE) file for details
 
 ## Support
 
-- **Documentation:** [In-app docs](https://agent-jumbo.vercel.app/documentation)
-- **Issues:** [GitHub Issues](https://github.com/agent-jumbo-deploy/agent-jumbo/issues)
-- **Discussions:** [GitHub Discussions](https://github.com/agent-jumbo-deploy/agent-jumbo/discussions)
+- **Documentation:** [In-app docs](https://agent-mahoo.vercel.app/documentation)
+- **Issues:** [GitHub Issues](https://github.com/agent-mahoo-deploy/agent-mahoo/issues)
+- **Discussions:** [GitHub Discussions](https://github.com/agent-mahoo-deploy/agent-mahoo/discussions)
 - **Support Policy:** [Customer Support](../docs/CUSTOMER_SUPPORT.md)
 
 ---

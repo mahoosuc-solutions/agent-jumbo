@@ -48,7 +48,7 @@ def _make_event(event_type="task.assigned", task_id="task-1", produced_by="mahoo
         produced_by=produced_by,
         timestamp="2026-03-22T00:00:00Z",
         version=1,
-        payload={"taskId": task_id, "assignee": "agent-jumbo", "category": "general"},
+        payload={"taskId": task_id, "assignee": "agent-mahoo", "category": "general"},
     )
 
 
@@ -259,7 +259,7 @@ async def test_emit_and_consume_roundtrip(bridge, fake_redis):
     await producer.emit(
         event_type="task.assigned",
         aggregate_id="round-trip-task",
-        payload={"taskId": "round-trip-task", "assignee": "agent-jumbo"},
+        payload={"taskId": "round-trip-task", "assignee": "agent-mahoo"},
     )
 
     # Consumer processes

@@ -482,7 +482,7 @@ class EmailClient:
         """
         Save attachment to disk and return absolute path.
 
-        Uses Agent Jumbo's file helpers for path management.
+        Uses Agent Mahoo's file helpers for path management.
         """
         # Sanitize filename
         filename = files.safe_file_name(filename)

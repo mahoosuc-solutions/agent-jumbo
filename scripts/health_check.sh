@@ -1,16 +1,16 @@
 #!/bin/bash
-# Quick health check for Agent Jumbo setup
+# Quick health check for Agent Mahoo setup
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AGENT_CONTAINER=""
-if docker ps --format '{{.Names}}' | grep -q "^agent-jumbo$"; then
-    AGENT_CONTAINER="agent-jumbo"
-elif docker ps --format '{{.Names}}' | grep -q "^agent-jumbo$"; then
-    AGENT_CONTAINER="agent-jumbo"
+if docker ps --format '{{.Names}}' | grep -q "^agent-mahoo$"; then
+    AGENT_CONTAINER="agent-mahoo"
+elif docker ps --format '{{.Names}}' | grep -q "^agent-mahoo$"; then
+    AGENT_CONTAINER="agent-mahoo"
 fi
 
-echo "🏥 Agent Jumbo Health Check"
+echo "🏥 Agent Mahoo Health Check"
 echo "=========================="
 echo ""
 
@@ -33,8 +33,8 @@ else
 fi
 echo ""
 
-# Check Agent Jumbo
-echo "🤖 Agent Jumbo Service:"
+# Check Agent Mahoo
+echo "🤖 Agent Mahoo Service:"
 if [ -n "$AGENT_CONTAINER" ]; then
     echo "  ✓ Container: Running"
 
@@ -46,7 +46,7 @@ if [ -n "$AGENT_CONTAINER" ]; then
         echo "  ✗ UI: Not accessible (HTTP $HTTP_CODE)"
     fi
 
-    # Check Ollama connectivity from agent-jumbo
+    # Check Ollama connectivity from agent-mahoo
     if docker exec "$AGENT_CONTAINER" curl -s http://ollama:11434/api/tags > /dev/null 2>&1; then
         echo "  ✓ Ollama Connection: OK"
     else
@@ -59,8 +59,8 @@ echo ""
 
 # Check volumes
 echo "💾 Data Persistence:"
-if docker volume ls | grep -q "agent_jumbo_data"; then
-    echo "  ✓ Database volume: agent_jumbo_data"
+if docker volume ls | grep -q "agent_mahoo_data"; then
+    echo "  ✓ Database volume: agent_mahoo_data"
 fi
 
 if [ -d "${ROOT_DIR}/ollama_models/models" ]; then
@@ -78,7 +78,7 @@ UI_OK=$([ "$(curl -s -o /dev/null -w "%{http_code}" http://localhost:50080 2>/de
 if [ "$OLLAMA_OK" = "yes" ] && [ "$AGENT_OK" = "yes" ] && [ "$UI_OK" = "yes" ]; then
     echo "  ✅ All systems operational!"
     echo ""
-    echo "  🌐 Access Agent Jumbo: http://localhost:50080"
+    echo "  🌐 Access Agent Mahoo: http://localhost:50080"
     echo "  🤖 Model: qwen2.5-coder:7b (local, no API key needed)"
 else
     echo "  ⚠️  Some services need attention"

@@ -1,10 +1,10 @@
-# Gmail Account Setup via Agent Jumbo UI
+# Gmail Account Setup via Agent Mahoo UI
 
-This guide explains how to set up Gmail accounts for Agent Jumbo using the web-based settings interface.
+This guide explains how to set up Gmail accounts for Agent Mahoo using the web-based settings interface.
 
 ## Overview
 
-Agent Jumbo now supports UI-based Gmail account setup through the Settings panel, eliminating the need for manual credential file management and command-line authentication.
+Agent Mahoo now supports UI-based Gmail account setup through the Settings panel, eliminating the need for manual credential file management and command-line authentication.
 
 ## Prerequisites
 
@@ -36,13 +36,13 @@ Agent Jumbo now supports UI-based Gmail account setup through the Settings panel
      http://localhost:5000/gmail_oauth_callback
      ```
 
-     (Adjust port if your Agent Jumbo runs on a different port)
+     (Adjust port if your Agent Mahoo runs on a different port)
 
 5. Download the credentials file (`credentials.json`)
 
-### 2. Access Gmail Settings in Agent Jumbo
+### 2. Access Gmail Settings in Agent Mahoo
 
-1. Open Agent Jumbo web interface
+1. Open Agent Mahoo web interface
 2. Click the **Settings** icon (⚙️) in the top navigation
 3. Navigate to the **"External"** tab
 4. Find the **"Gmail Accounts"** section
@@ -122,8 +122,8 @@ API endpoint: `POST /gmail_test_send`
 {
     "account_name": "sales",
     "to": "you@example.com",
-    "subject": "Agent Jumbo Gmail Test",
-    "body": "This is a test email from Agent Jumbo Gmail UI."
+    "subject": "Agent Mahoo Gmail Test",
+    "body": "This is a test email from Agent Mahoo Gmail UI."
 }
 ```
 
@@ -153,7 +153,7 @@ Accounts are authenticated with the following Gmail API scopes:
 
 - OAuth2 tokens are stored in `data/gmail_credentials/token_{account_name}.pickle`
 - Tokens are encrypted using Google's credential storage
-- Only the Agent Jumbo instance has access to these files
+- Only the Agent Mahoo instance has access to these files
 
 ### CSRF Protection
 
@@ -192,7 +192,7 @@ The OAuth2 flow uses state tokens to prevent CSRF attacks:
 **Solution:**
 
 - Start the authentication flow again
-- Don't navigate away from Agent Jumbo during authentication
+- Don't navigate away from Agent Mahoo during authentication
 - Check browser allows cookies from localhost
 
 ### "Credentials expired"

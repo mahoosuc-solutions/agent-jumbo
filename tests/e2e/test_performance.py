@@ -1,4 +1,4 @@
-"""E2E performance tests for Agent Jumbo web UI.
+"""E2E performance tests for Agent Mahoo web UI.
 
 Measures page load times, API SLA compliance, memory stability,
 and concurrent connection handling.

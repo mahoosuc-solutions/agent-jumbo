@@ -185,7 +185,7 @@ check_wbm_tags_support() {
     grep -q 'tag_item\|add_tag' "instruments/custom/work_queue/work_queue_manager.py" || return 1
 }
 
-echo "Agent Jumbo Release Validation"
+echo "Agent Mahoo Release Validation"
 echo "=============================="
 echo "Report: $REPORT_FILE"
 echo ""
@@ -230,7 +230,7 @@ check_dir_has_pattern "Compliance links artifact exists" "artifacts/validation" 
 
 echo ""
 echo "Metadata and Documentation Consistency:"
-check_text "pyproject has package name" '^name = "agent-jumbo-devops"$' "pyproject.toml"
+check_text "pyproject has package name" '^name = "agent-mahoo-devops"$' "pyproject.toml"
 check_text "pyproject has version" '^version = ".+"$' "pyproject.toml"
 check_text "pyproject has SPDX license" '^license = "Apache-2.0"$' "pyproject.toml"
 check_text "README references deployment" 'Deployment Guide' "README.md"
@@ -239,8 +239,8 @@ check_text "Production deploy points to GA definition" 'Production GA Definition
 check_text "Docs index lists GA definition" 'Production GA Definition of Done' "docs/README.md"
 check_text "Docs index lists customer support" 'Customer Support' "docs/README.md"
 check_text "Docs index lists Stripe setup" 'Stripe Setup For Mahoosuc.ai' "docs/README.md"
-check_text "Support doc links issues" 'github.com/agent-jumbo-deploy/agent-jumbo/issues' "docs/CUSTOMER_SUPPORT.md"
-check_text "Support doc links discussions" 'github.com/agent-jumbo-deploy/agent-jumbo/discussions' "docs/CUSTOMER_SUPPORT.md"
+check_text "Support doc links issues" 'github.com/agent-mahoo-deploy/agent-mahoo/issues' "docs/CUSTOMER_SUPPORT.md"
+check_text "Support doc links discussions" 'github.com/agent-mahoo-deploy/agent-mahoo/discussions' "docs/CUSTOMER_SUPPORT.md"
 check_text "Support doc references billing support" 'Billing And Payment Support' "docs/CUSTOMER_SUPPORT.md"
 check_text "Web docs page features support doc" "slug: 'CUSTOMER_SUPPORT'" "web/app/(public)/documentation/page.tsx"
 check_text "Pricing page links support doc" '/documentation/CUSTOMER_SUPPORT' "web/app/(public)/pricing/page.tsx"

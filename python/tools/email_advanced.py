@@ -1,5 +1,5 @@
 """
-Extended Email Tool for Agent Jumbo - Phase 2/3
+Extended Email Tool for Agent Mahoo - Phase 2/3
 Adds Gmail API OAuth2 and Push Notifications support
 """
 

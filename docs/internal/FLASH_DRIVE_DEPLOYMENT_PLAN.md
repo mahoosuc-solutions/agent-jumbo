@@ -1,8 +1,8 @@
-# Flash Drive Deployment Plan: Agent Jumbo Portable System
+# Flash Drive Deployment Plan: Agent Mahoo Portable System
 
 ## Executive Summary
 
-**Goal**: Deploy Agent Jumbo on a flash drive for operation on any computer
+**Goal**: Deploy Agent Mahoo on a flash drive for operation on any computer
 **Current State**: 17GB total (8.3GB source + 8.7GB Python venv + system container)
 **Feasibility**: ✅ **HIGHLY FEASIBLE** with Docker containerization
 **Recommended Flash Drive**: 256GB USB 3.1 (optimal) or 128GB minimum (tight)
@@ -119,7 +119,7 @@
 
 ```text
 flash-drive/
-├── agent-jumbo/                 # Source code (stripped)
+├── agent-mahoo/                 # Source code (stripped)
 │   ├── agents/
 │   ├── python/
 │   ├── skills/
@@ -175,7 +175,7 @@ docker-compose up
 1. ✅ Remove .git history (save ~1GB)
 
    ```bash
-   git clone --depth 1 . /tmp/agent-jumbo-clean
+   git clone --depth 1 . /tmp/agent-mahoo-clean
    ```
 
 2. ✅ Remove .venv directory
@@ -217,7 +217,7 @@ docker-compose up
    RUN bash /ins/install_python.sh
 
    # Copy source code
-   COPY ./agent-jumbo /a0
+   COPY ./agent-mahoo /a0
    WORKDIR /a0
 
    # Install Python dependencies
@@ -235,7 +235,7 @@ docker-compose up
    ```bash
    DOCKER_BUILDKIT=1 docker build \
      --compress \
-     --tag agent-jumbo:portable \
+     --tag agent-mahoo:portable \
      --file Dockerfile.portable \
      .
    ```
@@ -243,7 +243,7 @@ docker-compose up
 3. ✅ Compress and save
 
    ```bash
-   docker save agent-jumbo:portable | gzip > docker-image.tar.gz
+   docker save agent-mahoo:portable | gzip > docker-image.tar.gz
    ```
 
 **Expected image size: 2-3GB compressed**
@@ -260,16 +260,16 @@ Create `docker-compose.yml`:
 version: '3.8'
 
 services:
-  agent-jumbo:
-    image: agent-jumbo:portable
-    container_name: agent-jumbo-portable
+  agent-mahoo:
+    image: agent-mahoo:portable
+    container_name: agent-mahoo-portable
 
     # Persist data across restarts
     volumes:
-      - ./agent-jumbo/data:/a0/data
-      - ./agent-jumbo/memory:/a0/memory
-      - ./agent-jumbo/knowledge:/a0/knowledge
-      - ./agent-jumbo/logs:/a0/logs
+      - ./agent-mahoo/data:/a0/data
+      - ./agent-mahoo/memory:/a0/memory
+      - ./agent-mahoo/knowledge:/a0/knowledge
+      - ./agent-mahoo/logs:/a0/logs
 
     # Port mappings
     ports:
@@ -302,7 +302,7 @@ set -e
 
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
-echo "🚀 Agent Jumbo Portable - Starting..."
+echo "🚀 Agent Mahoo Portable - Starting..."
 
 # Check Docker
 if ! command -v docker &> /dev/null; then
@@ -311,7 +311,7 @@ if ! command -v docker &> /dev/null; then
 fi
 
 # Import Docker image if not already loaded
-if ! docker images | grep -q agent-jumbo:portable; then
+if ! docker images | grep -q agent-mahoo:portable; then
     echo "📦 Loading Docker image... (this may take a few minutes)"
     docker load -i "$SCRIPT_DIR/docker-image.tar.gz"
 fi
@@ -323,19 +323,19 @@ if [ ! -f "$SCRIPT_DIR/.env" ]; then
 fi
 
 # Start container
-echo "✅ Starting Agent Jumbo container..."
+echo "✅ Starting Agent Mahoo container..."
 cd "$SCRIPT_DIR"
 docker-compose up -d
 
 # Wait for health check
-echo "⏳ Waiting for Agent Jumbo to be ready..."
+echo "⏳ Waiting for Agent Mahoo to be ready..."
 sleep 10
 
 # Show status
-docker ps -a | grep agent-jumbo
+docker ps -a | grep agent-mahoo
 
 echo ""
-echo "✨ Agent Jumbo is running!"
+echo "✨ Agent Mahoo is running!"
 echo "🌐 Web UI: http://localhost:5000"
 echo "📡 API: http://localhost:8000"
 echo ""
@@ -352,7 +352,7 @@ setlocal enabledelayedexpansion
 
 set SCRIPT_DIR=%~dp0
 
-echo 🚀 Agent Jumbo Portable - Starting...
+echo 🚀 Agent Mahoo Portable - Starting...
 
 REM Check Docker
 docker --version >nul 2>&1
@@ -363,7 +363,7 @@ if %errorlevel% neq 0 (
 )
 
 REM Import Docker image if not already loaded
-docker images | findstr /R "agent-jumbo.*portable" >nul 2>&1
+docker images | findstr /R "agent-mahoo.*portable" >nul 2>&1
 if %errorlevel% neq 0 (
     echo 📦 Loading Docker image... ^(this may take a few minutes^)
     docker load -i "%SCRIPT_DIR%docker-image.tar.gz"
@@ -376,19 +376,19 @@ if not exist "%SCRIPT_DIR%.env" (
 )
 
 REM Start container
-echo ✅ Starting Agent Jumbo container...
+echo ✅ Starting Agent Mahoo container...
 cd /d "%SCRIPT_DIR%"
 docker-compose up -d
 
 REM Wait for health check
-echo ⏳ Waiting for Agent Jumbo to be ready...
+echo ⏳ Waiting for Agent Mahoo to be ready...
 timeout /t 10
 
 REM Show status
-docker ps -a | findstr "agent-jumbo"
+docker ps -a | findstr "agent-mahoo"
 
 echo.
-echo ✨ Agent Jumbo is running!
+echo ✨ Agent Mahoo is running!
 echo 🌐 Web UI: http://localhost:5000
 echo 📡 API: http://localhost:8000
 echo.
@@ -438,7 +438,7 @@ AGENT_KNOWLEDGE_SUBDIR=default
 #### **SETUP.md**
 
 ```markdown
-# Agent Jumbo Portable - Setup Guide
+# Agent Mahoo Portable - Setup Guide
 
 ## Prerequisites
 
@@ -463,7 +463,7 @@ AGENT_KNOWLEDGE_SUBDIR=default
    - Edit `.env` file with your API keys
    - Restart: `docker-compose restart`
 
-5. **Access Agent Jumbo**
+5. **Access Agent Mahoo**
    - Web UI: http://localhost:5000
    - API: http://localhost:8000
 
@@ -473,14 +473,14 @@ AGENT_KNOWLEDGE_SUBDIR=default
 # View logs
 docker-compose logs -f
 
-# Stop Agent Jumbo
+# Stop Agent Mahoo
 docker-compose down
 
 # Rebuild if needed
 docker-compose build
 
 # Access container shell
-docker-compose exec agent-jumbo bash
+docker-compose exec agent-mahoo bash
 ```
 
 ## Troubleshooting
@@ -513,8 +513,8 @@ docker-compose exec agent-jumbo bash
 
 ```
 
-agent-jumbo-portable/
-├── 📁 agent-jumbo/           (5-6GB stripped source)
+agent-mahoo-portable/
+├── 📁 agent-mahoo/           (5-6GB stripped source)
 ├── 📄 docker-image.tar.gz   (2-3GB Docker image)
 ├── 📄 docker-compose.yml    (2KB)
 ├── 📄 Dockerfile            (2KB) - for rebuilding
@@ -553,9 +553,9 @@ Total: ~10-11GB
    - [ ] Web UI loads at http://localhost:5000
 
 2. **Portability Testing** (1.5 hours each)
-   - [ ] **Windows machine** - run.bat starts Agent Jumbo
-   - [ ] **Mac machine** - run.sh starts Agent Jumbo
-   - [ ] **Linux machine** - run.sh starts Agent Jumbo
+   - [ ] **Windows machine** - run.bat starts Agent Mahoo
+   - [ ] **Mac machine** - run.sh starts Agent Mahoo
+   - [ ] **Linux machine** - run.sh starts Agent Mahoo
    - [ ] Fresh user (no Docker experience) can follow SETUP.md
 
 3. **Functional Testing** (1 hour)
@@ -642,8 +642,8 @@ Total: ~10-11GB
 **Q: What if user doesn't have Docker?**
 A: SETUP.md directs them to install Docker Desktop (simple, free, one-time)
 
-**Q: Can they update Agent Jumbo code?**
-A: Yes! They can edit files in the agent-jumbo/ folder, changes persist
+**Q: Can they update Agent Mahoo code?**
+A: Yes! They can edit files in the agent-mahoo/ folder, changes persist
 
 **Q: What about API keys and secrets?**
 A: Stored in .env file (git-ignored), not in docker image

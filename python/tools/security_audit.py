@@ -1,7 +1,7 @@
 """
 Security Audit Tool
 
-Converted from Mahoosuc OS /security:audit command to native Agent Jumbo tool.
+Converted from Mahoosuc OS /security:audit command to native Agent Mahoo tool.
 Provides comprehensive security audit for codebase and infrastructure with vulnerability detection.
 
 Source: .claude/commands/security/audit.md

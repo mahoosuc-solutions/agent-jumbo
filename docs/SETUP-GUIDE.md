@@ -1,14 +1,14 @@
-# Agent Jumbo Team Setup Guide
+# Agent Mahoo Team Setup Guide
 
-> Step-by-step guide for team members to set up Agent Jumbo development and deployment environment.
+> Step-by-step guide for team members to set up Agent Mahoo development and deployment environment.
 
 ## For Developers
 
 ### 1. Clone Repository
 
 ```bash
-git clone https://github.com/agent-jumbo-deploy/agent-jumbo.git
-cd agent-jumbo
+git clone https://github.com/agent-mahoo-deploy/agent-mahoo.git
+cd agent-mahoo
 ```
 
 ### 2. Setup Web Application
@@ -112,7 +112,7 @@ npm run type-check
 **Check Vercel logs:**
 
 1. Visit [vercel.com](https://vercel.com)
-2. Select "agent-jumbo" project
+2. Select "agent-mahoo" project
 3. Go to "Deployments" tab
 4. Click deployment and view "Build logs"
 
@@ -144,7 +144,7 @@ vercel env pull
 
 **Vercel Production:**
 
-1. Go to Vercel Dashboard → agent-jumbo → Settings
+1. Go to Vercel Dashboard → agent-mahoo → Settings
 2. Go to "Environment Variables"
 3. Add required variables:
    - NEXT_PUBLIC_API_URL

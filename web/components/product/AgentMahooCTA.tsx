@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-export default function AgentJumboCTA() {
+export default function AgentMahooCTA() {
   return (
     <section className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-copper-500/10 via-mahoosuc-blue-500/10 to-copper-500/10">
       <div className="max-w-4xl mx-auto text-center">
@@ -27,7 +27,7 @@ export default function AgentJumboCTA() {
         <p className="mt-6 text-sm text-slate-500">
           Open source under the Mahoosuc OS platform.{' '}
           <Link
-            href="https://github.com/mahoosuc-solutions/agent-jumbo"
+            href="https://github.com/mahoosuc-solutions/agent-mahoo"
             className="text-copper-400 hover:text-copper-300 underline underline-offset-2"
             target="_blank"
             rel="noopener noreferrer"

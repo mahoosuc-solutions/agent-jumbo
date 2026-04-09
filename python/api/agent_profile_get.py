@@ -42,7 +42,7 @@ class GetAgentProfile(ApiHandler):
                 }
             )
 
-        current = settings_persistence.get_settings().get("agent_profile", "agent-jumbo")
+        current = settings_persistence.get_settings().get("agent_profile", "agent-mahoo")
 
         return {
             "supported": True,

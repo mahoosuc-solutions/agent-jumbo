@@ -1,5 +1,5 @@
 """
-Payment Dunning Tool for Agent Jumbo
+Payment Dunning Tool for Agent Mahoo
 
 Manages automated failed-payment recovery (dunning) across all payment providers.
 Runs an escalating retry schedule: retry → email → pause → cancel.

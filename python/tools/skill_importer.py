@@ -1,5 +1,5 @@
 """
-Skill Importer Tool for Agent Jumbo
+Skill Importer Tool for Agent Mahoo
 Import Claude Code plugin skills, hooks, agents, and MCP servers
 """
 
@@ -11,8 +11,8 @@ from python.helpers.tool import Response, Tool
 
 class SkillImporter(Tool):
     """
-    Agent Jumbo tool for importing Claude Code plugins and skills.
-    Enables conversion of Claude Code ecosystem components to Agent Jumbo tools.
+    Agent Mahoo tool for importing Claude Code plugins and skills.
+    Enables conversion of Claude Code ecosystem components to Agent Mahoo tools.
     """
 
     def __init__(self, agent, name: str, method: str | None, args: dict, message: str, loop_data=None, **kwargs):
@@ -135,7 +135,7 @@ class SkillImporter(Tool):
         return Response(message=f"Skill {skill_id} {status}.", break_loop=False)
 
     async def _generate_prompt(self):
-        """Generate Agent Jumbo tool prompt for a skill"""
+        """Generate Agent Mahoo tool prompt for a skill"""
         skill_id = self.args.get("skill_id")
 
         if not skill_id:
@@ -249,7 +249,7 @@ class SkillImporter(Tool):
         return Response(message=self._format_result(result, "Remove Plugin"), break_loop=False)
 
     async def _get_mcp_config(self):
-        """Get MCP configuration for Agent Jumbo integration"""
+        """Get MCP configuration for Agent Mahoo integration"""
         plugin_id = self.args.get("plugin_id")
 
         if not plugin_id:
@@ -262,7 +262,7 @@ class SkillImporter(Tool):
 
         config_json = json.dumps(config, indent=2)
         return Response(
-            message=f"## MCP Configuration\n\nAdd this to your Agent Jumbo MCP settings:\n\n```json\n{config_json}\n```",
+            message=f"## MCP Configuration\n\nAdd this to your Agent Mahoo MCP settings:\n\n```json\n{config_json}\n```",
             break_loop=False,
         )
 

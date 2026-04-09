@@ -39,7 +39,7 @@ Agent Settings  │  External  │  ►MCP/A2A◄  │  Developer  │  Schedule
 └──────────────────────────────────────────┘
 ```
 
-### Step 1: Access Agent Jumbo Web UI
+### Step 1: Access Agent Mahoo Web UI
 
 Open your browser and navigate to:
 
@@ -131,7 +131,7 @@ http://localhost:8080
 
 3. **Restart the container** to ensure everything loads properly:
    ```bash
-   docker restart agent-jumbo
+   docker restart agent-mahoo
    ```
 
 1. **Wait ~30 seconds** for the container to fully restart
@@ -141,14 +141,14 @@ http://localhost:8080
 After restart (wait ~30 seconds), check logs:
 
 ```bash
-docker logs agent-jumbo | grep -i mcp
+docker logs agent-mahoo | grep -i mcp
 ```
 
 You should see MCP servers being initialized.
 
 ### Step 6: Test in Chat
 
-Ask Agent Jumbo:
+Ask Agent Mahoo:
 
 ```text
 What MCP tools are available?
@@ -181,19 +181,19 @@ Many servers mentioned in MCP documentation (fetch, git, github, brave-search, p
 
 ```bash
 # Restart container
-docker restart agent-jumbo
+docker restart agent-mahoo
 
 # View logs
-docker logs -f agent-jumbo
+docker logs -f agent-mahoo
 
 # Check MCP status
-docker logs agent-jumbo | grep -i mcp
+docker logs agent-mahoo | grep -i mcp
 
 # Access container shell
-docker exec -it agent-jumbo bash
+docker exec -it agent-mahoo bash
 
 # Test Ollama from container
-docker exec agent-jumbo curl http://host.docker.internal:11434/api/tags
+docker exec agent-mahoo curl http://host.docker.internal:11434/api/tags
 ```
 
 ## ⚠️ Important Notes

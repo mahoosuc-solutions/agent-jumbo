@@ -4,7 +4,7 @@
 
 ### Base Classes & Abstract Interfaces
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/pms_provider.py`** (256 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/pms_provider.py`** (256 lines)
   - `PMSProvider` abstract base class (Line 31-256)
   - `ProviderType` enum (Line 21-29)
   - `authenticate()` abstract method (Line 49-57)
@@ -13,7 +13,7 @@
 
 ### Canonical Data Models
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/canonical_models.py`**
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/canonical_models.py`**
   - `Reservation` model with ReservationStatus enum
   - `Property` model
   - `Unit` model
@@ -25,7 +25,7 @@
 
 ### Provider Registry (Configuration Management)
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/provider_registry.py`** (327 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/provider_registry.py`** (327 lines)
   - `ProviderConfig` dataclass (Line 15-50)
   - `ProviderRegistry` class (Line 53-327)
     - Config file path: `~/.pms_hub/providers.json` (Line 63)
@@ -39,7 +39,7 @@
 
 #### Hostaway Provider
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/hostaway.py`** (645 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/hostaway.py`** (645 lines)
   - `HostawayProvider` class (Line 33-645)
   - Configuration (Line 42-55): user_id, api_key, access_token
   - Authentication (Line 57-75): GET /v1/user
@@ -58,7 +58,7 @@
 
 #### Lodgify Provider
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/lodgify.py`** (666 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/lodgify.py`** (666 lines)
   - `LodgifyProvider` class (Line 33-666)
   - Configuration (Line 42-52): api_key, api_secret (for webhook), account_id
   - Authentication (Line 54-72): GET /account
@@ -79,7 +79,7 @@
 
 #### Hostify Provider
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/hostify.py`** (448 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/hostify.py`** (448 lines)
   - `HostifyProvider` class (Line 28-448)
   - Configuration (Line 36-45): api_key, account_id
   - Authentication (Line 47-56): GET /v2/accounts/me
@@ -98,7 +98,7 @@
 
 #### iCal Provider
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/ical.py`** (198 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/ical.py`** (198 lines)
   - `ICalProvider` class (Line 28-198)
   - Configuration (Line 35-45): ical_url, property_id, property_name
   - Authentication (Line 47-58): GET {ical_url} with redirects
@@ -114,14 +114,14 @@
 
 #### Provider Factory
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/__init__.py`** (48 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/__init__.py`** (48 lines)
   - `create_provider()` async factory function (Line 10-47)
   - Dispatches on ProviderType (Line 24-40)
   - Authenticates provider before returning (Line 44-45)
 
 ### Synchronization Service
 
-- **`/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/sync_service.py`** (362 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/sync_service.py`** (362 lines)
   - `PMSSyncService` class (Line 19-361)
   - PropertyManager integration (Line 30-39)
   - `sync_reservation_to_property_manager()` (Line 41-94):
@@ -140,7 +140,7 @@
 
 ### Webhook Receiver
 
-- **`/home/webemo-aaron/projects/agent-jumbo/python/api/pms_webhook_receive.py`** (142 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/python/api/pms_webhook_receive.py`** (142 lines)
   - `PMSWebhookReceive` class (Line 16-142)
   - `process()` async method (Line 36-113):
     - Extract webhook parameters (Line 52-56)
@@ -153,7 +153,7 @@
 
 ### Settings Get Endpoint
 
-- **`/home/webemo-aaron/projects/agent-jumbo/python/api/pms_settings_get.py`** (81 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/python/api/pms_settings_get.py`** (81 lines)
   - `PMSSettingsGet` class (Line 14-81)
   - `process()` async method (Line 15-80)
   - Returns provider list without credentials (Line 49-50)
@@ -161,7 +161,7 @@
 
 ### Settings Set Endpoint
 
-- **`/home/webemo-aaron/projects/agent-jumbo/python/api/pms_settings_set.py`** (207 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/python/api/pms_settings_set.py`** (207 lines)
   - `PMSSettingsSet` class (Line 14-206)
   - `process()` async dispatcher (Line 15-59)
   - `_add_provider()` (Line 61-120): Register new provider
@@ -175,7 +175,7 @@
 
 ### PMS Hub Tool
 
-- **`/home/webemo-aaron/projects/agent-jumbo/python/tools/pms_hub_tool.py`** (436 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/python/tools/pms_hub_tool.py`** (436 lines)
   - `PMSHub` class extending `Tool` (Line 16-436)
   - `execute()` async dispatcher (Line 22-75)
   - `_get_status()` (Line 77-92)
@@ -195,7 +195,7 @@
 
 ### Event Bus
 
-- **`/home/webemo-aaron/projects/agent-jumbo/python/helpers/event_bus.py`** (99 lines)
+- **`/home/webemo-aaron/projects/agent-mahoo/python/helpers/event_bus.py`** (99 lines)
   - `EventStore` class (Line 12-75):
     - SQLite database at specified path (Line 13)
     - `_ensure_schema()` (Line 20-32): Creates events table
@@ -213,27 +213,27 @@
 
 ### Provider Tests
 
-- **`/home/webemo-aaron/projects/agent-jumbo/tests/test_pms_providers.py`**
+- **`/home/webemo-aaron/projects/agent-mahoo/tests/test_pms_providers.py`**
   - `TestHostawayProvider`: Authentication, headers, transformation tests
   - `TestLodgifyProvider`: Webhook signature verification tests
   - Provider name and webhook event tests
 
 ### Registry Tests
 
-- **`/home/webemo-aaron/projects/agent-jumbo/tests/test_pms_registry.py`**
+- **`/home/webemo-aaron/projects/agent-mahoo/tests/test_pms_registry.py`**
   - `TestProviderConfig`: Serialization/deserialization tests
   - `TestProviderRegistry`: Load/save/register/unregister tests
 
 ### Sync Service Tests
 
-- **`/home/webemo-aaron/projects/agent-jumbo/tests/test_pms_sync_service.py`**
+- **`/home/webemo-aaron/projects/agent-mahoo/tests/test_pms_sync_service.py`**
   - `TestSyncServiceInitialization`: Creation tests
   - `TestReservationSync`: Sync flow tests
   - `TestPropertySync`: Property sync tests
 
 ### Canonical Models Tests
 
-- **`/home/webemo-aaron/projects/agent-jumbo/tests/test_pms_canonical_models.py`**
+- **`/home/webemo-aaron/projects/agent-mahoo/tests/test_pms_canonical_models.py`**
   - Model validation and serialization tests
 
 ---
@@ -297,7 +297,7 @@
 ## Absolute File Paths (Complete List)
 
 ```text
-/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/
+/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/
 ├── __init__.py
 ├── pms_provider.py                                 (256 lines)
 ├── provider_registry.py                            (327 lines)
@@ -310,18 +310,18 @@
     ├── hostify.py                                  (448 lines)
     └── ical.py                                     (198 lines)
 
-/home/webemo-aaron/projects/agent-jumbo/python/api/
+/home/webemo-aaron/projects/agent-mahoo/python/api/
 ├── pms_webhook_receive.py                          (142 lines)
 ├── pms_settings_get.py                             (81 lines)
 └── pms_settings_set.py                             (207 lines)
 
-/home/webemo-aaron/projects/agent-jumbo/python/tools/
+/home/webemo-aaron/projects/agent-mahoo/python/tools/
 └── pms_hub_tool.py                                 (436 lines)
 
-/home/webemo-aaron/projects/agent-jumbo/python/helpers/
+/home/webemo-aaron/projects/agent-mahoo/python/helpers/
 └── event_bus.py                                    (99 lines)
 
-/home/webemo-aaron/projects/agent-jumbo/tests/
+/home/webemo-aaron/projects/agent-mahoo/tests/
 ├── test_pms_providers.py
 ├── test_pms_registry.py
 ├── test_pms_sync_service.py

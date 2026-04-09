@@ -2,14 +2,14 @@
 
 ## The Problem
 
-Agent Jumbo is trying to use OpenRouter (default) but you haven't configured an API key.
+Agent Mahoo is trying to use OpenRouter (default) but you haven't configured an API key.
 You need to switch it to use your local Ollama/Qwen model.
 
 ## The Solution - Configure Qwen NOW
 
 ### Step 1: Open Settings
 
-1. In the Agent Jumbo UI (<http://localhost:8080>)
+1. In the Agent Mahoo UI (<http://localhost:8080>)
 2. Click the **⚙️ Settings** button (gear icon, top right)
 
 ### Step 2: Find Chat Model Settings
@@ -70,7 +70,7 @@ Try saying "Hello" again - it should now use your local Qwen model!
 Run this command to verify Ollama is accessible from the container:
 
 ```bash
-docker exec agent-jumbo curl -s http://host.docker.internal:11434/api/tags | head -20
+docker exec agent-mahoo curl -s http://host.docker.internal:11434/api/tags | head -20
 ```
 
 You should see the qwen2.5-coder:7b model listed.
@@ -80,7 +80,7 @@ You should see the qwen2.5-coder:7b model listed.
 After saving settings, you can also restart the container:
 
 ```bash
-docker restart agent-jumbo
+docker restart agent-mahoo
 ```
 
 Then try chatting again after ~30 seconds.

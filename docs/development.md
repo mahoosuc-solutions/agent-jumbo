@@ -1,6 +1,6 @@
-# Development manual for Agent Jumbo
+# Development manual for Agent Mahoo
 
-This guide will show you how to setup a local development environment for Agent Jumbo in a VS Code compatible IDE, including proper debugger.
+This guide will show you how to setup a local development environment for Agent Mahoo in a VS Code compatible IDE, including proper debugger.
 
 [![Tutorial video](./res/devguide_vid.png)](https://www.youtube.com/watch?v=KE39P4qBjDk)
 
@@ -11,7 +11,7 @@ This guide will show you how to setup a local development environment for Agent 
 
 > [!NOTE]
 >
-> - Agent Jumbo runs in a Docker container, this simplifies installation and ensures unified environment and behavior across systems.
+> - Agent Mahoo runs in a Docker container, this simplifies installation and ensures unified environment and behavior across systems.
 > - Developing and debugging in a container would be complicated though, therefore we use a hybrid approach where the python framework runs on your machine (in VS Code for example) and only connects to a Dockerized instance when it needs to execute code or use other pre-installed functionality like the built-in search engine.
 
 ## To follow this guide you will need
@@ -32,18 +32,18 @@ This guide will show you how to setup a local development environment for Agent 
 
 ## Step 1: Clone or download the repository
 
-- Agent Jumbo is available on GitHub [github.com/agent0ai/agent-jumbo](https://github.com/agent0ai/agent-jumbo).
-- You can download the files using a browser and extract or run `git clone https://github.com/agent0ai/agent-jumbo` in your desired directory.
+- Agent Mahoo is available on GitHub [github.com/agent0ai/agent-mahoo](https://github.com/agent0ai/agent-mahoo).
+- You can download the files using a browser and extract or run `git clone https://github.com/agent0ai/agent-mahoo` in your desired directory.
 
 > [!NOTE]
-> In my case, I used `cd ~/Desktop` and `git clone https://github.com/agent0ai/agent-jumbo`, so my project folder is `~/Desktop/agent-jumbo`.
+> In my case, I used `cd ~/Desktop` and `git clone https://github.com/agent0ai/agent-mahoo`, so my project folder is `~/Desktop/agent-mahoo`.
 
 ## Step 2: Open project folder in your IDE
 
 - I will be using plain and clean VS Code for this example to make sure I don't skip any setup part, you can use any of it's variants like Cursor, Windsurf etc.
-- Agent Jumbo comes with `.vscode` folder that contains basic setup, recommended extensions, and debugger profiles. These will help us a lot.
+- Agent Mahoo comes with `.vscode` folder that contains basic setup, recommended extensions, and debugger profiles. These will help us a lot.
 
-1. Open your IDE and open the project folder using `File > Open Folder` and select your folder, in my case `~/Desktop/agent-jumbo`.
+1. Open your IDE and open the project folder using `File > Open Folder` and select your folder, in my case `~/Desktop/agent-mahoo`.
 2. You will probably be prompted to trust the directory, confirm that.
 3. You should now have the project open in your IDE
 ![VS Code project](res/dev/devinst-1.png)
@@ -61,11 +61,11 @@ ms-python.python
 Now when you select one of the python files in the project, you should see proper Python syntax highlighting and error detection. It should immediately show some errors, because we did not yet install dependencies.
 ![VS Code Python](res/dev/devinst-2.png)
 
-1. Prepare the python environment to run Agent Jumbo in. (⚠️ This step assumes you have some Python runtime installed.) By clicking the python version in lower right corner (3.13.1 in my example), you should get a list of available environments. You can click the `+ Create Virtual Environment` button. You might be prompted to select the environment manager if you have multiple installed. I have venv and Conda, I will select Conda here. I'm also prompted for desired python version, I will select 3.12, that is known to work well.
+1. Prepare the python environment to run Agent Mahoo in. (⚠️ This step assumes you have some Python runtime installed.) By clicking the python version in lower right corner (3.13.1 in my example), you should get a list of available environments. You can click the `+ Create Virtual Environment` button. You might be prompted to select the environment manager if you have multiple installed. I have venv and Conda, I will select Conda here. I'm also prompted for desired python version, I will select 3.12, that is known to work well.
 ![VS Code Python environments](res/dev/devinst-3.png)
 ![VS Code Python environments](res/dev/devinst-4.png)
 
-- Your new environment should be automatically activated. If not, select it in the lower right corner. You might need to open a new terminal in VS Code to reflect the changes with `Terminal > New Terminal` or clicking the `+` button in the terminal tab. Your terminal prompt should now start with your environment name/path, in my case `(/Users/frdel/Desktop/agent-jumbo/.conda)` This shows the environment is active in the terminal.
+- Your new environment should be automatically activated. If not, select it in the lower right corner. You might need to open a new terminal in VS Code to reflect the changes with `Terminal > New Terminal` or clicking the `+` button in the terminal tab. Your terminal prompt should now start with your environment name/path, in my case `(/Users/frdel/Desktop/agent-mahoo/.conda)` This shows the environment is active in the terminal.
 
 ![VS Code env terminal](res/dev/devinst-5.png)
 
@@ -79,9 +79,9 @@ playwright install chromium
 These will install all the python packages and browser binaries for playwright (browser agent).
 Errors in the code editor caused by missing packages should now be gone. If not, try reloading the window.
 
-## Step 4: Run Agent Jumbo in the IDE
+## Step 4: Run Agent Mahoo in the IDE
 
-Great work! Now you should be able to run Agent Jumbo from your IDE including real-time debugging.
+Great work! Now you should be able to run Agent Mahoo from your IDE including real-time debugging.
 It will not be able to do code execution and few other features requiring the Docker container just yet, but most of the framework will already work.
 
 1. The project is pre-configured for debugging. Go to Debugging tab, select "run_ui.py" and click the green play button (or press F5 by default). The configuration can be found at `.vscode/launch.json`.
@@ -93,7 +93,7 @@ The framework will run at the default port 5000. If you open `http://localhost:5
 It may take a while the first time. You should see output like the screenshot below. The RFC error is ok for now as we did not yet connect our local development to another instance in docker.
 ![First run](res/dev/devinst-7.png)
 
-After inserting my API key in settings, my Agent Jumbo instance works. I can send a simple message and get a response.
+After inserting my API key in settings, my Agent Mahoo instance works. I can send a simple message and get a response.
 ⚠️ Some tools like code execution will not work yet as they need to be connected to a Dockerized instance.
 
 ![First message](res/dev/devinst-8.png)
@@ -109,14 +109,14 @@ After inserting my API key in settings, my Agent Jumbo instance works. I can sen
 
 ![Debugging](res/dev/devinst-10.png)
 
-## Step 5: Run another instance of Agent Jumbo in Docker
+## Step 5: Run another instance of Agent Mahoo in Docker
 
 - Some parts of A0 require standardized linux environment, additional web services and preinstalled binaries that would be unneccessarily complex to set up in a local environment.
 - To make development easier, we can use existing A0 instance in docker and forward some requests to be executed there using SSH and RFC (Remote Function Call).
 
-1. Pull the docker image `agent0ai/agent-jumbo` from Docker Hub and run it with a web port (`80`) mapped and SSH port (`22`) mapped.
+1. Pull the docker image `agent0ai/agent-mahoo` from Docker Hub and run it with a web port (`80`) mapped and SSH port (`22`) mapped.
 If you want, you can also map the `/a0` folder to our local project folder as well, this way we can update our local instance and the docker instance at the same time.
-This is how it looks in my example: port `80` is mapped to `8880` on the host and `22` to `8822`, `/a0` folder mapped to `/Users/frdel/Desktop/agent-jumbo`:
+This is how it looks in my example: port `80` is mapped to `8880` on the host and `22` to `8822`, `/a0` folder mapped to `/Users/frdel/Desktop/agent-mahoo`:
 
 ![docker run](res/dev/devinst-11.png)
 ![docker run](res/dev/devinst-12.png)
@@ -140,14 +140,14 @@ My VS Code instance:
 
 # 🎉 Congratulations! 🚀
 
-You have successfully set up a complete Agent Jumbo development environment! You now have:
+You have successfully set up a complete Agent Mahoo development environment! You now have:
 
 - ✅ A local development instance running in your IDE with full debugging capabilities
 - ✅ A dockerized instance for code execution and system operations
 - ✅ RFC and SSH communication between both instances
-- ✅ The ability to develop, debug, and test Agent Jumbo features seamlessly
+- ✅ The ability to develop, debug, and test Agent Mahoo features seamlessly
 
-You're now ready to contribute to Agent Jumbo, create custom extensions, or modify the framework to suit your needs. Happy coding! 💻✨
+You're now ready to contribute to Agent Mahoo, create custom extensions, or modify the framework to suit your needs. Happy coding! 💻✨
 
 ## Next steps
 
@@ -157,6 +157,6 @@ You're now ready to contribute to Agent Jumbo, create custom extensions, or modi
 ## Want to build your docker image?
 
 - You can use the `DockerfileLocal` to build your docker image.
-- Navigate to your project root in the terminal and run `docker build -f DockerfileLocal -t agent-jumbo-local --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .`
+- Navigate to your project root in the terminal and run `docker build -f DockerfileLocal -t agent-mahoo-local --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .`
 - The `CACHE_DATE` argument is optional, it is used to cache most of the build process and only rebuild the last steps when the files or dependencies change.
 - See `docker/run/build.txt` for more build command examples.

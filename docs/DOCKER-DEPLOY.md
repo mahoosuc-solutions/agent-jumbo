@@ -1,4 +1,4 @@
-# Agent Jumbo — Production Docker Deployment
+# Agent Mahoo — Production Docker Deployment
 
 Production Docker setup with baked image, persistent volumes, and local drive access.
 
@@ -12,16 +12,16 @@ Production Docker setup with baked image, persistent volumes, and local drive ac
 
 **Volume Mounts:**
 
-- `agent_jumbo_data` → `/aj/data` (runtime data: SQLite DBs, uploads)
-- `agent_jumbo_logs` → `/aj/logs` (application logs)
-- `agent_jumbo_venv` → `/opt/venv-a0` (Python virtual environment cache)
+- `agent_mahoo_data` → `/aj/data` (runtime data: SQLite DBs, uploads)
+- `agent_mahoo_logs` → `/aj/logs` (application logs)
+- `agent_mahoo_venv` → `/opt/venv-a0` (Python virtual environment cache)
 - `/mnt/wdblack` → `/mnt/wdblack` (full WD Black drive access)
 - `~/.ssh` → `/root/.ssh` (SSH keys, read-only)
 - `~/.config` → `/root/.config` (user configs)
 
 **Network:**
 
-- External port: `6274` (Agent Jumbo default)
+- External port: `6274` (Agent Mahoo default)
 - Internal port: `80`
 - Health check: `GET /health` every 30s
 
@@ -40,7 +40,7 @@ Production Docker setup with baked image, persistent volumes, and local drive ac
 ./scripts/docker-deploy.sh deploy
 ```
 
-This builds the image and starts the container. Agent Jumbo will be available at `http://localhost:6274`.
+This builds the image and starts the container. Agent Mahoo will be available at `http://localhost:6274`.
 
 ### Individual Commands
 
@@ -84,7 +84,7 @@ This builds the image and starts the container. Agent Jumbo will be available at
 3. **Docker Volumes**: Script auto-creates if missing, but verify existing ones:
 
    ```bash
-   docker volume ls | grep agent_jumbo
+   docker volume ls | grep agent_mahoo
    ```
 
 4. **Base Image**: Ensure `agent0ai/agent-zero-base:latest` is available:
@@ -102,9 +102,9 @@ This builds the image and starts the container. Agent Jumbo will be available at
 Key `.env` settings for production:
 
 ```bash
-# Agent Jumbo Mode
-AGENT_JUMBO_RUN_MODE=production
-AGENT_JUMBO_LAPTOP_MODE=false
+# Agent Mahoo Mode
+AGENT_MAHOO_RUN_MODE=production
+AGENT_MAHOO_LAPTOP_MODE=false
 
 # Mahoosuc OS Integration (optional)
 AGENTMESH_REDIS_URL=redis://your-redis-host:6379
@@ -172,10 +172,10 @@ Since the image is immutable (code baked in):
 
 ### Dependency Updates
 
-Python dependencies are cached in the `agent_jumbo_venv` volume. To force a refresh:
+Python dependencies are cached in the `agent_mahoo_venv` volume. To force a refresh:
 
 ```bash
-docker volume rm agent_jumbo_venv
+docker volume rm agent_mahoo_venv
 ./scripts/docker-deploy.sh build
 ./scripts/docker-deploy.sh start
 ```
@@ -188,36 +188,36 @@ docker volume rm agent_jumbo_venv
 
 ```bash
 # Backup data volume
-docker run --rm -v agent_jumbo_data:/data -v $(pwd):/backup \
-  ubuntu tar czf /backup/agent_jumbo_data_backup.tar.gz /data
+docker run --rm -v agent_mahoo_data:/data -v $(pwd):/backup \
+  ubuntu tar czf /backup/agent_mahoo_data_backup.tar.gz /data
 
 # Backup logs volume
-docker run --rm -v agent_jumbo_logs:/logs -v $(pwd):/backup \
-  ubuntu tar czf /backup/agent_jumbo_logs_backup.tar.gz /logs
+docker run --rm -v agent_mahoo_logs:/logs -v $(pwd):/backup \
+  ubuntu tar czf /backup/agent_mahoo_logs_backup.tar.gz /logs
 ```
 
 ### Restore Volumes
 
 ```bash
 # Restore data volume
-docker volume create agent_jumbo_data
-docker run --rm -v agent_jumbo_data:/data -v $(pwd):/backup \
-  ubuntu tar xzf /backup/agent_jumbo_data_backup.tar.gz -C /
+docker volume create agent_mahoo_data
+docker run --rm -v agent_mahoo_data:/data -v $(pwd):/backup \
+  ubuntu tar xzf /backup/agent_mahoo_data_backup.tar.gz -C /
 
 # Restore logs volume
-docker volume create agent_jumbo_logs
-docker run --rm -v agent_jumbo_logs:/logs -v $(pwd):/backup \
-  ubuntu tar xzf /backup/agent_jumbo_logs_backup.tar.gz -C /
+docker volume create agent_mahoo_logs
+docker run --rm -v agent_mahoo_logs:/logs -v $(pwd):/backup \
+  ubuntu tar xzf /backup/agent_mahoo_logs_backup.tar.gz -C /
 ```
 
 ### Inspect Volume Contents
 
 ```bash
 # List files in data volume
-docker run --rm -v agent_jumbo_data:/data ubuntu ls -lah /data
+docker run --rm -v agent_mahoo_data:/data ubuntu ls -lah /data
 
 # Check SQLite databases
-docker run --rm -v agent_jumbo_data:/data ubuntu \
+docker run --rm -v agent_mahoo_data:/data ubuntu \
   find /data -name "*.db" -exec ls -lh {} \;
 ```
 
@@ -235,14 +235,14 @@ docker run --rm -v agent_jumbo_data:/data ubuntu \
 ls -ld /mnt/wdblack ~/.ssh ~/.config
 
 # Check volume status
-docker volume ls | grep agent_jumbo
+docker volume ls | grep agent_mahoo
 ```
 
 ### Health check failing
 
 ```bash
 # Check health status
-docker inspect agent-jumbo-production | grep -A 10 Health
+docker inspect agent-mahoo-production | grep -A 10 Health
 
 # Manual health check
 curl http://localhost:6274/health
@@ -266,10 +266,10 @@ sudo chown -R $(id -u):$(id -g) /mnt/wdblack/data
 
 ```bash
 # Verify SSH keys are mounted read-only
-docker exec agent-jumbo-production ls -lah /root/.ssh
+docker exec agent-mahoo-production ls -lah /root/.ssh
 
 # Check permissions (should be 600 for private keys)
-docker exec agent-jumbo-production stat /root/.ssh/id_rsa
+docker exec agent-mahoo-production stat /root/.ssh/id_rsa
 ```
 
 ### Out of disk space
@@ -305,7 +305,7 @@ docker container prune
 | **Port** | 5000 | 6274 |
 | **Restart** | `unless-stopped` | `unless-stopped` |
 | **Resources** | Unlimited | 4 CPU / 8GB RAM limit |
-| **Mode** | `AGENT_JUMBO_RUN_MODE=local-lite` | `AGENT_JUMBO_RUN_MODE=production` |
+| **Mode** | `AGENT_MAHOO_RUN_MODE=local-lite` | `AGENT_MAHOO_RUN_MODE=production` |
 | **Drive Access** | Full source mount | Data mounts only |
 | **Rebuild** | Not needed for code changes | Required for code changes |
 
@@ -327,5 +327,5 @@ Use development mode for fast iteration. Use production mode for stable deployme
 
 - **Logs**: `./scripts/docker-deploy.sh logs`
 - **Status**: `./scripts/docker-deploy.sh status`
-- **GitHub Issues**: <https://github.com/mahoosuc-solutions/agent-jumbo/issues>
-- **Documentation**: <https://agent-jumbo.com/documentation>
+- **GitHub Issues**: <https://github.com/mahoosuc-solutions/agent-mahoo/issues>
+- **Documentation**: <https://agent-mahoo.com/documentation>

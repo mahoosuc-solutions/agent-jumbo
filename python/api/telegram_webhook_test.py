@@ -16,7 +16,7 @@ class TelegramWebhookTest(ApiHandler):
             "message": {
                 "message_id": 0,
                 "chat": {"id": 0, "type": "private"},
-                "text": "Webhook test from Agent Jumbo",
+                "text": "Webhook test from Agent Mahoo",
             },
         }
         data = json.dumps(payload).encode("utf-8")

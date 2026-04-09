@@ -17,7 +17,7 @@ class TemplateManager:
     """
     Manager for template operations.
 
-    Follows Agent Jumbo instrument conventions:
+    Follows Agent Mahoo instrument conventions:
     - Constructor takes db_path for testability
     - Methods return structured dicts with 'status'/'error' keys
     - Schema validation for inputs

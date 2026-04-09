@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def validate_security():
-    print("=== Agent Jumbo White-Hat Security Validation ===")
+    print("=== Agent Mahoo White-Hat Security Validation ===")
 
     db_path = Path("instruments/custom/workflow_engine/data/workflow.db")
     if not db_path.exists():

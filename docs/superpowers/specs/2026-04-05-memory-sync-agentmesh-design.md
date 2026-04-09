@@ -6,13 +6,13 @@
 
 ## Problem
 
-Agent Jumbo runs locally and connects to MOS on Hetzner via AgentMesh Bridge (Redis Streams). Memory is stored as local FAISS indexes — MOS has no visibility into what the local agent knows. This creates a blind spot: C-suite personas and scheduled tasks on MOS can't reference email digests, knowledge captures, or operator context that only exists locally.
+Agent Mahoo runs locally and connects to MOS on Hetzner via AgentMesh Bridge (Redis Streams). Memory is stored as local FAISS indexes — MOS has no visibility into what the local agent knows. This creates a blind spot: C-suite personas and scheduled tasks on MOS can't reference email digests, knowledge captures, or operator context that only exists locally.
 
 ## Decision
 
 **Option A: Local → Cloud (one-way sync via event bus)**
 
-Local Agent Jumbo is the source of truth. When EXECUTIVE memory is written locally, a `memory.updated` event is emitted through the existing AgentMesh Bridge. MOS consumes these events to build awareness. No FAISS duplication on the cloud side — MOS gets the text and metadata via events.
+Local Agent Mahoo is the source of truth. When EXECUTIVE memory is written locally, a `memory.updated` event is emitted through the existing AgentMesh Bridge. MOS consumes these events to build awareness. No FAISS duplication on the cloud side — MOS gets the text and metadata via events.
 
 ## What Gets Synced
 
@@ -37,7 +37,7 @@ The bridge runs in a separate thread with its own event loop (standard pattern i
 {
   "type": "memory.updated",
   "aggregateId": "<doc_id>",
-  "producedBy": "agent-jumbo",
+  "producedBy": "agent-mahoo",
   "payload": {
     "doc_id": "<doc_id>",
     "text": "<truncated to 4000 chars>",

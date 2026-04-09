@@ -326,18 +326,18 @@ After Team B Completion:
 **Team A (Calendar Hub)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 git branch  # Verify: feature/pms-calendar-sync
-cat /home/webemo-aaron/projects/agent-jumbo/TEAM_QUICKSTART.md
+cat /home/webemo-aaron/projects/agent-mahoo/TEAM_QUICKSTART.md
 pytest tests/test_pms_calendar_sync.py -v  # See test specs
 ```
 
 **Team B (Guest Communication)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 git branch  # Verify: feature/pms-messaging-automation
-cat /home/webemo-aaron/projects/agent-jumbo/TEAM_QUICKSTART.md
+cat /home/webemo-aaron/projects/agent-mahoo/TEAM_QUICKSTART.md
 pytest tests/test_pms_communication_workflows.py -v  # See test specs
 ```
 

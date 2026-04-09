@@ -1,6 +1,6 @@
 """
 Simplified Email Integration Test - Standalone
-Tests core email functionality without full Agent Jumbo dependencies
+Tests core email functionality without full Agent Mahoo dependencies
 """
 
 import sys

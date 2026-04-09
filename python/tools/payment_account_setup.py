@@ -1,5 +1,5 @@
 """
-Payment Account Setup Tool for Agent Jumbo
+Payment Account Setup Tool for Agent Mahoo
 
 Guides the operator through browser-assisted account creation for Stripe,
 Square, and PayPal. The agent drives each step using MCP browser tools

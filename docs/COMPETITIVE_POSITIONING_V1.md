@@ -1,12 +1,12 @@
-# Competitive Positioning v1 (Agent Jumbo)
+# Competitive Positioning v1 (Agent Mahoo)
 
 Date: March 8, 2026
-Owner: Agent Jumbo product team
+Owner: Agent Mahoo product team
 Status: Draft for review
 
 ## Objective
 
-Define where Agent Jumbo should compete and what measurable outcomes we must exceed.
+Define where Agent Mahoo should compete and what measurable outcomes we must exceed.
 
 ## Segment focus
 
@@ -27,7 +27,7 @@ Define where Agent Jumbo should compete and what measurable outcomes we must exc
 | LangGraph | Agent runtime framework | 25.9k GitHub stars | Durable execution + HITL strengths |
 | OpenAI Agents SDK | Agent SDK | 19.4k GitHub stars | Fast growth, robust agent primitives |
 
-## Where Agent Jumbo should win
+## Where Agent Mahoo should win
 
 1. Reliability under load and startup conditions for local/pro teams
 2. AI Architect lifecycle execution (design -> build -> test -> validate) in one workspace
@@ -37,7 +37,7 @@ Define where Agent Jumbo should compete and what measurable outcomes we must exc
 
 ## Scoring matrix (0-5, current strategic estimate)
 
-| Capability | Agent Jumbo | Dify | n8n | LangGraph | CrewAI | OpenHands |
+| Capability | Agent Mahoo | Dify | n8n | LangGraph | CrewAI | OpenHands |
 |---|---:|---:|---:|---:|---:|---:|
 | Local-first operability | 5 | 4 | 4 | 3 | 3 | 3 |
 | Runtime fault tolerance (chat/agent loop) | 4 | 3 | 3 | 4 | 3 | 3 |
@@ -82,7 +82,7 @@ Notes:
 
 ## Go-to-market positioning statement
 
-Agent Jumbo is the AI Architect operations platform for teams that need reliable, visible, and governable AI execution across the full software solution lifecycle, especially in local-first and controlled deployment environments.
+Agent Mahoo is the AI Architect operations platform for teams that need reliable, visible, and governable AI execution across the full software solution lifecycle, especially in local-first and controlled deployment environments.
 
 ## Source links
 

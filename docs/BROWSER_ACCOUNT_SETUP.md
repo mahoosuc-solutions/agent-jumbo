@@ -1,6 +1,6 @@
 # Browser-Assisted Payment Account Setup
 
-Agent Jumbo can guide you through setting up accounts on Stripe, Square, and PayPal using
+Agent Mahoo can guide you through setting up accounts on Stripe, Square, and PayPal using
 browser automation. The agent handles all navigation and form-filling, but pauses at checkpoints
 where human action is required (CAPTCHA, 2FA, email verification, document upload).
 

@@ -8,7 +8,7 @@
 
 ## Executive Summary
 
-The MOS↔Agent Jumbo integration is live and working. This plan addresses the gaps between "demo-ready" and "production SaaS" — focusing on API-driven user provisioning, security hardening, durable metering, and guided onboarding.
+The MOS↔Agent Mahoo integration is live and working. This plan addresses the gaps between "demo-ready" and "production SaaS" — focusing on API-driven user provisioning, security hardening, durable metering, and guided onboarding.
 
 **Prioritization:** Security hardening and revenue enablement first, then growth features, then technical debt.
 
@@ -37,7 +37,7 @@ The MOS↔Agent Jumbo integration is live and working. This plan addresses the g
 **Problem:** `mos_auth.check_entitlement()` returns True on network error (fail-open).
 **Fix:** Default to fail-closed. Add circuit breaker: stale-while-revalidate after 5 consecutive failures.
 
-- **File:** `agent-jumbo/python/helpers/mos_auth.py`
+- **File:** `agent-mahoo/python/helpers/mos_auth.py`
 - **Config:** `ENTITLEMENT_FAIL_MODE=closed|open`
 
 ### 1D. Per-Endpoint Rate Limiting with Redis
@@ -48,13 +48,13 @@ The MOS↔Agent Jumbo integration is live and working. This plan addresses the g
 - `/auth/relay`: 10/min
 - Chat operations: 30/min per org
 - `/login` POST: 5/min
-- **File:** `agent-jumbo/run_ui.py`
+- **File:** `agent-mahoo/run_ui.py`
 
 ### 1E. Relay Security Hardening
 
 **Fix:** Regenerate Flask session ID after relay exchange (prevent session fixation). Add nonce parameter. Add `Referrer-Policy: no-referrer` on redirect.
 
-- **File:** `agent-jumbo/run_ui.py` relay_handler
+- **File:** `agent-mahoo/run_ui.py` relay_handler
 
 ---
 
@@ -65,7 +65,7 @@ The MOS↔Agent Jumbo integration is live and working. This plan addresses the g
 **Problem:** In-memory counters reset on restart.
 **Fix:** Redis `INCRBY` on `usage:{org_id}:{YYYY-MM}:operations` with 45-day TTL. Daily snapshots to `usage_snapshots` table.
 
-- **File:** `agent-jumbo/python/helpers/usage_enforcement.py`
+- **File:** `agent-mahoo/python/helpers/usage_enforcement.py`
 - **New migration:** `usage_snapshots` table
 
 ### 2B. Automated Trial Expiry
@@ -147,7 +147,7 @@ Show product picker between registration and dashboard. Pass `productKey` throug
 
 ### 4C. Multi-Tenant Data Isolation
 
-Add `organization_id` to all Agent Jumbo data tables. Row-level scoping middleware injects org from session. Enforces the `data_mode: isolated` declaration.
+Add `organization_id` to all Agent Mahoo data tables. Row-level scoping middleware injects org from session. Enforces the `data_mode: isolated` declaration.
 
 ---
 

@@ -6,7 +6,7 @@
 
 ## Overview
 
-Mahoosuc OS agents are designed for Claude Code's agent system. Agent Jumbo uses a different architecture (`agent.py`, `AgentContext`, tool system). These agents serve as **reference implementations** and **design patterns**.
+Mahoosuc OS agents are designed for Claude Code's agent system. Agent Mahoo uses a different architecture (`agent.py`, `AgentContext`, tool system). These agents serve as **reference implementations** and **design patterns**.
 
 ## Agent Categories
 
@@ -32,12 +32,12 @@ Mahoosuc OS agents are designed for Claude Code's agent system. Agent Jumbo uses
 
 ## Migration Strategy
 
-**DO NOT** directly invoke these agents in Agent Jumbo. Instead:
+**DO NOT** directly invoke these agents in Agent Mahoo. Instead:
 
 1. **Extract Patterns**: Review agent prompts for workflow patterns
-2. **Adapt to Tools**: Convert agent capabilities to Agent Jumbo tools
-3. **Use as Templates**: Reference when creating new Agent Jumbo subagents
-4. **Document Learnings**: Note valuable patterns in Agent Jumbo's architecture docs
+2. **Adapt to Tools**: Convert agent capabilities to Agent Mahoo tools
+3. **Use as Templates**: Reference when creating new Agent Mahoo subagents
+4. **Document Learnings**: Note valuable patterns in Agent Mahoo's architecture docs
 
 ## Example: product-planner Agent
 
@@ -47,11 +47,11 @@ Mahoosuc OS agents are designed for Claude Code's agent system. Agent Jumbo uses
 - Returns structured plan
 - Designed for Claude Code context
 
-**Agent Jumbo Adaptation**:
+**Agent Mahoo Adaptation**:
 
 - Create `python/tools/product_plan.py`
-- Use Agent Jumbo's `Tool` base class
-- Integrate with Agent Jumbo's context and memory systems
+- Use Agent Mahoo's `Tool` base class
+- Integrate with Agent Mahoo's context and memory systems
 - Return `Response` object with markdown plan
 
-See `python/tools/` for Agent Jumbo tool patterns.
+See `python/tools/` for Agent Mahoo tool patterns.

@@ -612,7 +612,7 @@ Existing workflows using version 1 continue to work. You can migrate them to ver
 {{workflow_engine(action="export_template", name="approval-cycle", format="yaml")}}
 ```
 
-Export produces a portable definition that can be imported into other Agent Jumbo instances.
+Export produces a portable definition that can be imported into other Agent Mahoo instances.
 
 ### Practice Exercise
 

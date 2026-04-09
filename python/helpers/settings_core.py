@@ -513,7 +513,7 @@ def get_default_settings() -> Settings:
         auth_login="",
         auth_password="",
         root_password="",
-        agent_profile="agent-jumbo",
+        agent_profile="agent-mahoo",
         agent_memory_subdir="default",
         agent_knowledge_subdir="custom",
         chat_execution_backend="native",

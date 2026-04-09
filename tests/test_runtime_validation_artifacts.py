@@ -8,7 +8,7 @@ def test_manual_smoke_markdown_includes_browser_and_restart_evidence():
         CheckResult("health", True, "status=healthy"),
         CheckResult("scheduler_file", True, "128 /aj/data/scheduler/tasks.json"),
         CheckResult("browser_smoke", True, "all good"),
-        CheckResult("restart", True, "agent-jumbo-production"),
+        CheckResult("restart", True, "agent-mahoo-production"),
     ]
     artifacts = {
         "scheduler_api": {"task_count": 29},
@@ -26,14 +26,14 @@ def test_manual_smoke_markdown_includes_browser_and_restart_evidence():
         timestamp="20260405-120000",
         base_url="http://localhost:6274",
         browser_base_url="http://127.0.0.1:80",
-        container="agent-jumbo-production",
+        container="agent-mahoo-production",
         results=results,
         artifacts=artifacts,
         restart_container=True,
     )
 
     assert "# Manual Smoke Record" in markdown
-    assert "agent-jumbo-production" in markdown
+    assert "agent-mahoo-production" in markdown
     assert "tasks=`29`" not in markdown
     assert "tasks=29" in markdown
     assert "Work Queue" in markdown

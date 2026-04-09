@@ -1,28 +1,28 @@
-# Agent Jumbo DevOps
+# Agent Mahoo DevOps
 
-[![Tests](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/workflows/tests/badge.svg)](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/actions)
-[![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)](https://github.com/agent-jumbo-deploy/agent-jumbo-devops)
+[![Tests](https://github.com/agent-mahoo-deploy/agent-mahoo-devops/workflows/tests/badge.svg)](https://github.com/agent-mahoo-deploy/agent-mahoo-devops/actions)
+[![Coverage](https://img.shields.io/badge/coverage-99%25-brightgreen)](https://github.com/agent-mahoo-deploy/agent-mahoo-devops)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue)](https://www.python.org/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue)](LICENSE)
 
 **Intelligent multi-platform deployment orchestration for AI agents and applications.**
 
-Agent Jumbo DevOps provides production-grade deployment automation across Kubernetes, SSH, AWS, GCP, and GitHub Actions with intelligent error handling, automatic rollback, and real-time progress monitoring.
+Agent Mahoo DevOps provides production-grade deployment automation across Kubernetes, SSH, AWS, GCP, and GitHub Actions with intelligent error handling, automatic rollback, and real-time progress monitoring.
 
-## Agent Jumbo - Web UI & Deployment
+## Agent Mahoo - Web UI & Deployment
 
-> Agent Jumbo is a modern web interface for Agent Jumbo DevOps with a Next.js 14 dashboard, comprehensive documentation, and production-ready Vercel deployment.
+> Agent Mahoo is a modern web interface for Agent Mahoo DevOps with a Next.js 14 dashboard, comprehensive documentation, and production-ready Vercel deployment.
 
 ### Quick Access
 
-- **[Agent Jumbo Web README](web/README.md)** - Web application overview
+- **[Agent Mahoo Web README](web/README.md)** - Web application overview
 - **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete deployment instructions for Vercel
 - **[Setup Guide](docs/SETUP-GUIDE.md)** - Team setup and development guide
 - **[Vercel Configuration](web/README-VERCEL.md)** - Vercel-specific setup details
 - **[Production GA Definition of Done](docs/PRODUCTION_GA_DEFINITION_OF_DONE.md)** - Launch source of truth for current self-serve scope
 - **[Customer Support](docs/CUSTOMER_SUPPORT.md)** - Canonical support, billing, and incident path
 
-### Get Started with Agent Jumbo
+### Get Started with Agent Mahoo
 
 ```bash
 cd web
@@ -49,7 +49,7 @@ Visit [http://localhost:3000](http://localhost:3000)
 ### Installation
 
 ```bash
-pip install agent-jumbo-devops
+pip install agent-mahoo-devops
 ```
 
 ### Local Docker Run
@@ -65,15 +65,15 @@ Then open `http://localhost:5000`.
 
 Notes:
 
-- The container defaults to `AGENT_JUMBO_RUN_MODE=local-lite` and keeps `AGENT_JUMBO_LAPTOP_MODE=true` for backward compatibility.
-- Switch to `AGENT_JUMBO_RUN_MODE=research` when you want a lighter research/browsing setup without the full operational stack.
+- The container defaults to `AGENT_MAHOO_RUN_MODE=local-lite` and keeps `AGENT_MAHOO_LAPTOP_MODE=true` for backward compatibility.
+- Switch to `AGENT_MAHOO_RUN_MODE=research` when you want a lighter research/browsing setup without the full operational stack.
 - If you already run Ollama on the host, the container will use `http://host.docker.internal:11434` by default.
 - The repository is mounted into `/aj`, so edits on the host are reflected immediately in the container.
 
 ### Basic Kubernetes Deployment
 
 ```python
-from agent_jumbo.tools.devops_deploy import deploy_to_kubernetes
+from agent_mahoo.tools.devops_deploy import deploy_to_kubernetes
 
 # Deploy an application
 async for update in deploy_to_kubernetes(
@@ -88,7 +88,7 @@ async for update in deploy_to_kubernetes(
 ### With Error Handling
 
 ```python
-from agent_jumbo.tools.devops_deploy import (
+from agent_mahoo.tools.devops_deploy import (
     deploy_to_kubernetes,
     DeploymentError,
     TransientDeploymentError,
@@ -154,7 +154,7 @@ async for update in deploy_via_ssh(
 ## Architecture
 
 ```text
-Agent Jumbo DevOps
+Agent Mahoo DevOps
 ├── Core Framework (100%)
 │   ├── Deployment Orchestration
 │   ├── Error Classification
@@ -171,7 +171,7 @@ Agent Jumbo DevOps
 
 ## Testing
 
-Agent Jumbo DevOps has comprehensive test coverage:
+Agent Mahoo DevOps has comprehensive test coverage:
 
 ```text
 Total Tests: 66
@@ -245,7 +245,7 @@ Deployment times (typical Kubernetes):
 
 Compared to similar tools:
 
-| Metric | Agent Jumbo | Helm | Terraform |
+| Metric | Agent Mahoo | Helm | Terraform |
 |--------|-----------|------|-----------|
 | Setup time | < 5 min | 10-20 min | 15-30 min |
 | Deployment speed | 10-45s | 30-120s | 60-300s |
@@ -262,8 +262,8 @@ Apache License 2.0 - See [LICENSE](LICENSE) file for details.
 - 📖 [Documentation](docs/)
 - 🚦 [Launch Readiness](docs/PRODUCTION_GA_DEFINITION_OF_DONE.md)
 - 🛟 [Customer Support](docs/CUSTOMER_SUPPORT.md)
-- 🐛 [Report Issues](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/issues)
-- 💬 [Discussions](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/discussions)
+- 🐛 [Report Issues](https://github.com/agent-mahoo-deploy/agent-mahoo-devops/issues)
+- 💬 [Discussions](https://github.com/agent-mahoo-deploy/agent-mahoo-devops/discussions)
 
 ## Acknowledgments
 

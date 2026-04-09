@@ -298,7 +298,7 @@ GMAIL_WEBHOOK_SECRET="your-secret-token"
 
 - Typically 7 days
 - Must renew before expiration
-- Agent Jumbo can auto-renew
+- Agent Mahoo can auto-renew
 
 #### 2. Disable Push Notifications
 

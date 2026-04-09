@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Agent Jumbo One-Line Installer
-# Usage: curl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-jumbo/main/install.sh | bash
+# Agent Mahoo One-Line Installer
+# Usage: curl -fsSL https://raw.githubusercontent.com/mahoosuc-solutions/agent-mahoo/main/install.sh | bash
 
 # Step 1 — OS and arch detection
 OS="$(uname -s)"   # Linux or Darwin
@@ -16,19 +16,19 @@ fi
 # Validate OS
 if [ "$OS" != "Linux" ] && [ "$OS" != "Darwin" ]; then
     echo "ERROR: Unsupported operating system: ${OS}" >&2
-    echo "Agent Jumbo supports Linux and macOS only." >&2
+    echo "Agent Mahoo supports Linux and macOS only." >&2
     exit 1
 fi
 
 # Step 2 — Set install dir
 if [ "$OS" = "Darwin" ]; then
-    INSTALL_DIR="${HOME}/Library/Application Support/agent-jumbo"
+    INSTALL_DIR="${HOME}/Library/Application Support/agent-mahoo"
 else
-    INSTALL_DIR="${HOME}/.local/share/agent-jumbo"
+    INSTALL_DIR="${HOME}/.local/share/agent-mahoo"
 fi
 
 # Step 3 — Fetch latest VERSION from GitHub API
-REPO="mahoosuc-solutions/agent-jumbo"
+REPO="mahoosuc-solutions/agent-mahoo"
 API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 
 echo "Fetching latest version from GitHub..."
@@ -50,12 +50,12 @@ if [ -z "$VERSION" ]; then
 fi
 
 # Step 4 — Download and extract
-ARCHIVE_NAME="agent-jumbo-${VERSION}.tar.gz"
+ARCHIVE_NAME="agent-mahoo-${VERSION}.tar.gz"
 DOWNLOAD_URL="https://github.com/${REPO}/releases/latest/download/${ARCHIVE_NAME}"
 TMP_DIR=$(mktemp -d)
 trap 'rm -rf "${TMP_DIR}"' EXIT
 
-echo "Downloading Agent Jumbo v${VERSION}..."
+echo "Downloading Agent Mahoo v${VERSION}..."
 if command -v curl &>/dev/null; then
     curl -fsSL "${DOWNLOAD_URL}" -o "${TMP_DIR}/${ARCHIVE_NAME}"
 elif command -v wget &>/dev/null; then
@@ -98,35 +98,35 @@ fi
 
 # Step 7 — Create launcher script
 echo "Creating launcher script..."
-cat > "${INSTALL_DIR}/agent-jumbo" << 'EOF'
+cat > "${INSTALL_DIR}/agent-mahoo" << 'EOF'
 #!/usr/bin/env bash
 cd "$(dirname "$0")"
 exec uv run python run_ui.py "$@"
 EOF
-chmod +x "${INSTALL_DIR}/agent-jumbo"
+chmod +x "${INSTALL_DIR}/agent-mahoo"
 
 # Step 8 — Create symlink to launcher
 if [ "$OS" = "Darwin" ]; then
     LINK_DIR="/usr/local/bin"
     # Try to symlink to /usr/local/bin, fall back to ~/.local/bin if it fails
-    if ! ln -sf "${INSTALL_DIR}/agent-jumbo" "${LINK_DIR}/agent-jumbo" 2>/dev/null; then
+    if ! ln -sf "${INSTALL_DIR}/agent-mahoo" "${LINK_DIR}/agent-mahoo" 2>/dev/null; then
         echo "Note: /usr/local/bin not writable, using ~/.local/bin instead"
         LINK_DIR="${HOME}/.local/bin"
         mkdir -p "${LINK_DIR}"
-        ln -sf "${INSTALL_DIR}/agent-jumbo" "${LINK_DIR}/agent-jumbo"
+        ln -sf "${INSTALL_DIR}/agent-mahoo" "${LINK_DIR}/agent-mahoo"
     fi
 else
     LINK_DIR="${HOME}/.local/bin"
     mkdir -p "${LINK_DIR}"
-    ln -sf "${INSTALL_DIR}/agent-jumbo" "${LINK_DIR}/agent-jumbo"
+    ln -sf "${INSTALL_DIR}/agent-mahoo" "${LINK_DIR}/agent-mahoo"
 fi
 
 # Step 9 — Print success message
 echo ""
-echo "✓ Agent Jumbo v${VERSION} installed to ${INSTALL_DIR}"
+echo "✓ Agent Mahoo v${VERSION} installed to ${INSTALL_DIR}"
 echo ""
 echo "To start:"
-echo "  agent-jumbo"
+echo "  agent-mahoo"
 echo ""
 echo "Or directly:"
 echo "  cd \"${INSTALL_DIR}\" && uv run python run_ui.py"

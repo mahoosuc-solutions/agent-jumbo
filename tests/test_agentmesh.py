@@ -137,7 +137,7 @@ class TestAgentMeshBridge:
 
     def test_default_config(self):
         config = AgentMeshConfig()
-        assert config.name == "agent-jumbo"
+        assert config.name == "agent-mahoo"
         assert config.redis_url == "redis://localhost:6379"
 
     def test_health_initial(self):

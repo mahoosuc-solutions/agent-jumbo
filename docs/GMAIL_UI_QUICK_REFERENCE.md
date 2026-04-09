@@ -2,7 +2,7 @@
 
 ## 🎯 What's New
 
-Agent Jumbo now supports **web-based Gmail account setup** through the Settings UI - no more manual credential file management!
+Agent Mahoo now supports **web-based Gmail account setup** through the Settings UI - no more manual credential file management!
 
 ## 📦 Files Created/Modified
 
@@ -85,7 +85,7 @@ Response includes `authorization_url` (alias: `auth_url`) - open in browser to c
 ### 4. Use Account
 
 ```python
-# In Agent Jumbo conversation
+# In Agent Mahoo conversation
 "Send email via Gmail to customer@example.com"
 
 # Tool call (automatic)
@@ -150,8 +150,8 @@ Content-Type: application/json
 {
     "account_name": "sales",
     "to": "you@example.com",
-    "subject": "Agent Jumbo Gmail Test",
-    "body": "This is a test email from Agent Jumbo Gmail UI."
+    "subject": "Agent Mahoo Gmail Test",
+    "body": "This is a test email from Agent Mahoo Gmail UI."
 }
 ```
 
@@ -395,4 +395,4 @@ Agent: {
 
 **Ready to test!** Set up Google Cloud OAuth2 credentials and follow the Quick Start guide.
 
-For questions or issues, see `docs/GMAIL_UI_TESTING.md` or check the Agent Jumbo documentation.
+For questions or issues, see `docs/GMAIL_UI_TESTING.md` or check the Agent Mahoo documentation.

@@ -1,6 +1,6 @@
-# Agent Jumbo Notifications
+# Agent Mahoo Notifications
 
-Quick guide for using the notification system in Agent Jumbo.
+Quick guide for using the notification system in Agent Mahoo.
 
 ## Backend Usage
 

@@ -1,7 +1,7 @@
 # RC Next Steps — release/rc-mcp-tool-performance
 
 **Date:** 2026-03-14 (final update)
-**PR:** [mahoosuc-solutions/agent-jumbo#2](https://github.com/mahoosuc-solutions/agent-jumbo/pull/2)
+**PR:** [mahoosuc-solutions/agent-mahoo#2](https://github.com/mahoosuc-solutions/agent-mahoo/pull/2)
 **Branch:** `release/rc-mcp-tool-performance` (22 commits ahead of `main`)
 **Local tests:** 1767 passed, 0 failed, 6 skipped
 
@@ -17,7 +17,7 @@ All CI blockers resolved across 10 commits (`6db759d5` through `7d7be321`):
 - **CI workflows:** replaced black with ruff format, pinned `setuptools<78` (pkg_resources fix), pre-install openai-whisper with `--no-build-isolation`, fixed docs workflow bash syntax, dropped Python 3.10 from test matrix (browser-use requires >=3.11), disabled Docker Build Test (docker/run dir removed), softened instrument/perf test gates
 - **tests:** fixed 5 failures (hardcoded paths, stale doc refs, registry isolation)
 - **Local result:** 1767 passed, 0 failed, 6 skipped
-- **CI result:** Lint & Format, Web Docs, Web Build, Tests all green; Agent Jumbo CI all jobs green except Docker (disabled)
+- **CI result:** Lint & Format, Web Docs, Web Build, Tests all green; Agent Mahoo CI all jobs green except Docker (disabled)
 
 ### Remaining local issue: docker backup dirs
 
@@ -36,7 +36,7 @@ All three MOS integrations validated against real APIs on 2026-03-14.
 ### 2a. Linear Integration — PASSED
 
 - **API key:** configured in `.env` from `/mnt/wdblack/secure/keys/.env`
-- **Teams discovered:** MAH (Mahoosuc Solutions), GHI (Grateful House Inc), AJB (Agent Jumbo)
+- **Teams discovered:** MAH (Mahoosuc Solutions), GHI (Grateful House Inc), AJB (Agent Mahoo)
 - **Default team:** AJB (`245ff001-d242-424b-bd63-948dcf71239f`)
 - **CRUD test:** Create (AJB-1, AJB-2) → Search (2 matches) → Update (priority Medium→High) → Dashboard query (2 issues) — all passed
 - **Projects:** 5 in AJB (Life OS, Relationships & Social, Finance & Tax, Real Estate Portfolio, Health & Wellness)

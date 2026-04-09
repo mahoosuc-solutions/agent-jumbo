@@ -1,5 +1,5 @@
 # =============================================================================
-# Agent Jumbo — MOS Production Stack (mos-prod: 46.224.170.197)
+# Agent Mahoo — MOS Production Stack (mos-prod: 46.224.170.197)
 #
 # Joins the existing MOS Docker network for direct access to:
 #   - mos-redis:6379   (AgentMesh bridge)
@@ -11,7 +11,7 @@
 #
 # Usage:
 #   # Resolve secrets from Vault first:
-#   deploy/resolve-env.sh --output /opt/agent-jumbo/runtime.env
+#   deploy/resolve-env.sh --output /opt/agent-mahoo/runtime.env
 #
 #   # Deploy:
 #   docker compose -f docker-compose.mos-prod.yml up -d
@@ -26,21 +26,21 @@ networks:
     name: mos_mos-network
 
 services:
-  agent-jumbo:
-    image: agent-jumbo:current
+  agent-mahoo:
+    image: agent-mahoo:current
     pull_policy: never
-    container_name: agent-jumbo-production
+    container_name: agent-mahoo-production
     restart: unless-stopped
 
     env_file:
-      - path: /opt/agent-jumbo/runtime.env
+      - path: /opt/agent-mahoo/runtime.env
         required: true
 
     environment:
       # ── Runtime mode ─────────────────────────────────────────────────────
-      AGENT_JUMBO_RUN_MODE: production
+      AGENT_MAHOO_RUN_MODE: production
       DEPLOYMENT_MODE: cloud
-      AGENT_JUMBO_LAPTOP_MODE: "false"
+      AGENT_MAHOO_LAPTOP_MODE: "false"
       CODE_EXEC_SSH_ENABLED: "false"
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
       WEB_UI_PORT: 80
@@ -51,14 +51,14 @@ services:
       AIOS_BASE_URL: http://mos-aios-backend:3012
 
     volumes:
-      - agent_jumbo_data:/aj/data
-      - agent_jumbo_logs:/aj/logs
-      - agent_jumbo_venv:/opt/venv-a0
+      - agent_mahoo_data:/aj/data
+      - agent_mahoo_logs:/aj/logs
+      - agent_mahoo_venv:/opt/venv-a0
 
     networks:
       mos-network:
         aliases:
-          - agent-jumbo
+          - agent-mahoo
 
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://localhost/health"]
@@ -92,9 +92,9 @@ services:
       traefik.http.middlewares.agentjumbo-ratelimit.ratelimit.burst: "100"
 
 volumes:
-  agent_jumbo_data:
+  agent_mahoo_data:
     external: true
-  agent_jumbo_logs:
+  agent_mahoo_logs:
     external: true
-  agent_jumbo_venv:
+  agent_mahoo_venv:
     external: true

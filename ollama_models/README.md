@@ -1,12 +1,12 @@
 # Ollama Models Directory
 
-This directory contains Ollama model data (blobs, manifests, etc.) for Agent Jumbo.
+This directory contains Ollama model data (blobs, manifests, etc.) for Agent Mahoo.
 
 ## ⚠️ Models are NOT stored in Git
 
 Model files are **excluded from Git** due to their large size (4+ GB). Instead:
 
-- **Models are versioned in GCP Cloud Storage bucket**: `gs://agent-jumbo-models`
+- **Models are versioned in GCP Cloud Storage bucket**: `gs://agent-mahoo-models`
 - **Download models before building**: `./scripts/gcp_models_sync.sh download`
 - **Upload new model versions**: `./scripts/gcp_models_sync.sh upload`
 
@@ -75,7 +75,7 @@ This file **IS tracked in Git** to document which models are expected.
 ## GCP Bucket Structure
 
 ```text
-gs://agent-jumbo-models/
+gs://agent-mahoo-models/
 ├── 20260113-220000/     # Versioned model snapshots
 │   ├── models/
 │   ├── blobs/
@@ -118,14 +118,14 @@ Add to your CI/CD pipeline:
   run: |
     ./scripts/gcp_models_sync.sh download
 
-- name: Build Agent Jumbo
+- name: Build Agent Mahoo
   run: |
     ./scripts/build.sh
 ```
 
 ## Environment Variables
 
-- `GCP_BUCKET` - GCS bucket path (default: `gs://agent-jumbo-models`)
+- `GCP_BUCKET` - GCS bucket path (default: `gs://agent-mahoo-models`)
 - `MODEL_VERSION` - Specific version to download (default: `latest`)
 - `SKIP_MODEL_DOWNLOAD` - Skip download in build (default: `false`)
 
@@ -148,7 +148,7 @@ docker exec ollama ls -la /root/.ollama/models/
 gcloud auth list
 
 # Verify bucket access
-gsutil ls gs://agent-jumbo-models/
+gsutil ls gs://agent-mahoo-models/
 ```
 
 ### Clean up old versions

@@ -1,6 +1,6 @@
 ### a2a_chat
 
-This tool lets Agent Jumbo chat with any other FastA2A-compatible agent.
+This tool lets Agent Mahoo chat with any other FastA2A-compatible agent.
 It automatically keeps conversation **context** (so each subsequent call
 continues the same dialogue) and supports optional file attachments.
 

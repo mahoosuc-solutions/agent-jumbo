@@ -169,7 +169,7 @@ def _build_candidate_from_settings(settings: dict[str, Any], source: str, name: 
         provider=str(settings.get("chat_model_provider", "ollama") or "ollama").strip().lower(),
         model_name=str(settings.get("chat_model_name", "qwen2.5-coder:3b") or "qwen2.5-coder:3b").strip(),
         api_base=str(settings.get("chat_model_api_base", "") or "").strip(),
-        agent_profile=str(settings.get("agent_profile", "agent-jumbo") or "agent-jumbo").strip(),
+        agent_profile=str(settings.get("agent_profile", "agent-mahoo") or "agent-mahoo").strip(),
         source=source,
     )
 
@@ -194,7 +194,7 @@ def _build_preset_candidate(preset_name: str, base_settings: dict[str, Any], sou
         provider=provider,
         model_name=model_name,
         api_base=api_base,
-        agent_profile=str(base_settings.get("agent_profile", "agent-jumbo") or "agent-jumbo").strip(),
+        agent_profile=str(base_settings.get("agent_profile", "agent-mahoo") or "agent-mahoo").strip(),
         source=source,
     )
 

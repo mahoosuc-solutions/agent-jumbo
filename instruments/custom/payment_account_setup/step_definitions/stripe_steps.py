@@ -18,7 +18,7 @@ def get_stripe_steps(session_id: str, email: str, webhook_endpoint_url: str) -> 
     Args:
         session_id: The parent session identifier (used to namespace step IDs).
         email: The business email address to pre-fill on the registration form.
-        webhook_endpoint_url: The public URL Agent Jumbo will receive webhook events on.
+        webhook_endpoint_url: The public URL Agent Mahoo will receive webhook events on.
     """
 
     def step(index: int, **kwargs) -> dict:

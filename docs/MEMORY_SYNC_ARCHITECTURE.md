@@ -2,12 +2,12 @@
 
 ## Overview
 
-Agent Jumbo (local) is the source of truth for all memory. When EXECUTIVE memory is written locally (email digests, knowledge captures, interaction context), a `memory.updated` event is emitted through the AgentMesh Bridge (Redis Streams) so MOS on Hetzner receives the knowledge without duplicating FAISS storage.
+Agent Mahoo (local) is the source of truth for all memory. When EXECUTIVE memory is written locally (email digests, knowledge captures, interaction context), a `memory.updated` event is emitted through the AgentMesh Bridge (Redis Streams) so MOS on Hetzner receives the knowledge without duplicating FAISS storage.
 
 ## Data Flow
 
 ```
-Local (Agent Jumbo)                          Cloud (MOS / Hetzner)
+Local (Agent Mahoo)                          Cloud (MOS / Hetzner)
 ┌────────────────────┐                      ┌──────────────────────┐
 │ Memory.insert_text()│                      │                      │
 │        ↓           │                      │                      │
@@ -32,7 +32,7 @@ Local (Agent Jumbo)                          Cloud (MOS / Hetzner)
 {
   "type": "memory.updated",
   "aggregateId": "doc-abc-123",
-  "producedBy": "agent-jumbo",
+  "producedBy": "agent-mahoo",
   "payload": {
     "doc_id": "doc-abc-123",
     "text": "## Email Digest — 2026-04-05T12:00...",

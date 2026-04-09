@@ -112,7 +112,7 @@ class TestFinanceManagerExecutiveWrite:
     @pytest.mark.asyncio
     @patch("python.tools.finance_manager.emit_event", new=_noop_emit)
     async def test_skips_executive_write_for_default_profile(self):
-        tool = self._make_tool("agent-jumbo", "generate_report", {"period": "2025-04"})
+        tool = self._make_tool("agent-mahoo", "generate_report", {"period": "2025-04"})
 
         mock_db = AsyncMock()
         mock_db.insert_text = AsyncMock(return_value="mem-000")

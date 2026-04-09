@@ -1,8 +1,8 @@
-# Agent Jumbo: Mobile-First Security Hub & Identity Platform
+# Agent Mahoo: Mobile-First Security Hub & Identity Platform
 
 ## 1. Executive Summary
 
-The **Mobile-First Security Hub** transforms Agent Jumbo from a localized AI assistant into a hardware-secured, proactive autonomous agent. By integrating hardware-bound biometric authentication (Passkeys) and a cryptographic sidecar, the agent ensures that high-risk operations are always verified by the physical owner, while proactively monitoring its own behavior for anomalies.
+The **Mobile-First Security Hub** transforms Agent Mahoo from a localized AI assistant into a hardware-secured, proactive autonomous agent. By integrating hardware-bound biometric authentication (Passkeys) and a cryptographic sidecar, the agent ensures that high-risk operations are always verified by the physical owner, while proactively monitoring its own behavior for anomalies.
 
 ---
 

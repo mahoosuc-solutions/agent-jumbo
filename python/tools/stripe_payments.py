@@ -1,5 +1,5 @@
 """
-Stripe Payments Tool for Agent Jumbo
+Stripe Payments Tool for Agent Mahoo
 Provides agent access to Stripe payment operations: customers, products,
 checkout, invoicing, subscriptions, and revenue reporting.
 """

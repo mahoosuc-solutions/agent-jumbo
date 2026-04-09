@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** When Agent Jumbo (local) writes to EXECUTIVE memory, emit a `memory.updated` event through AgentMesh Bridge so MOS (Hetzner) receives the knowledge without duplicating FAISS storage. Local is the source of truth; cloud reads via event bus.
+**Goal:** When Agent Mahoo (local) writes to EXECUTIVE memory, emit a `memory.updated` event through AgentMesh Bridge so MOS (Hetzner) receives the knowledge without duplicating FAISS storage. Local is the source of truth; cloud reads via event bus.
 
 **Architecture:** Memory writes go through the existing `on_save` callback on the `Memory` class. A new module (`memory_mesh_sync.py`) registers this callback when the AgentMesh bridge is connected. On each memory write, it emits a `memory.updated` event containing the document text, metadata, and memory subdir. MOS consumes these events to build its own awareness. The sync is fire-and-forget: if the bridge is down, local writes still succeed.
 
@@ -99,7 +99,7 @@ Expected: FAIL with `ModuleNotFoundError: No module named 'python.helpers.memory
 ```python
 """Memory → AgentMesh sync — emits memory.updated events on EXECUTIVE writes.
 
-When Agent Jumbo writes to EXECUTIVE memory locally, this module emits a
+When Agent Mahoo writes to EXECUTIVE memory locally, this module emits a
 structured event via the AgentMesh Bridge so MOS on Hetzner receives the
 knowledge without needing a separate FAISS index.
 
@@ -485,7 +485,7 @@ git commit -m "test: add memory mesh sync validation to J-series"
 
 ## Overview
 
-Agent Jumbo (local) is the source of truth for all memory. When EXECUTIVE
+Agent Mahoo (local) is the source of truth for all memory. When EXECUTIVE
 memory is written locally (email digests, knowledge captures, interaction
 context), a `memory.updated` event is emitted through the AgentMesh Bridge
 (Redis Streams) so MOS on Hetzner receives the knowledge without
@@ -495,7 +495,7 @@ duplicating FAISS storage.
 
 ```
 
-Local (Agent Jumbo)                          Cloud (MOS / Hetzner)
+Local (Agent Mahoo)                          Cloud (MOS / Hetzner)
 ┌────────────────────┐                      ┌──────────────────────┐
 │ Memory.insert_text()│                      │                      │
 │        ↓           │                      │                      │
@@ -521,7 +521,7 @@ Local (Agent Jumbo)                          Cloud (MOS / Hetzner)
 {
   "type": "memory.updated",
   "aggregateId": "doc-abc-123",
-  "producedBy": "agent-jumbo",
+  "producedBy": "agent-mahoo",
   "payload": {
     "doc_id": "doc-abc-123",
     "text": "## Email Digest — 2026-04-05T12:00...",

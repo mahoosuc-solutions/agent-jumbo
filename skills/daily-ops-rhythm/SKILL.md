@@ -1,7 +1,7 @@
 ---
 name: daily-ops-rhythm
 version: 1.0.0
-author: agent-jumbo
+author: agent-mahoo
 tier: 1
 trust_level: local
 categories:

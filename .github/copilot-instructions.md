@@ -1,8 +1,8 @@
-# Agent Jumbo - Copilot Instructions
+# Agent Mahoo - Copilot Instructions
 
 ## Architecture Overview
 
-Agent Jumbo is a **prompt-driven, hierarchical agentic framework** designed as an active personal AI assistant application. Almost nothing is hardcoded—behavior is controlled through prompts in `/prompts/` and code is dynamically loaded.
+Agent Mahoo is a **prompt-driven, hierarchical agentic framework** designed as an active personal AI assistant application. Almost nothing is hardcoded—behavior is controlled through prompts in `/prompts/` and code is dynamically loaded.
 
 **Key architectural concepts:**
 
@@ -100,20 +100,20 @@ Copy `tests/_test_template.py` when creating new instrument tests.
 
 ### Runtime Architecture
 
-Agent Jumbo runs in Docker for code execution isolation. The framework on your machine connects to a containerized runtime via SSH.
+Agent Mahoo runs in Docker for code execution isolation. The framework on your machine connects to a containerized runtime via SSH.
 
 ### Docker Commands
 
 ```bash
 # Pull and run production image
-docker pull agent0ai/agent-jumbo
-docker run -p 50001:80 agent0ai/agent-jumbo
+docker pull agent0ai/agent-mahoo
+docker run -p 50001:80 agent0ai/agent-mahoo
 
 # Build local development image
-docker build -f DockerfileLocal -t agent-jumbo-local .
+docker build -f DockerfileLocal -t agent-mahoo-local .
 
 # Run with local code mounted
-docker run -p 50001:80 -v $(pwd):/a0 agent-jumbo-local
+docker run -p 50001:80 -v $(pwd):/a0 agent-mahoo-local
 ```
 
 ### Development with DevPod
@@ -227,7 +227,7 @@ class MyInstrumentManager:
 
 ## MCP Integration
 
-Agent Jumbo supports [Model Context Protocol](https://modelcontextprotocol.io/) for external integrations.
+Agent Mahoo supports [Model Context Protocol](https://modelcontextprotocol.io/) for external integrations.
 
 ### Configuration
 
@@ -263,7 +263,7 @@ MCP servers configured in Settings UI or `mcp_config_claude.json`:
 
 ### External API
 
-Agent Jumbo exposes APIs for external integration:
+Agent Mahoo exposes APIs for external integration:
 
 - `POST /api_message` - Send messages, receive responses
 - `GET/POST /api_log_get` - Retrieve conversation logs
@@ -497,7 +497,7 @@ ruff format .                 # Format
 ./scripts/run-ci-local.sh --list    # List jobs
 
 # Docker
-docker build -f DockerfileLocal -t agent-jumbo-local .
+docker build -f DockerfileLocal -t agent-mahoo-local .
 
 # Pre-commit hooks
 pre-commit install
@@ -532,7 +532,7 @@ pre-commit run --all-files
 
 ```bash
 # Check Docker container status
-docker ps -a | grep agent-jumbo
+docker ps -a | grep agent-mahoo
 
 # View container logs
 docker logs <container_id>

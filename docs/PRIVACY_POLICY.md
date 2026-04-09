@@ -1,6 +1,6 @@
 ---
 title: Privacy Policy
-description: Customer-facing summary of how Agent Jumbo handles platform data, integrations, and operational telemetry.
+description: Customer-facing summary of how Agent Mahoo handles platform data, integrations, and operational telemetry.
 date: 2026-03-24
 ---
 
@@ -8,7 +8,7 @@ date: 2026-03-24
 
 Last updated: 2026-03-24
 
-This policy describes how Agent Jumbo handles customer data for the self-serve platform described in the current launch package.
+This policy describes how Agent Mahoo handles customer data for the self-serve platform described in the current launch package.
 
 ## Scope
 
@@ -23,7 +23,7 @@ This policy applies to:
 
 ## What We Collect
 
-Agent Jumbo may store:
+Agent Mahoo may store:
 
 - chat prompts, responses, and thread metadata
 - project, workflow, and work-queue records
@@ -32,11 +32,11 @@ Agent Jumbo may store:
 - masked telemetry about tool use, latency, and failure states
 - payment and subscription identifiers returned by billing providers
 
-Agent Jumbo is not intended to collect unnecessary sensitive data. Operators are responsible for not placing secrets, credentials, or regulated data into chat or file uploads unless the deployment is explicitly configured and reviewed for that use case.
+Agent Mahoo is not intended to collect unnecessary sensitive data. Operators are responsible for not placing secrets, credentials, or regulated data into chat or file uploads unless the deployment is explicitly configured and reviewed for that use case.
 
 ## How Data Is Used
 
-Agent Jumbo uses stored data to:
+Agent Mahoo uses stored data to:
 
 - operate chat, workflow, queue, and project features
 - persist user settings and connected integrations
@@ -46,7 +46,7 @@ Agent Jumbo uses stored data to:
 
 ## Third-Party Services
 
-Depending on configuration, Agent Jumbo may send data to third-party providers, including:
+Depending on configuration, Agent Mahoo may send data to third-party providers, including:
 
 - model providers
 - Stripe
@@ -57,13 +57,13 @@ Operators are responsible for reviewing the privacy and data-processing terms of
 
 ## Security Practices
 
-Agent Jumbo uses risk-gated tool execution, secret masking, audit-oriented runtime logs, and encrypted handling for sensitive fields where supported by the configured deployment.
+Agent Mahoo uses risk-gated tool execution, secret masking, audit-oriented runtime logs, and encrypted handling for sensitive fields where supported by the configured deployment.
 
 No security control is a guarantee against all misuse. Operators remain responsible for environment hardening, credential management, and limiting access to authorized users.
 
 ## Data Sharing
 
-Agent Jumbo does not treat customer content as public. Data may be disclosed only:
+Agent Mahoo does not treat customer content as public. Data may be disclosed only:
 
 - to the customer or authorized operators
 - to subprocessors needed to provide configured services

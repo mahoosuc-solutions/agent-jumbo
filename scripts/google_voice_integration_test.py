@@ -40,7 +40,7 @@ async def test_message_lifecycle():
     print("\n[1/5] DRAFTING MESSAGE")
     print("─" * 70)
     test_phone = "+14155551234"
-    test_message = "Hi! This is a test message from Agent Jumbo Google Voice integration."
+    test_message = "Hi! This is a test message from Agent Mahoo Google Voice integration."
 
     draft_msg = manager.draft_outbound(test_phone, test_message)
     print(f"✓ Drafted message ID: {draft_msg['id']}")

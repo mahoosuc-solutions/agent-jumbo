@@ -1,4 +1,4 @@
-"""E2E security tests — OWASP-style probes for Agent Jumbo web UI."""
+"""E2E security tests — OWASP-style probes for Agent Mahoo web UI."""
 
 import http.client
 import json

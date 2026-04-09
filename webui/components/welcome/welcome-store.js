@@ -54,13 +54,13 @@ const model = {
         memoryStore.openModal();
         break;
       case "website":
-        window.open("https://agent-jumbo.ai", "_blank");
+        window.open("https://mahoosuc.ai/agent-mahoo", "_blank");
         break;
       case "github":
-        window.open("https://github.com/mahoosuc-solutions/agent-jumbo", "_blank");
+        window.open("https://github.com/mahoosuc-solutions/agent-mahoo", "_blank");
         break;
       case "setup-mos":
-        window.open("https://mahoosuc.ai/agent-jumbo", "_blank");
+        window.open("https://mahoosuc.ai/agent-mahoo", "_blank");
         break;
     }
   },

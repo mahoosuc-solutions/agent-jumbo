@@ -1,7 +1,7 @@
 """
 Brand Voice Tool
 
-Converted from Mahoosuc OS /brand:voice command to native Agent Jumbo tool.
+Converted from Mahoosuc OS /brand:voice command to native Agent Mahoo tool.
 Define, maintain, and enforce brand voice consistency across all content.
 
 Source: .claude/commands/brand/voice.md

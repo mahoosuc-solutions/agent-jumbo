@@ -9,10 +9,10 @@ def _env_flag(name: str) -> bool:
 
 
 def get_run_mode() -> str:
-    mode = os.getenv("AGENT_JUMBO_RUN_MODE", "").strip().lower()
+    mode = os.getenv("AGENT_MAHOO_RUN_MODE", "").strip().lower()
     if mode in _VALID_RUN_MODES:
         return mode
-    if _env_flag("AGENT_JUMBO_LAPTOP_MODE"):
+    if _env_flag("AGENT_MAHOO_LAPTOP_MODE"):
         return "local-lite"
     return "full"
 

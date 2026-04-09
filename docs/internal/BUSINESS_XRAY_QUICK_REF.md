@@ -2,7 +2,7 @@
 
 ## Quick Commands
 
-### Agent Jumbo Commands
+### Agent Mahoo Commands
 
 ```text
 "Run a comprehensive business x-ray for [Company Name]"

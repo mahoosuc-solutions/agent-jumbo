@@ -5,7 +5,7 @@ set -e
 
 # remove repo (if not local branch)
 if [ "$1" != "local" ]; then
-    rm -rf /git/agent-jumbo
+    rm -rf /git/agent-mahoo
 fi
 
 # run the original install script again

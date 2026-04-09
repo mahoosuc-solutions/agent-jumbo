@@ -1,7 +1,7 @@
 # PMS Hub: Comprehensive Authentication and System Integration Analysis
 
 **Analysis Date:** 2026-01-17
-**Scope:** Complete PMS Hub implementation in `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/`
+**Scope:** Complete PMS Hub implementation in `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/`
 
 ---
 
@@ -22,7 +22,7 @@ The PMS Hub is a multi-provider property management system integration layer sup
 ### 1.1 HOSTAWAY AUTHENTICATION
 
 **Authentication Type:** OAuth 2.0 Bearer Token + API Key
-**Files:** `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/hostaway.py`
+**Files:** `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/hostaway.py`
 
 #### Configuration Requirements
 
@@ -70,7 +70,7 @@ _get_headers() (Line 504-510)
 ### 1.2 LODGIFY AUTHENTICATION
 
 **Authentication Type:** API Key (Bearer Token) + HMAC-SHA256 Webhook Verification
-**Files:** `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/lodgify.py`
+**Files:** `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/lodgify.py`
 
 #### Configuration Requirements
 
@@ -146,7 +146,7 @@ def verify_webhook(self, payload: Dict[str, Any], signature: str) -> bool:
 ### 1.3 HOSTIFY AUTHENTICATION
 
 **Authentication Type:** API Key (Bearer Token)
-**Files:** `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/hostify.py`
+**Files:** `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/hostify.py`
 
 #### Configuration Requirements
 
@@ -193,7 +193,7 @@ _get_headers() (Line 351-356)
 ### 1.4 iCAL AUTHENTICATION
 
 **Authentication Type:** URL-based (HTTP GET with optional auth headers)
-**Files:** `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/providers/ical.py`
+**Files:** `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/providers/ical.py`
 
 #### Configuration Requirements
 
@@ -237,7 +237,7 @@ ICalProvider.authenticate() (Line 47-58)
 | Lodgify Credentials | Memory + JSON | Plaintext | Exposed in config |
 | Hostify API Key | Memory + JSON | Plaintext | Exposed in config |
 
-**Configuration File Location:** `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/provider_registry.py:63`
+**Configuration File Location:** `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/provider_registry.py:63`
 
 ```python
 self.config_path = config_path or Path.home() / ".pms_hub" / "providers.json"
@@ -280,7 +280,7 @@ self.config_path = config_path or Path.home() / ".pms_hub" / "providers.json"
 
 ### 3.1 Webhook Architecture
 
-**Entry Point:** `/home/webemo-aaron/projects/agent-jumbo/python/api/pms_webhook_receive.py`
+**Entry Point:** `/home/webemo-aaron/projects/agent-mahoo/python/api/pms_webhook_receive.py`
 
 ```text
 External Webhook (POST /api/pms/webhook/{provider}/{provider_id})
@@ -648,9 +648,9 @@ Output:
 
 **Implementation:** `pms_settings_set.py:14-206`
 
-### 4.5 PMSHub Tool Integration with agent-jumbo
+### 4.5 PMSHub Tool Integration with agent-mahoo
 
-**File:** `/home/webemo-aaron/projects/agent-jumbo/python/tools/pms_hub_tool.py`
+**File:** `/home/webemo-aaron/projects/agent-mahoo/python/tools/pms_hub_tool.py`
 
 **Tool Class:** `PMSHub(Tool)` (Line 16-75)
 
@@ -1316,7 +1316,7 @@ pms_hub_tool.py:_sync_reservations()
 - ✅ EventBus with event storage
 - ✅ PropertyManager sync (PMS → PropertyManager)
 - ✅ Canonical data models
-- ✅ PMSHub tool for agent-jumbo
+- ✅ PMSHub tool for agent-mahoo
 
 ### Partial/Incomplete Implementations
 

@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Agent Jumbo had mature infrastructure for multi-LLM orchestration (Coordinator, LLMRouter,
+Agent Mahoo had mature infrastructure for multi-LLM orchestration (Coordinator, LLMRouter,
 TaskDecomposer, ParallelExecutor) but no end-to-end pipeline connecting task intake to
 code output to quality evaluation to commit decision. Each step required separate, manual
 agent calls with no structured handoff between them.
@@ -58,4 +58,4 @@ Implement a `TaskCycle` tool (`python/tools/task_cycle.py`) as an orchestrator t
 
 ---
 
-*Recorded 2026-04-05 — Agent Jumbo agentic task cycle implementation*
+*Recorded 2026-04-05 — Agent Mahoo agentic task cycle implementation*

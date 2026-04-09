@@ -1,24 +1,24 @@
-# Legal and Compliance Brief: Agent Jumbo
+# Legal and Compliance Brief: Agent Mahoo
 
 This document is an operations/legal review checklist for productization.
 It is not legal advice.
 
 ## Product position
 
-Agent Jumbo is a specialized AI Architect platform derived from Agent Jumbo code.
+Agent Mahoo is a specialized AI Architect platform derived from Agent Mahoo code.
 
 ## Required controls before wider distribution
 
 1. Preserve upstream license text and attribution requirements (Apache 2.0).
 2. Preserve and review all required copyright headers/notices.
 3. Add and maintain a root `NOTICE` file if derivative attribution is needed.
-4. Ensure branding avoids implied endorsement by Agent Jumbo maintainers.
+4. Ensure branding avoids implied endorsement by Agent Mahoo maintainers.
 5. Keep a clear fork statement in README/docs.
 
 ## Trademark and naming controls
 
-1. Use "Agent Jumbo" as primary product name in UX/docs.
-2. Use "derived from Agent Jumbo" language only as attribution, not endorsement.
+1. Use "Agent Mahoo" as primary product name in UX/docs.
+2. Use "derived from Agent Mahoo" language only as attribution, not endorsement.
 3. Remove or replace upstream links/icons that imply official ownership.
 
 ## Data and security controls

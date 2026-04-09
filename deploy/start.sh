@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Deploy Host: Start
+# Agent Mahoo — Deploy Host: Start
 # ============================================
 # Runs on deploy host: 46.224.170.197 ONLY.
 # Must NOT run on build server or in GitHub Actions.
 #
 # Extracts the approved artifact into the install
-# directory and starts Agent Jumbo with resolved
+# directory and starts Agent Mahoo with resolved
 # runtime env.
 #
 # Usage:
@@ -14,18 +14,18 @@
 #
 # Options:
 #   --artifact FILE       Path to .tar.gz artifact (default: auto-detect in staging dir)
-#   --env FILE            Path to runtime .env file (default: /opt/agent-jumbo/runtime.env)
-#   --install-dir DIR     Installation directory (default: /opt/agent-jumbo/current)
-#   --staging-dir DIR     Staging directory (default: /opt/agent-jumbo/staging)
+#   --env FILE            Path to runtime .env file (default: /opt/agent-mahoo/runtime.env)
+#   --install-dir DIR     Installation directory (default: /opt/agent-mahoo/current)
+#   --staging-dir DIR     Staging directory (default: /opt/agent-mahoo/staging)
 #   --port PORT           Port to listen on (default: 6274)
 #
 # Exits non-zero on extraction failure or startup failure.
 
 set -euo pipefail
 
-ENV_FILE="${ENV_FILE:-/opt/agent-jumbo/runtime.env}"
-INSTALL_DIR="${INSTALL_DIR:-/opt/agent-jumbo/current}"
-STAGING_DIR="${STAGING_DIR:-/opt/agent-jumbo/staging}"
+ENV_FILE="${ENV_FILE:-/opt/agent-mahoo/runtime.env}"
+INSTALL_DIR="${INSTALL_DIR:-/opt/agent-mahoo/current}"
+STAGING_DIR="${STAGING_DIR:-/opt/agent-mahoo/staging}"
 ARTIFACT_FILE=""
 PORT="${PORT:-6274}"
 
@@ -40,7 +40,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "[start] Agent Jumbo deploy start"
+echo "[start] Agent Mahoo deploy start"
 echo "[start] Host: $(hostname)"
 echo "[start] Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -57,7 +57,7 @@ done
 # ── Locate artifact ───────────────────────────────────────────────────────────
 if [[ -z "${ARTIFACT_FILE}" ]]; then
     # Auto-detect from staging dir
-    ARTIFACT_FILE=$(ls -t "${STAGING_DIR}"/agent-jumbo-*.tar.gz 2>/dev/null | head -1 || true)
+    ARTIFACT_FILE=$(ls -t "${STAGING_DIR}"/agent-mahoo-*.tar.gz 2>/dev/null | head -1 || true)
     if [[ -z "${ARTIFACT_FILE}" ]]; then
         echo "[start] ERROR: no artifact found in ${STAGING_DIR}" >&2
         echo "[start] Run deploy/fetch-artifact.sh first" >&2
@@ -87,7 +87,7 @@ for required in AGENTMESH_REDIS_URL AIOS_BASE_URL; do
 done
 
 # ── Stop existing instance ────────────────────────────────────────────────────
-echo "[start] Checking for running Agent Jumbo instance..."
+echo "[start] Checking for running Agent Mahoo instance..."
 if pgrep -f "run_ui.py" >/dev/null 2>&1; then
     echo "[start] Stopping existing instance..."
     pkill -f "run_ui.py" || true
@@ -110,12 +110,12 @@ else
     exit 1
 fi
 
-# ── Start Agent Jumbo ─────────────────────────────────────────────────────────
-LOG_DIR="/opt/agent-jumbo/logs"
+# ── Start Agent Mahoo ─────────────────────────────────────────────────────────
+LOG_DIR="/opt/agent-mahoo/logs"
 mkdir -p "${LOG_DIR}"
-LOG_FILE="${LOG_DIR}/agent-jumbo.log"
+LOG_FILE="${LOG_DIR}/agent-mahoo.log"
 
-echo "[start] Starting Agent Jumbo on port ${PORT}..."
+echo "[start] Starting Agent Mahoo on port ${PORT}..."
 (
     cd "${INSTALL_DIR}"
     # Load runtime env — do not export to shell environment beyond this subshell
@@ -128,15 +128,15 @@ echo "[start] Starting Agent Jumbo on port ${PORT}..."
 
     nohup uv run python run_ui.py \
         >> "${LOG_FILE}" 2>&1 &
-    echo $! > /opt/agent-jumbo/agent-jumbo.pid
+    echo $! > /opt/agent-mahoo/agent-mahoo.pid
 )
 
-PID=$(cat /opt/agent-jumbo/agent-jumbo.pid 2>/dev/null || echo "unknown")
+PID=$(cat /opt/agent-mahoo/agent-mahoo.pid 2>/dev/null || echo "unknown")
 echo "[start] Started with PID: ${PID}"
 
 echo ""
 echo "============================================"
-echo "[start] Agent Jumbo started"
+echo "[start] Agent Mahoo started"
 echo "  PID:         ${PID}"
 echo "  Port:        ${PORT}"
 echo "  Install dir: ${INSTALL_DIR}"

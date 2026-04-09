@@ -1,17 +1,17 @@
 services:
-  agent-jumbo:
+  agent-mahoo:
     build:
       context: .
       dockerfile: DockerfileLocal
-    image: agent-jumbo-local:latest
+    image: agent-mahoo-local:latest
     pull_policy: never
-    container_name: agent-jumbo-local
+    container_name: agent-mahoo-local
     restart: unless-stopped
     env_file:
       - .env
     environment:
-      AGENT_JUMBO_RUN_MODE: ${AGENT_JUMBO_RUN_MODE:-local-lite}
-      AGENT_JUMBO_LAPTOP_MODE: ${AGENT_JUMBO_LAPTOP_MODE:-true}
+      AGENT_MAHOO_RUN_MODE: ${AGENT_MAHOO_RUN_MODE:-local-lite}
+      AGENT_MAHOO_LAPTOP_MODE: ${AGENT_MAHOO_LAPTOP_MODE:-true}
       AGENTMESH_REDIS_URL: ""
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
       WEB_UI_PORT: 80
@@ -23,9 +23,9 @@ services:
       - "${WEB_UI_PORT:-5000}:80"
     volumes:
       - .:/aj
-      - agent_jumbo_data:/aj/data
-      - agent_jumbo_logs:/aj/logs
-      - agent_jumbo_venv:/opt/venv-a0
+      - agent_mahoo_data:/aj/data
+      - agent_mahoo_logs:/aj/logs
+      - agent_mahoo_venv:/opt/venv-a0
     extra_hosts:
       - "host.docker.internal:host-gateway"
     healthcheck:
@@ -36,6 +36,6 @@ services:
       start_period: 90s
 
 volumes:
-  agent_jumbo_data:
-  agent_jumbo_logs:
-  agent_jumbo_venv:
+  agent_mahoo_data:
+  agent_mahoo_logs:
+  agent_mahoo_venv:

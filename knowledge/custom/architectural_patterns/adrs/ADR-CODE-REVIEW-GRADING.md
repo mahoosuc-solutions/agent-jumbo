@@ -67,4 +67,4 @@ to find a `tests/` directory. If no test file exists, pytest is skipped.
 
 ---
 
-*Recorded 2026-04-05 — Agent Jumbo agentic task cycle implementation*
+*Recorded 2026-04-05 — Agent Mahoo agentic task cycle implementation*

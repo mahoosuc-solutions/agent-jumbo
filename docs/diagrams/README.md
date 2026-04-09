@@ -1,6 +1,6 @@
-# Agent Jumbo Architecture Diagrams
+# Agent Mahoo Architecture Diagrams
 
-This directory contains Draw.io diagrams documenting the Agent Jumbo system architecture. These files can be opened in:
+This directory contains Draw.io diagrams documenting the Agent Mahoo system architecture. These files can be opened in:
 
 - [Draw.io Desktop App](https://www.drawio.com/)
 - [Draw.io Web](https://app.diagrams.net/)
@@ -10,7 +10,7 @@ This directory contains Draw.io diagrams documenting the Agent Jumbo system arch
 
 ### 1. System Architecture (`system-architecture.drawio`)
 
-**High-level overview of the entire Agent Jumbo system**
+**High-level overview of the entire Agent Mahoo system**
 
 - **Web UI Layer**: Alpine.js components, dashboards, settings modal
 - **API Layer**: 82 endpoints organized by domain

@@ -1,5 +1,5 @@
 """
-Customer Lifecycle Tool for Agent Jumbo
+Customer Lifecycle Tool for Agent Mahoo
 Enables AI agents to manage complete customer journey
 """
 
@@ -12,7 +12,7 @@ from python.helpers.tool import Response, Tool
 
 class CustomerLifecycle(Tool):
     """
-    Agent Jumbo tool for customer lifecycle management.
+    Agent Mahoo tool for customer lifecycle management.
     Automates lead capture, requirements gathering, solution design,
     proposal generation, and customer health monitoring.
     """

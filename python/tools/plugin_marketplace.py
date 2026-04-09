@@ -1,5 +1,5 @@
 """
-Plugin Marketplace Tool for Agent Jumbo
+Plugin Marketplace Tool for Agent Mahoo
 Discover, browse, and install plugins from Claude Code marketplaces
 """
 
@@ -9,7 +9,7 @@ from python.helpers.tool import Response, Tool
 
 class PluginMarketplace(Tool):
     """
-    Agent Jumbo tool for plugin marketplace operations.
+    Agent Mahoo tool for plugin marketplace operations.
     Discover, browse, install, and manage plugins from Claude Code marketplaces.
     """
 
@@ -52,7 +52,7 @@ class PluginMarketplace(Tool):
             "check_updates": self._check_updates,
             "update_plugin": self._update_plugin,
             # Integration
-            "import_to_agent_jumbo": self._import_to_agent_jumbo,
+            "import_to_agent_mahoo": self._import_to_agent_mahoo,
             # Statistics
             "get_stats": self._get_stats,
         }
@@ -313,7 +313,7 @@ class PluginMarketplace(Tool):
             lines.append(f"**Path:** {result['local_path']}")
 
         lines.append("")
-        lines.append("Use `import_to_agent_jumbo` to import this plugin's skills.")
+        lines.append("Use `import_to_agent_mahoo` to import this plugin's skills.")
 
         return Response(message="\n".join(lines), break_loop=False)
 
@@ -377,8 +377,8 @@ class PluginMarketplace(Tool):
 
     # ========== Integration ==========
 
-    async def _import_to_agent_jumbo(self):
-        """Import installed plugin to Agent Jumbo via skill_importer"""
+    async def _import_to_agent_mahoo(self):
+        """Import installed plugin to Agent Mahoo via skill_importer"""
         identifier = self.args.get("identifier")
 
         if not identifier:
@@ -396,7 +396,7 @@ class PluginMarketplace(Tool):
             if "error" in result:
                 return Response(message=f"Import failed: {result['error']}", break_loop=False)
 
-            lines = ["## Plugin Imported to Agent Jumbo\n"]
+            lines = ["## Plugin Imported to Agent Mahoo\n"]
             lines.append(f"**Plugin:** {result.get('name', identifier)}")
             lines.append(f"**Skills Imported:** {result.get('skills_count', 0)}")
             lines.append(f"**Hooks Imported:** {result.get('hooks_count', 0)}")

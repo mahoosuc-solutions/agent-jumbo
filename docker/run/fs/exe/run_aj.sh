@@ -10,7 +10,7 @@ python /aj/python/helpers/scheduler_bootstrap.py
 python /aj/prepare.py --dockerized=true
 # python /aj/preload.py --dockerized=true # no need to run preload if it's done during container build
 
-echo "Starting Agent Jumbo..."
+echo "Starting Agent Mahoo..."
 exec python /aj/run_ui.py \
     --dockerized=true \
     --port=80 \

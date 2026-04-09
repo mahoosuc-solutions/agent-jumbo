@@ -256,7 +256,7 @@ Error Handling: Try/except with context preservation
 1. **Clone/navigate to worktree**
 
    ```bash
-   cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+   cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
    git branch  # Verify: feature/pms-calendar-sync
    ```
 
@@ -292,7 +292,7 @@ Error Handling: Try/except with context preservation
 2. **Begin your own TDD cycle**
 
    ```bash
-   cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+   cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
    pytest tests/test_pms_communication_workflows.py::TestCommunicationWorkflowInitialization -v
    ```
 
@@ -380,7 +380,7 @@ Before moving to next test class, verify:
 
 ```bash
 # Solution: Ensure you're in project root
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 python -c "from instruments.custom.pms_hub.calendar_sync import CalendarSyncService"
 ```
 

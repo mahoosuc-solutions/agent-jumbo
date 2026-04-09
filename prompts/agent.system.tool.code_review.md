@@ -70,7 +70,7 @@ The `additional` field contains: `{"score": int, "passed": bool, "decision": str
 {
     "tool_name": "code_review",
     "tool_args": {
-        "file": "/mnt/wdblack/dev/projects/agent-jumbo/python/tools/git_tool.py"
+        "file": "/mnt/wdblack/dev/projects/agent-mahoo/python/tools/git_tool.py"
     }
 }
 ```
@@ -92,7 +92,7 @@ The `additional` field contains: `{"score": int, "passed": bool, "decision": str
 {
     "tool_name": "code_review",
     "tool_args": {
-        "file": "/mnt/wdblack/dev/projects/agent-jumbo/python/helpers/stripe_provider.py",
+        "file": "/mnt/wdblack/dev/projects/agent-mahoo/python/helpers/stripe_provider.py",
         "focus": "security"
     }
 }

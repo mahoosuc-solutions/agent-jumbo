@@ -243,7 +243,7 @@
   <div class="header-icon">🏨</div>
   <div>
     <h1>West Bethel Motel — Platform Onboarding</h1>
-    <p>Step-by-step guide to full service activation via Agent Jumbo + WBM MCP</p>
+    <p>Step-by-step guide to full service activation via Agent Mahoo + WBM MCP</p>
   </div>
   <div class="bridge-status">
     <div class="bridge-pill" id="bridge-staging">
@@ -297,13 +297,13 @@
     <div class="project-banner" id="project-banner">
       <div style="font-size:28px">🚀</div>
       <div class="project-banner-text">
-        <h3>Create this as a managed project in Agent Jumbo</h3>
+        <h3>Create this as a managed project in Agent Mahoo</h3>
         <p>Sets up a dedicated workspace with the WBM system prompt and MCP bridge pre-configured.</p>
       </div>
       <button class="btn btn-copper" id="create-project-btn" onclick="createProject()">Create Project</button>
       <div class="project-created" id="project-created">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-        Project created — open Agent Jumbo chat
+        Project created — open Agent Mahoo chat
       </div>
     </div>
 
@@ -311,7 +311,7 @@
     <div class="workflow-banner" id="workflow-banner">
       <div style="font-size:28px">🔁</div>
       <div class="workflow-banner-text">
-        <h3>Install recurring workflows into Agent Jumbo Scheduler</h3>
+        <h3>Install recurring workflows into Agent Mahoo Scheduler</h3>
         <p>Creates daily, weekly, monthly, seasonal, and yearly tasks for ongoing WBM operations.</p>
         <div class="workflow-list">
           <span>daily-ops-brief</span><span>daily-checkin-scan</span><span>daily-occupancy-check</span>
@@ -332,7 +332,7 @@
       <div style="font-size:28px">🤖</div>
       <div class="suite-banner-text">
         <h3>Automated Validation Suite</h3>
-        <p>Agent Jumbo runs each phase validation autonomously — calling WBM MCP tools and reporting pass/fail. Use the "Validate" button on each phase, or run all 15 checks in sequence.</p>
+        <p>Agent Mahoo runs each phase validation autonomously — calling WBM MCP tools and reporting pass/fail. Use the "Validate" button on each phase, or run all 15 checks in sequence.</p>
       </div>
       <button class="btn" id="run-suite-btn" onclick="runFullValidationSuite()">Run Full Suite</button>
       <div id="suite-progress">
@@ -347,7 +347,7 @@
         <div class="phase-badge active">🔌</div>
         <div>
           <div class="phase-title">Phase 0 — Verify MCP Bridge</div>
-          <div class="phase-desc">Confirm the WBM MCP Edge servers are reachable from Agent Jumbo before starting anything else.</div>
+          <div class="phase-desc">Confirm the WBM MCP Edge servers are reachable from Agent Mahoo before starting anything else.</div>
           <span class="phase-tag tag-required">Required first</span>
         </div>
         <div class="phase-validate-wrap">
@@ -367,7 +367,7 @@
           <div class="step-body">
             <div class="step-why">Confirms the MCP edge containers are up and the staging platform API is reachable. Run this before every session.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Use the <strong>wbm-staging</strong> MCP server. Call <strong>edge_health</strong> and then <strong>platform_api_root</strong> to confirm the bridge is connected to staging.</div>
             </div>
             <div class="verify-block">
@@ -405,7 +405,7 @@
           <div class="step-body">
             <div class="step-why">Shows what's already configured and what's missing. Always run this first so you know where you are.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>onboarding_status</strong> and <strong>onboarding_workflow_summary</strong> on the wbm-staging MCP server. Give me the full checklist of what's complete and what's pending.</div>
             </div>
           </div>
@@ -421,7 +421,7 @@
           <div class="step-body">
             <div class="step-why">The tenant-onboard runbook creates the initial config, enables baseline features, sets the subscription tier, and validates the result. It's the guided setup wizard.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Get the <strong>tenant-onboard</strong> runbook using <strong>config_runbook_get</strong> on wbm-staging, then walk me through each step. The property name is "West Bethel Motel", start with the Standard tier.</div>
             </div>
             <div class="verify-block">
@@ -459,7 +459,7 @@
           <div class="step-body">
             <div class="step-why">Name, address, timezone, and contact phone are required before any guest-facing feature (email, voice, booking page) will work correctly.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Use <strong>config_patch</strong> on wbm-staging to set: property name = "West Bethel Motel", address = [your address], timezone = "America/New_York", phone = [your front desk number], website = [your URL].</div>
             </div>
           </div>
@@ -475,7 +475,7 @@
           <div class="step-body">
             <div class="step-why">These times feed into the voice AI script, automated email confirmations, and door code scheduling.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Patch the config on wbm-staging: set check_in_time = "15:00", check_out_time = "11:00", early_check_in_fee = 25, late_checkout_fee = 30.</div>
             </div>
           </div>
@@ -491,7 +491,7 @@
           <div class="step-body">
             <div class="step-why">Returns a scored breakdown by section. Fix any section below 80 before moving to service setup.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Run <strong>config_health</strong> and <strong>property-health-check</strong> on wbm-staging. Show me every section score and flag anything below 80.</div>
             </div>
           </div>
@@ -525,7 +525,7 @@
           <div class="step-body">
             <div class="step-why">Each room needs: room_number, room_type (standard/deluxe/suite), nightly_rate, and capacity. Rates set here become the baseline for dynamic pricing later.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging, create rooms using <strong>rooms_create</strong>. I have [N] rooms — room numbers [list], all standard type, nightly rate $[X], capacity 2. Create them all then call <strong>rooms_list</strong> to confirm.</div>
             </div>
             <div class="verify-block">
@@ -563,7 +563,7 @@
           <div class="step-body">
             <div class="step-why">staff_invite sends a Firebase sign-in link. The recipient clicks it to set their password and gains access to the platform dashboard.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Use <strong>staff_invite</strong> on wbm-staging to invite [email address] with role = "manager". Then call <strong>staff_list</strong> to confirm the pending invite.</div>
             </div>
           </div>
@@ -597,7 +597,7 @@
           <div class="step-body">
             <div class="step-why">The platform needs Gmail OAuth or an IMAP app password. Gmail is recommended — create an app password in Google Account → Security → 2-Step Verification → App passwords.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging, call <strong>email_accounts_create</strong> with provider = "gmail", email = "[front-desk email]", app_password = "[16-char app password]". Then call <strong>email_accounts_test</strong> to verify connectivity.</div>
             </div>
             <div class="verify-block">
@@ -617,7 +617,7 @@
           <div class="step-body">
             <div class="step-why">Importing past guest emails trains the AI on your property's tone, common questions, and typical requests. The more history, the better the responses.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>email_accounts_import</strong> on wbm-staging for the connected account — import the last 6 months of emails for AI training.</div>
             </div>
           </div>
@@ -651,7 +651,7 @@
           <div class="step-body">
             <div class="step-why">Lists available voice models (regional accents, male/female), personalities (professional, warm, efficient), and fallback options.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>voice_agent_options</strong> on wbm-staging. Show me all available voices and personalities so I can choose.</div>
             </div>
           </div>
@@ -667,7 +667,7 @@
           <div class="step-body">
             <div class="step-why">Sets voice model, personality, fallback phone (if AI can't handle the call), and the property-specific greeting script.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Run the <strong>service-provision-voice-ai</strong> runbook on wbm-staging. Set personality = "warm", fallback_number = "[your cell or front desk]", greeting = "Thank you for calling West Bethel Motel, how can I help you today?"</div>
             </div>
             <div class="alert alert-warn" style="margin-top:12px">
@@ -687,7 +687,7 @@
           <div class="step-body">
             <div class="step-why">Validates that reservation modification, early check-in handling, late checkout, and local recommendation flows all respond correctly before going live.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging, simulate a guest calling to request early check-in using <strong>voice_early_checkin</strong>. Then test <strong>voice_local_recommendations</strong> to see what the AI would suggest near West Bethel, Maine.</div>
             </div>
           </div>
@@ -721,7 +721,7 @@
           <div class="step-body">
             <div class="step-why">SMS is the most reliable channel for door codes, last-minute changes, and check-in reminders. Guests read texts — not emails.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging, call <strong>tenant_config_enable</strong> with feature = "sms_notifications". Then call <strong>notifications_config_update</strong> to enable: booking_confirmation, checkin_reminder (24h before), door_code_delivery, checkout_reminder.</div>
             </div>
           </div>
@@ -755,7 +755,7 @@
           <div class="step-body">
             <div class="step-why">Each room's lock gets registered once with its hardware ID. After that, the platform auto-generates unique codes per booking and sends them via SMS at check-in.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Run the <strong>hardware-register-device</strong> runbook on wbm-staging for each door lock. Device type = "door_lock", location = "Room [number]". I have [N] locks — help me register them all.</div>
             </div>
           </div>
@@ -771,7 +771,7 @@
           <div class="step-body">
             <div class="step-why">Automation rules trigger door code SMS automatically on check-in so you never have to manually send codes.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>automation_rules_list</strong> on wbm-staging. Create a rule: trigger = "booking_checkin_time", action = "send_door_code_sms" to the guest's phone. Enable it.</div>
             </div>
           </div>
@@ -805,7 +805,7 @@
           <div class="step-body">
             <div class="step-why">Stripe Connect links your Stripe account so payments from guests flow directly to your bank. The runbook handles the approval workflow for sensitive config changes.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Run the <strong>service-provision-stripe</strong> runbook on wbm-staging. Check <strong>stripe_connect_status</strong> first. If not connected, walk me through the connection steps.</div>
             </div>
             <div class="verify-block">
@@ -843,7 +843,7 @@
           <div class="step-body">
             <div class="step-why">Real-time occupancy rate, bookings today, revenue MTD, and upcoming check-ins in one call. Run this every morning during the daily brief.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>dashboard_stats</strong> and <strong>daily-operations-brief</strong> on wbm-staging. Give me current occupancy rate, today's check-ins, and revenue this month.</div>
             </div>
           </div>
@@ -859,7 +859,7 @@
           <div class="step-body">
             <div class="step-why">The cost model (cleaning cost, utilities, mortgage/rent per room) is needed before the pricing engine can calculate true profit margins per booking.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>propops_cost_model_get</strong> on wbm-staging to see current values, then <strong>propops_cost_model_update</strong> to set: cleaning_cost = $[X], utilities_per_night = $[X], fixed_cost_per_night = $[X].</div>
             </div>
           </div>
@@ -893,7 +893,7 @@
           <div class="step-body">
             <div class="step-why">Pulls market data for competing properties near West Bethel, Maine — their rates, occupancy signals, and positioning. Forms the baseline for dynamic pricing decisions.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>competitor-analysis</strong> on wbm-staging. Then call <strong>competitor_research</strong> for detailed data on the top 5 competitors in the Bethel, Maine area. What are their nightly rates and how do we compare?</div>
             </div>
           </div>
@@ -927,7 +927,7 @@
           <div class="step-body">
             <div class="step-why">Maine has strong seasonality — ski season (winter), leaf peeping (October), summer. Define rate multipliers for each so pricing adjusts automatically.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging, call <strong>seasonal_rates_list</strong> first. Then use <strong>seasonal_rates_create</strong> to create: Summer Peak (Jun 15–Sep 1, +40%), Fall Foliage (Sep 15–Oct 31, +35%), Ski Season (Dec 15–Mar 15, +30%), Holiday (Dec 23–Jan 2, +60%).</div>
             </div>
           </div>
@@ -943,7 +943,7 @@
           <div class="step-body">
             <div class="step-why">A revenue profile combines occupancy target, rate floor, rate ceiling, and competitor parity rules. Run a scenario to see projected revenue before committing rates.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging: call <strong>propops_profile_configure</strong> to set occupancy_target = 75%, rate_floor = $[X], rate_ceiling = $[X]. Then run <strong>propops_scenario_run</strong> for the next 90 days and show me projected revenue vs current rates.</div>
             </div>
           </div>
@@ -958,7 +958,7 @@
         <div>
           <div class="phase-title">Phase 13 — SEO & Web Presence</div>
           <div class="phase-desc">Validate that the motel website is Google-compliant and has strong search visibility.</div>
-          <span class="phase-tag tag-optional">Via Agent Jumbo tools</span>
+          <span class="phase-tag tag-optional">Via Agent Mahoo tools</span>
         </div>
         <div class="phase-validate-wrap">
           <button class="validate-btn" id="vbtn-13" onclick="runPhaseValidation(13)">▶ Validate</button>
@@ -971,13 +971,13 @@
             <div class="step-check" onclick="check(event,'s-13-1')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="step-num">13.1</span>
             <span class="step-title">Full site SEO audit</span>
-            <span class="step-tool">Agent Jumbo SEO skill</span>
+            <span class="step-tool">Agent Mahoo SEO skill</span>
             <span class="step-chevron">▶</span>
           </div>
           <div class="step-body">
             <div class="step-why">Checks title tags, meta descriptions, structured data (LocalBusiness schema), page speed, mobile-friendliness, and Core Web Vitals — all factors Google uses to rank lodging results.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Run a full SEO audit on <strong>[westbethelmotel.me]</strong>. Check: title tags, meta descriptions, LocalBusiness structured data (schema.org), page speed score, mobile viewport, canonical URLs, and sitemap. Give me a prioritised fix list.</div>
             </div>
           </div>
@@ -987,13 +987,13 @@
             <div class="step-check" onclick="check(event,'s-13-2')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="step-num">13.2</span>
             <span class="step-title">Competitor content and keyword gap analysis</span>
-            <span class="step-tool">Agent Jumbo SEO skill</span>
+            <span class="step-tool">Agent Mahoo SEO skill</span>
             <span class="step-chevron">▶</span>
           </div>
           <div class="step-body">
             <div class="step-why">Identifies what keywords competing Maine lodging sites rank for that WBM doesn't — these are content opportunities that can drive organic bookings.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Analyse competitors of West Bethel Motel for SEO. Search for "motel bethel maine", "lodging white mountains maine", "ski lodging sunday river". What keywords are competitors ranking for that our site is missing? Give me a content plan to close the gap.</div>
             </div>
           </div>
@@ -1003,13 +1003,13 @@
             <div class="step-check" onclick="check(event,'s-13-3')"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
             <span class="step-num">13.3</span>
             <span class="step-title">Google Business Profile validation</span>
-            <span class="step-tool">Agent Jumbo web tools</span>
+            <span class="step-tool">Agent Mahoo web tools</span>
             <span class="step-chevron">▶</span>
           </div>
           <div class="step-body">
             <div class="step-why">Google Business Profile directly affects the local pack (the map results shown for "motel near me"). It must have: accurate hours, address matching website, photos, review responses.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Search Google for "West Bethel Motel" and check: Is the Google Business Profile claimed? Are the hours, address, and phone correct? Are there recent review responses? What's the star rating and review count vs competitors?</div>
             </div>
           </div>
@@ -1042,7 +1042,7 @@
           </div>
           <div class="step-body">
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">On wbm-staging: call <strong>property-health-check</strong>, <strong>platform_config_validate</strong>, <strong>config_health</strong>, and <strong>system-status</strong>. Give me a full readiness report. Flag anything blocking go-live.</div>
             </div>
             <div class="verify-block">
@@ -1062,7 +1062,7 @@
           <div class="step-body">
             <div class="step-why">This unlocks guest creation, booking creation, billing tools, and runbook config tools that are blocked during onboarding.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Call <strong>onboarding_complete</strong> on wbm-staging to mark the tenant fully onboarded. Then verify <strong>onboarding_status</strong> shows complete = true.</div>
             </div>
           </div>
@@ -1078,7 +1078,7 @@
           <div class="step-body">
             <div class="step-why">Once staging is validated, clone the config to the production environment so live bookings go through real Stripe, real voice AI, and real door codes.</div>
             <div class="prompt-block">
-              <div class="prompt-label">💬 Say to Agent Jumbo</div>
+              <div class="prompt-label">💬 Say to Agent Mahoo</div>
               <div class="prompt-text">Switch to the <strong>wbm-production</strong> MCP server. Clone the validated staging config using <strong>tenant_config_clone</strong>. Then run <strong>property-health-check</strong> on production to confirm the clone succeeded.</div>
             </div>
           </div>
@@ -1136,9 +1136,9 @@
 // ── Agent Chat Panel ──────────────────────────────────────────────────────────
 
 const AGENT_PANEL_SYSTEM = [
-  'You are the WBM Setup Assistant, an AI agent embedded in the West Bethel Motel onboarding guide inside Agent Jumbo.',
+  'You are the WBM Setup Assistant, an AI agent embedded in the West Bethel Motel onboarding guide inside Agent Mahoo.',
   '',
-  'You have access to the wbm-staging and wbm-production MCP servers via the Agent Jumbo tool system.',
+  'You have access to the wbm-staging and wbm-production MCP servers via the Agent Mahoo tool system.',
   '',
   'Your role:',
   '- Guide the operator through onboarding phases 0-14',
@@ -1297,7 +1297,7 @@ async function initAgentPanel() {
   } catch {
     setAgentStatus('initializing');
     ['agent-messages', 'agent-messages-drawer'].forEach(id =>
-      appendMsgToContainer(id, 'assistant', 'Could not connect to Agent Jumbo. Ensure the platform is running at localhost:6274.')
+      appendMsgToContainer(id, 'assistant', 'Could not connect to Agent Mahoo. Ensure the platform is running at localhost:6274.')
     );
   }
 }
@@ -1490,7 +1490,7 @@ function copy(text, btn) {
   });
 }
 
-// ── Create project in Agent Jumbo ──
+// ── Create project in Agent Mahoo ──
 async function createProject() {
   const btn = document.getElementById('create-project-btn');
   btn.textContent = 'Creating…';
@@ -1568,7 +1568,7 @@ async function getCsrf() {
 }
 
 // ── WBM Validation Task Definitions ──────────────────────────────────────────
-// Each phase has a corresponding AdHoc task. When triggered, Agent Jumbo runs
+// Each phase has a corresponding AdHoc task. When triggered, Agent Mahoo runs
 // it autonomously against wbm-staging MCP and reports structured pass/fail.
 
 const WBM_VALIDATION_SYSTEM = `You are an automated onboarding validator for West Bethel Motel.
@@ -1902,7 +1902,7 @@ async function runPhaseValidation(phase) {
       return;
     }
 
-    setPhaseResult(phase, 'running', 'Task queued — waiting for Agent Jumbo to run it…');
+    setPhaseResult(phase, 'running', 'Task queued — waiting for Agent Mahoo to run it…');
 
     // 2. Fire the task
     const CSRF = await getCsrfCached();
@@ -1917,7 +1917,7 @@ async function runPhaseValidation(phase) {
       return;
     }
 
-    setPhaseResult(phase, 'running', 'Agent Jumbo is running the validation — polling for result (up to 3 min)…');
+    setPhaseResult(phase, 'running', 'Agent Mahoo is running the validation — polling for result (up to 3 min)…');
 
     // 3. Poll until done
     const result = await pollTaskUntilDone(uuid, 180);
@@ -1954,7 +1954,7 @@ async function runFullValidationSuite() {
   suiteBtn.textContent = `✅ Suite complete — ${passed}/${VALIDATION_TASKS.length} passed`;
 }
 
-// ── Import WBM recurring workflows into Agent Jumbo Scheduler ──
+// ── Import WBM recurring workflows into Agent Mahoo Scheduler ──
 async function importWorkflows() {
   const btn = document.getElementById('import-workflows-btn');
   btn.textContent = 'Installing…';

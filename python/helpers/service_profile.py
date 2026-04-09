@@ -101,10 +101,10 @@ def persist_profile(profile: str) -> str:
     if not is_valid_profile(profile):
         raise ValueError(f"Unsupported profile: {profile}")
     normalized = normalize_profile(profile)
-    dotenv.save_dotenv_value("AGENT_JUMBO_RUN_MODE", normalized)
-    dotenv.save_dotenv_value("AGENT_JUMBO_LAPTOP_MODE", "true" if normalized == "local-lite" else "false")
-    os.environ["AGENT_JUMBO_RUN_MODE"] = normalized
-    os.environ["AGENT_JUMBO_LAPTOP_MODE"] = "true" if normalized == "local-lite" else "false"
+    dotenv.save_dotenv_value("AGENT_MAHOO_RUN_MODE", normalized)
+    dotenv.save_dotenv_value("AGENT_MAHOO_LAPTOP_MODE", "true" if normalized == "local-lite" else "false")
+    os.environ["AGENT_MAHOO_RUN_MODE"] = normalized
+    os.environ["AGENT_MAHOO_LAPTOP_MODE"] = "true" if normalized == "local-lite" else "false"
     invalidate_cache()
     return normalized
 

@@ -1,14 +1,14 @@
-# Agent Jumbo vs OpenClaw: High-Level Architecture
+# Agent Mahoo vs OpenClaw: High-Level Architecture
 
-This visual compares the current Agent Jumbo + Agent Jumbo implementation to the OpenClaw reference model used in this codebase planning docs.
+This visual compares the current Agent Mahoo + Agent Mahoo implementation to the OpenClaw reference model used in this codebase planning docs.
 
 Assumption sources in this repo:
 
-- `AGENT-JUMBO-OPA.md`
+- `AGENT-MAHOO-OPA.md`
 - `COMPETITIVE-ANALYSIS.md`
 - `COMPLETE_VS_COMPLETE_COMPARISON.md`
 
-## 1) Current Implementation (Agent Jumbo + Agent Jumbo)
+## 1) Current Implementation (Agent Mahoo + Agent Mahoo)
 
 ```mermaid
 graph TB
@@ -63,7 +63,7 @@ graph TB
     DEP --> OBS
 ```
 
-## 2) Winner/Loser Matrix: Agent Jumbo vs OpenClaw
+## 2) Winner/Loser Matrix: Agent Mahoo vs OpenClaw
 
 ```mermaid
 graph TB
@@ -74,21 +74,21 @@ graph TB
     C5[Category: Enterprise Security + Deployment]
 
     C1 --> W1[Winner: OpenClaw]
-    C1 --> L1[Loser: Agent Jumbo]
+    C1 --> L1[Loser: Agent Mahoo]
     C2 --> W2[Winner: OpenClaw]
-    C2 --> L2[Loser: Agent Jumbo]
+    C2 --> L2[Loser: Agent Mahoo]
     C3 --> W3[Winner: OpenClaw]
-    C3 --> L3[Loser: Agent Jumbo]
-    C4 --> W4[Winner: Agent Jumbo]
+    C3 --> L3[Loser: Agent Mahoo]
+    C4 --> W4[Winner: Agent Mahoo]
     C4 --> L4[Loser: OpenClaw]
-    C5 --> W5[Winner: Agent Jumbo]
+    C5 --> W5[Winner: Agent Mahoo]
     C5 --> L5[Loser: OpenClaw]
 
     E1[Evidence:<br/>OpenClaw documented as broader messaging footprint]
     E2[Evidence:<br/>OpenClaw documented with larger skill marketplace]
     E3[Evidence:<br/>OpenClaw documented with deeper memory architecture]
-    E4[Evidence:<br/>Agent Jumbo local-first/local-only routing policy]
-    E5[Evidence:<br/>Agent Jumbo stronger enterprise security + deployment gating]
+    E4[Evidence:<br/>Agent Mahoo local-first/local-only routing policy]
+    E5[Evidence:<br/>Agent Mahoo stronger enterprise security + deployment gating]
 
     W1 -.-> E1
     W2 -.-> E2
@@ -99,6 +99,6 @@ graph TB
 
 ## 3) Strategic Readout (From Diagram)
 
-- Agent Jumbo strength: orchestration, security, deployment, and now local-first LLM control.
+- Agent Mahoo strength: orchestration, security, deployment, and now local-first LLM control.
 - OpenClaw strength: channel breadth + ecosystem scale + mature messaging-native memory patterns.
-- OPA roadmap objective: close channel/skill/memory gaps while preserving Agent Jumbo enterprise strengths.
+- OPA roadmap objective: close channel/skill/memory gaps while preserving Agent Mahoo enterprise strengths.

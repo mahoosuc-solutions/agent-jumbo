@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Deploy Host: Verify
+# Agent Mahoo — Deploy Host: Verify
 # ============================================
 # Runs on deploy host: 46.224.170.197 ONLY.
 # Must NOT run on build server or in GitHub Actions.
@@ -32,7 +32,7 @@ BASE_URL="http://127.0.0.1:${PORT}"
 PASS=0
 FAIL=0
 
-echo "[verify] Agent Jumbo post-deploy verification"
+echo "[verify] Agent Mahoo post-deploy verification"
 echo "[verify] Host:    $(hostname)"
 echo "[verify] Date:    $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 echo "[verify] Target:  ${BASE_URL}"
@@ -152,9 +152,9 @@ if [[ "${CONSUMER_STATUS}" == "true" ]] || [[ "${CONSUMER_STATUS}" == "True" ]];
 elif [[ "${CONSUMER_STATUS}" == "MISSING" ]]; then
     # Field not in response — check process-level (consumer may be integrated)
     if pgrep -f "run_ui.py" >/dev/null 2>&1; then
-        pass "Agent Jumbo process running (stream consumer embedded)"
+        pass "Agent Mahoo process running (stream consumer embedded)"
     else
-        fail "Agent Jumbo process not found"
+        fail "Agent Mahoo process not found"
     fi
 else
     fail "Agent Mesh stream consumer not active: ${CONSUMER_STATUS}"
@@ -168,8 +168,8 @@ echo "============================================"
 
 if [[ ${FAIL} -gt 0 ]]; then
     echo "[verify] FAILED — ${FAIL} check(s) did not pass" >&2
-    echo "[verify] Check logs: /opt/agent-jumbo/logs/agent-jumbo.log" >&2
+    echo "[verify] Check logs: /opt/agent-mahoo/logs/agent-mahoo.log" >&2
     exit 1
 fi
 
-echo "[verify] All checks passed — Agent Jumbo is healthy"
+echo "[verify] All checks passed — Agent Mahoo is healthy"

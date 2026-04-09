@@ -36,9 +36,9 @@ services:
       timeout: 5s
       retries: 5
 
-  agent-jumbo:
-    container_name: agent-jumbo
-    image: agent-jumbo:latest
+  agent-mahoo:
+    container_name: agent-mahoo
+    image: agent-mahoo:latest
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:80/health"]
@@ -52,16 +52,16 @@ services:
         max-size: "50m"
         max-file: "5"
     volumes:
-      - /mnt/wdblack/dev/projects/agent-jumbo:/aj      # Mount live project over /aj (app root)
-      - agent_jumbo_data:/aj/data
-      - agent_jumbo_venv:/opt/venv-a0                  # Persist venv across restarts
+      - /mnt/wdblack/dev/projects/agent-mahoo:/aj      # Mount live project over /aj (app root)
+      - agent_mahoo_data:/aj/data
+      - agent_mahoo_venv:/opt/venv-a0                  # Persist venv across restarts
       - /mnt/wdblack:/mnt/wdblack                        # Host filesystem (projects need write access)
     ports:
       - "50080:80"
     cpus: "12.0"
     mem_limit: 64g
     env_file:
-      - /mnt/wdblack/dev/secrets/agent-jumbo.env
+      - /mnt/wdblack/dev/secrets/agent-mahoo.env
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
       - AGENTMESH_REDIS_URL=redis://redis:6379
@@ -83,14 +83,14 @@ services:
       - PUID=1000
       - PGID=1000
     volumes:
-      - /mnt/wdblack/dev/projects/agent-jumbo/wireguard:/config
+      - /mnt/wdblack/dev/projects/agent-mahoo/wireguard:/config
       - /lib/modules:/lib/modules:ro
     sysctls:
       - net.ipv4.conf.all.src_valid_mark=1
-    network_mode: "service:agent-jumbo"
+    network_mode: "service:agent-mahoo"
     restart: unless-stopped
     depends_on:
-      - agent-jumbo
+      - agent-mahoo
     healthcheck:
       test: ["CMD-SHELL", "wg show wg0 latest-handshakes | awk '{if (systime()-$$2 > 180) exit 1}'"]
       interval: 30s
@@ -98,9 +98,9 @@ services:
       retries: 3
 
 volumes:
-  agent_jumbo_data:
-    name: agent_jumbo_data
+  agent_mahoo_data:
+    name: agent_mahoo_data
   redis_data:
     name: redis_data
-  agent_jumbo_venv:
-    name: agent_jumbo_venv
+  agent_mahoo_venv:
+    name: agent_mahoo_venv

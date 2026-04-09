@@ -420,7 +420,7 @@ class Message(ApiHandler):
                 heading=f"{backend} failed, falling back",
                 content=str(e),
             )
-            # Optional fallback to native Agent Jumbo runtime.
+            # Optional fallback to native Agent Mahoo runtime.
             return await context._process_chain(context.get_agent(), user_msg, True)
 
     async def _run_external_chat(

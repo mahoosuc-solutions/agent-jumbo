@@ -17,7 +17,7 @@ class TestMyInstrument:
     """
     Test suite for MyInstrument.
 
-    Follows Agent Jumbo testing conventions:
+    Follows Agent Mahoo testing conventions:
     - Uses tmp_path fixture for database isolation
     - Each test gets fresh manager instance
     - Tests return structured results with status/error keys

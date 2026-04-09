@@ -2,7 +2,7 @@
 
 Before treating any deployment as launch-ready, verify it against [Production GA Definition of Done](PRODUCTION_GA_DEFINITION_OF_DONE.md). This guide explains how to deploy; the GA definition determines whether the platform is actually ready to go live.
 
-> Agent Jumbo — from development to production with confidence.
+> Agent Mahoo — from development to production with confidence.
 
 ---
 
@@ -76,16 +76,16 @@ Full list of 272+ documented variables: `.env.example`
 
 ```bash
 # Build
-docker build -t agent-jumbo:latest .
+docker build -t agent-mahoo:latest .
 
 # Run
 docker run -d \
-  --name agent-jumbo \
+  --name agent-mahoo \
   --env-file .env \
   -p 50001:50001 \
   -v $(pwd)/memory:/app/memory \
   -v $(pwd)/knowledge:/app/knowledge \
-  agent-jumbo:latest
+  agent-mahoo:latest
 
 # Verify
 curl http://localhost:50001/health | python -m json.tool

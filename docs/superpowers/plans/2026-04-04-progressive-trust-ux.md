@@ -63,7 +63,7 @@ def test_default_settings_has_trust_onboarded():
 - [ ] **Step 2: Run the test to verify it fails**
 
 ```bash
-cd /mnt/wdblack/dev/projects/agent-jumbo
+cd /mnt/wdblack/dev/projects/agent-mahoo
 python -m pytest tests/unit/test_trust_system.py::test_default_settings_has_trust_always_allow tests/unit/test_trust_system.py::test_default_settings_has_trust_onboarded -v
 ```
 
@@ -598,7 +598,7 @@ Create `webui/components/onboarding/onboarding-modal.html`:
 
         <!-- Step 1: Experience -->
         <div x-show="step === 1">
-            <h2 style="margin:0 0 8px;font-size:20px;text-align:center;">👋 Welcome to Agent Jumbo</h2>
+            <h2 style="margin:0 0 8px;font-size:20px;text-align:center;">👋 Welcome to Agent Mahoo</h2>
             <p style="text-align:center;color:var(--text-secondary,#aaa);margin:0 0 24px;font-size:14px;">Let's set up how much you want the agent to do on its own</p>
             <p style="font-weight:500;margin:0 0 16px;font-size:14px;">How would you describe your experience with AI assistants?</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
@@ -649,7 +649,7 @@ Create `webui/components/onboarding/onboarding-modal.html`:
 
             <button @click="confirm()"
                     style="width:100%;padding:12px;background:var(--color-primary,#4a9eff);color:white;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">
-                Start using Agent Jumbo →
+                Start using Agent Mahoo →
             </button>
             <button @click="step = 2" style="width:100%;margin-top:8px;background:none;border:none;color:var(--text-secondary,#aaa);font-size:12px;cursor:pointer;">← Back</button>
         </div>
@@ -842,7 +842,7 @@ Look for how `cowork-panel.html` is loaded — search `index.html` for `cowork-p
 - [ ] **Step 4: Verify the exact inclusion pattern and fix Step 3**
 
 ```bash
-grep -n "cowork-panel\|components.*html\|loadComponent\|innerHTML" /mnt/wdblack/dev/projects/agent-jumbo/webui/index.html | head -20
+grep -n "cowork-panel\|components.*html\|loadComponent\|innerHTML" /mnt/wdblack/dev/projects/agent-mahoo/webui/index.html | head -20
 ```
 
 Use the output to write the correct include. The modal needs to exist in the DOM before Alpine initializes, or be loaded dynamically the same way other panels are.

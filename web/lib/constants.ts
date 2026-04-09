@@ -4,10 +4,10 @@ import {
   Archive, Users, Settings, ClipboardList, Lightbulb, FolderKanban, BriefcaseBusiness, type LucideIcon,
 } from 'lucide-react'
 
-export const SITE_NAME = 'Agent Jumbo'
+export const SITE_NAME = 'Agent Mahoo'
 export const SITE_DESCRIPTION = 'Your Personal AI Operating System. Part of Mahoosuc OS.'
-export const GITHUB_REPO = 'mahoosuc-solutions/agent-jumbo'
-export const GITHUB_URL = 'https://github.com/mahoosuc-solutions/agent-jumbo'
+export const GITHUB_REPO = 'mahoosuc-solutions/agent-mahoo'
+export const GITHUB_URL = 'https://github.com/mahoosuc-solutions/agent-mahoo'
 export const MAHOOSUC_URL = 'https://mahoosuc.ai'
 export const VERSION = '1.0.0-beta'
 

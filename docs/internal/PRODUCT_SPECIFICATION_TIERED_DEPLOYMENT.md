@@ -1,4 +1,4 @@
-# Agent Jumbo - Tiered Deployment Product Specification
+# Agent Mahoo - Tiered Deployment Product Specification
 
 ## Complete Product Specification: Customer Use Cases, User Types, Expectations, and Deliverables
 
@@ -29,7 +29,7 @@
 
 ### Vision
 
-Agent Jumbo's tiered deployment enables organizations of all sizes to leverage autonomous AI automation based on their sophistication level, budget, and operational requirements.
+Agent Mahoo's tiered deployment enables organizations of all sizes to leverage autonomous AI automation based on their sophistication level, budget, and operational requirements.
 
 ### Market Positioning
 
@@ -41,7 +41,7 @@ Agent Jumbo's tiered deployment enables organizations of all sizes to leverage a
 - Data privacy concerns with cloud-first AI
 - Difficulty scaling AI adoption across teams
 
-**Solution**: Agent Jumbo provides:
+**Solution**: Agent Mahoo provides:
 
 - Transparent, fully customizable autonomous agents
 - Privacy-first (runs locally) with optional cloud sync
@@ -133,7 +133,7 @@ Agent Jumbo's tiered deployment enables organizations of all sizes to leverage a
 **Positioning**: "AI Agent in Your Pocket"
 
 **Description**:
-Standalone, portable Agent Jumbo that runs from a flash drive on any computer. Maximum privacy, zero cloud dependency, perfect for individual productivity.
+Standalone, portable Agent Mahoo that runs from a flash drive on any computer. Maximum privacy, zero cloud dependency, perfect for individual productivity.
 
 **Use Cases**:
 
@@ -409,7 +409,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 **Technology Comfort**: Very high (developer)
 
-**How They'd Use Agent Jumbo**:
+**How They'd Use Agent Mahoo**:
 
 1. Generates boilerplate code and project scaffolding
 2. Automated code review and refactoring
@@ -455,7 +455,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 **Technology Comfort**: Low-medium (business user)
 
-**How They'd Use Agent Jumbo**:
+**How They'd Use Agent Mahoo**:
 
 1. Automatic customer follow-ups via email
 2. Daily business health dashboard
@@ -501,7 +501,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 **Technology Comfort**: Medium (business + some technical)
 
-**How They'd Use Agent Jumbo**:
+**How They'd Use Agent Mahoo**:
 
 1. Auto-route and qualify leads
 2. Personalized customer communications
@@ -547,7 +547,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 **Technology Comfort**: Medium (power user)
 
-**How They'd Use Agent Jumbo**:
+**How They'd Use Agent Mahoo**:
 
 1. Process automation for routine workflows
 2. Bottleneck identification and reporting
@@ -593,7 +593,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 **Technology Comfort**: Very high (technical leader)
 
-**How They'd Use Agent Jumbo**:
+**How They'd Use Agent Mahoo**:
 
 1. Autonomous infrastructure operations
 2. AI platform for internal tools
@@ -639,7 +639,7 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 **Technology Comfort**: Medium (business + security)
 
-**How They'd Use Agent Jumbo**:
+**How They'd Use Agent Mahoo**:
 
 1. Compliance check automation
 2. Audit trail and logging
@@ -666,14 +666,14 @@ Full-stack enterprise solution with advanced customization, multi-organization s
 
 ```text
 As a solo developer named Sarah,
-I want to set up Agent Jumbo from a flash drive in < 15 minutes,
+I want to set up Agent Mahoo from a flash drive in < 15 minutes,
 So that I can start using it immediately without installation complexity.
 
 Acceptance Criteria:
 - Download flash drive package
 - Insert into computer
 - Double-click run.sh or run.bat
-- Agent Jumbo running within 15 minutes
+- Agent Mahoo running within 15 minutes
 - Web UI accessible at localhost:5000
 - First conversation initiated successfully
 ```
@@ -682,7 +682,7 @@ Acceptance Criteria:
 
 ```text
 As a researcher traveling internationally,
-I want to use Agent Jumbo without internet connectivity,
+I want to use Agent Mahoo without internet connectivity,
 So that I can work on flights and in remote locations.
 
 Acceptance Criteria:
@@ -697,7 +697,7 @@ Acceptance Criteria:
 
 ```text
 As a non-technical user,
-I want to customize Agent Jumbo's behavior through UI,
+I want to customize Agent Mahoo's behavior through UI,
 So that I can adapt it to my specific needs without writing code.
 
 Acceptance Criteria:
@@ -713,12 +713,12 @@ Acceptance Criteria:
 
 ```text
 As a busy consultant,
-I want to interact with Agent Jumbo via Telegram on mobile,
+I want to interact with Agent Mahoo via Telegram on mobile,
 So that I can get updates and interact while away from my desk.
 
 Acceptance Criteria:
 - Telegram bot configured automatically
-- Send messages to bot → Agent Jumbo processes
+- Send messages to bot → Agent Mahoo processes
 - Receive responses and digests via Telegram
 - Works with local Ollama setup
 - QR code for easy bot discovery
@@ -747,7 +747,7 @@ Acceptance Criteria:
 
 ```text
 As a small business owner,
-I want to set up Agent Jumbo for my 8-person team,
+I want to set up Agent Mahoo for my 8-person team,
 So that everyone can benefit from automation without individual licenses.
 
 Acceptance Criteria:
@@ -833,7 +833,7 @@ Acceptance Criteria:
 
 ```text
 As an IT director,
-I want to deploy Agent Jumbo to production for my department,
+I want to deploy Agent Mahoo to production for my department,
 So that I can automate operations at scale with enterprise controls.
 
 Acceptance Criteria:
@@ -850,7 +850,7 @@ Acceptance Criteria:
 
 ```text
 As a compliance officer,
-I want full audit trail of all Agent Jumbo actions,
+I want full audit trail of all Agent Mahoo actions,
 So that I can demonstrate compliance to auditors.
 
 Acceptance Criteria:
@@ -867,7 +867,7 @@ Acceptance Criteria:
 
 ```text
 As a systems architect,
-I want to connect Agent Jumbo to existing enterprise systems,
+I want to connect Agent Mahoo to existing enterprise systems,
 So that automation spans across tools and departments.
 
 Acceptance Criteria:
@@ -922,7 +922,7 @@ Acceptance Criteria:
 
 ```text
 As a Chief Technology Officer,
-I want to partner with Agent Jumbo strategically,
+I want to partner with Agent Mahoo strategically,
 So that AI automation becomes core to our competitive advantage.
 
 Acceptance Criteria:
@@ -939,7 +939,7 @@ Acceptance Criteria:
 
 ```text
 As the CTO for a holding company,
-I want to run multiple business units with Agent Jumbo,
+I want to run multiple business units with Agent Mahoo,
 So that each entity has isolation while sharing infrastructure.
 
 Acceptance Criteria:
@@ -972,7 +972,7 @@ Acceptance Criteria:
 
 ```text
 As an Enterprise Architect,
-I want to build an AI Center of Excellence on Agent Jumbo,
+I want to build an AI Center of Excellence on Agent Mahoo,
 So that we can rapidly build custom AI solutions for the organization.
 
 Acceptance Criteria:
@@ -1103,13 +1103,13 @@ Acceptance Criteria:
 
 **Day 1: Monday**
 
-- Sarah downloads Agent Jumbo flash drive package
+- Sarah downloads Agent Mahoo flash drive package
 - Inserts flash drive into MacBook
 - Runs `bash run.sh` - Docker loads in 2 minutes
 - Configures Ollama (local LLM) via .env
 - Adds her personal Anthropic API key as backup
 - Tests with simple request: "Create a React component for a loading spinner"
-- Agent Jumbo generates working component in 30 seconds
+- Agent Mahoo generates working component in 30 seconds
 - Sarah adds it to project
 
 **Day 3: Wednesday**
@@ -1129,7 +1129,7 @@ Acceptance Criteria:
 
 **Week 2: Ongoing**
 
-- Agent Jumbo learns her coding patterns
+- Agent Mahoo learns her coding patterns
 - Memory grows with useful code snippets
 - Suggests optimizations based on past projects
 - Handles deployment automation
@@ -1161,7 +1161,7 @@ Acceptance Criteria:
 - Set up Gmail integration
 - Created workflow: "Lead Capture → Auto-Interview → Proposal"
 - First lead comes in via web form
-- Agent Jumbo auto-interviews prospect within 2 hours
+- Agent Mahoo auto-interviews prospect within 2 hours
 - Proposal generated and sent before business hours end
 - Prospect impressed by speed
 
@@ -1225,7 +1225,7 @@ Acceptance Criteria:
 
 **Week 1**:
 
-- Jennifer (Ops Director) evaluates Agent Jumbo with IT team
+- Jennifer (Ops Director) evaluates Agent Mahoo with IT team
 - Use cases identified:
   - Support ticket routing and automation
   - Expense report processing
@@ -1309,7 +1309,7 @@ Acceptance Criteria:
 
 **Month 1**:
 
-- CTO engages Agent Jumbo enterprise partnership
+- CTO engages Agent Mahoo enterprise partnership
 - Dedicated success manager assigned
 - Strategic planning sessions with 3 departments: Operations, Engineering, Compliance
 

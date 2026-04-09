@@ -1,18 +1,18 @@
 # Architecture Overview
 
-Agent Jumbo is built on a flexible and modular architecture designed for extensibility and customization. This section outlines the key components and the interactions between them.
+Agent Mahoo is built on a flexible and modular architecture designed for extensibility and customization. This section outlines the key components and the interactions between them.
 
 ## System Architecture
 
 This simplified diagram illustrates the hierarchical relationship between agents and their interaction with tools, extensions, instruments, prompts, memory and knowledge base.
 
-![Agent Jumbo Architecture](res/arch-01.svg)
+![Agent Mahoo Architecture](res/arch-01.svg)
 
 The user or Agent 0 is at the top of the hierarchy, delegating tasks to subordinate agents, which can further delegate to other agents. Each agent can utilize tools and access the shared assets (prompts, memory, knowledge, extensions and instruments) to perform its tasks.
 
 ## Runtime Architecture
 
-Agent Jumbo's runtime architecture is built around Docker containers:
+Agent Mahoo's runtime architecture is built around Docker containers:
 
 1. **Host System (your machine)**:
    - Requires only Docker and a web browser
@@ -20,7 +20,7 @@ Agent Jumbo's runtime architecture is built around Docker containers:
    - Handles container orchestration
 
 2. **Runtime Container**:
-   - Houses the complete Agent Jumbo framework
+   - Houses the complete Agent Mahoo framework
    - Manages the Web UI and API endpoints
    - Handles all core functionalities including code execution
    - Provides a standardized environment across all platforms
@@ -34,7 +34,7 @@ This architecture ensures:
 - Flexible deployment options for advanced users
 
 > [!NOTE]
-> The legacy approach of running Agent Jumbo directly on the host system (using Python, Conda, etc.)
+> The legacy approach of running Agent Mahoo directly on the host system (using Python, Conda, etc.)
 > is still possible but requires Remote Function Calling (RFC) configuration through the Settings
 > page. See [Full Binaries Installation](installation.md#in-depth-guide-for-full-binaries-installation)
 > for detailed instructions.
@@ -85,7 +85,7 @@ This architecture ensures:
 
 ## Core Components
 
-Agent Jumbo's architecture revolves around the following key components:
+Agent Mahoo's architecture revolves around the following key components:
 
 ### 1. Agents
 
@@ -93,7 +93,7 @@ The core actors within the framework. Agents receive instructions, reason, make 
 
 #### Agent Hierarchy and Communication
 
-Agent Jumbo employs a hierarchical agent structure, where a top-level agent (often the user) can delegate tasks to subordinate agents. This hierarchy allows for the efficient breakdown of complex tasks into smaller, more manageable sub-tasks.
+Agent Mahoo employs a hierarchical agent structure, where a top-level agent (often the user) can delegate tasks to subordinate agents. This hierarchy allows for the efficient breakdown of complex tasks into smaller, more manageable sub-tasks.
 
 Communication flows between agents through messages, which are structured according to the prompt templates. These messages typically include:
 
@@ -105,7 +105,7 @@ Communication flows between agents through messages, which are structured accord
 
 #### Interaction Flow
 
-A typical interaction flow within Agent Jumbo might look like this:
+A typical interaction flow within Agent Mahoo might look like this:
 
 ![Interaction Flow](res/flow-01.svg)
 
@@ -119,15 +119,15 @@ A typical interaction flow within Agent Jumbo might look like this:
 
 ### 2. Tools
 
-Tools are functionalities that agents can leverage. These can include anything from web search and code execution to interacting with APIs or controlling external software. Agent Jumbo provides a mechanism for defining and integrating both built-in and custom tools.
+Tools are functionalities that agents can leverage. These can include anything from web search and code execution to interacting with APIs or controlling external software. Agent Mahoo provides a mechanism for defining and integrating both built-in and custom tools.
 
 #### Built-in Tools
 
-Agent Jumbo comes with a set of built-in tools designed to help agents perform tasks efficiently:
+Agent Mahoo comes with a set of built-in tools designed to help agents perform tasks efficiently:
 
 | Tool | Function |
 | --- | --- |
-| behavior_adjustment | Agent Jumbo use this tool to change its behavior according to a prior request from the user. |
+| behavior_adjustment | Agent Mahoo use this tool to change its behavior according to a prior request from the user. |
 | call_subordinate | Allows agents to delegate tasks to subordinate agents |
 | code_execution_tool | Allows agents to execute Python, Node.js, and Shell code in the terminal |
 | input | Allows agents to use the keyboard to interact with an active shell |
@@ -136,7 +136,7 @@ Agent Jumbo comes with a set of built-in tools designed to help agents perform t
 
 #### SearXNG Integration
 
-Agent Jumbo has integrated SearXNG as its primary search tool, replacing the previous knowledge tools (Perplexity and DuckDuckGo). This integration enhances the agent's ability to retrieve information while ensuring user privacy and customization.
+Agent Mahoo has integrated SearXNG as its primary search tool, replacing the previous knowledge tools (Perplexity and DuckDuckGo). This integration enhances the agent's ability to retrieve information while ensuring user privacy and customization.
 
 Current transition note:
 The repo still uses `SearXNG` as the built-in query search backend, but the product direction is shifting toward agentic browsing plus optional provider-backed search. See `docs/SEARCH_STACK_TRANSITION.md`.
@@ -148,7 +148,7 @@ SearXNG is an open-source metasearch engine that allows users to search multiple
 The integration provides access to various types of content, including images, videos, and news articles, allowing users to gather comprehensive information on any topic.
 
 - Fallback Mechanism
-In cases where SearXNG might not return satisfactory results, Agent Jumbo can be configured to fall back on other sources or methods, ensuring that users always have access to information.
+In cases where SearXNG might not return satisfactory results, Agent Mahoo can be configured to fall back on other sources or methods, ensuring that users always have access to information.
 
 > [!NOTE]
 > The Knowledge Tool is designed to work seamlessly with both online searches through
@@ -157,7 +157,7 @@ In cases where SearXNG might not return satisfactory results, Agent Jumbo can be
 
 #### Custom Tools
 
-Users can create custom tools to extend Agent Jumbo's capabilities. Custom tools can be integrated into the framework by defining a tool specification, which includes the tool's prompt to be placed in `/prompts/$FOLDERNAME/agent.system.tool.$TOOLNAME.md`, as detailed below.
+Users can create custom tools to extend Agent Mahoo's capabilities. Custom tools can be integrated into the framework by defining a tool specification, which includes the tool's prompt to be placed in `/prompts/$FOLDERNAME/agent.system.tool.$TOOLNAME.md`, as detailed below.
 
 1. Create `agent.system.tool.$TOOL_NAME.md` in `prompts/$SUBDIR`
 2. Add reference in `agent.system.tools.md`
@@ -171,7 +171,7 @@ Users can create custom tools to extend Agent Jumbo's capabilities. Custom tools
 
 ### 3. Memory System
 
-The memory system is a critical component of Agent Jumbo, enabling the agent to learn and adapt from past interactions. It operates on a hybrid model where part of the memory is managed automatically by the framework while users can also manually input and extract information.
+The memory system is a critical component of Agent Mahoo, enabling the agent to learn and adapt from past interactions. It operates on a hybrid model where part of the memory is managed automatically by the framework while users can also manually input and extract information.
 
 #### Memory Structure
 
@@ -184,10 +184,10 @@ The memory is categorized into four distinct areas:
 
 #### Messages History and Summarization
 
-Agent Jumbo employs a sophisticated message history and summarization system to maintain context effectively while optimizing memory usage. This system dynamically manages the information flow, ensuring relevant details are readily available while efficiently handling the constraints of context windows.
+Agent Mahoo employs a sophisticated message history and summarization system to maintain context effectively while optimizing memory usage. This system dynamically manages the information flow, ensuring relevant details are readily available while efficiently handling the constraints of context windows.
 
 - **Context Extraction:** The system identifies key information from previous messages that are vital for ongoing discussions. This process mirrors how humans recall important memories, allowing less critical details to fade.
-- **Summarization Process:** Using natural language processing through the utility model, Agent Jumbo condenses the extracted information into concise summaries. By summarizing past interactions, Agent Jumbo can quickly recall important facts about the whole chat, leading to more appropriate responses.
+- **Summarization Process:** Using natural language processing through the utility model, Agent Mahoo condenses the extracted information into concise summaries. By summarizing past interactions, Agent Mahoo can quickly recall important facts about the whole chat, leading to more appropriate responses.
 - **Contextual Relevance:** The summarized context is prioritized based on its relevance to the current topic, ensuring users receive the most pertinent information.
 
 **Implementation Details:**
@@ -207,10 +207,10 @@ Agent Jumbo employs a sophisticated message history and summarization system to 
   - Enables efficient navigation of long conversation histories.
   - Maintains semantic connections between related topics.
 
-By dynamically adjusting context windows and summarizing past interactions, Agent Jumbo enhances both efficiency and user experience. This innovation not only reflects the framework's commitment to being dynamic and user-centric, but also draws inspiration from human cognitive processes, making AI interactions more relatable and effective. Just as humans forget trivial details, Agent Jumbo intelligently condenses information to enhance communication.
+By dynamically adjusting context windows and summarizing past interactions, Agent Mahoo enhances both efficiency and user experience. This innovation not only reflects the framework's commitment to being dynamic and user-centric, but also draws inspiration from human cognitive processes, making AI interactions more relatable and effective. Just as humans forget trivial details, Agent Mahoo intelligently condenses information to enhance communication.
 
 > [!NOTE]
-> To maximize the effectiveness of context summarization, users should provide clear and specific instructions during interactions. This helps Agent Jumbo understand which details are most important to retain.
+> To maximize the effectiveness of context summarization, users should provide clear and specific instructions during interactions. This helps Agent Mahoo understand which details are most important to retain.
 
 ### 4. Prompts
 
@@ -240,7 +240,7 @@ The `prompts` directory contains various Markdown files that control agent behav
 
 1. Create directory in `prompts/` (e.g., `my-custom-prompts`)
 2. Copy and modify needed files from `prompts/default/`
-3. Agent Jumbo will merge your custom files with the default ones
+3. Agent Mahoo will merge your custom files with the default ones
 4. Select your custom prompts in the Settings page (Agent Config section)
 
 #### Dynamic Behavior System
@@ -270,7 +270,7 @@ The `prompts` directory contains various Markdown files that control agent behav
   - Maintains separation between core functionality and behavioral rules
 
 > [!NOTE]
-> You can customize any of these files. Agent Jumbo will use the files in your custom `prompts_subdir`
+> You can customize any of these files. Agent Mahoo will use the files in your custom `prompts_subdir`
 > if they exist, otherwise, it will fall back to the files in `prompts/default`.
 
 <!-- markdownlint-disable-next-line MD028 -->
@@ -301,9 +301,9 @@ Knowledge refers to the user-provided information and data that agents can lever
 
 ### 6. Instruments
 
-Instruments provide a way to add custom functionalities to Agent Jumbo without adding to the token count of the system prompt:
+Instruments provide a way to add custom functionalities to Agent Mahoo without adding to the token count of the system prompt:
 
-- Stored in long-term memory of Agent Jumbo
+- Stored in long-term memory of Agent Mahoo
 - Unlimited number of instruments available
 - Recalled when needed by the agent
 - Can modify agent behavior by introducing new procedures
@@ -319,7 +319,7 @@ Instruments provide a way to add custom functionalities to Agent Jumbo without a
 
 ### 7. Extensions
 
-Extensions are a powerful feature of Agent Jumbo, designed to keep the main codebase clean and organized while allowing for greater flexibility and modularity.
+Extensions are a powerful feature of Agent Mahoo, designed to keep the main codebase clean and organized while allowing for greater flexibility and modularity.
 
 #### Structure
 
@@ -352,7 +352,7 @@ Extensions can be found in `python/extensions` directory:
 
 ## Agentic Task Cycle Pipeline
 
-Agent Jumbo includes a self-contained end-to-end pipeline for taking a task from natural language description to graded, committed code output. The pipeline wires together four components:
+Agent Mahoo includes a self-contained end-to-end pipeline for taking a task from natural language description to graded, committed code output. The pipeline wires together four components:
 
 ```
 task_cycle(task)

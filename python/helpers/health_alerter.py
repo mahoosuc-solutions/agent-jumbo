@@ -47,7 +47,7 @@ async def check_and_alert():
             if _last_alert["status"] != "healthy":
                 # Recovery — send one recovery notice then reset
                 _last_alert.update({"status": "healthy", "ts": time.monotonic()})
-                await _send_telegram("✅ Agent Jumbo recovered — status: HEALTHY")
+                await _send_telegram("✅ Agent Mahoo recovered — status: HEALTHY")
             return {"status": "healthy", "alerted": False}
 
         # Build alert message
@@ -68,7 +68,7 @@ async def check_and_alert():
             return {"status": status, "alerted": False, "skipped": "deduped"}
 
         _last_alert.update({"status": status, "ts": now})
-        alert_msg = f"⚠️ Agent Jumbo Health: {status.upper()}\n\n" + "\n".join(issues)
+        alert_msg = f"⚠️ Agent Mahoo Health: {status.upper()}\n\n" + "\n".join(issues)
 
         # Send via Telegram
         alerted = await _send_telegram(alert_msg)

@@ -1,7 +1,7 @@
 {
-  "name": "agent-jumbo-web",
+  "name": "agent-mahoo-web",
   "version": "1.0.0-beta",
-  "description": "Agent Jumbo - Multi-platform Deployment Orchestration",
+  "description": "Agent Mahoo - Multi-platform Deployment Orchestration",
   "private": true,
   "scripts": {
     "dev": "next dev",

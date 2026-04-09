@@ -14,7 +14,7 @@
 
 - `instruments/custom/customer_lifecycle/lifecycle_db.py` - Database schema (8 tables)
 - `instruments/custom/customer_lifecycle/lifecycle_manager.py` - Business logic
-- `python/tools/customer_lifecycle.py` - Agent Jumbo tool wrapper
+- `python/tools/customer_lifecycle.py` - Agent Mahoo tool wrapper
 - `prompts/agent.system.tool.customer_lifecycle.md` - Tool documentation
 
 **Capabilities**:
@@ -52,7 +52,7 @@
 
 - `instruments/custom/virtual_team/team_db.py` - Database schema (9 tables)
 - `instruments/custom/virtual_team/team_orchestrator.py` - Team coordination logic
-- `python/tools/virtual_team.py` - Agent Jumbo tool wrapper
+- `python/tools/virtual_team.py` - Agent Mahoo tool wrapper
 - `prompts/agent.system.tool.virtual_team.md` - Tool documentation
 
 **Agent Roles** (7 specialists):
@@ -94,7 +94,7 @@
 ## File Structure
 
 ```text
-agent-jumbo/
+agent-mahoo/
 ├── instruments/custom/
 │   ├── customer_lifecycle/
 │   │   ├── __init__.py
@@ -204,7 +204,7 @@ agent-jumbo/
 Run comprehensive tests:
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 python3 tests/test_customer_lifecycle.py  # 9 tests
 python3 tests/test_virtual_team.py        # 13 tests
 ```
@@ -307,7 +307,7 @@ rm instruments/custom/*/data/test_*.db
 3. ✓ Multi-agent workflow orchestration
 4. ✓ Complete testing coverage
 5. ✓ Comprehensive documentation
-6. ✓ Integration with existing Agent Jumbo tools
+6. ✓ Integration with existing Agent Mahoo tools
 
 **Total Implementation**:
 
@@ -341,10 +341,10 @@ rm instruments/custom/*/data/test_*.db
 
 ## License
 
-Inherits Agent Jumbo license.
+Inherits Agent Mahoo license.
 
 ---
 
 **Status**: ✅ **PRODUCTION READY**
 
-All tests passing, documentation complete, ready for immediate use in Agent Jumbo!
+All tests passing, documentation complete, ready for immediate use in Agent Mahoo!

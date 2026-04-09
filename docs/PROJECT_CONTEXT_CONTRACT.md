@@ -4,7 +4,7 @@ This project uses a unified context manifest so agents can execute with the righ
 
 ## Manifest
 
-- Path: `project_context/agent_jumbo.context.yaml`
+- Path: `project_context/agent_mahoo.context.yaml`
 - Scope:
   - skills
   - commands

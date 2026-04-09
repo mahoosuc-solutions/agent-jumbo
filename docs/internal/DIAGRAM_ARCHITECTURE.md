@@ -1,4 +1,4 @@
-# Agent Jumbo Diagram System Architecture
+# Agent Mahoo Diagram System Architecture
 
 ## System Overview
 
@@ -11,7 +11,7 @@ graph TB
     end
 
     subgraph "Agent Layer"
-        Agent[🤖 Agent Jumbo]
+        Agent[🤖 Agent Mahoo]
         Tools[🛠️ Tool System]
         Memory[🧠 Memory]
     end
@@ -116,7 +116,7 @@ User Request → Agent → diagram_tool → Generator script
 ## File Organization
 
 ```text
-agent-jumbo/
+agent-mahoo/
 ├── webui/
 │   ├── vendor/
 │   │   └── mermaid.min.js          ← Client library
@@ -181,7 +181,7 @@ sequenceDiagram
 | **Server** | @mermaid-js/mermaid-cli | PNG/SVG export |
 | **Runtime** | Python 3.8+ | Script execution |
 | **Package Manager** | npm | Dependency management |
-| **Framework** | Agent Jumbo | Integration platform |
+| **Framework** | Agent Mahoo | Integration platform |
 
 ## Performance Characteristics
 
@@ -241,4 +241,4 @@ New diagram types can be added by:
 
 ---
 
-This architecture enables Agent Jumbo to create professional diagrams with minimal latency and maximum flexibility!
+This architecture enables Agent Mahoo to create professional diagrams with minimal latency and maximum flexibility!

@@ -1,5 +1,5 @@
 """
-Linear Integration Tool for Agent Jumbo / MOS.
+Linear Integration Tool for Agent Mahoo / MOS.
 
 Provides 7 actions: create_issue, create_issue_batch, update_issue,
 search_issues, get_project_issues, sync_pipeline, get_dashboard.

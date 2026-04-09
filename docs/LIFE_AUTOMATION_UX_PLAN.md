@@ -1,6 +1,6 @@
-# Life Automation UX Plan + Agent Jumbo Integration
+# Life Automation UX Plan + Agent Mahoo Integration
 
-This document defines the UX plan for the proposed life-automation systems and how they integrate into Agent Jumbo's existing WebUI, tools, and data model.
+This document defines the UX plan for the proposed life-automation systems and how they integrate into Agent Mahoo's existing WebUI, tools, and data model.
 
 ## UX Principles
 
@@ -327,7 +327,7 @@ This document defines the UX plan for the proposed life-automation systems and h
 - Email parsing + calendar hub.
 - Finance tool for receipts.
 
-## Agent Jumbo Integration Map
+## Agent Mahoo Integration Map
 
 **WebUI**
 
@@ -363,7 +363,7 @@ Use MFEs when teams need to ship UI modules independently and at different caden
 
 2) **Plugin/Extension Registry**
    - Why: lets you enable/disable systems at runtime and load features by manifest.
-   - Fit: aligns with Agent Jumbo's tool/instrument model and keeps the UI lightweight.
+   - Fit: aligns with Agent Mahoo's tool/instrument model and keeps the UI lightweight.
 
 3) **Backend-Driven UI (Schema-Based)**
    - Why: ships UI changes via JSON schema without full frontend redeploys.
@@ -404,7 +404,7 @@ Use MFEs when teams need to ship UI modules independently and at different caden
 **Pros**
 
 - Enable/disable systems dynamically per user.
-- Aligns with Agent Jumbo's tool/instrument design.
+- Aligns with Agent Mahoo's tool/instrument design.
 - Reduces baseline UI weight.
 
 **Cons**

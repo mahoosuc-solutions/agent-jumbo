@@ -2,11 +2,11 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Install Agent Jumbo',
-  description: 'Download and self-host Agent Jumbo in minutes. One-line install script for macOS and Linux.',
+  title: 'Install Agent Mahoo',
+  description: 'Download and self-host Agent Mahoo in minutes. One-line install script for macOS and Linux.',
 }
 
-const GITHUB_REPO = 'mahoosuc-solutions/agent-jumbo'
+const GITHUB_REPO = 'mahoosuc-solutions/agent-mahoo'
 const GITHUB_URL = `https://github.com/${GITHUB_REPO}`
 const RELEASES_URL = `${GITHUB_URL}/releases/latest`
 
@@ -17,13 +17,13 @@ const MANUAL_STEPS = [
     step: '1',
     title: 'Download the latest release',
     code: `# Download from GitHub Releases
-curl -LO ${RELEASES_URL.replace('/latest', '')}/download/latest/agent-jumbo-latest.tar.gz`,
+curl -LO ${RELEASES_URL.replace('/latest', '')}/download/latest/agent-mahoo-latest.tar.gz`,
   },
   {
     step: '2',
     title: 'Extract and enter the directory',
-    code: `tar -xzf agent-jumbo-latest.tar.gz
-cd agent-jumbo-*/`,
+    code: `tar -xzf agent-mahoo-latest.tar.gz
+cd agent-mahoo-*/`,
   },
   {
     step: '3',
@@ -31,7 +31,7 @@ cd agent-jumbo-*/`,
     code: `# Install uv if you don't have it
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
-# Install Agent Jumbo dependencies
+# Install Agent Mahoo dependencies
 uv sync`,
   },
   {
@@ -42,7 +42,7 @@ uv sync`,
   },
   {
     step: '5',
-    title: 'Start Agent Jumbo',
+    title: 'Start Agent Mahoo',
     code: `uv run python run_ui.py
 # Opens on http://localhost:6274`,
   },
@@ -63,12 +63,12 @@ export default function InstallPage() {
         {/* Header */}
         <div className="mb-12">
           <p className="text-copper-400 font-mono text-sm tracking-widest uppercase mb-3">Installation</p>
-          <h1 className="text-4xl font-bold text-white mb-4">Get Agent Jumbo Running</h1>
+          <h1 className="text-4xl font-bold text-white mb-4">Get Agent Mahoo Running</h1>
           <p className="text-slate-400 text-lg">
             Self-hosted. No cloud required. Runs on your machine or your server.
           </p>
           <p className="mt-4 text-sm text-slate-500">
-            Not sure what Agent Jumbo is or how it works?{' '}
+            Not sure what Agent Mahoo is or how it works?{' '}
             <Link href="/how-it-works" className="text-copper-400 hover:text-copper-300 underline underline-offset-2">
               Read the plain-language guide first →
             </Link>
@@ -87,7 +87,7 @@ export default function InstallPage() {
             </pre>
           </div>
           <p className="mt-3 text-xs text-slate-500">
-            Installs to <code className="text-slate-400">~/.local/share/agent-jumbo</code> with a launcher at <code className="text-slate-400">~/.local/bin/agent-jumbo</code>.{' '}
+            Installs to <code className="text-slate-400">~/.local/share/agent-mahoo</code> with a launcher at <code className="text-slate-400">~/.local/bin/agent-mahoo</code>.{' '}
             <Link href={`${GITHUB_URL}/blob/main/install.sh`} className="text-copper-400 hover:text-copper-300 underline underline-offset-2" target="_blank" rel="noopener noreferrer">
               Read the install script
             </Link>
@@ -136,10 +136,10 @@ export default function InstallPage() {
             <div>
               <h3 className="text-white font-semibold mb-1">Connect to Mahoosuc OS</h3>
               <p className="text-slate-400 text-sm mb-3">
-                Once running, Agent Jumbo can connect to the Mahoosuc OS platform via the Agent Mesh Bridge. Set <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded text-xs">AGENTMESH_REDIS_URL</code> and <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded text-xs">AIOS_BASE_URL</code> in your <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded text-xs">.env</code> to activate the bridge.
+                Once running, Agent Mahoo can connect to the Mahoosuc OS platform via the Agent Mesh Bridge. Set <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded text-xs">AGENTMESH_REDIS_URL</code> and <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded text-xs">AIOS_BASE_URL</code> in your <code className="text-slate-300 bg-slate-800 px-1 py-0.5 rounded text-xs">.env</code> to activate the bridge.
               </p>
               <Link
-                href="https://mahoosuc.ai/agent-jumbo"
+                href="https://mahoosuc.ai/agent-mahoo"
                 className="text-sm text-mahoosuc-blue-300 hover:text-mahoosuc-blue-200 underline underline-offset-2"
                 target="_blank"
                 rel="noopener noreferrer"

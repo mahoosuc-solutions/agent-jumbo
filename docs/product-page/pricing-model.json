@@ -125,7 +125,7 @@
       "cta_href": "/signup?plan=pro",
       "includes": [
         "Everything in Community",
-        "Managed LLM proxy with $10/mo included cloud token budget (via Agent Jumbo Venice.ai endpoint)",
+        "Managed LLM proxy with $10/mo included cloud token budget (via Agent Mahoo Venice.ai endpoint)",
         "Usage analytics dashboard with per-project cost tracking",
         "Priority model routing with automatic fallback chains",
         "Prompt caching optimization (supported on Anthropic, OpenAI models)",
@@ -201,31 +201,31 @@
       "competitor": "Dify",
       "tier": "Pro",
       "price": 59,
-      "comparison_notes": "Dify Pro at $59/mo includes 5,000 message credits but requires separate LLM API keys. Agent Jumbo Pro at $39 includes $10 token budget routed through our proxy AND supports unlimited local model usage. Dify is cloud-hosted; Agent Jumbo is self-hosted with optional managed routing."
+      "comparison_notes": "Dify Pro at $59/mo includes 5,000 message credits but requires separate LLM API keys. Agent Mahoo Pro at $39 includes $10 token budget routed through our proxy AND supports unlimited local model usage. Dify is cloud-hosted; Agent Mahoo is self-hosted with optional managed routing."
     },
     {
       "competitor": "n8n",
       "tier": "Cloud Pro",
       "price": 50,
-      "comparison_notes": "n8n Cloud Pro at $50/mo focuses on workflow automation with 2,500 executions. Agent Jumbo is purpose-built for AI agent orchestration with 36 specialized instruments, LLM routing across 18 providers, and full lifecycle management. n8n has broader integration ecosystem (500+ nodes) but no native LLM routing or agent loop management."
+      "comparison_notes": "n8n Cloud Pro at $50/mo focuses on workflow automation with 2,500 executions. Agent Mahoo is purpose-built for AI agent orchestration with 36 specialized instruments, LLM routing across 18 providers, and full lifecycle management. n8n has broader integration ecosystem (500+ nodes) but no native LLM routing or agent loop management."
     },
     {
       "competitor": "CrewAI",
       "tier": "Enterprise",
       "price": 0,
-      "comparison_notes": "CrewAI Enterprise is custom-priced (typically $200+/mo). Their open-source framework requires significant custom integration. Agent Jumbo provides a complete operational platform (Web UI, task scheduler, dashboards, payment processing, communication instruments) out of the box at $0 for self-hosted."
+      "comparison_notes": "CrewAI Enterprise is custom-priced (typically $200+/mo). Their open-source framework requires significant custom integration. Agent Mahoo provides a complete operational platform (Web UI, task scheduler, dashboards, payment processing, communication instruments) out of the box at $0 for self-hosted."
     },
     {
       "competitor": "LangGraph (LangChain)",
       "tier": "Cloud Plus",
       "price": 0,
-      "comparison_notes": "LangGraph Cloud is usage-based pricing (no fixed monthly). Their Developer tier is free with limited runs. Agent Jumbo's self-hosted model means zero platform fees for local usage. LangGraph excels at durable execution and human-in-the-loop; Agent Jumbo excels at full lifecycle orchestration with integrated business instruments."
+      "comparison_notes": "LangGraph Cloud is usage-based pricing (no fixed monthly). Their Developer tier is free with limited runs. Agent Mahoo's self-hosted model means zero platform fees for local usage. LangGraph excels at durable execution and human-in-the-loop; Agent Mahoo excels at full lifecycle orchestration with integrated business instruments."
     },
     {
       "competitor": "OpenHands",
       "tier": "Cloud",
       "price": 0,
-      "comparison_notes": "OpenHands is focused purely on AI software engineering (coding agent). Agent Jumbo covers the full AI Architect lifecycle: design, build, test, validate, deploy, plus business operations (CRM, payments, communications). Different scope but overlapping in the coding-agent vertical."
+      "comparison_notes": "OpenHands is focused purely on AI software engineering (coding agent). Agent Mahoo covers the full AI Architect lifecycle: design, build, test, validate, deploy, plus business operations (CRM, payments, communications). Different scope but overlapping in the coding-agent vertical."
     }
   ],
   "assumptions": [
@@ -233,7 +233,7 @@
     "LLM token costs are based on published pricing as of March 2026: OpenAI GPT-4o at $5/$15 per million tokens, Anthropic Claude 3.5 Sonnet at $3/$15, Gemini 2.0 Flash at $0.10/$0.40, local Ollama models at $0.",
     "The 'typical small business' usage profile is estimated at 500K-2M tokens/month across chat, code generation, and background tasks, costing $2-15/month in cloud LLM fees depending on model mix.",
     "Stripe transaction fees (2.9% + $0.30) and Twilio per-minute charges are always pass-through costs borne by the operator regardless of tier.",
-    "The managed LLM proxy (Agent Jumbo Venice.ai endpoint) operates at near-cost with a 15-20% markup on wholesale token prices to cover routing infrastructure.",
+    "The managed LLM proxy (Agent Mahoo Venice.ai endpoint) operates at near-cost with a 15-20% markup on wholesale token prices to cover routing infrastructure.",
     "Support cost estimates assume a lean team: community support is volunteer/maintainer time, Pro email support is ~15 min/ticket average, Enterprise priority support is ~30 min/ticket with dedicated rotation.",
     "36 instruments confirmed in codebase, each with independent SQLite database. Total storage footprint for a typical installation: 50MB-2GB.",
     "Enterprise multi-instance pricing assumes shared infrastructure for proxy/analytics with per-instance marginal cost of ~$2-3/mo.",

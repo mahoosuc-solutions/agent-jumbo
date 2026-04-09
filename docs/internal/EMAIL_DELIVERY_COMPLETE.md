@@ -2,7 +2,7 @@
 
 ## Executive Summary
 
-All 3 phases of email integration for Agent Jumbo are now **complete, tested, and production-ready**.
+All 3 phases of email integration for Agent Mahoo are now **complete, tested, and production-ready**.
 
 ---
 

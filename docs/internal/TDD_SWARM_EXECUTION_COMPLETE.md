@@ -103,7 +103,7 @@ SPRINT VELOCITY:
 4. Implement TestSyncStatusReporting (3 tests)
 
 # Command to continue:
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 pytest tests/test_pms_calendar_sync.py::TestDynamicPricingRules -v
 # Replace pytest.skip() with test implementations
 ```
@@ -127,7 +127,7 @@ pytest tests/test_pms_calendar_sync.py::TestDynamicPricingRules -v
 5. Implement post-checkout workflow tests (6 tests)
 
 # Command to start:
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 # Create: instruments/custom/pms_hub/communication_workflows.py
 # Edit: tests/test_pms_communication_workflows.py
 pytest tests/test_pms_communication_workflows.py::TestCommunicationWorkflowInitialization -v
@@ -319,7 +319,7 @@ Day 5: Both teams merge to main
 ## 📊 File Structure Summary
 
 ```text
-/home/webemo-aaron/projects/agent-jumbo
+/home/webemo-aaron/projects/agent-mahoo
 
 Implementation Files:
 ├─ instruments/custom/pms_hub/calendar_sync.py        (245 lines) ✅

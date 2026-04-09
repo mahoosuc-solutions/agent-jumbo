@@ -1,6 +1,6 @@
 ---
 title: Customer Support
-description: Canonical support, incident, billing, and remediation paths for the self-serve Agent Jumbo platform.
+description: Canonical support, incident, billing, and remediation paths for the self-serve Agent Mahoo platform.
 date: 2026-04-05
 ---
 
@@ -8,16 +8,16 @@ date: 2026-04-05
 
 Last updated: 2026-04-05
 
-This is the canonical customer-facing support and escalation path for the current self-serve Agent Jumbo platform. If another document conflicts with this one, this document wins for launch.
+This is the canonical customer-facing support and escalation path for the current self-serve Agent Mahoo platform. If another document conflicts with this one, this document wins for launch.
 
 ## Standard Support
 
 Use these channels for normal product questions, onboarding help, and reproducible bugs:
 
 - Product issues and bug reports: GitHub Issues
-  - <https://github.com/agent-jumbo-deploy/agent-jumbo/issues>
+  - <https://github.com/agent-mahoo-deploy/agent-mahoo/issues>
 - Product questions and non-urgent discussion: GitHub Discussions
-  - <https://github.com/agent-jumbo-deploy/agent-jumbo/discussions>
+  - <https://github.com/agent-mahoo-deploy/agent-mahoo/discussions>
 - Community support: Discord
   - <https://discord.gg/B8KZKNsPpj>
 

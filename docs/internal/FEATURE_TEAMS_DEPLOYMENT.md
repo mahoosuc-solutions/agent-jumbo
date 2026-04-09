@@ -13,7 +13,7 @@
 ## 📊 Project Structure
 
 ```text
-/home/webemo-aaron/projects/agent-jumbo
+/home/webemo-aaron/projects/agent-mahoo
 ├── Main Branch (main)
 │   ├── [Core PMS Hub System] ✓ Complete
 │   ├── [TDD Test Infrastructure] ✓ Complete
@@ -43,7 +43,7 @@
 ### Worktree Location
 
 ```bash
-/home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+/home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 ```
 
 ### Git Branch
@@ -134,7 +134,7 @@ class PMSCalendarSync(APIHandler):
 
 ```bash
 # Navigate to Team A worktree
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 
 # Run all calendar sync tests
 pytest tests/test_pms_calendar_sync.py -v
@@ -156,7 +156,7 @@ pytest tests/test_pms_calendar_*.py -m asyncio -v
 ### Worktree Location
 
 ```bash
-/home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+/home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 ```
 
 ### Git Branch
@@ -264,7 +264,7 @@ class Communication(Tool):
 
 ```bash
 # Navigate to Team B worktree
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 
 # Run all communication tests
 pytest tests/test_pms_communication_workflows.py -v
@@ -483,24 +483,24 @@ Integration: <2s for full sync cycle
 
 ### For All Teams
 
-- `/home/webemo-aaron/projects/agent-jumbo/TDD_SWARM_FEATURE_TEAMS.md` - Comprehensive feature specs
-- `/home/webemo-aaron/projects/agent-jumbo/TEAM_QUICKSTART.md` - Quick start guide
-- `/home/webemo-aaron/projects/agent-jumbo/TDD_SWARM_GUIDE.md` - Testing guide
+- `/home/webemo-aaron/projects/agent-mahoo/TDD_SWARM_FEATURE_TEAMS.md` - Comprehensive feature specs
+- `/home/webemo-aaron/projects/agent-mahoo/TEAM_QUICKSTART.md` - Quick start guide
+- `/home/webemo-aaron/projects/agent-mahoo/TDD_SWARM_GUIDE.md` - Testing guide
 
 ### Team A (Calendar)
 
-- `/home/webemo-aaron/projects/agent-jumbo/python/tools/calendar_hub.py` - Calendar API reference
-- `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/README.md` - PMS Hub API
+- `/home/webemo-aaron/projects/agent-mahoo/python/tools/calendar_hub.py` - Calendar API reference
+- `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/README.md` - PMS Hub API
 
 ### Team B (Messaging)
 
-- Canonical models: `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/canonical_models.py`
-- Sync service: `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/sync_service.py`
+- Canonical models: `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/canonical_models.py`
+- Sync service: `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/sync_service.py`
 
 ### Testing
 
-- Existing tests: `/home/webemo-aaron/projects/agent-jumbo/tests/test_pms_*.py`
-- Conftest: `/home/webemo-aaron/projects/agent-jumbo/tests/conftest.py`
+- Existing tests: `/home/webemo-aaron/projects/agent-mahoo/tests/test_pms_*.py`
+- Conftest: `/home/webemo-aaron/projects/agent-mahoo/tests/conftest.py`
 
 ---
 
@@ -510,13 +510,13 @@ Integration: <2s for full sync cycle
 
 ```bash
 # Team A
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 
 # Team B
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 
 # Main
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 ```
 
 ### Git Branch Management
@@ -633,7 +633,7 @@ Documentation:
 
 - EventBus subscription and publishing
 - API integration (calendar_hub, external services)
-- Tool integration with agent-jumbo
+- Tool integration with agent-mahoo
 - Database operations (SQLite)
 
 ---

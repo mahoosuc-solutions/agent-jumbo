@@ -1,5 +1,5 @@
 # Use the pre-built base image for AJ
-# FROM agent-jumbo-base:local
+# FROM agent-mahoo-base:local
 FROM agent0ai/agent-zero-base:latest
 
 # Check if the argument is provided, else throw an error

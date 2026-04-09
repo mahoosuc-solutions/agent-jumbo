@@ -1,7 +1,7 @@
 """
 Auth Test Tool
 
-Converted from Mahoosuc OS /auth:test command to native Agent Jumbo tool.
+Converted from Mahoosuc OS /auth:test command to native Agent Mahoo tool.
 Tests authentication system with comprehensive security validation.
 
 Source: .claude/commands/auth/test.md

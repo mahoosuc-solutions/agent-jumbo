@@ -43,12 +43,12 @@ class TestFullOrchestrationFlow:
 
     def test_project_flow(self):
         """Project lookup -> context enrichment."""
-        cmd, args = parse_slash_command("/project agent-jumbo")
+        cmd, args = parse_slash_command("/project agent-mahoo")
         assert cmd == "project"
-        assert args == "agent-jumbo"
+        assert args == "agent-mahoo"
 
         prompt = slash_command_to_prompt(cmd, args)
-        assert "agent-jumbo" in prompt
+        assert "agent-mahoo" in prompt
 
     def test_vision_enrichment_flow(self):
         """Image context -> enriched prompt."""

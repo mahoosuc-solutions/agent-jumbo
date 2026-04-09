@@ -343,7 +343,7 @@ Sprint Timeline:
 **Terminal 1 - Team A (Calendar)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 # Create tests, implement, iterate
 ./scripts/run_pms_tests.sh calendar
 ```
@@ -351,7 +351,7 @@ cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
 **Terminal 2 - Team B (Messaging)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 # Create tests, implement, iterate
 ./scripts/run_pms_tests.sh messaging
 ```
@@ -359,7 +359,7 @@ cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
 **Terminal 3 - Main (Integration)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 # Monitor changes, prepare merge strategy
 git log --oneline
 ```
@@ -496,7 +496,7 @@ Feature Branch: feature/pms-messaging-automation
 
 ### Documentation
 
-- Update `/home/webemo-aaron/projects/agent-jumbo/README.md` with new features
+- Update `/home/webemo-aaron/projects/agent-mahoo/README.md` with new features
 - Add API documentation for new endpoints
 - Create troubleshooting guide for new workflows
 

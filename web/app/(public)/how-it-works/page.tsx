@@ -2,16 +2,16 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'How Agent Jumbo Works',
+  title: 'How Agent Mahoo Works',
   description:
-    'Everything you need to know about Agent Jumbo — what it is, what it does, how it connects to Mahoosuc OS, and how your data is protected. Written for humans, not engineers.',
+    'Everything you need to know about Agent Mahoo — what it is, what it does, how it connects to Mahoosuc OS, and how your data is protected. Written for humans, not engineers.',
 }
 
 const SECTIONS = [
   {
     id: 'what',
     label: 'What is it?',
-    title: 'Agent Jumbo is a personal AI operating system that runs on your own computer.',
+    title: 'Agent Mahoo is a personal AI operating system that runs on your own computer.',
   },
   {
     id: 'what-it-does',
@@ -26,7 +26,7 @@ const SECTIONS = [
   {
     id: 'mos',
     label: 'Mahoosuc OS connection',
-    title: 'Agent Jumbo is one part of a larger platform.',
+    title: 'Agent Mahoo is one part of a larger platform.',
   },
   {
     id: 'security',
@@ -47,7 +47,7 @@ export default function HowItWorksPage() {
 
         {/* Header */}
         <div className="mb-14">
-          <p className="text-copper-400 font-mono text-sm tracking-widest uppercase mb-3">Understanding Agent Jumbo</p>
+          <p className="text-copper-400 font-mono text-sm tracking-widest uppercase mb-3">Understanding Agent Mahoo</p>
           <h1 className="text-4xl font-bold text-white mb-5 leading-tight">
             Everything you need to know.<br />Plain language. No assumptions.
           </h1>
@@ -76,7 +76,7 @@ export default function HowItWorksPage() {
           <div className="mb-6">
             <p className="text-copper-400 font-mono text-xs uppercase tracking-widest mb-2">01 — What is it?</p>
             <h2 className="text-2xl font-bold text-white leading-snug">
-              Agent Jumbo is a personal AI operating system that runs on your own computer.
+              Agent Mahoo is a personal AI operating system that runs on your own computer.
             </h2>
           </div>
 
@@ -85,7 +85,7 @@ export default function HowItWorksPage() {
               Think of it like a very capable personal assistant — one that can manage your calendar, track your properties, monitor your finances, remind you about the people you care about, and handle the repetitive work you do every week. The difference is that this assistant runs as software on your machine, not in someone else&apos;s cloud.
             </p>
             <p>
-              Agent Jumbo is <strong className="text-white">not a chat app</strong>. It is not a productivity app. It is not a subscription service. It is an operating system layer — a piece of software that runs continuously in the background, monitoring your configured domains, triggering actions, and routing decisions to you when human judgment is required.
+              Agent Mahoo is <strong className="text-white">not a chat app</strong>. It is not a productivity app. It is not a subscription service. It is an operating system layer — a piece of software that runs continuously in the background, monitoring your configured domains, triggering actions, and routing decisions to you when human judgment is required.
             </p>
             <p>
               It is built on the same architecture as{' '}
@@ -125,7 +125,7 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              Most of the work in managing a property, tracking finances, staying connected with family, or keeping a calendar optimized does not require your unique human judgment. It requires consistency, attention, and the willingness to act on information. Agent Jumbo provides the first two and routes the third to you — only when it actually matters.
+              Most of the work in managing a property, tracking finances, staying connected with family, or keeping a calendar optimized does not require your unique human judgment. It requires consistency, attention, and the willingness to act on information. Agent Mahoo provides the first two and routes the third to you — only when it actually matters.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-6">
@@ -145,7 +145,7 @@ export default function HowItWorksPage() {
             </div>
 
             <p>
-              Every one of these domains is optional. You configure what you want Agent Jumbo to manage. If you only care about property management and finances, you configure those two and ignore the rest.
+              Every one of these domains is optional. You configure what you want Agent Mahoo to manage. If you only care about property management and finances, you configure those two and ignore the rest.
             </p>
           </div>
         </section>
@@ -161,7 +161,7 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              The primary interface is a chat window — accessible from a browser on your local machine, or via Telegram on your phone. You talk to Agent Jumbo the way you would talk to a capable assistant. &quot;The HVAC at the rental property is making a noise.&quot; &quot;I haven&apos;t called my mother in three weeks.&quot; &quot;Schedule a deep work block for Thursday morning.&quot; It understands context. It remembers what you told it last month.
+              The primary interface is a chat window — accessible from a browser on your local machine, or via Telegram on your phone. You talk to Agent Mahoo the way you would talk to a capable assistant. &quot;The HVAC at the rental property is making a noise.&quot; &quot;I haven&apos;t called my mother in three weeks.&quot; &quot;Schedule a deep work block for Thursday morning.&quot; It understands context. It remembers what you told it last month.
             </p>
 
             <div className="space-y-4 my-6">
@@ -169,7 +169,7 @@ export default function HowItWorksPage() {
                 {
                   step: '01',
                   title: 'You communicate',
-                  body: 'Text, voice notes, or photos via the web interface or Telegram. Agent Jumbo understands natural language — you do not need to learn commands or a specific format.',
+                  body: 'Text, voice notes, or photos via the web interface or Telegram. Agent Mahoo understands natural language — you do not need to learn commands or a specific format.',
                 },
                 {
                   step: '02',
@@ -184,7 +184,7 @@ export default function HowItWorksPage() {
                 {
                   step: '04',
                   title: 'Everything is logged',
-                  body: 'Every action Agent Jumbo takes, every decision it makes without you, every approval it requests — all of it is logged locally. You can audit the complete history of what happened and why at any time.',
+                  body: 'Every action Agent Mahoo takes, every decision it makes without you, every approval it requests — all of it is logged locally. You can audit the complete history of what happened and why at any time.',
                 },
               ].map((s) => (
                 <div key={s.step} className="flex gap-5 p-5 rounded-xl bg-slate-800/40 border border-slate-700/40">
@@ -206,26 +206,26 @@ export default function HowItWorksPage() {
           <div className="mb-6">
             <p className="text-copper-400 font-mono text-xs uppercase tracking-widest mb-2">04 — The Mahoosuc OS connection</p>
             <h2 className="text-2xl font-bold text-white leading-snug">
-              Agent Jumbo is one part of a larger platform.
+              Agent Mahoo is one part of a larger platform.
             </h2>
           </div>
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
               <Link href="https://mahoosuc.ai" className="text-copper-400 hover:text-copper-300 underline underline-offset-2" target="_blank" rel="noopener noreferrer">Mahoosuc OS</Link>{' '}
-              is the business AI operating system — 20 products, 121 specialized agents, built and proven in production. Agent Jumbo is its personal counterpart: the same governance model, the same approval architecture, the same underlying infrastructure — applied to your life instead of your business.
+              is the business AI operating system — 20 products, 121 specialized agents, built and proven in production. Agent Mahoo is its personal counterpart: the same governance model, the same approval architecture, the same underlying infrastructure — applied to your life instead of your business.
             </p>
             <p>
-              The two systems can connect through what is called the <strong className="text-white">Agent Mesh Bridge</strong>. This is an optional connection that lets Agent Jumbo and Mahoosuc OS share context and route tasks across the boundary between your personal and business life.
+              The two systems can connect through what is called the <strong className="text-white">Agent Mesh Bridge</strong>. This is an optional connection that lets Agent Mahoo and Mahoosuc OS share context and route tasks across the boundary between your personal and business life.
             </p>
 
             <div className="p-5 rounded-xl bg-mahoosuc-blue-900/30 border border-mahoosuc-blue-700/30 space-y-3">
               <p className="text-sm font-semibold text-white">How the bridge works — in plain terms:</p>
               <ul className="space-y-2.5 text-sm text-slate-300">
                 {[
-                  { q: 'Is the bridge required?', a: 'No. Agent Jumbo works completely standalone. The bridge is optional and only activates if you configure it.' },
+                  { q: 'Is the bridge required?', a: 'No. Agent Mahoo works completely standalone. The bridge is optional and only activates if you configure it.' },
                   { q: 'What crosses the bridge?', a: 'Only events you configure. Examples: a maintenance issue at your rental property routes to the Mahoosuc OS property management system. A personal goal triggers a work calendar block. You define the boundaries.' },
-                  { q: 'Is the bridge encrypted?', a: 'Yes. All communication between Agent Jumbo and Mahoosuc OS travels over an encrypted Redis Streams channel. Nothing is sent in plain text.' },
+                  { q: 'Is the bridge encrypted?', a: 'Yes. All communication between Agent Mahoo and Mahoosuc OS travels over an encrypted Redis Streams channel. Nothing is sent in plain text.' },
                   { q: 'Can Mahoosuc OS read my personal data?', a: 'Only what you explicitly route to it. The bridge is event-based — it passes structured events, not raw data dumps. You control what crosses.' },
                 ].map((item) => (
                   <li key={item.q} className="border-t border-slate-700/50 pt-2.5 first:border-0 first:pt-0">
@@ -249,44 +249,44 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              Security is not a feature in Agent Jumbo — it is the architecture. Every design decision starts from the assumption that your data belongs to you and that you should be able to inspect, audit, and revoke access to anything the system touches.
+              Security is not a feature in Agent Mahoo — it is the architecture. Every design decision starts from the assumption that your data belongs to you and that you should be able to inspect, audit, and revoke access to anything the system touches.
             </p>
 
             <div className="space-y-3 my-6">
               {[
                 {
                   title: 'Self-hosted by default',
-                  body: 'Agent Jumbo runs on your machine. Your data lives in a local SQLite database on your hard drive. There is no Agent Jumbo cloud account. There is no central server that receives your information. The software runs entirely within your own infrastructure.',
+                  body: 'Agent Mahoo runs on your machine. Your data lives in a local SQLite database on your hard drive. There is no Agent Mahoo cloud account. There is no central server that receives your information. The software runs entirely within your own infrastructure.',
                   icon: '🔒',
                 },
                 {
                   title: 'AI providers receive only what you send',
-                  body: 'When Agent Jumbo uses an AI model (like Claude or GPT-4) to process a request, only the specific content of that request is sent. Your historical data, your full database, your other domains — none of that is included unless it is directly relevant to the task at hand and you have configured it to be.',
+                  body: 'When Agent Mahoo uses an AI model (like Claude or GPT-4) to process a request, only the specific content of that request is sent. Your historical data, your full database, your other domains — none of that is included unless it is directly relevant to the task at hand and you have configured it to be.',
                   icon: '🧠',
                 },
                 {
                   title: 'Secrets stored locally, never in code',
-                  body: 'Your API keys (for AI providers, calendar access, financial data) are stored in a local .env file on your machine. They are never stored in the Agent Jumbo codebase, never sent to a third party, and never logged. When connecting to Mahoosuc OS, secrets are managed through HashiCorp Vault — an industry-standard secrets manager that stores credentials separately from application code.',
+                  body: 'Your API keys (for AI providers, calendar access, financial data) are stored in a local .env file on your machine. They are never stored in the Agent Mahoo codebase, never sent to a third party, and never logged. When connecting to Mahoosuc OS, secrets are managed through HashiCorp Vault — an industry-standard secrets manager that stores credentials separately from application code.',
                   icon: '🔑',
                 },
                 {
                   title: 'Approval gates on consequential actions',
-                  body: 'Any action involving money, external communications, or irreversible changes requires your explicit approval before Agent Jumbo proceeds. The system is designed to be stopped by a human at every meaningful decision point. You are not handing over control — you are delegating volume work while retaining judgment.',
+                  body: 'Any action involving money, external communications, or irreversible changes requires your explicit approval before Agent Mahoo proceeds. The system is designed to be stopped by a human at every meaningful decision point. You are not handing over control — you are delegating volume work while retaining judgment.',
                   icon: '✅',
                 },
                 {
                   title: 'Complete audit log',
-                  body: 'Every action Agent Jumbo takes is written to a tamper-evident local audit log. You can inspect the complete history of what the system did, when, and why. If something unexpected happened, you can trace it back to the exact request that caused it.',
+                  body: 'Every action Agent Mahoo takes is written to a tamper-evident local audit log. You can inspect the complete history of what the system did, when, and why. If something unexpected happened, you can trace it back to the exact request that caused it.',
                   icon: '📋',
                 },
                 {
                   title: 'Open source — inspect the code yourself',
-                  body: 'Agent Jumbo is open source. Every line of code that runs on your machine is publicly available on GitHub. You do not have to trust our claims about security — you can read the code, or ask someone you trust to read it for you.',
+                  body: 'Agent Mahoo is open source. Every line of code that runs on your machine is publicly available on GitHub. You do not have to trust our claims about security — you can read the code, or ask someone you trust to read it for you.',
                   icon: '👁',
                 },
                 {
                   title: 'No telemetry, no analytics, no tracking',
-                  body: 'Agent Jumbo does not collect usage data, crash reports, feature analytics, or any other telemetry. There is no tracking pixel, no session recording, no behavioral analytics. The software runs for you, not for us.',
+                  body: 'Agent Mahoo does not collect usage data, crash reports, feature analytics, or any other telemetry. There is no tracking pixel, no session recording, no behavioral analytics. The software runs for you, not for us.',
                   icon: '🚫',
                 },
               ].map((item) => (
@@ -304,11 +304,11 @@ export default function HowItWorksPage() {
             <div className="p-5 rounded-xl border border-amber-500/20 bg-amber-500/5">
               <p className="text-sm font-semibold text-amber-300 mb-3">What connects to the internet — complete list</p>
               <p className="text-sm text-slate-400 mb-4">
-                Being transparent about every outbound connection Agent Jumbo can make. None of these happen without your configuration and explicit consent.
+                Being transparent about every outbound connection Agent Mahoo can make. None of these happen without your configuration and explicit consent.
               </p>
               <div className="space-y-3">
                 {[
-                  { who: 'AI providers (Claude, OpenAI, etc.)', when: 'When you send a message or Agent Jumbo processes a task', what: 'The text of your request and any relevant context you have configured to include', required: 'Required for AI functionality — you choose which provider' },
+                  { who: 'AI providers (Claude, OpenAI, etc.)', when: 'When you send a message or Agent Mahoo processes a task', what: 'The text of your request and any relevant context you have configured to include', required: 'Required for AI functionality — you choose which provider' },
                   { who: 'Your calendar service (Google, Outlook)', when: 'When you configure calendar integration', what: 'OAuth tokens stored locally; calendar read/write within the permissions you granted', required: 'Optional — only if you configure it' },
                   { who: 'Mahoosuc OS (Agent Mesh Bridge)', when: 'When you configure the bridge connection', what: 'Structured events you define — not raw data', required: 'Optional — off by default' },
                   { who: 'GitHub (for updates)', when: 'When you check for new versions', what: 'A version check request — no personal data', required: 'Optional — manual check only' },
@@ -338,14 +338,14 @@ export default function HowItWorksPage() {
 
           <div className="space-y-5 text-slate-300 leading-relaxed">
             <p>
-              Agent Jumbo does not take autonomous action. Every action it takes is the result of something you set in motion — either directly (you sent a message), on a schedule (you configured a daily briefing), or through an approval you granted (you tapped &quot;approve&quot; on a suggested action).
+              Agent Mahoo does not take autonomous action. Every action it takes is the result of something you set in motion — either directly (you sent a message), on a schedule (you configured a daily briefing), or through an approval you granted (you tapped &quot;approve&quot; on a suggested action).
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 my-6">
               {[
-                { trigger: 'You initiate', example: 'You send a message, ask a question, or give an instruction. Agent Jumbo responds and acts on that specific request.' },
+                { trigger: 'You initiate', example: 'You send a message, ask a question, or give an instruction. Agent Mahoo responds and acts on that specific request.' },
                 { trigger: 'Scheduled task', example: 'You configured a 6:30 AM morning brief. Every day at 6:30, it runs that brief — nothing more, nothing less.' },
-                { trigger: 'You approve', example: 'Agent Jumbo identified something that needs your judgment. It asked. You approved. It acted on that approval only.' },
+                { trigger: 'You approve', example: 'Agent Mahoo identified something that needs your judgment. It asked. You approved. It acted on that approval only.' },
               ].map((t) => (
                 <div key={t.trigger} className="p-4 rounded-lg bg-slate-800/40 border border-slate-700/40 text-center">
                   <p className="text-copper-400 font-semibold text-sm mb-2">{t.trigger}</p>
@@ -355,11 +355,11 @@ export default function HowItWorksPage() {
             </div>
 
             <p>
-              If you stop Agent Jumbo — close the application, shut down the server — it stops completely. There is no background cloud process continuing to act on your behalf. There is no &quot;always on&quot; remote component. The system is exactly as active as you choose to make it.
+              If you stop Agent Mahoo — close the application, shut down the server — it stops completely. There is no background cloud process continuing to act on your behalf. There is no &quot;always on&quot; remote component. The system is exactly as active as you choose to make it.
             </p>
 
             <div className="p-5 rounded-xl bg-slate-800/60 border border-slate-700/40">
-              <p className="text-sm font-semibold text-white mb-3">Things Agent Jumbo will never do without your explicit approval:</p>
+              <p className="text-sm font-semibold text-white mb-3">Things Agent Mahoo will never do without your explicit approval:</p>
               <ul className="space-y-2 text-sm text-slate-400">
                 {[
                   'Transfer or move money',
@@ -388,7 +388,7 @@ export default function HowItWorksPage() {
             <Link href="/install" className="px-6 py-2.5 bg-copper-500 text-white rounded-lg font-semibold hover:bg-copper-400 transition text-sm">
               Download &amp; Install
             </Link>
-            <Link href="https://mahoosuc.ai/agent-jumbo" className="px-6 py-2.5 border border-slate-700 text-slate-200 rounded-lg font-semibold hover:bg-slate-800 transition text-sm" target="_blank" rel="noopener noreferrer">
+            <Link href="https://mahoosuc.ai/agent-mahoo" className="px-6 py-2.5 border border-slate-700 text-slate-200 rounded-lg font-semibold hover:bg-slate-800 transition text-sm" target="_blank" rel="noopener noreferrer">
               See the Vision →
             </Link>
           </div>

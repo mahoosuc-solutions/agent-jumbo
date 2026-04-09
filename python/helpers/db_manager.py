@@ -1,5 +1,5 @@
 """
-Database Manager for Agent Jumbo
+Database Manager for Agent Mahoo
 Centralized SQLite connection handling and utilities
 """
 

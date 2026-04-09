@@ -29,8 +29,8 @@ class GmailTestSend(ApiHandler):
         try:
             account_name = input.get("account_name")
             to = input.get("to")
-            subject = input.get("subject") or "Agent Jumbo Gmail Test"
-            body = input.get("body") or "This is a test email from Agent Jumbo Gmail UI."
+            subject = input.get("subject") or "Agent Mahoo Gmail Test"
+            body = input.get("body") or "This is a test email from Agent Mahoo Gmail UI."
 
             current_settings = settings.get_settings()
             gmail_accounts = current_settings.get("gmail_accounts", {})

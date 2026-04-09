@@ -7,7 +7,7 @@ set -e
 # Configuration
 PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MODELS_DIR="${PROJECT_ROOT}/ollama_models"
-GCP_BUCKET="${GCP_BUCKET:-gs://agent-jumbo-models}"
+GCP_BUCKET="${GCP_BUCKET:-gs://agent-mahoo-models}"
 MODEL_VERSION="${MODEL_VERSION:-$(date +%Y%m%d-%H%M%S)}"
 MANIFEST_FILE="${MODELS_DIR}/model_manifest.json"
 
@@ -205,7 +205,7 @@ Commands:
     help                Show this help message
 
 Environment Variables:
-    GCP_BUCKET          GCS bucket path (default: gs://agent-jumbo-models)
+    GCP_BUCKET          GCS bucket path (default: gs://agent-mahoo-models)
     MODEL_VERSION       Version tag (default: timestamp YYYYMMDD-HHMMSS)
 
 Examples:

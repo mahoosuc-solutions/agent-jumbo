@@ -59,4 +59,4 @@ would pick whichever tier's patterns were evaluated first, which is order-depend
 
 ---
 
-*Recorded 2026-04-05 — Agent Jumbo agentic task cycle implementation*
+*Recorded 2026-04-05 — Agent Mahoo agentic task cycle implementation*

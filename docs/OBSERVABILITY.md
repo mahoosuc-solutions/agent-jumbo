@@ -1,6 +1,6 @@
 # Observability & Telemetry
 
-Agent Jumbo can collect lightweight telemetry per thread to track tool usage, latency, and errors.
+Agent Mahoo can collect lightweight telemetry per thread to track tool usage, latency, and errors.
 
 ## Enable
 

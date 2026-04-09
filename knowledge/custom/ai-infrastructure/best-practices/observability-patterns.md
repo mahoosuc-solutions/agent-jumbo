@@ -320,9 +320,9 @@ class QualityMetrics:
         })
 ```
 
-## Agent Jumbo Observability
+## Agent Mahoo Observability
 
-Agent Jumbo implements these patterns through:
+Agent Mahoo implements these patterns through:
 
 - **Structured event logging**: Every agent action emits a structured JSON event to the event log, enabling trace reconstruction and audit analysis
 - **Token budget tracking**: Per-session and per-tenant budgets with real-time enforcement and alerting

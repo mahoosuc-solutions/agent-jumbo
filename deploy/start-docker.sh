@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Deploy Host: Docker Start
+# Agent Mahoo — Deploy Host: Docker Start
 # ============================================
 # Runs on deploy host ONLY (mos-prod or CPX42).
 # Must NOT run on build server or in GitHub Actions.
 #
-# Deploys agent-jumbo as a Docker container using
+# Deploys agent-mahoo as a Docker container using
 # docker-compose.mos-prod.yml. Includes deploy lock,
 # pre/post-deploy checks, auto-rollback, and image
 # retention (last 5 SHA-tagged images).
@@ -15,9 +15,9 @@
 #
 # Options:
 #   --image FILE          Docker image tarball to load (default: auto-detect in staging dir)
-#   --env FILE            Runtime .env file (default: /opt/agent-jumbo/runtime.env)
+#   --env FILE            Runtime .env file (default: /opt/agent-mahoo/runtime.env)
 #   --compose FILE        Compose file (default: docker-compose.mos-prod.yml)
-#   --staging-dir DIR     Staging directory (default: /opt/agent-jumbo/staging)
+#   --staging-dir DIR     Staging directory (default: /opt/agent-mahoo/staging)
 #   --skip-resolve        Skip Vault env resolution (use existing runtime.env)
 #   --skip-checks         Skip pre-deploy checks (NOT RECOMMENDED)
 #
@@ -32,14 +32,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-ENV_FILE="${ENV_FILE:-/opt/agent-jumbo/runtime.env}"
+ENV_FILE="${ENV_FILE:-/opt/agent-mahoo/runtime.env}"
 COMPOSE_FILE="${COMPOSE_FILE:-${PROJECT_ROOT}/docker-compose.cloud.yml}"
-STAGING_DIR="${STAGING_DIR:-/opt/agent-jumbo/staging}"
+STAGING_DIR="${STAGING_DIR:-/opt/agent-mahoo/staging}"
 IMAGE_FILE=""
 SKIP_RESOLVE=false
 SKIP_CHECKS=false
-CONTAINER_NAME="agent-jumbo-production"
-IMAGE_NAME="agent-jumbo"
+CONTAINER_NAME="agent-mahoo-production"
+IMAGE_NAME="agent-mahoo"
 
 # Colors
 RED='\033[0;31m'
@@ -66,7 +66,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 echo ""
-echo -e "${BLUE}━━━ Agent Jumbo Docker Deploy ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+echo -e "${BLUE}━━━ Agent Mahoo Docker Deploy ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 log_info "Host: $(hostname)"
 log_info "Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -81,7 +81,7 @@ for ip in ${LOCAL_IPS}; do
 done
 
 # ── Acquire deploy lock ──────────────────────────────────────────────────────
-LOCKFILE="/opt/agent-jumbo/deploy.lock"
+LOCKFILE="/opt/agent-mahoo/deploy.lock"
 mkdir -p "$(dirname "${LOCKFILE}")"
 exec 9>"${LOCKFILE}"
 if ! flock -n 9; then
@@ -107,7 +107,7 @@ fi
 
 # ── Locate and load Docker image ─────────────────────────────────────────────
 if [[ -z "${IMAGE_FILE}" ]]; then
-    IMAGE_FILE=$(ls -t "${STAGING_DIR}"/agent-jumbo-*.tar 2>/dev/null | head -1 || true)
+    IMAGE_FILE=$(ls -t "${STAGING_DIR}"/agent-mahoo-*.tar 2>/dev/null | head -1 || true)
 fi
 
 if [[ -n "${IMAGE_FILE}" ]] && [[ -f "${IMAGE_FILE}" ]]; then
@@ -177,7 +177,7 @@ if [[ "${SKIP_CHECKS}" == "false" ]]; then
 fi
 
 # ── Create Docker volumes if needed ──────────────────────────────────────────
-for vol in agent_jumbo_data agent_jumbo_logs agent_jumbo_venv; do
+for vol in agent_mahoo_data agent_mahoo_logs agent_mahoo_venv; do
     if ! docker volume inspect "$vol" &>/dev/null; then
         log_info "Creating volume: $vol"
         docker volume create "$vol"
@@ -240,7 +240,7 @@ if [[ "${HEALTH_OK}" == "false" ]]; then
         curl -sf --max-time 10 \
             -X POST "https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage" \
             -d "chat_id=${ALERT_CHAT}" \
-            -d "text=ROLLBACK: agent-jumbo deploy failed. Reverted to previous image. Host: $(hostname)" \
+            -d "text=ROLLBACK: agent-mahoo deploy failed. Reverted to previous image. Host: $(hostname)" \
             >/dev/null 2>&1 || true
     fi
 
@@ -270,7 +270,7 @@ fi
 # ── Done ─────────────────────────────────────────────────────────────────────
 echo ""
 echo -e "${GREEN}━━━ Deploy Complete ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-log_success "Agent Jumbo is running"
+log_success "Agent Mahoo is running"
 log_info "Container: ${CONTAINER_NAME}"
 log_info "Compose:   ${COMPOSE_FILE}"
 log_info "AgentMesh: ${MESH_CONNECTED}"

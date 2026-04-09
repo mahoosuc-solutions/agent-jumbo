@@ -11,7 +11,7 @@
 
 set -euo pipefail
 
-ENV_FILE="${1:-/opt/agent-jumbo/runtime.env}"
+ENV_FILE="${1:-/opt/agent-mahoo/runtime.env}"
 ERRORS=0
 
 RED='\033[0;31m'

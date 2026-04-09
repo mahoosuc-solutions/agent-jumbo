@@ -1,8 +1,8 @@
-# Agent Jumbo: Platform & Services Documentation
+# Agent Mahoo: Platform & Services Documentation
 
 ## 1. Executive Overview
 
-Agent Jumbo is a multi-agent autonomous framework designed for high-assurance tasks, workflow automation, and professional integration. It leverages a hierarchical agent architecture ("Agent 0") to delegate specialized work to subordinate agents like 'Developer', 'Researcher', and 'Hacker'.
+Agent Mahoo is a multi-agent autonomous framework designed for high-assurance tasks, workflow automation, and professional integration. It leverages a hierarchical agent architecture ("Agent 0") to delegate specialized work to subordinate agents like 'Developer', 'Researcher', and 'Hacker'.
 
 ---
 
@@ -40,7 +40,7 @@ Agent Jumbo is a multi-agent autonomous framework designed for high-assurance ta
 ### 🔌 Model Context Protocol (MCP)
 
 * **Implementation**: `python/helpers/mcp_handler.py`
-* **Functionality**: Standardized tool integration via SSE, Stdio, or HTTP. Allows Agent Jumbo to consume tools from the global MCP ecosystem.
+* **Functionality**: Standardized tool integration via SSE, Stdio, or HTTP. Allows Agent Mahoo to consume tools from the global MCP ecosystem.
 
 ### 📈 Workflow Engine
 

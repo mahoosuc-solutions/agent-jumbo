@@ -1,6 +1,6 @@
 # 📋 Diagram Generation Quick Reference
 
-## 🎨 For Agent Jumbo Users
+## 🎨 For Agent Mahoo Users
 
 ### Ask the Agent
 

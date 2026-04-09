@@ -1,5 +1,5 @@
 """
-Async SMTP Email Sender for Agent Jumbo
+Async SMTP Email Sender for Agent Mahoo
 Supports Gmail and other SMTP providers
 """
 
@@ -13,7 +13,7 @@ import aiosmtplib
 
 
 class EmailSender:
-    """Async SMTP email sender compatible with Agent Jumbo"""
+    """Async SMTP email sender compatible with Agent Mahoo"""
 
     def __init__(self, server: str, port: int, username: str, password: str, use_tls: bool = True):
         """

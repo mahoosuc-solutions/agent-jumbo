@@ -4,7 +4,7 @@
 
 **Do NOT open public GitHub issues for security vulnerabilities.**
 
-If you discover a security vulnerability, please email <security@agent-jumbo-deploy.org> with:
+If you discover a security vulnerability, please email <security@agent-mahoo-deploy.org> with:
 
 1. Description of the vulnerability
 2. Steps to reproduce (if applicable)
@@ -20,7 +20,7 @@ We will:
 
 ## Security Best Practices
 
-### Using Agent Jumbo DevOps Securely
+### Using Agent Mahoo DevOps Securely
 
 1. **Never commit secrets**
    - Use environment variables for API keys
@@ -46,7 +46,7 @@ We will:
 
 ```python
 import os
-from agent_jumbo.tools.devops_deploy import deploy_to_kubernetes
+from agent_mahoo.tools.devops_deploy import deploy_to_kubernetes
 
 # Load from environment, never hardcode
 api_key = os.getenv('KUBERNETES_API_KEY')
@@ -109,7 +109,7 @@ This project uses:
 
 ## Compliance
 
-Agent Jumbo DevOps is designed with:
+Agent Mahoo DevOps is designed with:
 
 - OWASP Top 10 considerations
 - NIST security guidelines
@@ -118,4 +118,4 @@ Agent Jumbo DevOps is designed with:
 
 ---
 
-Thank you for helping keep Agent Jumbo DevOps secure!
+Thank you for helping keep Agent Mahoo DevOps secure!

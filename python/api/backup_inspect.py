@@ -36,7 +36,7 @@ class BackupInspect(ApiHandler):
                 "include_patterns": metadata.get("include_patterns", []),
                 "exclude_patterns": metadata.get("exclude_patterns", []),
                 "default_patterns": metadata.get("backup_config", {}).get("default_patterns", ""),
-                "agent_jumbo_version": metadata.get("agent_jumbo_version", "unknown"),
+                "agent_mahoo_version": metadata.get("agent_mahoo_version", "unknown"),
                 "timestamp": metadata.get("timestamp", ""),
                 "backup_name": metadata.get("backup_name", ""),
                 "total_files": metadata.get("total_files", len(metadata.get("files", []))),

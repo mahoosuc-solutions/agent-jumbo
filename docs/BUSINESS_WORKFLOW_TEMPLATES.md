@@ -1,6 +1,6 @@
 # Business Workflow Templates
 
-This document outlines the common business workflow templates added to Agent Jumbo's Workflow Engine. These templates are stored in the SQLite database and include best-practice stages and example prompts for the agent.
+This document outlines the common business workflow templates added to Agent Mahoo's Workflow Engine. These templates are stored in the SQLite database and include best-practice stages and example prompts for the agent.
 
 ## 1. Strategic Content Marketing
 

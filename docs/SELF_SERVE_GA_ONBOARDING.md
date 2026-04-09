@@ -1,6 +1,6 @@
 ---
 title: Self-Serve GA Onboarding
-description: Canonical onboarding path for a new self-serve customer setting up Agent Jumbo for production use.
+description: Canonical onboarding path for a new self-serve customer setting up Agent Mahoo for production use.
 date: 2026-03-24
 ---
 

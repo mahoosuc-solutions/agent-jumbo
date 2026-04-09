@@ -1,6 +1,6 @@
 # Business X-Ray System
 
-> Comprehensive business intelligence and life optimization platform for Agent Jumbo
+> Comprehensive business intelligence and life optimization platform for Agent Mahoo
 
 ## Overview
 
@@ -18,7 +18,7 @@ All analyses generate **visual diagrams** using Mermaid, making insights easy to
 
 ### Run Comprehensive Analysis
 
-Ask Agent Jumbo:
+Ask Agent Mahoo:
 
 > "Run a comprehensive business x-ray for my company 'Acme Corp'"
 
@@ -783,7 +783,7 @@ A: Yes, use different business_name and output_dir for each.
 ## Resources
 
 - [Diagram Tool Documentation](./diagrams.md) - Create visual diagrams
-- [Agent Jumbo Usage Guide](./usage.md) - General agent capabilities
+- [Agent Mahoo Usage Guide](./usage.md) - General agent capabilities
 - [Tool Development](./development.md) - Extend Business X-Ray
 
 ## Support

@@ -1,7 +1,7 @@
 version: 1
 project:
-  id: agent-jumbo
-  name: Agent Jumbo
+  id: agent-mahoo
+  name: Agent Mahoo
   mission: >-
     Provide a reliable, local-first, agent-native operating platform for project execution,
     validation, and life/business orchestration.

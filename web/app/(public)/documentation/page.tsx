@@ -20,7 +20,7 @@ const launchAndComplianceDocs = [
   {
     slug: 'PRIVACY_POLICY',
     title: 'Privacy Policy',
-    description: 'How Agent Jumbo handles customer data, integrations, and telemetry.',
+    description: 'How Agent Mahoo handles customer data, integrations, and telemetry.',
   },
   {
     slug: 'TERMS_OF_USE',
@@ -61,7 +61,7 @@ export default function DocsIndex() {
           Documentation
         </h1>
         <p className="text-xl text-slate-600 dark:text-slate-300">
-          Learn how to use Agent Jumbo for intelligent multi-platform deployment orchestration.
+          Learn how to use Agent Mahoo for intelligent multi-platform deployment orchestration.
         </p>
       </div>
 

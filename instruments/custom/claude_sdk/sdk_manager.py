@@ -19,7 +19,7 @@ class ClaudeSDKManager:
     1. query() - Stateless one-off requests
     2. ClaudeSDKClient - Stateful interactive sessions with custom tools
 
-    This manager wraps both and adds Agent Jumbo-specific functionality.
+    This manager wraps both and adds Agent Mahoo-specific functionality.
     """
 
     def __init__(self):
@@ -185,7 +185,7 @@ class ClaudeSDKManager:
         """
         Create an SDK tool from a handler function.
 
-        This allows Agent Jumbo tools to be exposed to Claude Code via SDK.
+        This allows Agent Mahoo tools to be exposed to Claude Code via SDK.
 
         Example:
             def my_handler(args):
@@ -221,7 +221,7 @@ class ClaudeSDKManager:
         """
         Create an in-process MCP server from a list of SDK tools.
 
-        This is useful for exposing Agent Jumbo tools to Claude Code
+        This is useful for exposing Agent Mahoo tools to Claude Code
         without running a separate server process.
         """
         if not self.sdk_available:
@@ -231,9 +231,9 @@ class ClaudeSDKManager:
 
         return create_sdk_mcp_server(name=name, version=version, tools=tools)
 
-    def export_agent_jumbo_tool(self, tool_name: str, tool_class) -> dict:
+    def export_agent_mahoo_tool(self, tool_name: str, tool_class) -> dict:
         """
-        Export an Agent Jumbo tool as an SDK tool.
+        Export an Agent Mahoo tool as an SDK tool.
 
         This creates a wrapper that can be used with ClaudeSDKClient.
         """
@@ -241,7 +241,7 @@ class ClaudeSDKManager:
             return {"error": "Claude Code SDK not installed"}
 
         try:
-            # Create a handler that invokes the Agent Jumbo tool
+            # Create a handler that invokes the Agent Mahoo tool
             async def tool_handler(args):
                 # This would need access to an agent instance
                 # For now, return the schema info
@@ -249,7 +249,7 @@ class ClaudeSDKManager:
 
             # Get tool info from class if available
             description = (
-                getattr(tool_class, "__doc__", f"Agent Jumbo tool: {tool_name}") or f"Agent Jumbo tool: {tool_name}"
+                getattr(tool_class, "__doc__", f"Agent Mahoo tool: {tool_name}") or f"Agent Mahoo tool: {tool_name}"
             )
 
             self.create_sdk_tool(

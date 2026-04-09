@@ -251,7 +251,7 @@ def main():
                 "--output",
                 str(test_dir / "excalidraw_custom.excalidraw"),
                 "--elements",
-                '[{"type":"rectangle","x":100,"y":100,"width":200,"height":100,"text":"Hello Agent Jumbo"}]',
+                '[{"type":"rectangle","x":100,"y":100,"width":200,"height":100,"text":"Hello Agent Mahoo"}]',
             ],
             test_dir / "excalidraw_custom.excalidraw",
         )

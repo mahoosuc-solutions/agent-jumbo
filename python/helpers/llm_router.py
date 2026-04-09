@@ -1,5 +1,5 @@
 """
-LLM Router - Intelligent model selection and prioritization for Agent Jumbo
+LLM Router - Intelligent model selection and prioritization for Agent Mahoo
 
 This module provides:
 1. Auto-detection of available models (Ollama, cloud providers)
@@ -485,7 +485,7 @@ class LLMRouterDatabase:
 
 class LLMRouter:
     """
-    Intelligent LLM Router for Agent Jumbo
+    Intelligent LLM Router for Agent Mahoo
 
     Features:
     - Auto-discovery of available models

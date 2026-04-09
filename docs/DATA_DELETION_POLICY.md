@@ -8,7 +8,7 @@ date: 2026-03-24
 
 Last updated: 2026-03-24
 
-This policy defines how Agent Jumbo platform data should be deleted when customers remove content, disconnect integrations, or close an environment.
+This policy defines how Agent Mahoo platform data should be deleted when customers remove content, disconnect integrations, or close an environment.
 
 ## Customer-Initiated Deletion
 

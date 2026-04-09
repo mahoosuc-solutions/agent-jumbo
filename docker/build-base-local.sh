@@ -9,5 +9,5 @@ if [[ ! -f docker/base/Dockerfile ]]; then
   exit 1
 fi
 
-docker build -f docker/base/Dockerfile -t agent-jumbo-base:local docker/base
-echo "Built reusable base image: agent-jumbo-base:local"
+docker build -f docker/base/Dockerfile -t agent-mahoo-base:local docker/base
+echo "Built reusable base image: agent-mahoo-base:local"

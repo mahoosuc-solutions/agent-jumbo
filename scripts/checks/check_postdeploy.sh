@@ -4,14 +4,14 @@
 # ============================================
 # Gate tier: SOFT BLOCK (triggers rollback on failure)
 #
-# Verifies that the agent-jumbo container is healthy
+# Verifies that the agent-mahoo container is healthy
 # and the AgentMesh bridge is connected after deploy.
 #
 # Usage: check_postdeploy.sh [container-name] [--timeout SECONDS]
 
 set -euo pipefail
 
-CONTAINER_NAME="${1:-agent-jumbo-production}"
+CONTAINER_NAME="${1:-agent-mahoo-production}"
 TIMEOUT=120
 INTERVAL=10
 

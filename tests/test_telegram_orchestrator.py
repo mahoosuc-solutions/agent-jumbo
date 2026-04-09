@@ -16,9 +16,9 @@ class TestParseSlashCommand:
         assert args == ""
 
     def test_project_command_with_name(self):
-        cmd, args = parse_slash_command("/project agent-jumbo")
+        cmd, args = parse_slash_command("/project agent-mahoo")
         assert cmd == "project"
-        assert args == "agent-jumbo"
+        assert args == "agent-mahoo"
 
     def test_not_a_command(self):
         cmd, args = parse_slash_command("hello world")
@@ -46,8 +46,8 @@ class TestSlashCommandToPrompt:
         assert "linear" in prompt.lower()
 
     def test_project_includes_name(self):
-        prompt = slash_command_to_prompt("project", "agent-jumbo")
-        assert "agent-jumbo" in prompt
+        prompt = slash_command_to_prompt("project", "agent-mahoo")
+        assert "agent-mahoo" in prompt
 
     def test_tasks_mentions_linear(self):
         prompt = slash_command_to_prompt("tasks", "")
@@ -86,9 +86,9 @@ class TestBuildOrchestratorContext:
     def test_includes_active_project(self):
         ctx = build_orchestrator_context(
             chat_id="123",
-            active_project="agent-jumbo",
+            active_project="agent-mahoo",
         )
-        assert "agent-jumbo" in ctx
+        assert "agent-mahoo" in ctx
 
     def test_minimal_context_without_extras(self):
         ctx = build_orchestrator_context(chat_id="123")

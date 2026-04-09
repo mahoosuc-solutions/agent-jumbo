@@ -1,14 +1,14 @@
-# Using Mahoosuc OS Commands in Agent Jumbo
+# Using Mahoosuc OS Commands in Agent Mahoo
 
 **Last Updated**: 2026-01-24
 
 ## Overview
 
-Mahoosuc OS provides 400+ slash commands across 95 categories. These commands are designed for Claude Code CLI but can be leveraged in Agent Jumbo through various integration methods.
+Mahoosuc OS provides 400+ slash commands across 95 categories. These commands are designed for Claude Code CLI but can be leveraged in Agent Mahoo through various integration methods.
 
 ## Native Tools (Recommended)
 
-**5 high-value commands have been converted to native Agent Jumbo tools** with full test coverage and zero subprocess overhead:
+**5 high-value commands have been converted to native Agent Mahoo tools** with full test coverage and zero subprocess overhead:
 
 1. **DevOps Deploy** (`devops_deploy`) - Multi-environment deployment automation
    - Source: `.claude/commands/devops/deploy.md`
@@ -49,7 +49,7 @@ await agent.use_tool("code_review", file="src/app.py", focus="security")
 **Benefits**:
 
 - 10-100x faster (no subprocess overhead)
-- Full Agent Jumbo context integration
+- Full Agent Mahoo context integration
 - 100% test coverage (39 tests, all passing)
 - Production-ready with comprehensive error handling
 - No external dependencies
@@ -62,7 +62,7 @@ await agent.use_tool("code_review", file="src/app.py", focus="security")
 
 ### Method 1: Native Tools (Recommended for Converted Commands)
 
-Use the native Agent Jumbo tools for the 5 converted commands. These provide the best performance and integration:
+Use the native Agent Mahoo tools for the 5 converted commands. These provide the best performance and integration:
 
 ```python
 # DevOps deployment
@@ -84,7 +84,7 @@ await agent.use_tool("code_review", file="src/api.py", focus="security")
 **Advantages**:
 
 - Zero subprocess overhead (10-100x faster)
-- Full Agent Jumbo context access
+- Full Agent Mahoo context access
 - Comprehensive test coverage (100%)
 - No external dependencies
 - Production-ready
@@ -93,10 +93,10 @@ See `docs/MAHOOSUC_TOOLS.md` for complete documentation.
 
 ### Method 2: Claude Code MCP Integration (For Non-Converted Commands)
 
-If Agent Jumbo has Claude Code MCP client configured:
+If Agent Mahoo has Claude Code MCP client configured:
 
 ```python
-# Agent Jumbo can invoke Claude Code commands via MCP
+# Agent Mahoo can invoke Claude Code commands via MCP
 from python.helpers.claude_code_mcp import ClaudeCodeClient
 
 client = ClaudeCodeClient()
@@ -107,10 +107,10 @@ result = await client.execute_command("/devops:deploy production")
 
 ### Method 3: Reference for Tool Development
 
-Use commands as specifications for creating Agent Jumbo tools:
+Use commands as specifications for creating Agent Mahoo tools:
 
 ```python
-# Example: Convert /finance:report to Agent Jumbo tool
+# Example: Convert /finance:report to Agent Mahoo tool
 # See .claude/commands/finance/report.md for spec
 
 from python.helpers.tool import Tool, Response
@@ -135,7 +135,7 @@ See `docs/MAHOOSUC_TOOLS.md` for the conversion pattern and examples.
 If Claude Code CLI is installed and authenticated:
 
 ```python
-# From Agent Jumbo tool
+# From Agent Mahoo tool
 import subprocess
 
 result = subprocess.run(
@@ -237,7 +237,7 @@ category: category-name
 1. **Read Documentation First**: Check `.claude/commands/` for full command specs
 2. **Test in Isolation**: Test commands before integrating into workflows
 3. **Adapt to Context**: Mahoosuc commands may assume Claude Code context
-4. **Create Native Tools**: For frequently used commands, create Agent Jumbo native tools
+4. **Create Native Tools**: For frequently used commands, create Agent Mahoo native tools
 5. **Reference, Don't Copy**: Use commands as design inspiration, not direct code
 
 ## Troubleshooting
@@ -277,5 +277,5 @@ category: category-name
 
 - **`docs/MAHOOSUC_TOOLS.md`** - Complete guide to converted native tools
 - `.claude/docs/COMMANDS_INDEX.md` - Complete command index
-- `.claude/docs/AGENT_JUMBO_INTEGRATION.md` - Integration architecture
+- `.claude/docs/AGENT_MAHOO_INTEGRATION.md` - Integration architecture
 - `.claude/docs/mahoosuc-reference/SLASH_COMMANDS_REFERENCE.md` - Full reference

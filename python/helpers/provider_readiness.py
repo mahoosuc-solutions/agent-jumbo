@@ -11,7 +11,7 @@ import models
 from instruments.custom.claude_sdk.sdk_manager import ClaudeSDKManager
 
 LOCAL_PROVIDERS = {"ollama", "huggingface", "local", "lmstudio", "lm_studio"}
-DEFAULT_CONTAINER_NAME = os.getenv("AGENT_JUMBO_CONTAINER_NAME", "agent-jumbo").strip() or "agent-jumbo"
+DEFAULT_CONTAINER_NAME = os.getenv("AGENT_MAHOO_CONTAINER_NAME", "agent-mahoo").strip() or "agent-mahoo"
 
 
 def current_runtime_scope() -> str:

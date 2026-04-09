@@ -1,5 +1,5 @@
 """
-Claude SDK Bridge Tool for Agent Jumbo
+Claude SDK Bridge Tool for Agent Mahoo
 Integrates Claude Agent SDK for Python, enabling bidirectional tool sharing
 """
 
@@ -9,7 +9,7 @@ from python.helpers.tool import Response, Tool
 
 class ClaudeSDKBridge(Tool):
     """
-    Agent Jumbo tool for Claude Agent SDK integration.
+    Agent Mahoo tool for Claude Agent SDK integration.
     Enables session management, queries, and tool bridging with Claude Code.
     """
 
@@ -238,7 +238,7 @@ class ClaudeSDKBridge(Tool):
         return Response(message="\n".join(lines), break_loop=False)
 
     async def _export_tool(self):
-        """Export an Agent Jumbo tool for SDK use"""
+        """Export an Agent Mahoo tool for SDK use"""
         tool_name = self.args.get("tool_name")
 
         if not tool_name:
@@ -254,7 +254,7 @@ class ClaudeSDKBridge(Tool):
                 return Response(message=f"Tool not found: {tool_name}", break_loop=False)
 
             tool_class = next(iter(tool_classes.values()))
-            result = self.manager.export_agent_jumbo_tool(tool_name, tool_class)
+            result = self.manager.export_agent_mahoo_tool(tool_name, tool_class)
 
             if "error" in result:
                 return Response(message=f"Export failed: {result['error']}", break_loop=False)

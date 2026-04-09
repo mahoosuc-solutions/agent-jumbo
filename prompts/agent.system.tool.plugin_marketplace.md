@@ -8,7 +8,7 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 - Search and browse plugins by name, tag, or popularity
 - Install plugins from marketplaces
 - Track installed plugins and check for updates
-- Import installed plugins into Agent Jumbo via skill_importer
+- Import installed plugins into Agent Mahoo via skill_importer
 
 ## Available Marketplaces
 
@@ -261,20 +261,20 @@ The **plugin_marketplace** tool enables discovery, browsing, and installation of
 
 ### Integration
 
-#### 16. import_to_agent_jumbo
+#### 16. import_to_agent_mahoo
 
-**Import installed plugin into Agent Jumbo**
+**Import installed plugin into Agent Mahoo**
 
 ```json
 {{plugin_marketplace(
-  action="import_to_agent_jumbo",
+  action="import_to_agent_mahoo",
   identifier="@anthropics/feature-dev"
 )}}
 ```
 
 This uses the `skill_importer` tool to:
 
-- Import plugin skills as Agent Jumbo tools
+- Import plugin skills as Agent Mahoo tools
 - Register hooks
 - Configure MCP servers
 - Set up agent profiles
@@ -312,8 +312,8 @@ This uses the `skill_importer` tool to:
 # 4. Install
 {{plugin_marketplace(action="install_plugin", identifier="@wshobson/pr-review-toolkit")}}
 
-# 5. Import to Agent Jumbo
-{{plugin_marketplace(action="import_to_agent_jumbo", identifier="@wshobson/pr-review-toolkit")}}
+# 5. Import to Agent Mahoo
+{{plugin_marketplace(action="import_to_agent_mahoo", identifier="@wshobson/pr-review-toolkit")}}
 ```
 
 ### Browse Popular Plugins
@@ -336,10 +336,10 @@ This uses the `skill_importer` tool to:
 
 ### With skill_importer
 
-After installation, use `import_to_agent_jumbo` to make plugins available in Agent Jumbo:
+After installation, use `import_to_agent_mahoo` to make plugins available in Agent Mahoo:
 
 ```json
-{{plugin_marketplace(action="import_to_agent_jumbo", identifier="plugin-name")}}
+{{plugin_marketplace(action="import_to_agent_mahoo", identifier="plugin-name")}}
 ```
 
 This is equivalent to:
@@ -354,6 +354,6 @@ This is equivalent to:
 
 - Sync marketplaces before searching to ensure fresh data
 - CLI installation is recommended for proper validation
-- Imported plugins become available as Agent Jumbo tools
+- Imported plugins become available as Agent Mahoo tools
 - Local plugins in `~/.claude/plugins` are auto-discovered
 - Plugin cache is stored in SQLite for offline browsing

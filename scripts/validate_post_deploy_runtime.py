@@ -406,7 +406,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Validate deployed runtime state and dashboard/browser flows.")
     parser.add_argument("--base-url", default="http://localhost:6274")
     parser.add_argument("--browser-base-url", default="http://127.0.0.1:80")
-    parser.add_argument("--container", default="agent-jumbo-production")
+    parser.add_argument("--container", default="agent-mahoo-production")
     parser.add_argument("--report-dir", default=os.path.join("artifacts", "validation"))
     parser.add_argument(
         "--write-artifacts",

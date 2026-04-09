@@ -1,5 +1,5 @@
 """
-Diagram Architect Tool for Agent Jumbo
+Diagram Architect Tool for Agent Mahoo
 Auto-generate architecture diagrams from codebase analysis
 """
 
@@ -9,7 +9,7 @@ from python.helpers.tool import Response, Tool
 
 class DiagramArchitect(Tool):
     """
-    Agent Jumbo tool for architecture analysis and diagram generation.
+    Agent Mahoo tool for architecture analysis and diagram generation.
     Analyzes codebases to detect components, relationships, and generates
     architecture diagrams in Mermaid format.
     """

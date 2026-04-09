@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Build Server CI: Bridge Contract Tests
+# Agent Mahoo — Build Server CI: Bridge Contract Tests
 # ============================================
 # Runs on build server: 49.13.125.252
 # Must NOT run on deploy host or in GitHub Actions.

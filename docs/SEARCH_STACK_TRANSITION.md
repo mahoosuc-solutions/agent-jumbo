@@ -21,7 +21,7 @@ For local workflows, the replacement direction is not another metasearch engine.
 
 Use this framing:
 
-`SearXNG` is the legacy query-only search layer. Agent Jumbo is moving toward an agentic research stack where the default path is browser-driven investigation, with optional provider-backed search via MCP when fast retrieval is enough.
+`SearXNG` is the legacy query-only search layer. Agent Mahoo is moving toward an agentic research stack where the default path is browser-driven investigation, with optional provider-backed search via MCP when fast retrieval is enough.
 
 That pitch is more accurate than saying `SearXNG` has already been replaced. In the current code, it has not.
 

@@ -46,7 +46,7 @@ class ApiFilesGet(ApiHandler):
                         external_path = files.get_abs_path("tmp/uploads", filename)
                         filename = os.path.basename(external_path)
                     elif path.startswith("/aj/"):
-                        # Other internal Agent Jumbo paths
+                        # Other internal Agent Mahoo paths
                         relative_path = path.replace("/aj/", "")
                         external_path = files.get_abs_path(relative_path)
                         filename = os.path.basename(external_path)

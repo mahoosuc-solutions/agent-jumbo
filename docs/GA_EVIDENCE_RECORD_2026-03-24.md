@@ -26,7 +26,7 @@ This record captures the green launch-readiness evidence collected on the `relea
 
 - **Artifact:** `artifacts/validation/deployment-validation-20260324-203145.log`
 - **Result:** Passed
-- **Notes:** Validated against restored `agent-jumbo` Docker container and current repo layout
+- **Notes:** Validated against restored `agent-mahoo` Docker container and current repo layout
 
 ### Web Gate
 

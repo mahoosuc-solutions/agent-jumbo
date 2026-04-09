@@ -2,7 +2,7 @@
 set -e
 
 # Paths
-SOURCE_DIR="/git/agent-jumbo"
+SOURCE_DIR="/git/agent-mahoo"
 TARGET_DIR="/aj"
 
 # Copy repository files if run_ui.py is missing in /aj (if the volume is mounted)

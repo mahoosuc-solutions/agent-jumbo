@@ -39,7 +39,7 @@ Follow this checklist when preparing a release.
 
 ### GitHub Release
 
-- [ ] Go to <https://github.com/agent-jumbo-deploy/agent-jumbo-devops/releases>
+- [ ] Go to <https://github.com/agent-mahoo-deploy/agent-mahoo-devops/releases>
 - [ ] Click "Draft a new release"
 - [ ] Select tag: `v1.x.x`
 - [ ] Title: `Release v1.x.x`
@@ -52,7 +52,7 @@ Follow this checklist when preparing a release.
 - [ ] Build distribution: `python setup.py sdist bdist_wheel`
 - [ ] Verify build: `twine check dist/*`
 - [ ] Upload to PyPI: `twine upload dist/*`
-- [ ] Verify on PyPI: <https://pypi.org/project/agent-jumbo-devops/>
+- [ ] Verify on PyPI: <https://pypi.org/project/agent-mahoo-devops/>
 
 ### Documentation
 
@@ -108,7 +108,7 @@ If critical issue found:
 ## Communication Template
 
 ```text
-# Release: Agent Jumbo DevOps v1.x.x
+# Release: Agent Mahoo DevOps v1.x.x
 
 We're excited to announce v1.x.x!
 
@@ -120,7 +120,7 @@ We're excited to announce v1.x.x!
 
 ## Upgrade Guide
 
-pip install --upgrade agent-jumbo-devops
+pip install --upgrade agent-mahoo-devops
 
 ## Breaking Changes
 
@@ -130,5 +130,5 @@ pip install --upgrade agent-jumbo-devops
 
 Thank you to: @contributor1, @contributor2
 
-[Full Changelog](https://github.com/agent-jumbo-deploy/agent-jumbo-devops/blob/main/CHANGELOG.md)
+[Full Changelog](https://github.com/agent-mahoo-deploy/agent-mahoo-devops/blob/main/CHANGELOG.md)
 ```

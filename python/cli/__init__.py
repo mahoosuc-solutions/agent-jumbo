@@ -1,1 +1,1 @@
-"""CLI package for Agent Jumbo skill management."""
+"""CLI package for Agent Mahoo skill management."""

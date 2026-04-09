@@ -1,6 +1,6 @@
 # Performance Analysis & Architectural Roadmap
 
-This document outlines the performance characteristics of the current Agent Jumbo implementation and provides a technical roadmap for scaling to enterprise-grade throughput.
+This document outlines the performance characteristics of the current Agent Mahoo implementation and provides a technical roadmap for scaling to enterprise-grade throughput.
 
 ## 1. Performance Baseline (As-Is)
 

@@ -3,32 +3,32 @@
 # Run these commands from the project root folder
 
 # local development image based on local files with smart cache
-docker build -f DockerfileLocal -t agent-jumbo --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -f DockerfileLocal -t agent-mahoo --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # local development image based on local files without cache
-docker build -f DockerfileLocal -t agent-jumbo --no-cache .
+docker build -f DockerfileLocal -t agent-mahoo --no-cache .
 
 # local development image without Playwright browser binaries
-docker build -f DockerfileLocal -t agent-jumbo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -f DockerfileLocal -t agent-mahoo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # slim local development image without Playwright browser binaries or preload downloads
-docker build -f DockerfileLocal -t agent-jumbo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg RUN_PRELOAD=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -f DockerfileLocal -t agent-mahoo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg RUN_PRELOAD=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # minimal local development image for Telegram/VPN-style deployments
-docker build -f DockerfileLocal -t agent-jumbo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg RUN_PRELOAD=0 --build-arg INSTALL_ADDITIONAL_TOOLS=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -f DockerfileLocal -t agent-mahoo --build-arg INSTALL_PLAYWRIGHT=0 --build-arg RUN_PRELOAD=0 --build-arg INSTALL_ADDITIONAL_TOOLS=0 --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 
 # GIT BASED BUILDS
 # Run these commands from the /docker/run directory
 
 # local image based on development branch instead of local files
-docker build -t agent-jumbo-development --build-arg BRANCH=development --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -t agent-mahoo-development --build-arg BRANCH=development --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # local image based on testing branch instead of local files
-docker build -t agent-jumbo-testing --build-arg BRANCH=testing --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -t agent-mahoo-testing --build-arg BRANCH=testing --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # local image based on main branch instead of local files
-docker build -t agent-jumbo-main --build-arg BRANCH=main --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker build -t agent-mahoo-main --build-arg BRANCH=main --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 
 
@@ -38,13 +38,13 @@ docker build -t agent-jumbo-main --build-arg BRANCH=main --build-arg CACHE_DATE=
 docker login
 
 # development:
-docker buildx build -t mahoosuc-solutions/agent-jumbo:development --platform linux/amd64,linux/arm64 --push --build-arg BRANCH=development --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker buildx build -t mahoosuc-solutions/agent-mahoo:development --platform linux/amd64,linux/arm64 --push --build-arg BRANCH=development --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # testing:
-docker buildx build -t mahoosuc-solutions/agent-jumbo:testing --platform linux/amd64,linux/arm64 --push --build-arg BRANCH=testing --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker buildx build -t mahoosuc-solutions/agent-mahoo:testing --platform linux/amd64,linux/arm64 --push --build-arg BRANCH=testing --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 # main
-docker buildx build -t mahoosuc-solutions/agent-jumbo:vx.x.x -t mahoosuc-solutions/agent-jumbo:latest --platform linux/amd64,linux/arm64 --push --build-arg BRANCH=main --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
+docker buildx build -t mahoosuc-solutions/agent-mahoo:vx.x.x -t mahoosuc-solutions/agent-mahoo:latest --platform linux/amd64,linux/arm64 --push --build-arg BRANCH=main --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) .
 
 
 # plain output

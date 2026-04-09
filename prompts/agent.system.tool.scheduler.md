@@ -1,6 +1,6 @@
 ## Task Scheduler Subsystem
 
-The task scheduler is a part of agent-jumbo enabling the system to execute
+The task scheduler is a part of agent-mahoo enabling the system to execute
 arbitrary tasks defined by a "system prompt" and "user prompt".
 
 When the task is executed the prompts are being run in the background in a context

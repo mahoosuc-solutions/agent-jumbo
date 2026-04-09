@@ -1,4 +1,4 @@
-"""E2E accessibility tests for Agent Jumbo web UI.
+"""E2E accessibility tests for Agent Mahoo web UI.
 
 Injects axe-core via Playwright and audits pages against WCAG 2.1 AA.
 Critical and serious violations fail the test; moderate/minor are warnings.

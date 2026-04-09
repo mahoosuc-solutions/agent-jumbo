@@ -1,5 +1,5 @@
 """
-Life OS Tool for Agent Jumbo
+Life OS Tool for Agent Mahoo
 Event-driven dashboard aggregation and daily planning.
 """
 

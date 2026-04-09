@@ -1,5 +1,5 @@
 """
-Coordinator Tool for Agent Jumbo
+Coordinator Tool for Agent Mahoo
 Multi-LLM task coordination: decompose, dispatch, classify, and monitor.
 """
 

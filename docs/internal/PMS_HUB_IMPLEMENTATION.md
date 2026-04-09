@@ -435,7 +435,7 @@ You now have a **production-ready, enterprise-grade PMS integration system** tha
 4. ✅ Handles multi-unit properties correctly
 5. ✅ Includes comprehensive error handling and retry logic
 6. ✅ Is fully documented and easy to extend
-7. ✅ Follows agent-jumbo architecture patterns
+7. ✅ Follows agent-mahoo architecture patterns
 8. ✅ Is async-first for high performance
 
 The system is designed to grow with you - adding new providers, features, and integrations is straightforward thanks to the adapter pattern and event-driven architecture.

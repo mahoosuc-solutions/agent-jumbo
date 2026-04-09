@@ -9,7 +9,7 @@
 #
 # Usage:
 #   ./scripts/checks/check_image_imports.sh [image_name]
-#   ./scripts/checks/check_image_imports.sh agent-jumbo:production
+#   ./scripts/checks/check_image_imports.sh agent-mahoo:production
 #
 # Exit codes:
 #   0  All imports succeeded
@@ -17,7 +17,7 @@
 
 set -euo pipefail
 
-IMAGE="${1:-agent-jumbo:production}"
+IMAGE="${1:-agent-mahoo:production}"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'

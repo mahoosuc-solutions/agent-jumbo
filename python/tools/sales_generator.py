@@ -1,5 +1,5 @@
 """
-Sales Generator Tool for Agent Jumbo
+Sales Generator Tool for Agent Mahoo
 Create customer-facing proposals, demos, ROI analyses, and business cases
 """
 
@@ -9,7 +9,7 @@ from python.helpers.tool import Response, Tool
 
 class SalesGenerator(Tool):
     """
-    Agent Jumbo tool for generating sales materials.
+    Agent Mahoo tool for generating sales materials.
     Creates proposals, demos, ROI calculations, case studies, and business cases.
     """
 

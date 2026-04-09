@@ -4,7 +4,7 @@ import Link from 'next/link'
 export const metadata: Metadata = {
   title: {
     default: 'Billing',
-    template: '%s | Billing | Agent Jumbo',
+    template: '%s | Billing | Agent Mahoo',
   },
 }
 
@@ -53,7 +53,7 @@ export default function BillingLayout({ children }: { children: React.ReactNode 
               </Link>
             </div>
             <Link href="/" className="text-xs text-slate-500 hover:text-slate-300 transition">
-              ← Back to Agent Jumbo
+              ← Back to Agent Mahoo
             </Link>
           </div>
         </div>

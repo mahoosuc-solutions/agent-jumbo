@@ -1,6 +1,6 @@
-# Contributing to Agent Jumbo DevOps
+# Contributing to Agent Mahoo DevOps
 
-Thank you for your interest in contributing to Agent Jumbo DevOps! This guide will help you get started.
+Thank you for your interest in contributing to Agent Mahoo DevOps! This guide will help you get started.
 
 ## Code of Conduct
 
@@ -44,8 +44,8 @@ Be respectful, inclusive, and professional. We're building a welcoming community
 
 ```bash
 # Clone the repository
-git clone https://github.com/agent-jumbo-deploy/agent-jumbo-devops.git
-cd agent-jumbo-devops
+git clone https://github.com/agent-mahoo-deploy/agent-mahoo-devops.git
+cd agent-mahoo-devops
 
 # Create virtual environment
 python -m venv venv

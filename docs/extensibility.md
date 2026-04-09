@@ -1,22 +1,22 @@
-# Extensibility framework in Agent Jumbo
+# Extensibility framework in Agent Mahoo
 
 > [!NOTE]
-> Agent Jumbo is built with extensibility in mind. It provides a framework for creating custom extensions, agents, instruments, and tools that can be used to enhance the functionality of the framework.
+> Agent Mahoo is built with extensibility in mind. It provides a framework for creating custom extensions, agents, instruments, and tools that can be used to enhance the functionality of the framework.
 
 ## Extensible components
 
-- The Python framework controlling Agent Jumbo is built as simple as possible, relying on independent smaller and modular scripts for individual tools, API endpoints, system extensions and helper scripts.
+- The Python framework controlling Agent Mahoo is built as simple as possible, relying on independent smaller and modular scripts for individual tools, API endpoints, system extensions and helper scripts.
 - This way individual components can be easily replaced, upgraded or extended.
 
 Here's a summary of the extensible components:
 
 ### Extensions
 
-Extensions are components that hook into specific points in the agent's lifecycle. They allow you to modify or enhance the behavior of Agent Jumbo at predefined extension points. The framework uses a plugin-like architecture where extensions are automatically discovered and loaded.
+Extensions are components that hook into specific points in the agent's lifecycle. They allow you to modify or enhance the behavior of Agent Mahoo at predefined extension points. The framework uses a plugin-like architecture where extensions are automatically discovered and loaded.
 
 #### Extension Points
 
-Agent Jumbo provides several extension points where custom code can be injected:
+Agent Mahoo provides several extension points where custom code can be injected:
 
 - **agent_init**: Executed when an agent is initialized
 - **before_main_llm_call**: Executed before the main LLM call is made
@@ -32,7 +32,7 @@ Agent Jumbo provides several extension points where custom code can be injected:
 
 #### Extension Mechanism
 
-The extension mechanism in Agent Jumbo works through the `call_extensions` function in `agent.py`, which:
+The extension mechanism in Agent Mahoo works through the `call_extensions` function in `agent.py`, which:
 
 1. Loads default extensions from `/python/extensions/{extension_point}/`
 2. Loads agent-specific extensions from `/agents/{agent_profile}/extensions/{extension_point}/`
@@ -85,7 +85,7 @@ Each tool is implemented as a Python class that inherits from the base `Tool` cl
 
 #### Tool Override Logic
 
-When a tool with the same name is requested, Agent Jumbo first checks for its existence in the agent-specific tools directory. If found, that version is used. If not found, it falls back to the default tools directory.
+When a tool with the same name is requested, Agent Mahoo first checks for its existence in the agent-specific tools directory. If found, that version is used. If not found, it falls back to the default tools directory.
 
 **Example tool override:**
 
@@ -114,7 +114,7 @@ When a tool is called, it goes through the following lifecycle:
 
 ### API Endpoints
 
-API endpoints expose Agent Jumbo functionality to external systems or the user interface. They are modular and can be extended or replaced.
+API endpoints expose Agent Mahoo functionality to external systems or the user interface. They are modular and can be extended or replaced.
 
 API endpoints are located in:
 
@@ -141,7 +141,7 @@ Prompts are located in:
 
 #### Prompt Features
 
-Agent Jumbo's prompt system supports several powerful features:
+Agent Mahoo's prompt system supports several powerful features:
 
 ##### Variable Placeholders
 
@@ -159,7 +159,7 @@ Prompts can include variables using the `{{var}}` syntax. These variables are re
 
 For more advanced prompt customization, you can create Python files with the same name as your prompt files. These Python files act as dynamic variable loaders that generate variables at runtime.
 
-When a prompt file is processed, Agent Jumbo automatically looks for a corresponding `.py` file in the same directory. If found, it uses this Python file to generate dynamic variables for the prompt.
+When a prompt file is processed, Agent Mahoo automatically looks for a corresponding `.py` file in the same directory. If found, it uses this Python file to generate dynamic variables for the prompt.
 
 **Example:**
 If you have a prompt file `agent.system.tools.md`, you can create `agent.system.tools.py` alongside it:
@@ -202,7 +202,7 @@ Prompts can include content from other prompt files using the `{{ include "path/
 **Example:**
 
 ```markdown
-# Agent Jumbo System Manual
+# Agent Mahoo System Manual
 
 {{ include "agent.system.main.role.md" }}
 
@@ -225,14 +225,14 @@ Similar to extensions and tools, prompts follow an override pattern. When the ag
 > !!!
 
 ## Your role
-You are Agent Jumbo, a sci-fi character from the movie "Agent Jumbo".
+You are Agent Mahoo, a sci-fi character from the movie "Agent Mahoo".
 ```
 
 This example overrides the default role definition in `/prompts/agent.system.main.role.md` with a custom one for a specific agent profile.
 
 ## Subagent Customization
 
-Agent Jumbo supports creating specialized subagents with customized behavior. The `_example` agent in the `/agents/_example/` directory demonstrates this pattern.
+Agent Mahoo supports creating specialized subagents with customized behavior. The `_example` agent in the `/agents/_example/` directory demonstrates this pattern.
 
 ### Creating a Subagent
 
@@ -316,12 +316,12 @@ These files allow you to keep credentials and configuration tightly scoped to a 
 
 ### When to Use Projects
 
-Projects are the recommended way to create specialized workflows in Agent Jumbo when you need to:
+Projects are the recommended way to create specialized workflows in Agent Mahoo when you need to:
 
 - Add specific instructions without affecting global behavior
 - Isolate file context, knowledge, and memory for a particular task or client
 - Keep passwords and other secrets scoped to a single workspace
-- Run multiple independent flows side by side under the same Agent Jumbo installation
+- Run multiple independent flows side by side under the same Agent Mahoo installation
 
 ## Best Practices
 

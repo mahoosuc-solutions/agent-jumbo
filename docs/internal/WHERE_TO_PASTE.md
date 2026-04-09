@@ -52,7 +52,7 @@ You'll see tabs at the top of the Settings window:
 4. Click **"Apply Now"** button
 5. Wait for servers to show "Connected" status
 6. Click **"Save Settings"** at the very bottom of the Settings modal
-7. Close Settings and run: `docker restart agent-jumbo`
+7. Close Settings and run: `docker restart agent-mahoo`
 
 ## The Config to Paste
 
@@ -109,4 +109,4 @@ Copy this entire block:
 
 ## Done
 
-After restarting, your Agent Jumbo will have access to all these MCP tools! 🎉
+After restarting, your Agent Mahoo will have access to all these MCP tools! 🎉

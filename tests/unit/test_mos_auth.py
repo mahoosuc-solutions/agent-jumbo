@@ -46,7 +46,7 @@ class TestCheckEntitlement:
         """Cache hit returns stored value without API call."""
         import python.helpers.mos_auth as m
 
-        m._entitlement_cache["org-1:agent-jumbo"] = (True, time.time())
+        m._entitlement_cache["org-1:agent-mahoo"] = (True, time.time())
 
         assert m.check_entitlement("org-1") is True
 
@@ -118,17 +118,17 @@ class TestCheckEntitlement:
         import python.helpers.mos_auth as m
 
         # Seed stale cache (expired TTL)
-        m._entitlement_cache["org-6:agent-jumbo"] = (True, time.time() - 600)
+        m._entitlement_cache["org-6:agent-mahoo"] = (True, time.time() - 600)
         mock_get.side_effect = ConnectionError("timeout")
 
         # First 4 failures: fail-closed (no circuit breaker yet)
         for _ in range(4):
-            m._entitlement_cache.pop("org-6:agent-jumbo", None)  # Clear fresh cache entry
+            m._entitlement_cache.pop("org-6:agent-mahoo", None)  # Clear fresh cache entry
             result = m.check_entitlement("org-6")
 
         # After 5+ failures: circuit breaker kicks in, uses stale value
         m._consecutive_failures = 5
-        m._entitlement_cache["org-6:agent-jumbo"] = (True, time.time() - 600)
+        m._entitlement_cache["org-6:agent-mahoo"] = (True, time.time() - 600)
         result = m.check_entitlement("org-6")
         # Should use stale cached True value
         assert result is True

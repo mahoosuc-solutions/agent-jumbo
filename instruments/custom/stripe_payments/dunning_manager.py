@@ -286,7 +286,7 @@ class DunningManager:
     ) -> bool:
         amount_str = f"${amount_cents / 100:.2f}"
         urgency = ["", "", "urgent ", "final "][min(attempt_number, 3)]
-        subject = f"[{urgency.strip().capitalize() + ' ' if urgency else ''}Action Required] Payment for your Agent Jumbo subscription"
+        subject = f"[{urgency.strip().capitalize() + ' ' if urgency else ''}Action Required] Payment for your Agent Mahoo subscription"
         body = (
             f"We were unable to process your payment of {amount_str}. "
             f"This is attempt {attempt_number} of {self.max_attempts}. "
@@ -304,7 +304,7 @@ class DunningManager:
         return False
 
     def _send_cancellation_email(self, customer_id: str, amount_cents: int, email_tool) -> bool:
-        subject = "Your Agent Jumbo subscription has been cancelled"
+        subject = "Your Agent Mahoo subscription has been cancelled"
         body = (
             "Due to repeated payment failures, your subscription has been cancelled. "
             "You can resubscribe at any time from your billing portal."

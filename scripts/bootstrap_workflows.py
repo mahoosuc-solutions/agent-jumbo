@@ -1,5 +1,5 @@
 """
-Bootstrap 26 scheduled workflow tasks for Agent Jumbo's daily operating system.
+Bootstrap 26 scheduled workflow tasks for Agent Mahoo's daily operating system.
 
 Usage:
     python scripts/bootstrap_workflows.py

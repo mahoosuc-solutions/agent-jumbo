@@ -17,7 +17,7 @@
 
 ```bash
 # Your worktree is automatically created at:
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 
 # Verify you're on the correct branch
 git branch  # Should show: feature/pms-calendar-sync
@@ -34,7 +34,7 @@ git branch  # Should show: feature/pms-calendar-sync
 **Phase 2: Write Failing Tests**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 
 # Open test file
 nano tests/test_pms_calendar_sync.py
@@ -122,7 +122,7 @@ git push origin feature/pms-calendar-sync
 
 ```bash
 # Your worktree is automatically created at:
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 
 # Verify you're on the correct branch
 git branch  # Should show: feature/pms-messaging-automation
@@ -139,7 +139,7 @@ git branch  # Should show: feature/pms-messaging-automation
 **Phase 2: Write Failing Tests**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 
 # Open test file
 nano tests/test_pms_communication_workflows.py
@@ -243,7 +243,7 @@ git push origin feature/pms-messaging-automation
 **Terminal 1: Team A (Calendar)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 # Implement tests → features → iterate
 pytest tests/test_pms_calendar_sync.py -v --tb=short
 ```
@@ -251,7 +251,7 @@ pytest tests/test_pms_calendar_sync.py -v --tb=short
 **Terminal 2: Team B (Messaging)**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 # Implement tests → features → iterate
 pytest tests/test_pms_communication_workflows.py -v --tb=short
 ```
@@ -259,7 +259,7 @@ pytest tests/test_pms_communication_workflows.py -v --tb=short
 **Terminal 3: Monitor/Integration**
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 # Run full test suite periodically
 pytest tests/ -v --tb=short
 ```
@@ -350,13 +350,13 @@ pytest tests/test_pms_*.py -v --durations=10
 
 ```bash
 # Ensure you're in the worktree root
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-calendar
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-calendar
 
 # Install in development mode
 pip install -e .
 
 # Run with PYTHONPATH
-export PYTHONPATH=/home/webemo-aaron/projects/agent-jumbo:$PYTHONPATH
+export PYTHONPATH=/home/webemo-aaron/projects/agent-mahoo:$PYTHONPATH
 pytest tests/test_pms_calendar_sync.py -v
 ```
 
@@ -406,22 +406,22 @@ print(sync.event_bus.subscribers)
 
 ### Architecture
 
-- `/home/webemo-aaron/projects/agent-jumbo/PMS_HUB_IMPLEMENTATION.md`
-- `/home/webemo-aaron/projects/agent-jumbo/TDD_SWARM_FEATURE_TEAMS.md`
+- `/home/webemo-aaron/projects/agent-mahoo/PMS_HUB_IMPLEMENTATION.md`
+- `/home/webemo-aaron/projects/agent-mahoo/TDD_SWARM_FEATURE_TEAMS.md`
 
 ### API Reference
 
-- `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/README.md`
+- `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/README.md`
 - Calendar Hub: `python/tools/calendar_hub.py` (line 23-100)
 
 ### Testing
 
-- `/home/webemo-aaron/projects/agent-jumbo/TDD_SWARM_GUIDE.md`
+- `/home/webemo-aaron/projects/agent-mahoo/TDD_SWARM_GUIDE.md`
 - Example tests: `tests/test_pms_providers.py`
 
 ### Canonical Models
 
-- `/home/webemo-aaron/projects/agent-jumbo/instruments/custom/pms_hub/canonical_models.py`
+- `/home/webemo-aaron/projects/agent-mahoo/instruments/custom/pms_hub/canonical_models.py`
 
 ---
 

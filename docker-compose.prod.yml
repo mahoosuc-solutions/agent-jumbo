@@ -1,5 +1,5 @@
 services:
-  agent-jumbo:
+  agent-mahoo:
     build:
       context: .
       dockerfile: Dockerfile.prod
@@ -8,9 +8,9 @@ services:
         RUN_PRELOAD: 1
         INSTALL_ADDITIONAL_TOOLS: 1
         INSTALL_MERMAID_CLI: ${INSTALL_MERMAID_CLI:-0}
-    image: agent-jumbo:production
+    image: agent-mahoo:production
     pull_policy: never
-    container_name: agent-jumbo-production
+    container_name: agent-mahoo-production
     restart: unless-stopped
     env_file:
       - path: .env
@@ -18,8 +18,8 @@ services:
       - path: .env.production
         required: false   # gitignored runtime overrides (MOS bridge, auth, etc.)
     environment:
-      AGENT_JUMBO_RUN_MODE: ${AGENT_JUMBO_RUN_MODE:-production}
-      AGENT_JUMBO_LAPTOP_MODE: ${AGENT_JUMBO_LAPTOP_MODE:-false}
+      AGENT_MAHOO_RUN_MODE: ${AGENT_MAHOO_RUN_MODE:-production}
+      AGENT_MAHOO_LAPTOP_MODE: ${AGENT_MAHOO_LAPTOP_MODE:-false}
       AGENTMESH_REDIS_URL: ${AGENTMESH_REDIS_URL:-}
       AIOS_BASE_URL: ${AIOS_BASE_URL:-}
       LITELLM_LOCAL_MODEL_COST_MAP: "True"
@@ -28,14 +28,14 @@ services:
       OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
       FILE_OWNER_UID: ${FILE_OWNER_UID:-1000}
       FILE_OWNER_GID: ${FILE_OWNER_GID:-1000}
-      AGENT_JUMBO_SCHEDULER_SEED_PATH: ${AGENT_JUMBO_SCHEDULER_SEED_PATH:-/mnt/wdblack/dev/projects/agent-jumbo/tmp/scheduler/tasks.json}
+      AGENT_MAHOO_SCHEDULER_SEED_PATH: ${AGENT_MAHOO_SCHEDULER_SEED_PATH:-/mnt/wdblack/dev/projects/agent-mahoo/tmp/scheduler/tasks.json}
     ports:
       - "6274:80"
     volumes:
       # Persistent data volumes (keep existing)
-      - agent_jumbo_data:/aj/data
-      - agent_jumbo_logs:/aj/logs
-      - agent_jumbo_venv:/opt/venv-a0
+      - agent_mahoo_data:/aj/data
+      - agent_mahoo_logs:/aj/logs
+      - agent_mahoo_venv:/opt/venv-a0
       # Local data drive mounts
       - /mnt/wdblack:/mnt/wdblack:rw
       - ${HOME}/.ssh:/root/.ssh:ro
@@ -100,11 +100,11 @@ services:
       start_period: 15s
 
 volumes:
-  agent_jumbo_data:
+  agent_mahoo_data:
     external: true
-  agent_jumbo_logs:
+  agent_mahoo_logs:
     external: true
-  agent_jumbo_venv:
+  agent_mahoo_venv:
     external: true
   wbm_mcp_staging_data:
   wbm_mcp_production_data:

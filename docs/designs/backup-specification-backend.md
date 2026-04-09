@@ -1,8 +1,8 @@
-# Agent Jumbo Backup/Restore Backend Specification
+# Agent Mahoo Backup/Restore Backend Specification
 
 ## Overview
 
-This specification defines the backend implementation for Agent Jumbo's backup and restore functionality, providing users with the ability to backup and restore their Agent Jumbo configurations, data, and custom files using glob pattern-based selection. The backup functionality is implemented as a dedicated "backup" tab in the settings interface for easy access and organization.
+This specification defines the backend implementation for Agent Mahoo's backup and restore functionality, providing users with the ability to backup and restore their Agent Mahoo configurations, data, and custom files using glob pattern-based selection. The backup functionality is implemented as a dedicated "backup" tab in the settings interface for easy access and organization.
 
 ## Core Requirements
 
@@ -30,7 +30,7 @@ Add backup/restore section with dedicated tab to `python/helpers/settings.py`:
 **Integration Notes:**
 
 - Leverages existing settings button handler pattern (follows MCP servers example)
-- Integrates with Agent Jumbo's established error handling and toast notification system
+- Integrates with Agent Mahoo's established error handling and toast notification system
 - Uses existing file operation helpers with RFC support for development mode compatibility
 
 ```python
@@ -38,7 +38,7 @@ Add backup/restore section with dedicated tab to `python/helpers/settings.py`:
 backup_section: SettingsSection = {
     "id": "backup_restore",
     "title": "Backup & Restore",
-    "description": "Backup and restore Agent Jumbo data and configurations using glob pattern-based file selection.",
+    "description": "Backup and restore Agent Mahoo data and configurations using glob pattern-based file selection.",
     "fields": [
         {
             "id": "backup_create",
@@ -67,14 +67,14 @@ The backup system now uses **resolved absolute filesystem paths** instead of pla
 def _get_default_patterns(self) -> str:
     """Get default backup patterns with resolved absolute paths"""
     # Ensure paths don't have double slashes
-    agent_root = self.agent_jumbo_root.rstrip('/')
+    agent_root = self.agent_mahoo_root.rstrip('/')
     user_home = self.user_home.rstrip('/')
 
-    return f"""# Agent Jumbo Knowledge (excluding defaults)
+    return f"""# Agent Mahoo Knowledge (excluding defaults)
 {agent_root}/knowledge/**
 !{agent_root}/knowledge/default/**
 
-# Agent Jumbo Instruments (excluding defaults)
+# Agent Mahoo Instruments (excluding defaults)
 {agent_root}/instruments/**
 !{agent_root}/instruments/default/**
 
@@ -113,7 +113,7 @@ def _get_default_patterns(self) -> str:
 !/home/rafael/.*
 ```
 
-> **⚠️ CRITICAL FILE NOTICE**: The `{agent_root}/.env` file contains essential configuration including API keys, model settings, and runtime parameters. This file is **REQUIRED** for Agent Jumbo to function properly and should always be included in backups alongside `settings.json`. Without this file, restored Agent Jumbo instances will not have access to configured language models or external services.
+> **⚠️ CRITICAL FILE NOTICE**: The `{agent_root}/.env` file contains essential configuration including API keys, model settings, and runtime parameters. This file is **REQUIRED** for Agent Mahoo to function properly and should always be included in backups alongside `settings.json`. Without this file, restored Agent Mahoo instances will not have access to configured language models or external services.
 
 ### 2. API Endpoints
 
@@ -190,7 +190,7 @@ class BackupCreate(ApiHandler):
     async def process(self, input: dict, request: Request) -> dict | Response:
         patterns = input.get("patterns", "")
         include_hidden = input.get("include_hidden", False)
-        backup_name = input.get("backup_name", "agent-jumbo-backup")
+        backup_name = input.get("backup_name", "agent-mahoo-backup")
 
         try:
             backup_service = BackupService()
@@ -398,7 +398,7 @@ class BackupProgressStream(ApiHandler):
     async def process(self, input: dict, request: Request) -> dict | Response:
         patterns = input.get("patterns", "")
         include_hidden = input.get("include_hidden", False)
-        backup_name = input.get("backup_name", "agent-jumbo-backup")
+        backup_name = input.get("backup_name", "agent-mahoo-backup")
 
         def generate_progress():
             try:
@@ -466,7 +466,7 @@ class BackupInspect(ApiHandler):
                 "include_patterns": metadata.get("include_patterns", []),  # Array of include patterns
                 "exclude_patterns": metadata.get("exclude_patterns", []),  # Array of exclude patterns
                 "default_patterns": metadata.get("backup_config", {}).get("default_patterns", ""),
-                "agent_jumbo_version": metadata.get("agent_jumbo_version", "unknown"),
+                "agent_mahoo_version": metadata.get("agent_mahoo_version", "unknown"),
                 "timestamp": metadata.get("timestamp", ""),
                 "backup_name": metadata.get("backup_name", ""),
                 "total_files": metadata.get("total_files", len(metadata.get("files", []))),
@@ -488,7 +488,7 @@ class BackupInspect(ApiHandler):
 **File**: `python/helpers/backup.py`
 
 **RFC Integration Notes:**
-The BackupService leverages Agent Jumbo's existing file operation helpers which already support RFC (Remote Function Call) routing for development mode. This ensures seamless operation whether running in direct mode or with container isolation.
+The BackupService leverages Agent Mahoo's existing file operation helpers which already support RFC (Remote Function Call) routing for development mode. This ensures seamless operation whether running in direct mode or with container isolation.
 
 ```python
 import zipfile
@@ -503,19 +503,19 @@ from python.helpers import files, runtime, git
 import shutil
 
 class BackupService:
-    """Core backup and restore service for Agent Jumbo"""
+    """Core backup and restore service for Agent Mahoo"""
 
     def __init__(self):
-        self.agent_jumbo_version = self._get_agent_jumbo_version()
-        self.agent_jumbo_root = files.get_abs_path("")  # Resolved Agent Jumbo root
+        self.agent_mahoo_version = self._get_agent_mahoo_version()
+        self.agent_mahoo_root = files.get_abs_path("")  # Resolved Agent Mahoo root
         self.user_home = os.path.expanduser("~")       # Current user's home directory
 
     def _get_default_patterns(self) -> str:
         """Get default backup patterns from specification"""
         return DEFAULT_BACKUP_PATTERNS
 
-    def _get_agent_jumbo_version(self) -> str:
-        """Get current Agent Jumbo version"""
+    def _get_agent_mahoo_version(self) -> str:
+        """Get current Agent Mahoo version"""
         try:
             # Get version from git info (same as run_ui.py)
             gitinfo = git.get_git_info()
@@ -597,7 +597,7 @@ class BackupService:
                 "path": os.environ.get("PATH", "")[:200] + "..." if len(os.environ.get("PATH", "")) > 200 else os.environ.get("PATH", ""),
                 "timezone": str(datetime.datetime.now().astimezone().tzinfo),
                 "working_directory": os.getcwd(),
-                "agent_jumbo_root": files.get_abs_path(""),
+                "agent_mahoo_root": files.get_abs_path(""),
                 "runtime_mode": "development" if runtime.is_development() else "production"
             }
         except Exception as e:
@@ -719,7 +719,7 @@ class BackupService:
 
         return matched_files
 
-    async def create_backup(self, patterns: str, include_hidden: bool = False, backup_name: str = "agent-jumbo-backup") -> str:
+    async def create_backup(self, patterns: str, include_hidden: bool = False, backup_name: str = "agent-mahoo-backup") -> str:
         """Create backup archive with selected files"""
 
         # Get matched files
@@ -742,7 +742,7 @@ class BackupService:
 
                 metadata = {
                     # Basic backup information
-                    "agent_jumbo_version": self.agent_jumbo_version,
+                    "agent_mahoo_version": self.agent_mahoo_version,
                     "timestamp": datetime.datetime.now().isoformat(),
                     "backup_name": backup_name,
                     "include_hidden": include_hidden,
@@ -922,7 +922,7 @@ class BackupService:
             "total_size": total_size
         }
 
-    def create_backup_with_progress(self, patterns: str, include_hidden: bool = False, backup_name: str = "agent-jumbo-backup"):
+    def create_backup_with_progress(self, patterns: str, include_hidden: bool = False, backup_name: str = "agent-mahoo-backup"):
         """Generator that yields backup progress for streaming"""
 
         try:
@@ -981,7 +981,7 @@ class BackupService:
             with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
                 # Create and add metadata first
                 metadata = {
-                    "agent_jumbo_version": self.agent_jumbo_version,
+                    "agent_mahoo_version": self.agent_mahoo_version,
                     "timestamp": datetime.datetime.now().isoformat(),
                     "backup_name": backup_name,
                     "backup_patterns": patterns,
@@ -1251,9 +1251,9 @@ pathspec>=0.10.0  # For gitignore-style pattern matching
 psutil>=5.8.0     # For system information collection
 ```
 
-#### Agent Jumbo Internal Dependencies
+#### Agent Mahoo Internal Dependencies
 
-The backup system requires these Agent Jumbo helper modules:
+The backup system requires these Agent Mahoo helper modules:
 
 - `python.helpers.git` - For version detection using git.get_git_info() (consistent with run_ui.py)
 - `python.helpers.files` - For file operations and path resolution
@@ -1267,15 +1267,15 @@ pip install pathspec psutil
 
 ### 5. Error Handling
 
-#### Integration with Agent Jumbo Error System
+#### Integration with Agent Mahoo Error System
 
-The backup system integrates with Agent Jumbo's existing error handling infrastructure:
+The backup system integrates with Agent Mahoo's existing error handling infrastructure:
 
 ```python
 from python.helpers.errors import format_error
 from python.helpers.print_style import PrintStyle
 
-# Follow Agent Jumbo's error handling patterns
+# Follow Agent Mahoo's error handling patterns
 try:
     result = await backup_operation()
     return {"success": True, "data": result}
@@ -1363,7 +1363,7 @@ BACKUP_CONFIG = {
 #### Future Integration Opportunities
 
 **Task Scheduler Integration:**
-Agent Jumbo's existing task scheduler could be extended to support automated backups:
+Agent Mahoo's existing task scheduler could be extended to support automated backups:
 
 ```python
 # Potential future enhancement - scheduled backups
@@ -1383,11 +1383,11 @@ Agent Jumbo's existing task scheduler could be extended to support automated bac
 
 ### Version Detection Implementation
 
-The backup system uses the same version detection method as Agent Jumbo's main UI:
+The backup system uses the same version detection method as Agent Mahoo's main UI:
 
 ```python
-def _get_agent_jumbo_version(self) -> str:
-    """Get current Agent Jumbo version"""
+def _get_agent_mahoo_version(self) -> str:
+    """Get current Agent Mahoo version"""
     try:
         # Get version from git info (same as run_ui.py)
         gitinfo = git.get_git_info()
@@ -1404,7 +1404,7 @@ The backup archive includes a comprehensive `metadata.json` file with the follow
 
 ```json
 {
-  "agent_jumbo_version": "version",
+  "agent_mahoo_version": "version",
   "timestamp": "ISO datetime",
   "backup_name": "user-defined name",
   "include_hidden": boolean,
@@ -1463,11 +1463,11 @@ The backup archive includes a comprehensive `metadata.json` file with the follow
 The backup metadata has been significantly enhanced to include:
 
 - **System Information**: Platform, architecture, Python version, CPU count, memory, disk usage
-- **Environment Details**: User, timezone, working directory, runtime mode, Agent Jumbo root path
+- **Environment Details**: User, timezone, working directory, runtime mode, Agent Mahoo root path
 - **Backup Author**: System identifier (user@hostname) for backup tracking
 - **File Checksums**: SHA-256 hashes for all backed up files for integrity verification
 - **Backup Statistics**: Total files, directories, sizes with verification methods
-- **Compatibility Data**: Agent Jumbo version and environment for restoration validation
+- **Compatibility Data**: Agent Mahoo version and environment for restoration validation
 
 ### Smart File Management
 
@@ -1505,7 +1505,7 @@ The backup metadata has been significantly enhanced to include:
 - **Path Security**: Enhanced validation with system information context
 - **Backup Validation**: Version compatibility checking and environment verification
 
-This enhanced backend specification provides a production-ready, comprehensive backup and restore system with advanced metadata tracking, real-time progress monitoring, and intelligent file management capabilities, all while maintaining Agent Jumbo's architectural patterns and security standards.
+This enhanced backend specification provides a production-ready, comprehensive backup and restore system with advanced metadata tracking, real-time progress monitoring, and intelligent file management capabilities, all while maintaining Agent Mahoo's architectural patterns and security standards.
 
 ### Implementation Status Updates
 
@@ -1514,7 +1514,7 @@ This enhanced backend specification provides a production-ready, comprehensive b
 - **Git Version Integration**: Updated to use `git.get_git_info()` consistent with `run_ui.py`
 - **Type Safety**: Fixed psutil return values to be strings for JSON metadata consistency
 - **Code Quality**: All linting errors resolved, proper import structure
-- **Testing Verified**: BackupService initializes correctly and detects Agent Jumbo root paths
+- **Testing Verified**: BackupService initializes correctly and detects Agent Mahoo root paths
 - **Dependencies Added**: pathspec>=0.10.0 for pattern matching, psutil>=5.8.0 for system info
 - **Git Helper Integration**: Uses python.helpers.git.get_git_info() for version detection consistency
 
@@ -1599,7 +1599,7 @@ if not include_hidden and file.startswith('.'):
 - **Explicit patterns** (like `/aj/.env`) - Always included regardless of `include_hidden` setting
 - **Wildcard discoveries** (like `/aj/*`) - Respect the `include_hidden` setting
 
-**Result:** Critical files like `.env` are now properly backed up when explicitly specified, ensuring Agent Jumbo configurations are preserved.
+**Result:** Critical files like `.env` are now properly backed up when explicitly specified, ensuring Agent Mahoo configurations are preserved.
 
 ### **Implementation Status: ✅ PRODUCTION READY**
 
@@ -1619,7 +1619,7 @@ The backup system is now:
 - ✅ **Cleaner API** - Only endpoints that are actually used
 - ✅ **Better reliability** - Removed complex features that weren't properly implemented
 
-The Agent Jumbo backup system is now production-ready and battle-tested! 🚀
+The Agent Mahoo backup system is now production-ready and battle-tested! 🚀
 
 ## ✅ **FINAL STATUS: ACE EDITOR STATE GUARANTEE COMPLETED (December 2024)**
 
@@ -1638,7 +1638,7 @@ metadata["exclude_patterns"] = original_backup_metadata.get("exclude_patterns", 
 
 # 2. Path translation for cross-system compatibility
 environment_info = original_backup_metadata.get("environment_info", {})
-backed_up_agent_root = environment_info.get("agent_jumbo_root", "")
+backed_up_agent_root = environment_info.get("agent_mahoo_root", "")
 ```
 
 #### **✅ ACE editor metadata Usage** (EVERYTHING ELSE)
@@ -1747,7 +1747,7 @@ async def _find_files_to_clean_with_user_metadata(self, user_metadata: Dict[str,
 
 - Path translation preserves technical functionality
 - Users don't need to manually adjust paths
-- Works seamlessly between different Agent Jumbo installations
+- Works seamlessly between different Agent Mahoo installations
 - Maintains backup portability across environments
 
 #### **✅ Clean Architecture:**
@@ -1759,7 +1759,7 @@ async def _find_files_to_clean_with_user_metadata(self, user_metadata: Dict[str,
 
 ### **Final Status: ✅ PRODUCTION READY**
 
-The Agent Jumbo backup system now provides:
+The Agent Mahoo backup system now provides:
 
 - **✅ Complete user control** via ACE editor state
 - **✅ Cross-system compatibility** through intelligent path translation

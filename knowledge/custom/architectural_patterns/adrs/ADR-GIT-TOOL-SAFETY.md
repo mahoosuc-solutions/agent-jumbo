@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Agent Jumbo had read-only git access via `python/helpers/git.py` (using GitPython). The
+Agent Mahoo had read-only git access via `python/helpers/git.py` (using GitPython). The
 `task_cycle` pipeline's `ship` action requires write operations: staging files, committing,
 and eventually pushing to a remote. These operations carry irreversible risk if performed
 carelessly:
@@ -67,4 +67,4 @@ agent action. This means the pipeline is: grade → ship (commit) → (human rev
 
 ---
 
-*Recorded 2026-04-05 — Agent Jumbo agentic task cycle implementation*
+*Recorded 2026-04-05 — Agent Mahoo agentic task cycle implementation*

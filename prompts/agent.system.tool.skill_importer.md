@@ -1,13 +1,13 @@
 # Skill Importer Tool
 
-The **skill_importer** tool enables importing Claude Code plugins, skills, hooks, agents, and MCP server configurations into Agent Jumbo.
+The **skill_importer** tool enables importing Claude Code plugins, skills, hooks, agents, and MCP server configurations into Agent Mahoo.
 
 ## Purpose
 
 - Import individual skills from markdown files
 - Import complete Claude Code plugins with all components
 - Manage imported skills and plugins
-- Generate Agent Jumbo-compatible tool prompts
+- Generate Agent Mahoo-compatible tool prompts
 - Export MCP server configurations for integration
 
 ## Available Actions
@@ -118,7 +118,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 #### 6. generate_prompt
 
-**Generate Agent Jumbo tool prompt from imported skill**
+**Generate Agent Mahoo tool prompt from imported skill**
 
 ```json
 {{skill_importer(
@@ -240,7 +240,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 #### 12. get_mcp_config
 
-**Get MCP configuration for Agent Jumbo integration**
+**Get MCP configuration for Agent Mahoo integration**
 
 ```json
 {{skill_importer(
@@ -253,7 +253,7 @@ The **skill_importer** tool enables importing Claude Code plugins, skills, hooks
 
 - `plugin_id` (required): Plugin ID
 
-**Returns:** JSON MCP configuration to add to Agent Jumbo settings
+**Returns:** JSON MCP configuration to add to Agent Mahoo settings
 
 ---
 
@@ -360,6 +360,6 @@ Import CI/CD related skills:
 
 - Database auto-creates on first use at `instruments/custom/skill_importer/data/skill_importer.db`
 - Skills are stored with their original source path for reference
-- MCP server configs can be exported and merged into Agent Jumbo settings
-- Imported hooks are stored but require manual integration into Agent Jumbo extensions
-- Agent definitions can be converted to Agent Jumbo profiles
+- MCP server configs can be exported and merged into Agent Mahoo settings
+- Imported hooks are stored but require manual integration into Agent Mahoo extensions
+- Agent definitions can be converted to Agent Mahoo profiles

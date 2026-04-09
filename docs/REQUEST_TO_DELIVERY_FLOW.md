@@ -2,9 +2,9 @@
 
 # Request-to-Delivery Flow
 
-Agent Jumbo is an agentic platform that receives requests from multiple channels (Telegram, Web UI, AgentMesh, webhooks), routes them through a context-aware agent loop with 72 tools and 33 instruments, and delivers responses back to the originating channel. This document traces that flow end-to-end.
+Agent Mahoo is an agentic platform that receives requests from multiple channels (Telegram, Web UI, AgentMesh, webhooks), routes them through a context-aware agent loop with 72 tools and 33 instruments, and delivers responses back to the originating channel. This document traces that flow end-to-end.
 
-**Audience:** Developers debugging, extending, or onboarding to Agent Jumbo.
+**Audience:** Developers debugging, extending, or onboarding to Agent Mahoo.
 
 ## Master Pipeline
 
@@ -125,7 +125,7 @@ flowchart TD
 | Aspect | Detail |
 |--------|--------|
 | **Files** | `python/helpers/agentmesh_bridge.py`, `python/helpers/agentmesh_task_handler.py` |
-| **Transport** | Redis Streams (`agentmesh:events`, consumer group `agentmesh:cg:agent-jumbo`) |
+| **Transport** | Redis Streams (`agentmesh:events`, consumer group `agentmesh:cg:agent-mahoo`) |
 | **Init** | Daemon thread started in `run_ui.py` when `AGENTMESH_REDIS_URL` is set |
 | **Risk classification** | HIGH/CRITICAL tasks emit `task.approval_required`; LOW tasks execute directly |
 | **Profile mapping** | Category maps to agent profile: `deployment` → `actor-ops`, `security_scan` → `hacker`, etc. |
@@ -270,7 +270,7 @@ Agent 0 can delegate via the `call_subordinate` tool, creating child agents. Eac
 
 ### Multi-LLM Orchestration Engine
 
-Agent Jumbo can act as a **meta-agent**, decomposing complex tasks and dispatching subtasks concurrently to different LLM providers.
+Agent Mahoo can act as a **meta-agent**, decomposing complex tasks and dispatching subtasks concurrently to different LLM providers.
 
 ```mermaid
 flowchart LR
@@ -541,7 +541,7 @@ self.manager = Manager(db_path)
 
 ## 6. The Five Project Systems
 
-Agent Jumbo has five overlapping data stores for "projects." Understanding which owns what is critical.
+Agent Mahoo has five overlapping data stores for "projects." Understanding which owns what is critical.
 
 ```mermaid
 flowchart TD

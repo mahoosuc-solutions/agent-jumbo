@@ -1,6 +1,6 @@
 # Square Payment Platform Setup
 
-This guide walks through creating a Square developer account and connecting it to Agent Jumbo.
+This guide walks through creating a Square developer account and connecting it to Agent Mahoo.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ This guide walks through creating a Square developer account and connecting it t
 ## Step 2 — Create an Application
 
 1. From the Developer Dashboard, click **Create Your First Application**
-2. Name it `Agent Jumbo` (or your business name)
+2. Name it `Agent Mahoo` (or your business name)
 3. Select **Production** as the environment once you're ready for live payments; use **Sandbox** for testing
 4. Click **Save**
 
@@ -86,7 +86,7 @@ python3 scripts/square_catalog_sync.py --mock --catalog both
 
 ## Browser-Assisted Setup
 
-Agent Jumbo can guide you through account setup interactively:
+Agent Mahoo can guide you through account setup interactively:
 
 ```
 Ask the agent: "Help me set up Square payments"

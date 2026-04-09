@@ -1,18 +1,18 @@
-import AgentJumboHero from '@/components/product/AgentJumboHero'
+import AgentMahooHero from '@/components/product/AgentMahooHero'
 import ProofPoints from '@/components/product/ProofPoints'
 import HowItWorks from '@/components/product/HowItWorks'
 import MosBridge from '@/components/product/MosBridge'
-import AgentJumboCTA from '@/components/product/AgentJumboCTA'
+import AgentMahooCTA from '@/components/product/AgentMahooCTA'
 import LiveStatus from '@/components/product/LiveStatus'
 
 export default function Home() {
   return (
     <>
-      <AgentJumboHero />
+      <AgentMahooHero />
       <ProofPoints />
       <HowItWorks />
       <MosBridge />
-      <AgentJumboCTA />
+      <AgentMahooCTA />
       <div className="flex justify-center py-4">
         <LiveStatus />
       </div>

@@ -51,7 +51,7 @@ wheels = [
 ]
 
 [[package]]
-name = "agent-jumbo-devops"
+name = "agent-mahoo-devops"
 version = "1.0.0b0"
 source = { editable = "." }
 dependencies = [

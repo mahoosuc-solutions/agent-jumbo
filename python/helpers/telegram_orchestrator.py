@@ -26,7 +26,7 @@ ORCHESTRATOR_COMMANDS = {
     "backup",
 }
 
-HELP_TEXT = """*Agent Jumbo — Telegram Commands*
+HELP_TEXT = """*Agent Mahoo — Telegram Commands*
 
 /status — Cross-system status (portfolio + tasks + workflows)
 /project <name> — Project details and lifecycle

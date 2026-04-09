@@ -6,7 +6,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 - Initialize and manage Claude SDK sessions
 - Send queries through SDK or CLI
-- Bridge Agent Jumbo tools to Claude Code
+- Bridge Agent Mahoo tools to Claude Code
 - Connect MCP servers between systems
 - Export/import tools bidirectionally
 
@@ -167,7 +167,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 #### 9. export_tool
 
-**Export an Agent Jumbo tool for use in Claude Code**
+**Export an Agent Mahoo tool for use in Claude Code**
 
 ```json
 {{claude_sdk_bridge(
@@ -178,7 +178,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 **Parameters:**
 
-- `tool_name` (required): Name of Agent Jumbo tool to export
+- `tool_name` (required): Name of Agent Mahoo tool to export
 
 **Result:** Tool is wrapped and made available via MCP for Claude Code sessions.
 
@@ -213,7 +213,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 #### 11. bridge_mcp
 
-**Bridge an external MCP server to Agent Jumbo**
+**Bridge an external MCP server to Agent Mahoo**
 
 ```json
 {{claude_sdk_bridge(
@@ -285,7 +285,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 )}}
 ```
 
-### Export Agent Jumbo Tools
+### Export Agent Mahoo Tools
 
 ```python
 # Export business analysis tool for Claude Code use
@@ -330,7 +330,7 @@ The **claude_sdk_bridge** tool enables bidirectional integration with the Claude
 
 ### With skill_importer
 
-SDK tools can be converted to Agent Jumbo tools:
+SDK tools can be converted to Agent Mahoo tools:
 
 ```python
 # Import a Claude Code skill, then use SDK to enhance it

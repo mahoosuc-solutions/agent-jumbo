@@ -1,6 +1,6 @@
-# Agent Jumbo Deployment Guide
+# Agent Mahoo Deployment Guide
 
-> This guide covers deploying Agent Jumbo (Agent Jumbo DevOps fork) to Vercel with full CI/CD automation.
+> This guide covers deploying Agent Mahoo (Agent Mahoo DevOps fork) to Vercel with full CI/CD automation.
 
 ## Quick Start
 
@@ -17,8 +17,8 @@
 
    ```bash
    # Clone repository
-   git clone https://github.com/agent-jumbo-deploy/agent-jumbo.git
-   cd agent-jumbo
+   git clone https://github.com/agent-mahoo-deploy/agent-mahoo.git
+   cd agent-mahoo
 
    # Create feature branch for deployment setup
    git checkout -b feature/vercel-deployment
@@ -62,7 +62,7 @@
 
 ### Overview
 
-Agent Jumbo uses a multi-layer deployment architecture:
+Agent Mahoo uses a multi-layer deployment architecture:
 
 ```text
 ┌─────────────────────────────────────────────────┐
@@ -86,8 +86,8 @@ Agent Jumbo uses a multi-layer deployment architecture:
 └─────────────────────────────────────────────────┘
            ↓ (live)
 ┌─────────────────────────────────────────────────┐
-│  Public Agent Jumbo Instance                    │
-│  https://agent-jumbo.vercel.app                 │
+│  Public Agent Mahoo Instance                    │
+│  https://agent-mahoo.vercel.app                 │
 └─────────────────────────────────────────────────┘
 ```
 
@@ -120,7 +120,7 @@ Agent Jumbo uses a multi-layer deployment architecture:
 
 ### Step 1: Repository Setup
 
-1. Fork or clone the Agent Jumbo repository
+1. Fork or clone the Agent Mahoo repository
 2. Create a feature branch for deployment setup
 3. Verify all files are present:
 
@@ -161,7 +161,7 @@ Agent Jumbo uses a multi-layer deployment architecture:
 1. **Create Vercel project:**
    - Visit [vercel.com/new](https://vercel.com/new)
    - Connect GitHub repository
-   - Import "agent-jumbo" repository
+   - Import "agent-mahoo" repository
 
 2. **Configure project settings:**
    - Framework: Next.js
@@ -174,9 +174,9 @@ Agent Jumbo uses a multi-layer deployment architecture:
    | Variable | Example | Required |
    |----------|---------|----------|
    | NEXT_PUBLIC_API_URL | <https://api.example.com> | Yes |
-   | NEXT_PUBLIC_GITHUB_REPO | agent-jumbo-deploy/agent-jumbo | Yes |
+   | NEXT_PUBLIC_GITHUB_REPO | agent-mahoo-deploy/agent-mahoo | Yes |
    | NEXT_PUBLIC_GA_ID | G-XXXXXXXXXX | No |
-   | NEXT_PUBLIC_URL | <https://agent-jumbo.vercel.app> | Yes |
+   | NEXT_PUBLIC_URL | <https://agent-mahoo.vercel.app> | Yes |
 
 4. **Deploy:**
    - Click "Deploy" button
@@ -320,7 +320,7 @@ Agent Jumbo uses a multi-layer deployment architecture:
 
 ### Caching Strategy
 
-Agent Jumbo uses Vercel's edge caching:
+Agent Mahoo uses Vercel's edge caching:
 
 - Static pages: cached indefinitely
 - API routes: cached based on response headers

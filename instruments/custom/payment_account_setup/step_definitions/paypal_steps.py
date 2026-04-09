@@ -133,7 +133,7 @@ def get_paypal_steps(session_id: str, email: str, webhook_endpoint_url: str) -> 
             automation_type="human_required",
             human_instructions=(
                 "In the PayPal Developer Dashboard → My Apps & Credentials → Sandbox, "
-                "click 'Create App', name it 'Agent Jumbo', then copy the "
+                "click 'Create App', name it 'Agent Mahoo', then copy the "
                 "Client ID and Client Secret shown. "
                 "Press Continue when you have them."
             ),

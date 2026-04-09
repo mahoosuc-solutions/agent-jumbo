@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-agent-jumbo init — interactive zero-to-running wizard.
+agent-mahoo init — interactive zero-to-running wizard.
 
 Usage:
     python3 scripts/init.py
@@ -241,7 +241,7 @@ TOTAL_STEPS = 6
 def main() -> None:
     print()
     print(c(BOLD, "  ╔══════════════════════════════════════╗"))
-    print(c(BOLD, "  ║   Agent Jumbo — Quick Setup Wizard   ║"))
+    print(c(BOLD, "  ║   Agent Mahoo — Quick Setup Wizard   ║"))
     print(c(BOLD, "  ╚══════════════════════════════════════╝"))
     print(f"  {c(DIM, 'Zero-to-running in under 5 minutes.')}")
     print()
@@ -351,7 +351,7 @@ def main() -> None:
     write_env(env_values)
     ok(".env written")
 
-    launch = ask_choice("Launch Agent Jumbo now?", ["yes", "no"], "yes")
+    launch = ask_choice("Launch Agent Mahoo now?", ["yes", "no"], "yes")
     if launch == "no":
         print()
         print(c(GREEN, "  Setup complete. To start later:"))
@@ -382,7 +382,7 @@ def main() -> None:
             sys.exit(1)
 
     print()
-    print(c(GREEN, c(BOLD, "  ✓ Agent Jumbo is running!")))
+    print(c(GREEN, c(BOLD, "  ✓ Agent Mahoo is running!")))
     print()
     print(f"  Open: {c(BOLD, c(CYAN, f'http://localhost:{port}'))}")
     print(f"  Login: {c(BOLD, login)}")

@@ -31,7 +31,7 @@
 #### Step 1: See Current Status
 
 ```bash
-cd /home/webemo-aaron/projects/agent-jumbo
+cd /home/webemo-aaron/projects/agent-mahoo
 
 # Run current tests
 pytest tests/test_pms_calendar_sync.py -v
@@ -297,7 +297,7 @@ def test_workflow_service_creation(self):
 
 ```bash
 # cd to your worktree
-cd /home/webemo-aaron/projects/agent-jumbo/.worktrees/pms-messaging
+cd /home/webemo-aaron/projects/agent-mahoo/.worktrees/pms-messaging
 
 # Run initialization tests
 pytest tests/test_pms_communication_workflows.py::TestCommunicationWorkflowInitialization -v

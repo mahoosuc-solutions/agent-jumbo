@@ -124,7 +124,7 @@ def _adjust_to_version(settings: Settings, default: Settings):
     # switch to agent0 if the old default is used from v0.8
     if "version" not in settings or settings["version"].startswith("v0.8"):
         if "agent_profile" not in settings or settings["agent_profile"] == "default":
-            settings["agent_profile"] = "agent-jumbo"
+            settings["agent_profile"] = "agent-mahoo"
 
 
 # ---------------------------------------------------------------------------

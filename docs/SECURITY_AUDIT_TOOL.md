@@ -7,7 +7,7 @@
 
 ## Overview
 
-Comprehensive security audit tool for codebase and infrastructure with vulnerability detection, security scoring, and remediation planning. Converted from Mahoosuc OS `/security:audit` command to native Agent Jumbo tool following TDD methodology.
+Comprehensive security audit tool for codebase and infrastructure with vulnerability detection, security scoring, and remediation planning. Converted from Mahoosuc OS `/security:audit` command to native Agent Mahoo tool following TDD methodology.
 
 ## Parameters
 

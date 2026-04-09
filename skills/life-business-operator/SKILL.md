@@ -1,7 +1,7 @@
 ---
 name: life-business-operator
 version: 1.0.0
-author: agent-jumbo
+author: agent-mahoo
 tier: 1
 trust_level: local
 categories:
@@ -14,7 +14,7 @@ capabilities:
   - lifecycle-planning
   - scheduling
   - validation
-description: Run Agent Jumbo as a practical life and business operating system. Use when the goal is to intake raw project content, decompose it into structured knowledge, generate execution plans, and schedule repeatable automation loops.
+description: Run Agent Mahoo as a practical life and business operating system. Use when the goal is to intake raw project content, decompose it into structured knowledge, generate execution plans, and schedule repeatable automation loops.
 ---
 
 # Life Business Operator

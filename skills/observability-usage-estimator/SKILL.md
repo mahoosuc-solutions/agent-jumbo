@@ -1,7 +1,7 @@
 ---
 name: observability-usage-estimator
 version: "0.1.0"
-author: Agent Jumbo Team
+author: Agent Mahoo Team
 tier: 1
 trust_level: builtin
 description: Estimate observability usage and monthly cost for managed and self-hosted deployments across one or more projects.

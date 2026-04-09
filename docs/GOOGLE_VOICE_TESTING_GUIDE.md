@@ -342,10 +342,10 @@ Add to crontab:
 
 ```bash
 # Send check-in messages every day at 8 AM
-0 8 * * * cd /path/to/agent-jumbo && python scripts/test_google_voice_checkin.py --auto-send
+0 8 * * * cd /path/to/agent-mahoo && python scripts/test_google_voice_checkin.py --auto-send
 
 # List pending messages every hour
-0 * * * * cd /path/to/agent-jumbo && python scripts/test_google_voice_checkin.py --list-pending >> /var/log/google_voice.log
+0 * * * * cd /path/to/agent-mahoo && python scripts/test_google_voice_checkin.py --list-pending >> /var/log/google_voice.log
 ```
 
 ### Monitoring

@@ -24,7 +24,7 @@ import pytest
 ROOT = Path(__file__).resolve().parent.parent
 
 # Container name used in docker-compose.yml
-_CONTAINER = os.environ.get("AJ_CONTAINER", "agent-jumbo-production")
+_CONTAINER = os.environ.get("AJ_CONTAINER", "agent-mahoo-production")
 
 
 def _docker_available() -> bool:

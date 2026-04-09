@@ -1,5 +1,5 @@
 {
-  "name": "Agent Jumbo Development",
+  "name": "Agent Mahoo Development",
   "build": {
     "dockerfile": "../DockerfileLocal",
     "context": "..",

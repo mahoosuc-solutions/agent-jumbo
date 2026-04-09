@@ -16,7 +16,7 @@ from python.helpers.print_style import PrintStyle
 
 class BackupService:
     """
-    Core backup and restore service for Agent Jumbo.
+    Core backup and restore service for Agent Mahoo.
 
     Features:
     - JSON-based metadata with user-editable path specifications
@@ -27,12 +27,12 @@ class BackupService:
     """
 
     def __init__(self):
-        self.agent_jumbo_version = self._get_agent_jumbo_version()
-        self.agent_jumbo_root = files.get_abs_path("")  # Resolved Agent Jumbo root
+        self.agent_mahoo_version = self._get_agent_mahoo_version()
+        self.agent_mahoo_root = files.get_abs_path("")  # Resolved Agent Mahoo root
 
         # Build base paths map for pattern resolution
         self.base_paths = {
-            self.agent_jumbo_root: self.agent_jumbo_root,
+            self.agent_mahoo_root: self.agent_mahoo_root,
         }
 
     def get_default_backup_metadata(self) -> dict[str, Any]:
@@ -43,7 +43,7 @@ class BackupService:
         include_patterns, exclude_patterns = self._parse_patterns(default_patterns)
 
         return {
-            "backup_name": f"agent-jumbo-backup-{timestamp[:10]}",
+            "backup_name": f"agent-mahoo-backup-{timestamp[:10]}",
             "include_hidden": False,
             "include_patterns": include_patterns,
             "exclude_patterns": exclude_patterns,
@@ -53,10 +53,10 @@ class BackupService:
     def _get_default_patterns(self) -> str:
         """Get default backup patterns with resolved absolute paths.
 
-        Only includes Agent Jumbo project directory patterns.
+        Only includes Agent Mahoo project directory patterns.
         """
         # Ensure paths don't have double slashes
-        agent_root = self.agent_jumbo_root.rstrip("/")
+        agent_root = self.agent_mahoo_root.rstrip("/")
         db_root = str(get_db_dir()).rstrip("/")
 
         # pathspec GitWildMatchPattern matches relative paths (leading slash stripped at match time)
@@ -64,11 +64,11 @@ class BackupService:
         rel_root = agent_root.lstrip("/")
         rel_db_root = db_root.lstrip("/")
 
-        patterns = f"""# Agent Jumbo Knowledge (excluding defaults)
+        patterns = f"""# Agent Mahoo Knowledge (excluding defaults)
 {rel_root}/knowledge/**
 !{rel_root}/knowledge/default/**
 
-# Agent Jumbo Instruments (excluding defaults)
+# Agent Mahoo Instruments (excluding defaults)
 {rel_root}/instruments/**
 !{rel_root}/instruments/default/**
 
@@ -101,8 +101,8 @@ class BackupService:
 
         return patterns
 
-    def _get_agent_jumbo_version(self) -> str:
-        """Get current Agent Jumbo version"""
+    def _get_agent_mahoo_version(self) -> str:
+        """Get current Agent Mahoo version"""
         try:
             # Get version from git info (same as run_ui.py)
             gitinfo = git.get_git_info()
@@ -185,7 +185,7 @@ class BackupService:
                 else os.environ.get("PATH", ""),
                 "timezone": str(datetime.datetime.now().astimezone().tzinfo),
                 "working_directory": os.getcwd(),
-                "agent_jumbo_root": files.get_abs_path(""),
+                "agent_mahoo_root": files.get_abs_path(""),
                 "runtime_mode": "development" if runtime.is_development() else "production",
             }
         except Exception as e:
@@ -237,22 +237,22 @@ class BackupService:
     def _translate_patterns(self, patterns: list[str], backup_metadata: dict[str, Any]) -> list[str]:
         """Translate patterns from backed up system to current system.
 
-        Replaces the backed up Agent Jumbo root path with the current Agent Jumbo root path
+        Replaces the backed up Agent Mahoo root path with the current Agent Mahoo root path
         in all patterns if there's an exact match at the beginning of the pattern.
 
         Args:
             patterns: List of patterns from the backed up system
-            backup_metadata: Backup metadata containing the original agent_jumbo_root
+            backup_metadata: Backup metadata containing the original agent_mahoo_root
 
         Returns:
             List of translated patterns for the current system
         """
         # Get the backed up agent zero root path from metadata
         environment_info = backup_metadata.get("environment_info", {})
-        backed_up_agent_root = environment_info.get("agent_jumbo_root", "")
+        backed_up_agent_root = environment_info.get("agent_mahoo_root", "")
 
         # Get current agent zero root path
-        current_agent_root = self.agent_jumbo_root
+        current_agent_root = self.agent_mahoo_root
 
         # If we don't have the backed up root path, return patterns as-is
         if not backed_up_agent_root:
@@ -373,7 +373,7 @@ class BackupService:
         include_patterns: list[str],
         exclude_patterns: list[str],
         include_hidden: bool = False,
-        backup_name: str = "agent-jumbo-backup",
+        backup_name: str = "agent-mahoo-backup",
     ) -> str:
         """Create backup archive and return path to created file"""
 
@@ -399,7 +399,7 @@ class BackupService:
                 # Add comprehensive metadata
                 metadata = {
                     # Basic backup information
-                    "agent_jumbo_version": self.agent_jumbo_version,
+                    "agent_mahoo_version": self.agent_mahoo_version,
                     "timestamp": datetime.datetime.now().isoformat(),
                     "backup_name": backup_name,
                     "include_hidden": include_hidden,
@@ -815,7 +815,7 @@ class BackupService:
 
         Args:
             archive_path: Member path from the zip archive's namelist
-            backup_metadata: Backup metadata containing the original agent_jumbo_root
+            backup_metadata: Backup metadata containing the original agent_mahoo_root
 
         Raises:
             ValueError: If the path contains traversal components or escapes expected roots
@@ -840,8 +840,8 @@ class BackupService:
         # agent root) so it cannot escape to arbitrary filesystem locations.
         if os.path.isabs(normalised):
             environment_info = backup_metadata.get("environment_info", {})
-            backed_up_root = environment_info.get("agent_jumbo_root", "").rstrip("/")
-            current_root = self.agent_jumbo_root.rstrip("/")
+            backed_up_root = environment_info.get("agent_mahoo_root", "").rstrip("/")
+            current_root = self.agent_mahoo_root.rstrip("/")
 
             allowed_roots = [r for r in (backed_up_root, current_root) if r]
             if allowed_roots and not any(
@@ -852,12 +852,12 @@ class BackupService:
     def _translate_restore_path(self, archive_path: str, backup_metadata: dict[str, Any]) -> str:
         """Translate file path from backed up system to current system.
 
-        Replaces the backed up Agent Jumbo root path with the current Agent Jumbo root path
+        Replaces the backed up Agent Mahoo root path with the current Agent Mahoo root path
         if there's an exact match at the beginning of the path.
 
         Args:
             archive_path: Original file path from the archive
-            backup_metadata: Backup metadata containing the original agent_jumbo_root
+            backup_metadata: Backup metadata containing the original agent_mahoo_root
 
         Returns:
             Translated path for the current system
@@ -870,10 +870,10 @@ class BackupService:
 
         # Get the backed up agent zero root path from metadata
         environment_info = backup_metadata.get("environment_info", {})
-        backed_up_agent_root = environment_info.get("agent_jumbo_root", "")
+        backed_up_agent_root = environment_info.get("agent_mahoo_root", "")
 
         # Get current agent zero root path
-        current_agent_root = self.agent_jumbo_root
+        current_agent_root = self.agent_mahoo_root
 
         # If we don't have the backed up root path, use original path with leading slash
         if not backed_up_agent_root:

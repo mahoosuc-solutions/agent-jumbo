@@ -20,7 +20,7 @@ from webauthn.helpers.structs import (
 class PasskeyVaultManager:
     """Manages Passkey registration and verification for centralized auth."""
 
-    RP_NAME = "Agent Jumbo Central"
+    RP_NAME = "Agent Mahoo Central"
 
     def __init__(self, db):
         self.db = db

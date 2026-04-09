@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================
-# Agent Jumbo — Deploy Host: Fetch Artifact
+# Agent Mahoo — Deploy Host: Fetch Artifact
 # ============================================
 # Runs on deploy host: 46.224.170.197
 # Must NOT run on build server or in GitHub Actions.
@@ -16,8 +16,8 @@
 # Environment:
 #   BUILD_SERVER_USER    SSH user on build server (default: deploy)
 #   BUILD_SERVER_HOST    Build server address (default: 49.13.125.252)
-#   BUILD_SERVER_DIR     Remote dist/ path (default: ~/agent-jumbo/dist)
-#   DEPLOY_STAGING_DIR   Local staging directory (default: /opt/agent-jumbo/staging)
+#   BUILD_SERVER_DIR     Remote dist/ path (default: ~/agent-mahoo/dist)
+#   DEPLOY_STAGING_DIR   Local staging directory (default: /opt/agent-mahoo/staging)
 #
 # Exits non-zero on checksum failure or missing artifact.
 
@@ -25,8 +25,8 @@ set -euo pipefail
 
 BUILD_SERVER_USER="${BUILD_SERVER_USER:-deploy}"
 BUILD_SERVER_HOST="${BUILD_SERVER_HOST:-49.13.125.252}"
-BUILD_SERVER_DIR="${BUILD_SERVER_DIR:-~/agent-jumbo/dist}"
-DEPLOY_STAGING_DIR="${DEPLOY_STAGING_DIR:-/opt/agent-jumbo/staging}"
+BUILD_SERVER_DIR="${BUILD_SERVER_DIR:-~/agent-mahoo/dist}"
+DEPLOY_STAGING_DIR="${DEPLOY_STAGING_DIR:-/opt/agent-mahoo/staging}"
 
 ARTIFACT_ID=""
 EVIDENCE_FILE=""
@@ -41,7 +41,7 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-echo "[fetch] Agent Jumbo artifact fetch"
+echo "[fetch] Agent Mahoo artifact fetch"
 echo "[fetch] Host: $(hostname)"
 echo "[fetch] Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
@@ -74,8 +74,8 @@ if [[ -n "${EVIDENCE_FILE}" ]]; then
         exit 1
     fi
 elif [[ -n "${ARTIFACT_ID}" ]]; then
-    # Parse version from artifact ID: agent-jumbo-<VERSION>-<SHORT_SHA>
-    VERSION=$(echo "${ARTIFACT_ID}" | sed 's/^agent-jumbo-\(.*\)-[0-9a-f]\{7\}$/\1/')
+    # Parse version from artifact ID: agent-mahoo-<VERSION>-<SHORT_SHA>
+    VERSION=$(echo "${ARTIFACT_ID}" | sed 's/^agent-mahoo-\(.*\)-[0-9a-f]\{7\}$/\1/')
     EXPECTED_SHA=""
     echo "[fetch] Artifact ID: ${ARTIFACT_ID}"
     echo "[fetch] Version: ${VERSION}"
@@ -86,7 +86,7 @@ else
     exit 1
 fi
 
-TARGZ_NAME="agent-jumbo-${VERSION}.tar.gz"
+TARGZ_NAME="agent-mahoo-${VERSION}.tar.gz"
 REMOTE_TARGZ="${BUILD_SERVER_DIR}/${TARGZ_NAME}"
 
 # ── Prepare staging directory ─────────────────────────────────────────────────

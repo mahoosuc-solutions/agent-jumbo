@@ -21,8 +21,8 @@ def mock_state(tmp_path):
 
 class TestSessionMeta:
     def test_set_and_get_meta(self):
-        set_session_meta("chat123", "active_project", "agent-jumbo")
-        assert get_session_meta("chat123", "active_project") == "agent-jumbo"
+        set_session_meta("chat123", "active_project", "agent-mahoo")
+        assert get_session_meta("chat123", "active_project") == "agent-mahoo"
 
     def test_get_missing_key_returns_none(self):
         assert get_session_meta("chat123", "nonexistent") is None

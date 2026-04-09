@@ -1,8 +1,8 @@
-# Agent Jumbo Connectivity Guide
+# Agent Mahoo Connectivity Guide
 
-This guide covers the different ways to connect to Agent Jumbo from external applications, including using the External API, connecting as an MCP client, and enabling agent-to-agent communication.
+This guide covers the different ways to connect to Agent Mahoo from external applications, including using the External API, connecting as an MCP client, and enabling agent-to-agent communication.
 
-**Note:** You can find your specific URLs and API tokens in your Agent Jumbo instance under `Settings > External Services`.
+**Note:** You can find your specific URLs and API tokens in your Agent Mahoo instance under `Settings > External Services`.
 
 ## API Token Information
 
@@ -12,11 +12,11 @@ The API token is automatically generated from your username and password. This s
 
 ## External API Endpoints
 
-Agent Jumbo provides external API endpoints for integration with other applications. These endpoints use API key authentication and support text messages and file attachments.
+Agent Mahoo provides external API endpoints for integration with other applications. These endpoints use API key authentication and support text messages and file attachments.
 
 ### `POST /api_message`
 
-Send messages to Agent Jumbo and receive responses. Supports text messages, file attachments, and conversation continuity.
+Send messages to Agent Mahoo and receive responses. Supports text messages, file attachments, and conversation continuity.
 
 ### API Reference
 
@@ -40,7 +40,7 @@ Send messages to Agent Jumbo and receive responses. Supports text messages, file
 // Basic message example
 async function sendMessage() {
     try {
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_message', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ sendMessage().then(result => {
 // Continue conversation example
 async function continueConversation(contextId) {
     try {
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_message', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -133,7 +133,7 @@ async function sendWithAttachment() {
         const textContent = "Hello World from attachment!";
         const base64Content = btoa(textContent);
 
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_message', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -202,7 +202,7 @@ async function getLogsGET(contextId, length = 50) {
             length: length.toString()
         });
 
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_log_get?' + params, {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_log_get?' + params, {
             method: 'GET',
             headers: {
                 'X-API-KEY': 'YOUR_API_KEY'
@@ -237,7 +237,7 @@ getLogsGET('ctx_abc123', 20);
 // Get logs using POST request
 async function getLogsPOST(contextId, length = 50) {
     try {
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_log_get', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_log_get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -300,7 +300,7 @@ Terminate and remove a chat context to free up resources. Similar to the MCP `fi
 // Basic terminate chat function
 async function terminateChat(contextId) {
     try {
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_terminate_chat', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_terminate_chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -376,7 +376,7 @@ Reset a chat context to clear conversation history while keeping the `context_id
 // Basic reset chat function
 async function resetChat(contextId) {
     try {
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_reset_chat', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_reset_chat', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -418,7 +418,7 @@ async function resetAndContinue() {
         console.log('Chat reset, starting fresh conversation...');
 
         // Continue with same context_id but fresh history
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_message', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_message', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -465,7 +465,7 @@ Retrieve file contents by paths, returning files as base64 encoded data. Useful 
 // Basic file retrieval
 async function getFiles(filePaths) {
     try {
-        const response = await fetch('YOUR_AGENT_JUMBO_URL/api_files_get', {
+        const response = await fetch('YOUR_AGENT_MAHOO_URL/api_files_get', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -513,7 +513,7 @@ getFiles(filePaths);
 // Example 2: Complete attachment workflow
 async function attachmentWorkflow() {
     // Step 1: Send message with attachments
-    const messageResponse = await fetch('YOUR_AGENT_JUMBO_URL/api_message', {
+    const messageResponse = await fetch('YOUR_AGENT_MAHOO_URL/api_message', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -550,7 +550,7 @@ attachmentWorkflow();
 
 ## MCP Server Connectivity
 
-Agent Jumbo includes an MCP Server that allows other MCP-compatible clients to connect to it. The server runs on the same URL and port as the Web UI.
+Agent Mahoo includes an MCP Server that allows other MCP-compatible clients to connect to it. The server runs on the same URL and port as the Web UI.
 
 It provides two endpoint types:
 
@@ -559,7 +559,7 @@ It provides two endpoint types:
 
 ### Example MCP Server Configuration
 
-Below is an example of a `mcp.json` configuration file that a client could use to connect to the Agent Jumbo MCP server.
+Below is an example of a `mcp.json` configuration file that a client could use to connect to the Agent Mahoo MCP server.
 
 **Note:** You can find your personalized connection URLs under `Settings > MCP Server > MCP Server`.
 
@@ -567,13 +567,13 @@ Below is an example of a `mcp.json` configuration file that a client could use t
 {
     "mcpServers":
     {
-        "agent-jumbo": {
+        "agent-mahoo": {
             "type": "sse",
-            "url": "YOUR_AGENT_JUMBO_URL/mcp/t-YOUR_API_TOKEN/sse"
+            "url": "YOUR_AGENT_MAHOO_URL/mcp/t-YOUR_API_TOKEN/sse"
         },
-        "agent-jumbo-http": {
+        "agent-mahoo-http": {
             "type": "streamable-http",
-            "url": "YOUR_AGENT_JUMBO_URL/mcp/t-YOUR_API_TOKEN/http/"
+            "url": "YOUR_AGENT_MAHOO_URL/mcp/t-YOUR_API_TOKEN/http/"
         }
     }
 }
@@ -583,14 +583,14 @@ Below is an example of a `mcp.json` configuration file that a client could use t
 
 ## A2A (Agent-to-Agent) Connectivity
 
-Agent Jumbo's A2A Server enables communication with other agents using the FastA2A protocol. Other agents can connect to your instance using the connection URL.
+Agent Mahoo's A2A Server enables communication with other agents using the FastA2A protocol. Other agents can connect to your instance using the connection URL.
 
 ### A2A Connection URL
 
-To connect another agent to your Agent Jumbo instance, use the following URL format.
+To connect another agent to your Agent Mahoo instance, use the following URL format.
 
 **Note:** You can find your specific A2A connection URL under `Settings > External Services > A2A Connection`.
 
 ```text
-YOUR_AGENT_JUMBO_URL/a2a/t-YOUR_API_TOKEN
+YOUR_AGENT_MAHOO_URL/a2a/t-YOUR_API_TOKEN
 ```

@@ -1,10 +1,10 @@
 # Architecture Options
 
-## Option A: In-app pipelines (Agent Jumbo native)
+## Option A: In-app pipelines (Agent Mahoo native)
 
 ### Summary
 
-Use Agent Jumbo tools, instruments, MCP servers, and workflow_engine to ingest, summarize, and store knowledge. Deliver digests via a Telegram tool.
+Use Agent Mahoo tools, instruments, MCP servers, and workflow_engine to ingest, summarize, and store knowledge. Deliver digests via a Telegram tool.
 
 ### Pros
 
@@ -21,7 +21,7 @@ Use Agent Jumbo tools, instruments, MCP servers, and workflow_engine to ingest, 
 
 ### Summary
 
-Run an external ETL service (cron or serverless) that fetches sources, stores them in a DB/vector store, and pushes summaries to Agent Jumbo via API.
+Run an external ETL service (cron or serverless) that fetches sources, stores them in a DB/vector store, and pushes summaries to Agent Mahoo via API.
 
 ### Pros
 
@@ -37,7 +37,7 @@ Run an external ETL service (cron or serverless) that fetches sources, stores th
 
 ### Summary
 
-Keep core reasoning and storage in Agent Jumbo, but use a lightweight external scheduler to trigger ingestion and backfill. Agent Jumbo remains the brain; the scheduler is only a trigger.
+Keep core reasoning and storage in Agent Mahoo, but use a lightweight external scheduler to trigger ingestion and backfill. Agent Mahoo remains the brain; the scheduler is only a trigger.
 
 ### Pros
 

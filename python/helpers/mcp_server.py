@@ -25,31 +25,31 @@ _PRINTER = PrintStyle(italic=True, font_color="green", padding=False)
 
 
 mcp_server: FastMCP = FastMCP(
-    name="Agent Jumbo integrated MCP Server",
+    name="Agent Mahoo integrated MCP Server",
     instructions="""
-    Connect to remote Agent Jumbo instance.
-    Agent Jumbo is a general AI assistant controlling it's linux environment.
-    Agent Jumbo can install software, manage files, execute commands, code, use internet, etc.
-    Agent Jumbo's environment is isolated unless configured otherwise.
+    Connect to remote Agent Mahoo instance.
+    Agent Mahoo is a general AI assistant controlling it's linux environment.
+    Agent Mahoo can install software, manage files, execute commands, code, use internet, etc.
+    Agent Mahoo's environment is isolated unless configured otherwise.
     """,
 )
 
 
 class ToolResponse(BaseModel):
     status: Literal["success"] = Field(description="The status of the response", default="success")
-    response: str = Field(description="The response from the remote Agent Jumbo Instance")
+    response: str = Field(description="The response from the remote Agent Mahoo Instance")
     chat_id: str = Field(description="The id of the chat this message belongs to.")
 
 
 class ToolError(BaseModel):
     status: Literal["error"] = Field(description="The status of the response", default="error")
-    error: str = Field(description="The error message from the remote Agent Jumbo Instance")
+    error: str = Field(description="The error message from the remote Agent Mahoo Instance")
     chat_id: str = Field(description="The id of the chat this message belongs to.")
 
 
 SEND_MESSAGE_DESCRIPTION = """
-Send a message to the remote Agent Jumbo Instance.
-This tool is used to send a message to the remote Agent Jumbo Instance connected remotely via MCP.
+Send a message to the remote Agent Mahoo Instance.
+This tool is used to send a message to the remote Agent Mahoo Instance connected remotely via MCP.
 """
 
 
@@ -57,7 +57,7 @@ This tool is used to send a message to the remote Agent Jumbo Instance connected
     name="send_message",
     description=SEND_MESSAGE_DESCRIPTION,
     tags={
-        "agent_jumbo",
+        "agent_mahoo",
         "chat",
         "remote",
         "communication",
@@ -82,7 +82,7 @@ async def send_message(
     message: Annotated[
         str,
         Field(
-            description="The message to send to the remote Agent Jumbo Instance",
+            description="The message to send to the remote Agent Mahoo Instance",
             title="message",
         ),
     ],
@@ -90,7 +90,7 @@ async def send_message(
         Annotated[
             list[str],
             Field(
-                description="Optional: A list of attachments (file paths or web urls) to send to the remote Agent Jumbo Instance with the message. Default: Empty list",
+                description="Optional: A list of attachments (file paths or web urls) to send to the remote Agent Mahoo Instance with the message. Default: Empty list",
                 title="attachments",
             ),
         ]
@@ -118,7 +118,7 @@ async def send_message(
     ) = None,
 ) -> Annotated[
     Union[ToolResponse, ToolError],
-    Field(description="The response from the remote Agent Jumbo Instance", title="response"),
+    Field(description="The response from the remote Agent Mahoo Instance", title="response"),
 ]:
     context: AgentContext | None = None
     if chat_id:
@@ -149,10 +149,10 @@ async def send_message(
 
 
 FINISH_CHAT_DESCRIPTION = """
-Finish a chat with the remote Agent Jumbo Instance.
-This tool is used to finish a persistent chat (send_message with persistent_chat=True) with the remote Agent Jumbo Instance connected remotely via MCP.
+Finish a chat with the remote Agent Mahoo Instance.
+This tool is used to finish a persistent chat (send_message with persistent_chat=True) with the remote Agent Mahoo Instance connected remotely via MCP.
 If you want to continue the chat, use the send_message tool instead.
-Always use this tool to finish persistent chat conversations with remote Agent Jumbo.
+Always use this tool to finish persistent chat conversations with remote Agent Mahoo.
 """
 
 
@@ -160,7 +160,7 @@ Always use this tool to finish persistent chat conversations with remote Agent J
     name="finish_chat",
     description=FINISH_CHAT_DESCRIPTION,
     tags={
-        "agent_jumbo",
+        "agent_mahoo",
         "chat",
         "remote",
         "communication",
@@ -190,7 +190,7 @@ async def finish_chat(
     ],
 ) -> Annotated[
     Union[ToolResponse, ToolError],
-    Field(description="The response from the remote Agent Jumbo Instance", title="response"),
+    Field(description="The response from the remote Agent Mahoo Instance", title="response"),
 ]:
     if not chat_id:
         return ToolError(error="Chat ID is required", chat_id="")

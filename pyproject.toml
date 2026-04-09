@@ -6,7 +6,7 @@ requires = ["setuptools>=68.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agent-jumbo-devops"
+name = "agent-mahoo-devops"
 version = "1.0.0-beta"
 description = "Intelligent multi-platform deployment orchestration for AI agents"
 authors = [
@@ -132,11 +132,11 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops"
-"Bug Tracker" = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/issues"
-Documentation = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/tree/main/docs"
-"Source Code" = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops"
-Discussions = "https://github.com/agent-jumbo-deploy/agent-jumbo-devops/discussions"
+Homepage = "https://github.com/agent-mahoo-deploy/agent-mahoo-devops"
+"Bug Tracker" = "https://github.com/agent-mahoo-deploy/agent-mahoo-devops/issues"
+Documentation = "https://github.com/agent-mahoo-deploy/agent-mahoo-devops/tree/main/docs"
+"Source Code" = "https://github.com/agent-mahoo-deploy/agent-mahoo-devops"
+Discussions = "https://github.com/agent-mahoo-deploy/agent-mahoo-devops/discussions"
 
 # ============================================
 # Setuptools Package Discovery
@@ -146,7 +146,7 @@ where = ["."]
 include = ["python*", "instruments*"]
 
 # ============================================
-# Ruff Configuration for Agent Jumbo
+# Ruff Configuration for Agent Mahoo
 # ============================================
 [tool.ruff]
 target-version = "py310"

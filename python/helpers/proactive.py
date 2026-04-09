@@ -25,7 +25,7 @@ class ProactiveManager:
     LOG_OPTIONAL_WARNINGS = os.getenv("A0_LOG_OPTIONAL_WARNINGS", "").strip().lower() in {"1", "true", "yes", "on"}
 
     # VAPID Claims
-    VAPID_CLAIMS = {"sub": "mailto:admin@agent-jumbo.local"}
+    VAPID_CLAIMS = {"sub": "mailto:admin@agent-mahoo.local"}
 
     @classmethod
     def get_public_key(cls):

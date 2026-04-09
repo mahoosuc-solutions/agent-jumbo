@@ -132,15 +132,15 @@ Replace the dependency manifest COPY block:
 
 ```dockerfile
 # OLD:
-# COPY ./requirements.txt /git/agent-jumbo/requirements.txt
-# COPY ./requirements2.txt /git/agent-jumbo/requirements2.txt
-# COPY ./pyproject.toml /git/agent-jumbo/pyproject.toml
-# COPY ./requirements.lock.txt /git/agent-jumbo/requirements.lock.txt
-# COPY ./docker/wheelhouse /git/agent-jumbo/docker/wheelhouse
+# COPY ./requirements.txt /git/agent-mahoo/requirements.txt
+# COPY ./requirements2.txt /git/agent-mahoo/requirements2.txt
+# COPY ./pyproject.toml /git/agent-mahoo/pyproject.toml
+# COPY ./requirements.lock.txt /git/agent-mahoo/requirements.lock.txt
+# COPY ./docker/wheelhouse /git/agent-mahoo/docker/wheelhouse
 
 # NEW:
-COPY ./pyproject.toml /git/agent-jumbo/pyproject.toml
-COPY ./docker/wheelhouse /git/agent-jumbo/docker/wheelhouse
+COPY ./pyproject.toml /git/agent-mahoo/pyproject.toml
+COPY ./docker/wheelhouse /git/agent-mahoo/docker/wheelhouse
 ```
 
 Replace the dependency install RUN command:
@@ -151,10 +151,10 @@ Replace the dependency install RUN command:
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=cache,target=/root/.cache/uv \
     bash -lc 'source /ins/setup_venv.sh "$BRANCH" && uv pip install setuptools wheel && \
-    if [ -d /git/agent-jumbo/docker/wheelhouse ] && [ "$(find /git/agent-jumbo/docker/wheelhouse -maxdepth 1 -name "*.whl" | wc -l)" -gt 0 ]; then \
-        uv pip install --no-build-isolation --no-index --find-links /git/agent-jumbo/docker/wheelhouse -e /git/agent-jumbo; \
+    if [ -d /git/agent-mahoo/docker/wheelhouse ] && [ "$(find /git/agent-mahoo/docker/wheelhouse -maxdepth 1 -name "*.whl" | wc -l)" -gt 0 ]; then \
+        uv pip install --no-build-isolation --no-index --find-links /git/agent-mahoo/docker/wheelhouse -e /git/agent-mahoo; \
     else \
-        uv pip install --no-build-isolation -e /git/agent-jumbo; \
+        uv pip install --no-build-isolation -e /git/agent-mahoo; \
     fi'
 ```
 

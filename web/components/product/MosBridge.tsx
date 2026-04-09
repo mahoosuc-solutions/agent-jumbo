@@ -32,7 +32,7 @@ export default function MosBridge() {
             Personal OS meets Business OS
           </h2>
           <p className="text-slate-400 text-lg leading-relaxed">
-            Agent Jumbo connects to{' '}
+            Agent Mahoo connects to{' '}
             <Link
               href="https://mahoosuc.ai"
               className="text-copper-400 hover:text-copper-300 underline underline-offset-2"
@@ -41,7 +41,7 @@ export default function MosBridge() {
             >
               Mahoosuc OS
             </Link>{' '}
-            through the Agent Mesh Bridge — a Redis Streams architecture for bi-directional task routing. Business decisions flow to Mahoosuc OS governance. Personal decisions stay in Agent Jumbo. Both share the same approval architecture.
+            through the Agent Mesh Bridge — a Redis Streams architecture for bi-directional task routing. Business decisions flow to Mahoosuc OS governance. Personal decisions stay in Agent Mahoo. Both share the same approval architecture.
           </p>
         </div>
 
@@ -50,7 +50,7 @@ export default function MosBridge() {
           {/* Left: domains */}
           <div>
             <h3 className="text-sm font-mono text-slate-400 uppercase tracking-widest mb-6">
-              Six Domains Agent Jumbo Manages
+              Six Domains Agent Mahoo Manages
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {DOMAINS.map((d) => (
@@ -74,7 +74,7 @@ export default function MosBridge() {
                 <div className="w-16 h-16 rounded-full border-2 border-copper-500/60 bg-copper-500/10 flex items-center justify-center mx-auto mb-2">
                   <span className="text-copper-400 font-bold text-xs">AJ</span>
                 </div>
-                <div className="text-white text-xs font-semibold">Agent Jumbo</div>
+                <div className="text-white text-xs font-semibold">Agent Mahoo</div>
                 <div className="text-slate-500 text-xs">Personal OS</div>
               </div>
 

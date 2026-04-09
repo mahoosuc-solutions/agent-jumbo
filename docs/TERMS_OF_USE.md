@@ -1,6 +1,6 @@
 ---
 title: Terms Of Use
-description: Core service terms, acceptable-use boundaries, and customer responsibilities for the Agent Jumbo platform.
+description: Core service terms, acceptable-use boundaries, and customer responsibilities for the Agent Mahoo platform.
 date: 2026-03-24
 ---
 
@@ -8,15 +8,15 @@ date: 2026-03-24
 
 Last updated: 2026-03-24
 
-These terms govern use of the Agent Jumbo self-serve platform.
+These terms govern use of the Agent Mahoo self-serve platform.
 
 ## Service
 
-Agent Jumbo provides AI-assisted chat, project, workflow, queue, and operational tooling. Availability and feature scope are limited to the capabilities documented for the current release.
+Agent Mahoo provides AI-assisted chat, project, workflow, queue, and operational tooling. Availability and feature scope are limited to the capabilities documented for the current release.
 
 ## Acceptable Use
 
-You may not use Agent Jumbo to:
+You may not use Agent Mahoo to:
 
 - break laws or regulations
 - process data you are not authorized to use
@@ -43,7 +43,7 @@ Features may change between releases. Beta features are not part of the GA suppo
 
 ## Security And Access
 
-You must protect your credentials, access devices, and connected secrets. Agent Jumbo may restrict or suspend access when security or abuse concerns require it.
+You must protect your credentials, access devices, and connected secrets. Agent Mahoo may restrict or suspend access when security or abuse concerns require it.
 
 ## Billing
 

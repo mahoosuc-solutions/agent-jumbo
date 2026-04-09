@@ -337,7 +337,7 @@ class PluginMarketplaceManager:
     # ========== Integration with skill_importer ==========
 
     def import_installed_plugin(self, identifier: str, skill_importer_manager) -> dict:
-        """Import an installed plugin into Agent Jumbo via skill_importer"""
+        """Import an installed plugin into Agent Mahoo via skill_importer"""
         installed = self.db.get_installed_plugin(identifier)
         if not installed:
             return {"error": f"Plugin not installed: {identifier}"}

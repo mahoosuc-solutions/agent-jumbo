@@ -103,7 +103,7 @@ class PromptEnhancer(Extension):
         tool_context = ""
         if suggested_tools:
             tool_list = ", ".join(suggested_tools)
-            tool_context = f"\n\nRelevant Agent Jumbo tools for this request: {tool_list}"
+            tool_context = f"\n\nRelevant Agent Mahoo tools for this request: {tool_list}"
 
         message_prompt = self.agent.read_prompt("prompt.enhance.msg.md", user_message=user_text) + tool_context
 

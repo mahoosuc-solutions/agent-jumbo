@@ -1,4 +1,4 @@
-# Production Dockerfile for Agent Jumbo
+# Production Dockerfile for Agent Mahoo
 #
 # Two-stage layer strategy:
 #   deps  — apt packages, pip installs, playwright, preload (slow; cached unless requirements change)
@@ -34,8 +34,8 @@ RUN --mount=type=cache,target=/var/cache/apt \
 
 # Copy ONLY the dependency manifests — not the full source.
 # This layer only invalidates when requirements actually change.
-RUN mkdir -p /git/agent-jumbo
-COPY requirements.txt requirements2.txt /git/agent-jumbo/
+RUN mkdir -p /git/agent-mahoo
+COPY requirements.txt requirements2.txt /git/agent-mahoo/
 
 # Refresh apt index (base image may be stale vs Kali rolling repos)
 RUN apt-get update
@@ -44,8 +44,8 @@ RUN apt-get update
 RUN --mount=type=cache,target=/root/.cache/pip \
     --mount=type=cache,target=/root/.cache/uv \
     bash -c '. /ins/setup_venv.sh local && \
-    uv pip install -r /git/agent-jumbo/requirements.txt && \
-    uv pip install -r /git/agent-jumbo/requirements2.txt'
+    uv pip install -r /git/agent-mahoo/requirements.txt && \
+    uv pip install -r /git/agent-mahoo/requirements2.txt'
 
 # Install playwright browsers into a stable path (not inside /aj which is copied later)
 ENV PLAYWRIGHT_BROWSERS_PATH=/opt/playwright
@@ -66,14 +66,14 @@ RUN bash /ins/install_additional.sh local
 FROM deps AS app
 
 # Copy full project source
-COPY . /git/agent-jumbo
+COPY . /git/agent-mahoo
 COPY . /aj
 WORKDIR /aj
 
 # usr/projects is excluded from the image (large user data) but lives on the host
 # bind-mounted at /mnt/wdblack (local) or as an empty dir (cloud).
-RUN if [ -d "/mnt/wdblack/dev/projects/agent-jumbo/usr/projects" ]; then \
-        ln -sf /mnt/wdblack/dev/projects/agent-jumbo/usr/projects /aj/usr/projects; \
+RUN if [ -d "/mnt/wdblack/dev/projects/agent-mahoo/usr/projects" ]; then \
+        ln -sf /mnt/wdblack/dev/projects/agent-mahoo/usr/projects /aj/usr/projects; \
     else \
         mkdir -p /aj/usr/projects; \
     fi
@@ -81,7 +81,7 @@ RUN if [ -d "/mnt/wdblack/dev/projects/agent-jumbo/usr/projects" ]; then \
 # Preload models (runs after source is present; skip with RUN_PRELOAD=0 for fast iteration)
 RUN bash -c 'if [ "${RUN_PRELOAD:-1}" = "1" ]; then \
         . /ins/setup_venv.sh local && \
-        python /git/agent-jumbo/preload.py --dockerized=true; \
+        python /git/agent-mahoo/preload.py --dockerized=true; \
     else \
         echo "Skipping preload (RUN_PRELOAD=${RUN_PRELOAD})"; \
     fi'

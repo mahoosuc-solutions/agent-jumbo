@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers the complete AI solutioning workflow for operators using Agent Jumbo. As an operator, you'll deliver end-to-end AI solutions from discovery through deployment and optimization.
+This guide covers the complete AI solutioning workflow for operators using Agent Mahoo. As an operator, you'll deliver end-to-end AI solutions from discovery through deployment and optimization.
 
 ---
 
@@ -97,7 +97,7 @@ For extremely complex projects (e.g., analyzing 50+ business processes simultane
 
 ## 📜 Architectural Memory (ADRs)
 
-Agent Jumbo now features **Automated ADR Generation**.
+Agent Mahoo now features **Automated ADR Generation**.
 
 - **Extraction**: Every time you conclude a technical decision, the `adr_generator` extension saves a record in `knowledge/custom/architectural_patterns/adrs/`.
 - **Injection**: Future agents will automatically see these decisions in their system prompt via the `adr_context` extension. This ensures **Architectural Consistency** over time.
@@ -259,7 +259,7 @@ Agent Jumbo now features **Automated ADR Generation**.
 | Tool | Action | Purpose |
 |------|--------|---------|
 | `project_scaffold` | `scaffold_project` | Production project setup |
-| Agent Jumbo | Code execution | Implement features |
+| Agent Mahoo | Code execution | Implement features |
 
 ---
 
@@ -559,4 +559,4 @@ Access the workflow dashboard in the UI:
 
 ---
 
-*Created for Agent Jumbo operators delivering AI solutions.*
+*Created for Agent Mahoo operators delivering AI solutions.*

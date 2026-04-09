@@ -14,7 +14,7 @@
   },
   "projects": [
     {
-      "name": "agent-jumbo-main",
+      "name": "agent-mahoo-main",
       "active_users": 8,
       "sessions_per_user_per_day": 5,
       "avg_turns_per_session": 12,

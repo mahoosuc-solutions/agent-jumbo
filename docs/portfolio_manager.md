@@ -14,7 +14,7 @@ The Portfolio Manager is a comprehensive tool for organizing, analyzing, and com
 
 ### 1. Scan Your Projects
 
-Point Agent Jumbo to your projects folder:
+Point Agent Mahoo to your projects folder:
 
 ```text
 Scan my projects folder at ~/projects for portfolio

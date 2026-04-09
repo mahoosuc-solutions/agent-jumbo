@@ -1,4 +1,4 @@
-"""E2E test fixtures for Agent Jumbo."""
+"""E2E test fixtures for Agent Mahoo."""
 
 import os
 import shutil

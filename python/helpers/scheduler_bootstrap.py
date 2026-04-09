@@ -21,10 +21,10 @@ def _task_count(path: Path) -> int:
 def resolve_seed_candidates() -> list[Path]:
     candidates = list(DEFAULT_SEED_CANDIDATES)
 
-    if configured := os.getenv("AGENT_JUMBO_SCHEDULER_SEED_PATH"):
+    if configured := os.getenv("AGENT_MAHOO_SCHEDULER_SEED_PATH"):
         candidates.append(Path(configured))
 
-    if configured_many := os.getenv("AGENT_JUMBO_SCHEDULER_SEED_PATHS"):
+    if configured_many := os.getenv("AGENT_MAHOO_SCHEDULER_SEED_PATHS"):
         candidates.extend(Path(p) for p in configured_many.split(":") if p)
 
     unique: list[Path] = []

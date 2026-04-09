@@ -1,5 +1,5 @@
 """
-Finance Manager Tool for Agent Jumbo
+Finance Manager Tool for Agent Mahoo
 Mock-friendly finance automation with ingest, categorize, and reporting actions.
 """
 

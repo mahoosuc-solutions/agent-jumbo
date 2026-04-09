@@ -1,8 +1,8 @@
-# Email Tool - Agent Jumbo Documentation
+# Email Tool - Agent Mahoo Documentation
 
 ## Overview
 
-The Email tool provides comprehensive email capabilities for Agent Jumbo, enabling automated communication, customer engagement, and team notifications. It integrates SMTP sending with existing IMAP reading functionality.
+The Email tool provides comprehensive email capabilities for Agent Mahoo, enabling automated communication, customer engagement, and team notifications. It integrates SMTP sending with existing IMAP reading functionality.
 
 ## Features
 
@@ -53,7 +53,7 @@ Send individual emails with full formatting and attachment support.
 - `bcc` (optional): BCC recipients - string or list
 - `attachments` (optional): List of file paths to attach
 - `html` (optional): Boolean, set to `true` for HTML emails (default: false)
-- `from_name` (optional): Display name for sender (default: "Agent Jumbo")
+- `from_name` (optional): Display name for sender (default: "Agent Mahoo")
 
 **Example:**
 

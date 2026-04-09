@@ -158,7 +158,7 @@ class KnowledgeIngestManager:
         }
 
     def _fetch_url(self, uri: str) -> str:
-        request = urllib.request.Request(uri, headers={"User-Agent": "AgentJumbo/1.0"})
+        request = urllib.request.Request(uri, headers={"User-Agent": "AgentMahoo/1.0"})
         with urllib.request.urlopen(request, timeout=20) as response:  # nosec B310 - URL from controlled config
             charset = response.headers.get_content_charset() or "utf-8"
             return response.read().decode(charset, errors="ignore")

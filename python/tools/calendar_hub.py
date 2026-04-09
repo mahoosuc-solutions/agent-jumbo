@@ -1,5 +1,5 @@
 """
-Calendar Hub Tool for Agent Jumbo
+Calendar Hub Tool for Agent Mahoo
 Mock-friendly calendar integration with event CRUD and prep/follow-up hooks.
 """
 

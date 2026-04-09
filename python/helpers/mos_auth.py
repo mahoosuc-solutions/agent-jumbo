@@ -23,12 +23,12 @@ def _sign_service_request(path: str) -> dict[str, str]:
     secret = dotenv.get_dotenv_value("SERVICE_MESH_SECRET") or ""
     if not secret:
         # Fallback to legacy header when no secret configured
-        return {"x-internal-service": "agent-jumbo"}
+        return {"x-internal-service": "agent-mahoo"}
     timestamp = str(int(time.time()))
-    message = f"agent-jumbo|{timestamp}|{path}"
+    message = f"agent-mahoo|{timestamp}|{path}"
     signature = hmac_mod.new(secret.encode(), message.encode(), hashlib.sha256).hexdigest()
     return {
-        "x-service-name": "agent-jumbo",
+        "x-service-name": "agent-mahoo",
         "x-service-timestamp": timestamp,
         "x-service-signature": signature,
     }
@@ -99,7 +99,7 @@ _CIRCUIT_BREAKER_THRESHOLD = 5
 _CIRCUIT_BREAKER_CRITICAL = 10
 
 
-def check_entitlement(organization_id: str, product_key: str = "agent-jumbo") -> bool:
+def check_entitlement(organization_id: str, product_key: str = "agent-mahoo") -> bool:
     """
     Check if an organization has an active entitlement for the given product.
 

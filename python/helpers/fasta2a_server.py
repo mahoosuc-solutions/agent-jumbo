@@ -62,15 +62,15 @@ except ImportError:  # pragma: no cover – library not installed
 _PRINTER = PrintStyle(italic=True, font_color="purple", padding=False)
 
 
-class AgentJumboWorker(Worker):  # type: ignore[misc]
-    """Agent Jumbo implementation of FastA2A Worker."""
+class AgentMahooWorker(Worker):  # type: ignore[misc]
+    """Agent Mahoo implementation of FastA2A Worker."""
 
     def __init__(self, broker, storage):
         super().__init__(broker=broker, storage=storage)
         self.storage = storage
 
     async def run_task(self, params: Any) -> None:  # params: TaskSendParams
-        """Execute a task by processing the message through Agent Jumbo."""
+        """Execute a task by processing the message through Agent Mahoo."""
         context = None
         try:
             task_id = params["id"]
@@ -78,7 +78,7 @@ class AgentJumboWorker(Worker):  # type: ignore[misc]
 
             _PRINTER.print(f"[A2A] Processing task {task_id} with new temporary context")
 
-            # Convert A2A message to Agent Jumbo format
+            # Convert A2A message to Agent Mahoo format
             agent_message = self._convert_message(message)
 
             # Always create new temporary context for this A2A conversation
@@ -94,7 +94,7 @@ class AgentJumboWorker(Worker):  # type: ignore[misc]
                 temp=False,
             )
 
-            # Process message through Agent Jumbo (includes response)
+            # Process message through Agent Mahoo (includes response)
             task = context.communicate(agent_message)
             result_text = await task.result()
 
@@ -145,7 +145,7 @@ class AgentJumboWorker(Worker):  # type: ignore[misc]
         return []
 
     def _convert_message(self, a2a_message: Message) -> UserMessage:  # type: ignore
-        """Convert A2A message to Agent Jumbo UserMessage."""
+        """Convert A2A message to Agent Mahoo UserMessage."""
         # Extract text from message parts
         text_parts = [part.get("text", "") for part in a2a_message.get("parts", []) if part.get("kind") == "text"]
         message_text = "\n".join(text_parts)
@@ -200,12 +200,12 @@ class DynamicA2AProxy:
                 _PRINTER.print("[A2A] Reconfiguration scheduled for next request")
 
     def _configure(self):
-        """Configure the FastA2A application with Agent Jumbo integration."""
+        """Configure the FastA2A application with Agent Mahoo integration."""
         try:
             storage = InMemoryStorage()  # type: ignore[arg-type]
             broker = InMemoryBroker()  # type: ignore[arg-type]
 
-            # Define Agent Jumbo's skills
+            # Define Agent Mahoo's skills
             skills: list[Skill] = [
                 {  # type: ignore
                     "id": "general_assistance",
@@ -225,15 +225,15 @@ class DynamicA2AProxy:
             ]
 
             provider: AgentProvider = {  # type: ignore
-                "organization": "Agent Jumbo",
-                "url": "https://github.com/frdel/agent-jumbo",
+                "organization": "Agent Mahoo",
+                "url": "https://github.com/frdel/agent-mahoo",
             }
 
             # Create new FastA2A app with proper thread safety
             new_app = FastA2A(  # type: ignore
                 storage=storage,
                 broker=broker,
-                name="Agent Jumbo",
+                name="Agent Mahoo",
                 description=(
                     "A general AI assistant that can execute code, manage files, browse the web, and "
                     "solve complex problems in an isolated Linux environment."
@@ -248,7 +248,7 @@ class DynamicA2AProxy:
             # Store for later lazy startup (needs active event-loop)
             self._storage = storage  # type: ignore[attr-defined]
             self._broker = broker  # type: ignore[attr-defined]
-            self._worker = AgentJumboWorker(broker=broker, storage=storage)  # type: ignore[attr-defined]
+            self._worker = AgentMahooWorker(broker=broker, storage=storage)  # type: ignore[attr-defined]
 
             # Atomic update of the app
             self.app = new_app

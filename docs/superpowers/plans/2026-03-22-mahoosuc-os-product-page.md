@@ -85,7 +85,7 @@ All four agents run simultaneously. Each produces a structured output file.
 
 ```python
 #!/usr/bin/env python3
-"""Scan the agent-jumbo codebase and produce platform-manifest.json."""
+"""Scan the agent-mahoo codebase and produce platform-manifest.json."""
 import json
 import os
 import re
@@ -319,7 +319,7 @@ fi
 
 - [ ] **Step 3: Run the introspection script**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo && python3 scripts/introspect_platform.py`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo && python3 scripts/introspect_platform.py`
 Expected: Outputs manifest to `web/public/platform-manifest.json` with real counts
 
 - [ ] **Step 4: Verify manifest has real data**
@@ -2057,7 +2057,7 @@ git commit -m "feat: add pricing page with cost-validated tiers"
 
 - [ ] **Step 1: Run full build**
 
-Run: `cd /mnt/wdblack/dev/projects/agent-jumbo/web && npm run build`
+Run: `cd /mnt/wdblack/dev/projects/agent-mahoo/web && npm run build`
 Expected: Build succeeds with no errors
 
 - [ ] **Step 2: Run dev server and verify routes**

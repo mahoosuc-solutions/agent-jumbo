@@ -10,7 +10,7 @@ export interface SEOMetadata {
 }
 
 export function generateMetadata(seo: SEOMetadata): Metadata {
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://agent-jumbo.vercel.app'
+  const baseUrl = process.env.NEXT_PUBLIC_URL || 'https://agent-mahoo.vercel.app'
   const imageUrl = seo.image || `${baseUrl}/og-image.png`
   const url = seo.url || baseUrl
 
@@ -31,7 +31,7 @@ export function generateMetadata(seo: SEOMetadata): Metadata {
         },
       ],
       type: (seo.type as any) || 'website',
-      siteName: 'Agent Jumbo',
+      siteName: 'Agent Mahoo',
     },
     twitter: {
       card: 'summary_large_image',

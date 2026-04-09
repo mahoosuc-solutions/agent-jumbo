@@ -1,4 +1,4 @@
-# Supported model providers for Agent Jumbo
+# Supported model providers for Agent Mahoo
 # ---------------------------------------
 #
 # Each provider type ("chat", "embedding") contains a mapping of provider IDs
@@ -18,10 +18,10 @@
 
 chat:
   a0_venice:
-    name: Agent Jumbo Venice.ai
+    name: Agent Mahoo Venice.ai
     litellm_provider: openai
     kwargs:
-      api_base: https://api.agent-jumbo.ai/venice/v1
+      api_base: https://api.mahoosuc.ai/agent-mahoo/venice/v1
       venice_parameters:
         include_venice_system_prompt: false
   anthropic:
@@ -69,8 +69,8 @@ chat:
     litellm_provider: openrouter
     kwargs:
       extra_headers:
-        "HTTP-Referer": "https://agent-jumbo.ai/"
-        "X-Title": "Agent Jumbo"
+        "HTTP-Referer": "https://mahoosuc.ai/agent-mahoo/"
+        "X-Title": "Agent Mahoo"
   sambanova:
     name: Sambanova
     litellm_provider: sambanova
@@ -117,8 +117,8 @@ embedding:
     kwargs:
       api_base: https://openrouter.ai/api/v1
       extra_headers:
-        "HTTP-Referer": "https://agent-jumbo.ai/"
-        "X-Title": "Agent Jumbo"
+        "HTTP-Referer": "https://mahoosuc.ai/agent-mahoo/"
+        "X-Title": "Agent Mahoo"
   other:
     name: Other OpenAI compatible
     litellm_provider: openai
